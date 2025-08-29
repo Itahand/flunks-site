@@ -1,0 +1,46 @@
+
+> flunks-95@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.28
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1470ms
+ ✓ Compiled /api/debug-daily-login in 135ms (112 modules)
+🔍 Debugging daily login for wallet: 0x123test
+📊 Daily login source config: {
+  id: 2,
+  source_name: 'daily_login',
+  base_reward: 5,
+  cooldown_minutes: 1440,
+  daily_limit: 5,
+  description: 'Daily login bonus - 5 GUM per day',
+  is_active: true,
+  created_at: '2025-08-14T15:37:54.313663+00:00',
+  updated_at: '2025-08-25T02:21:24.883381+00:00'
+}
+⏰ User cooldown record: {
+  id: 26,
+  wallet_address: '0x123test',
+  source_name: 'daily_login',
+  last_earned_at: '2025-08-25T02:39:12.914203+00:00',
+  daily_earned_amount: 5,
+  daily_reset_date: '2025-08-25'
+}
+🕐 Minutes since last earn: 438.98285
+🕐 Required cooldown minutes: 1440
+📅 Today: Mon Aug 25 2025
+📅 Reset date: Sun Aug 24 2025
+💰 Daily earned amount: 5
+💰 Daily limit: 5
+🆕 New day detected - can claim
+ GET /api/debug-daily-login?wallet=0x123test 200 in 406ms
+ ✓ Compiled /api/daily-checkin in 59ms (116 modules)
+ POST /api/daily-checkin 200 in 221ms
+ POST /api/daily-checkin 200 in 199ms
+ POST /api/daily-checkin 200 in 147ms
+ POST /api/daily-checkin 200 in 127ms
+ ✓ Compiled in 47ms (98 modules)
+ ✓ Compiled in 41ms (98 modules)

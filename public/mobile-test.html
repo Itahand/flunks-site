@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Test - Flunks 95</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: sans-serif;
+            background: #008080;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .test-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 100%;
+            width: 100%;
+        }
+        
+        .test-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            text-align: center;
+            min-height: 100px;
+        }
+        
+        .test-icon img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 8px;
+        }
+        
+        .viewport-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .test-window {
+            position: fixed;
+            top: 50px;
+            left: 10px;
+            right: 10px;
+            bottom: 100px;
+            background: #c0c0c0;
+            border: 2px outset #c0c0c0;
+            display: none;
+        }
+        
+        .test-window.active {
+            display: block;
+        }
+        
+        .window-header {
+            background: linear-gradient(90deg, #0000ff, #000080);
+            color: white;
+            padding: 2px 4px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        
+        .window-content {
+            padding: 10px;
+            height: calc(100% - 20px);
+            overflow: auto;
+        }
+        
+        .scroll-test {
+            height: 200vh;
+            background: linear-gradient(to bottom, red, orange, yellow, green, blue, indigo, violet);
+            color: white;
+            padding: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="viewport-info" id="viewportInfo">
+        Loading viewport info...
+    </div>
+    
+    <h1>Mobile Desktop Test</h1>
+    <p>Testing icon layout and scrolling behavior on mobile</p>
+    
+    <div class="test-container">
+        <div class="test-icon" onclick="openTestWindow()">
+            <div style="width: 48px; height: 48px; background: #ff0000; margin-bottom: 8px;"></div>
+            <span>Test App 1</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #00ff00; margin-bottom: 8px;"></div>
+            <span>Test App 2</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #0000ff; margin-bottom: 8px;"></div>
+            <span>Test App 3</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #ffff00; margin-bottom: 8px;"></div>
+            <span>Test App 4</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #ff00ff; margin-bottom: 8px;"></div>
+            <span>Test App 5</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #00ffff; margin-bottom: 8px;"></div>
+            <span>Test App 6</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #ffa500; margin-bottom: 8px;"></div>
+            <span>Test App 7</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #800080; margin-bottom: 8px;"></div>
+            <span>Test App 8</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #008000; margin-bottom: 8px;"></div>
+            <span>Test App 9</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #800000; margin-bottom: 8px;"></div>
+            <span>Test App 10</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #008080; margin-bottom: 8px;"></div>
+            <span>Test App 11</span>
+        </div>
+        <div class="test-icon">
+            <div style="width: 48px; height: 48px; background: #808080; margin-bottom: 8px;"></div>
+            <span>Test App 12</span>
+        </div>
+    </div>
+    
+    <div class="test-window" id="testWindow">
+        <div class="window-header">
+            Test Window
+            <button onclick="closeTestWindow()" style="float: right; background: #c0c0c0; border: 1px outset;">×</button>
+        </div>
+        <div class="window-content">
+            <div class="scroll-test">
+                <h2>Scroll Test Content</h2>
+                <p>This content should be scrollable within the window.</p>
+                <p>Testing viewport constraints...</p>
+                <p>Line 1</p><p>Line 2</p><p>Line 3</p><p>Line 4</p><p>Line 5</p>
+                <p>Line 6</p><p>Line 7</p><p>Line 8</p><p>Line 9</p><p>Line 10</p>
+                <p>More content...</p><p>More content...</p><p>More content...</p>
+                <p>Bottom of scroll test</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateViewportInfo() {
+            const info = document.getElementById('viewportInfo');
+            info.innerHTML = `
+                Viewport: ${window.innerWidth} × ${window.innerHeight}<br>
+                Screen: ${screen.width} × ${screen.height}<br>
+                Ratio: ${window.devicePixelRatio}<br>
+                Touch: ${('ontouchstart' in window) ? 'Yes' : 'No'}
+            `;
+        }
+        
+        function openTestWindow() {
+            document.getElementById('testWindow').classList.add('active');
+        }
+        
+        function closeTestWindow() {
+            document.getElementById('testWindow').classList.remove('active');
+        }
+        
+        window.addEventListener('resize', updateViewportInfo);
+        window.addEventListener('orientationchange', updateViewportInfo);
+        updateViewportInfo();
+        
+        // Test scroll behavior
+        document.addEventListener('touchmove', function(e) {
+            console.log('Touch move detected');
+        });
+        
+        console.log('Mobile test page loaded');
+        console.log('User agent:', navigator.userAgent);
+        console.log('Viewport size:', window.innerWidth, 'x', window.innerHeight);
+    </script>
+</body>
+</html>
