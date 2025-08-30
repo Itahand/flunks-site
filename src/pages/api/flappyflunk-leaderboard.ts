@@ -15,8 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Get scores first, then manually fetch user profiles for those wallets
   const { data: scoresData, error } = await supabase
     .from('flappyflunk_scores')
-    .select('wallet, score')
+    .select('wallet, score, timestamp, metadata')
     .order('score', { ascending: false })
+    .order('timestamp', { ascending: false }) // Secondary sort by timestamp for ties
     .limit(100);
 
   if (error) {
@@ -45,7 +46,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return {
       wallet: row.wallet,
       score: row.score,
-      username: userProfile?.username || `${row.wallet.slice(0, 6)}...${row.wallet.slice(-4)}`,
+      timestamp: row.timestamp,
+      username: userProfile?.username || row.metadata?.username || `${row.wallet.slice(0, 6)}...${row.wallet.slice(-4)}`,
       profile_icon: userProfile?.profile_icon,
       hasProfile: !!userProfile?.username
     };
