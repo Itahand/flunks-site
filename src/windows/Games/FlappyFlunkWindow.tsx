@@ -207,14 +207,45 @@ const FlappyFlunkWindow: React.FC = () => {
     const handler = (event: MessageEvent) => {
       if (event.data?.type === 'FLAPPY_SCORE') {
         const score = event.data.score;
+        console.log('🎮 Flappy Flunk score received:', score);
+        
         fcl.currentUser().snapshot().then((user: any) => {
+          console.log('👤 User authentication check:', { 
+            hasUser: !!user, 
+            hasAddr: !!user?.addr, 
+            addr: user?.addr?.substring(0, 10) + '...' 
+          });
+          
           const wallet = user?.addr;
-          if (!wallet) return;
+          if (!wallet) {
+            console.warn('❌ No wallet connected - score not submitted for score:', score);
+            return;
+          }
+          
+          console.log('📮 Submitting score to database:', { wallet: wallet.substring(0, 10) + '...', score });
+          
           fetch('/api/flappyflunk-score', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ wallet, score }),
+          })
+          .then(response => {
+            console.log('📊 Score submission response status:', response.status);
+            if (!response.ok) {
+              return response.text().then(text => {
+                throw new Error(`Score API Error ${response.status}: ${text}`);
+              });
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('✅ Score submitted successfully to leaderboard:', data);
+          })
+          .catch(error => {
+            console.error('❌ Score submission failed:', error);
           });
+        }).catch(authError => {
+          console.error('❌ Flow authentication error:', authError);
         });
       }
     };
