@@ -2,7 +2,6 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
-import ArcadeSnackSection from "../../components/ArcadeSnackSection";
 
 const ArcadeMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -95,21 +94,11 @@ const ArcadeMain = () => {
         {/* Snack Corner */}
         <button
           onClick={() =>
-            openWindow({
-              key: WINDOW_IDS.ARCADE_BOTTOM_LEFT,
-              window: (
-                <DraggableResizeableWindow
-                  windowsId={WINDOW_IDS.ARCADE_BOTTOM_LEFT}
-                  headerTitle="🍿 Arcade Snack Corner"
-                  onClose={() => closeWindow(WINDOW_IDS.ARCADE_BOTTOM_LEFT)}
-                  initialWidth="800px"
-                  initialHeight="600px"
-                  resizable={true}
-                >
-                  <ArcadeSnackSection onClose={() => closeWindow(WINDOW_IDS.ARCADE_BOTTOM_LEFT)} />
-                </DraggableResizeableWindow>
-              ),
-            })
+            openRoom(
+              WINDOW_IDS.ARCADE_BOTTOM_LEFT,
+              "Snack Corner",
+              "Vending machines hum with stale candy and energy drinks."
+            )
           }
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
         >
