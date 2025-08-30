@@ -46,21 +46,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, primaryWallet } = useDynamicContext();
   const [isLoading, setIsLoading] = useState(true);
   
-  // Safe NFT data access with error handling
-  let flunksCount = 0;
-  let backpacksCount = 0;
-  let nftLoading = false;
+  // CRITICAL FIX: Never wrap hooks in try/catch - causes React error #310
+  // Always call hooks unconditionally to maintain stable hook order
+  const paginatedData = usePaginatedItems();
   
-  try {
-    const paginatedData = usePaginatedItems();
-    if (paginatedData) {
-      flunksCount = paginatedData.flunksCount || 0;
-      backpacksCount = paginatedData.backpacksCount || 0;
-      nftLoading = paginatedData.isLoading || false;
-    }
-  } catch (error) {
-    console.warn('AuthProvider: Could not access paginated items:', error);
-  }
+  // Safe NFT data access after hook call
+  const flunksCount = paginatedData?.flunksCount || 0;
+  const backpacksCount = paginatedData?.backpacksCount || 0;
+  const nftLoading = paginatedData?.isLoading || false;
   
   // Determine authentication state
   const isWalletConnected = !!primaryWallet?.address;
