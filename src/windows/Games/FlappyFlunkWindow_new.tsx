@@ -13,53 +13,35 @@ const ArcadeMachine = styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background: linear-gradient(135deg, #6a4c93 0%, #4a0e4e 25%, #2d1b3d 50%, #1a1a1a 100%);
-  border-radius: 25px 25px 12px 12px;
-  border: 4px solid #ff69b4;
+  background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+  border-radius: 20px 20px 8px 8px;
   box-shadow: 
-    0 0 40px rgba(255, 105, 180, 0.4),
-    0 0 80px rgba(106, 76, 147, 0.3),
-    inset 0 4px 15px rgba(255, 255, 255, 0.15),
-    inset 0 -4px 15px rgba(0, 0, 0, 0.4);
+    0 0 30px rgba(0, 0, 0, 0.8),
+    inset 0 2px 10px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 10px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(255, 105, 180, 0.1) 0%, transparent 50%);
-    pointer-events: none;
-  }
 `;
 
 const ArcadeTop = styled.div`
-  height: 120px;
-  background: linear-gradient(180deg, #6a4c93 0%, #4a0e4e 50%, #2c2c2c 100%);
+  height: 60px;
+  background: linear-gradient(180deg, #4a4a4a 0%, #2c2c2c 100%);
   border-radius: 20px 20px 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  border: 3px solid #ff69b4;
-  box-shadow: 
-    0 0 20px rgba(255, 105, 180, 0.6),
-    inset 0 0 20px rgba(255, 105, 180, 0.2);
   
   &::before {
     content: '';
     position: absolute;
-    top: 15px;
-    left: 30px;
-    right: 30px;
-    height: 6px;
+    top: 10px;
+    left: 20px;
+    right: 20px;
+    height: 4px;
     background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
-    border-radius: 3px;
+    border-radius: 2px;
     animation: neonPulse 3s ease-in-out infinite alternate;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
   }
   
   @keyframes neonPulse {
@@ -69,64 +51,31 @@ const ArcadeTop = styled.div`
 `;
 
 const ArcadeTitle = styled.h2`
-  color: #ffff00;
-  font-family: 'Impact', 'Arial Black', sans-serif;
-  font-size: 42px;
-  font-weight: 900;
-  text-shadow: 
-    0 0 5px #ffff00,
-    0 0 10px #ffff00,
-    0 0 15px #ffff00,
-    0 0 20px #ff8c00,
-    0 0 25px #ff8c00,
-    2px 2px 0px #ff0000,
-    4px 4px 0px #800080;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
   margin: 0;
-  letter-spacing: 4px;
+  letter-spacing: 2px;
   animation: titleGlow 2s ease-in-out infinite alternate;
-  transform: perspective(500px) rotateX(-5deg);
-  background: linear-gradient(45deg, #ffff00, #ff8c00, #ffff00);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   
   @keyframes titleGlow {
-    0% { 
-      text-shadow: 
-        0 0 5px #ffff00,
-        0 0 10px #ffff00,
-        0 0 15px #ffff00,
-        0 0 20px #ff8c00,
-        0 0 25px #ff8c00,
-        2px 2px 0px #ff0000,
-        4px 4px 0px #800080;
-      transform: perspective(500px) rotateX(-5deg) scale(1);
-    }
-    100% { 
-      text-shadow: 
-        0 0 10px #ffff00,
-        0 0 20px #ffff00,
-        0 0 30px #ffff00,
-        0 0 40px #ff8c00,
-        0 0 50px #ff8c00,
-        3px 3px 0px #ff0000,
-        6px 6px 0px #800080;
-      transform: perspective(500px) rotateX(-5deg) scale(1.02);
-    }
+    0% { text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; }
+    100% { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff; }
   }
 `;
 
 const ScreenBezel = styled.div`
   flex: 1;
-  margin: 25px;
+  margin: 20px;
   background: #000000;
-  border-radius: 20px;
-  border: 12px solid #333333;
+  border-radius: 15px;
+  border: 8px solid #333333;
   box-shadow: 
-    inset 0 0 30px rgba(0, 0, 0, 0.95),
-    inset 0 0 60px rgba(0, 0, 0, 0.8),
-    0 0 15px rgba(0, 255, 255, 0.4),
-    0 0 30px rgba(106, 76, 147, 0.3);
+    inset 0 0 20px rgba(0, 0, 0, 0.9),
+    inset 0 0 40px rgba(0, 0, 0, 0.7),
+    0 0 10px rgba(0, 255, 255, 0.3);
   position: relative;
   overflow: hidden;
   
@@ -137,30 +86,15 @@ const ScreenBezel = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-      linear-gradient(
-        45deg,
-        transparent 48%,
-        rgba(0, 255, 255, 0.03) 49%,
-        rgba(0, 255, 255, 0.03) 51%,
-        transparent 52%
-      ),
-      radial-gradient(circle at center, transparent 60%, rgba(0, 255, 255, 0.1) 100%);
+    background: linear-gradient(
+      45deg,
+      transparent 48%,
+      rgba(255, 255, 255, 0.02) 49%,
+      rgba(255, 255, 255, 0.02) 51%,
+      transparent 52%
+    );
     pointer-events: none;
     z-index: 10;
-  }
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    border: 2px solid rgba(0, 255, 255, 0.3);
-    border-radius: 10px;
-    pointer-events: none;
-    z-index: 11;
   }
 `;
 
