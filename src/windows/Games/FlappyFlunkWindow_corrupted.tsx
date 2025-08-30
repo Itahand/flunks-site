@@ -7,6 +7,15 @@ import FlappyLeaderboardWindow from './FlappyLeaderboardWindow';
 import { getCurrentBuildMode } from 'utils/buildMode';
 import styled from 'styled-components';
 
+import React, { useEffect } from 'react';
+import * as fcl from '@onflow/fcl';
+import { useWindowsContext } from 'contexts/WindowsContext';
+import { WINDOW_IDS } from 'fixed';
+import DraggableResizeableWindow from 'components/DraggableResizeableWindow';
+import FlappyLeaderboardWindow from './FlappyLeaderboardWindow';
+import { getCurrentBuildMode } from 'utils/buildMode';
+import styled from 'styled-components';
+
 // Styled components for the arcade machine
 const ArcadeMachine = styled.div`
   display: flex;
@@ -201,7 +210,7 @@ const SpeakerGrill = styled.div`
 
 const FlappyFlunkWindow: React.FC = () => {
   const { openWindow, closeWindow } = useWindowsContext();
-  const isBuildMode = getCurrentBuildMode() === 'build';
+  const isBuilMode = getCurrentBuildMode() === 'build';
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
@@ -242,7 +251,7 @@ const FlappyFlunkWindow: React.FC = () => {
   };
 
   // Regular display for public mode
-  if (!isBuildMode) {
+  if (!isBuilMode) {
     return (
       <div className="flex flex-col h-full w-full">
         <iframe
