@@ -47,7 +47,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showSemesterZero: true,
     showMemeManager: false,
     showMyPlace: false,
-    showFlappyFlunk: false,
+    showFlappyFlunk: true,
     showGameManual: true,
     showTerminal: true,
     showCliqueAccess: true,

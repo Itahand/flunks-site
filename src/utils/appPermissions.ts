@@ -109,7 +109,7 @@ export const APP_PERMISSIONS: AppPermission[] = [
   {
     id: 'flappyflunk',
     title: 'Flappy Flunk',
-    requiredLevel: ['ADMIN'],
+    requiredLevel: ['ADMIN', 'BETA', 'COMMUNITY'],
     description: 'Play Flappy Flunk game',
     buildModeFeature: 'showFlappyFlunk'
   },
