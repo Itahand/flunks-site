@@ -28,23 +28,31 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
   useEffect(() => {
     loadObjectives();
     
-    // Refresh every 10 seconds to catch any missed updates
-    const interval = setInterval(loadObjectives, 10000);
+    // Reduced refresh interval to prevent excessive refreshes
+    const interval = setInterval(loadObjectives, 30000); // Changed from 10s to 30s
     
-    // Listen for objective updates
+    // Debounced update handler to prevent multiple rapid refreshes
+    let refreshTimeout: NodeJS.Timeout | null = null;
     const handleObjectiveUpdate = () => {
-      setTimeout(loadObjectives, 1000); // Small delay to ensure DB is updated
+      if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+      }
+      refreshTimeout = setTimeout(() => {
+        loadObjectives();
+        refreshTimeout = null;
+      }, 2000); // Increased delay and debounce
     };
 
     window.addEventListener('cafeteriaButtonClicked', handleObjectiveUpdate);
     window.addEventListener('codeAccessed', handleObjectiveUpdate);
-    window.addEventListener('gumBalanceUpdated', handleObjectiveUpdate); // Also listen to gum updates
     
     return () => {
       clearInterval(interval);
+      if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+      }
       window.removeEventListener('cafeteriaButtonClicked', handleObjectiveUpdate);
       window.removeEventListener('codeAccessed', handleObjectiveUpdate);
-      window.removeEventListener('gumBalanceUpdated', handleObjectiveUpdate);
     };
   }, [primaryWallet?.address]);
 

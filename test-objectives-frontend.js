@@ -1,28 +1,10 @@
-import { supabase, hasValidSupabaseConfig } from '../lib/supabase';
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config({ path: '.env.local' });
 
-export interface WeeklyObjective {
-  id: string;
-  title: string;
-  description: string;
-  type: 'cafeteria_click' | 'crack_code' | 'daily_checkin' | 'custom';
-  completed: boolean;
-  completedAt?: string;
-  reward?: number; // gum reward if applicable
-}
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-export interface ObjectiveStatus {
-  cafeteriaClicked: boolean;
-  crackedCode: boolean;
-  completedObjectives: WeeklyObjective[];
-}
-
-// Check if user has clicked cafeteria button
-export const checkCafeteriaObjective = async (walletAddress: string): Promise<boolean> => {
-  if (!hasValidSupabaseConfig || !supabase) {
-    console.warn('Supabase not configured, cannot check cafeteria objective');
-    return false;
-  }
-
+// Import the same functions used by the frontend
+async function checkCafeteriaObjective(walletAddress) {
   try {
     console.log('🔍 Checking cafeteria objective for wallet:', walletAddress);
     const { data, error } = await supabase
@@ -44,15 +26,9 @@ export const checkCafeteriaObjective = async (walletAddress: string): Promise<bo
     console.error('Failed to check cafeteria objective:', err);
     return false;
   }
-};
+}
 
-// Check if user has cracked the code
-export const checkCrackCodeObjective = async (walletAddress: string): Promise<boolean> => {
-  if (!hasValidSupabaseConfig || !supabase) {
-    console.warn('Supabase not configured, cannot check crack code objective');
-    return false;
-  }
-
+async function checkCrackCodeObjective(walletAddress) {
   try {
     console.log('🔍 Checking crack code objective for wallet:', walletAddress);
     const { data, error } = await supabase
@@ -76,10 +52,9 @@ export const checkCrackCodeObjective = async (walletAddress: string): Promise<bo
     console.error('Failed to check crack code objective:', err);
     return false;
   }
-};
+}
 
-// Get all weekly objectives status for a user
-export const getWeeklyObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
+async function getWeeklyObjectivesStatus(walletAddress) {
   console.log('🎯 getWeeklyObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
   
   const [cafeteriaClicked, crackedCode] = await Promise.all([
@@ -89,7 +64,7 @@ export const getWeeklyObjectivesStatus = async (walletAddress: string): Promise<
 
   console.log('📊 Objectives status:', { cafeteriaClicked, crackedCode });
 
-  const completedObjectives: WeeklyObjective[] = [
+  const completedObjectives = [
     {
       id: 'slacker',
       title: 'The Slacker',
@@ -113,11 +88,32 @@ export const getWeeklyObjectivesStatus = async (walletAddress: string): Promise<
     crackedCode,
     completedObjectives
   };
-};
+}
 
-// Calculate progress percentage
-export const calculateObjectiveProgress = (objectives: WeeklyObjective[]): number => {
-  if (objectives.length === 0) return 0;
-  const completed = objectives.filter(obj => obj.completed).length;
-  return Math.round((completed / objectives.length) * 100);
-};
+async function testObjectivesForUser() {
+  // Test with one of the known successful wallets
+  const testWallet = '0xe327216d843357f1'; // This wallet has successful 8004 entries
+  
+  console.log('🧪 Testing objectives system for wallet:', testWallet);
+  console.log('=' .repeat(60));
+  
+  const status = await getWeeklyObjectivesStatus(testWallet);
+  
+  console.log('\n🎯 Final Results:');
+  console.log('Cafeteria Clicked:', status.cafeteriaClicked);
+  console.log('Code Cracked (8004):', status.crackedCode);
+  console.log('\n📋 Objectives:');
+  
+  status.completedObjectives.forEach(obj => {
+    const checkmark = obj.completed ? '✅' : '❌';
+    console.log(`${checkmark} ${obj.title}: ${obj.description}`);
+  });
+  
+  if (status.crackedCode) {
+    console.log('\n🎉 This user SHOULD see the Overachiever objective with a green checkmark!');
+  } else {
+    console.log('\n⚠️  This user should NOT see the Overachiever objective completed');
+  }
+}
+
+testObjectivesForUser().catch(console.error);
