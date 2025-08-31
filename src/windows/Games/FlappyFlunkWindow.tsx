@@ -4,7 +4,6 @@ import { useWindowsContext } from 'contexts/WindowsContext';
 import { WINDOW_IDS } from 'fixed';
 import DraggableResizeableWindow from 'components/DraggableResizeableWindow';
 import FlappyLeaderboardWindow from './FlappyLeaderboardWindow';
-import { getCurrentBuildMode } from 'utils/buildMode';
 import styled from 'styled-components';
 
 // Styled components for the arcade machine
@@ -201,7 +200,6 @@ const SpeakerGrill = styled.div`
 
 const FlappyFlunkWindow: React.FC = () => {
   const { openWindow, closeWindow } = useWindowsContext();
-  const isBuildMode = getCurrentBuildMode() === 'build';
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
@@ -272,26 +270,7 @@ const FlappyFlunkWindow: React.FC = () => {
     });
   };
 
-  // Regular display for public mode
-  if (!isBuildMode) {
-    return (
-      <div className="flex flex-col h-full w-full">
-        <iframe
-          src="/Games/FlappyFlunk/index.html"
-          title="Flappy Flunk"
-          style={{ width: '100%', height: '100%', border: 'none' }}
-        />
-        <button
-          onClick={openLeaderboard}
-          className="mt-2 px-2 py-1 bg-blue-500 text-white"
-        >
-          Leaderboard
-        </button>
-      </div>
-    );
-  }
-
-  // Arcade machine display for build mode
+  // Always show the stylized arcade machine frame
   return (
     <ArcadeMachine>
       <CoinSlot />

@@ -2,14 +2,56 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
+import { useState } from "react";
+import { useAuth } from "contexts/AuthContext";
+import { awardGum } from "utils/gumAPI";
 
 const ArcadeMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
+  const { walletAddress, user } = useAuth();
+  const [gumClaimLoading, setGumClaimLoading] = useState(false);
   
   // Use your uploaded day/night images for Arcade
   const dayImage = "/images/icons/arcade-day.png";
   const nightImage = "/images/icons/arcade-night.png";
   const timeBasedInfo = useTimeBasedImage(dayImage, nightImage);
+
+  // Handle snack corner gum claim
+  const handleSnackGumClaim = async () => {
+    if (!walletAddress) {
+      alert('Please connect your wallet first to claim gum!');
+      return;
+    }
+
+    setGumClaimLoading(true);
+    
+    try {
+      // Get username - could be from user object or wallet address as fallback
+      const username = user?.email || user?.username || walletAddress.slice(0, 8) + '...';
+      
+      // Award gum for the snack corner visit
+      const gumResult = await awardGum(
+        walletAddress,
+        "arcade_snack",
+        { username, location: 'arcade_snack_corner' }
+      );
+
+      if (gumResult.success) {
+        alert(`🍿 Snack time! +${gumResult.earned} gum awarded! Come back in 24 hours for more.`);
+      } else {
+        if (gumResult.error?.includes('cooldown') || gumResult.error?.includes('limit')) {
+          alert('🕐 You can only claim snack gum once every 24 hours. Come back later!');
+        } else {
+          alert(`❌ ${gumResult.error || 'Failed to claim gum. Please try again.'}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error claiming snack gum:', error);
+      alert('❌ Something went wrong. Please try again.');
+    } finally {
+      setGumClaimLoading(false);
+    }
+  };
 
   const openRoom = (roomKey: string, title: string, content: string) => {
     openWindow({
@@ -26,6 +68,86 @@ const ArcadeMain = () => {
           <div className="p-4 text-sm leading-relaxed bg-[#1a1a1a] text-white w-full h-full">
             <h1 className="text-xl mb-2">{title}</h1>
             <p>{content}</p>
+          </div>
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
+  const openSnackCorner = () => {
+    openWindow({
+      key: WINDOW_IDS.ARCADE_BOTTOM_LEFT,
+      window: (
+        <DraggableResizeableWindow
+          windowsId={WINDOW_IDS.ARCADE_BOTTOM_LEFT}
+          headerTitle="Snack Corner"
+          onClose={() => closeWindow(WINDOW_IDS.ARCADE_BOTTOM_LEFT)}
+          initialWidth="70vw"
+          initialHeight="70vh"
+          resizable={true}
+        >
+          <div className="relative w-full h-full bg-[#1a1a1a] text-white overflow-hidden">
+            {/* Snack Corner Background Image */}
+            <img
+              src="/images/locations/snack-corner.png"
+              alt="Snack Corner Interior"
+              className="absolute inset-0 w-full h-full object-cover z-0"
+              onError={(e) => {
+                e.currentTarget.src = "/images/backdrops/BLANK.png";
+              }}
+            />
+            
+            {/* Content Overlay */}
+            <div className="absolute inset-0 z-10 bg-black bg-opacity-50 p-6 flex flex-col justify-between">
+              {/* Top Section - Interactive Button */}
+              <div className="flex justify-center pt-8">
+                <button
+                  onClick={handleSnackGumClaim}
+                  disabled={!walletAddress || gumClaimLoading}
+                  className={`
+                    px-6 py-3 rounded-lg font-bold text-white text-lg shadow-lg transition-all duration-200
+                    ${walletAddress 
+                      ? 'bg-purple-600 hover:bg-purple-700 hover:scale-105 cursor-pointer' 
+                      : 'bg-gray-600 cursor-not-allowed opacity-50'
+                    }
+                    ${gumClaimLoading ? 'animate-pulse' : ''}
+                  `}
+                  title={walletAddress ? 'Claim 25 gum from the snack corner! (24h cooldown)' : 'Connect wallet to claim gum'}
+                >
+                  {gumClaimLoading ? (
+                    <span className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      Claiming...
+                    </span>
+                  ) : (
+                    '🍿 Claim 25 Gum'
+                  )}
+                </button>
+              </div>
+
+              {/* Bottom Section - Description */}
+              <div className="bg-black bg-opacity-80 p-4 rounded">
+                <h1 className="text-2xl mb-3 font-bold">🍿 Snack Corner</h1>
+                <p className="text-sm leading-relaxed mb-3">
+                  The perfect pit stop between gaming sessions. Rows of vending machines line the walls, 
+                  filled with sugary drinks and salty snacks that fuel late-night gaming marathons. 
+                  The neon glow from the machines casts colorful shadows across scattered candy wrappers 
+                  and empty soda cans. A small seating area with retro booth-style seats provides the 
+                  perfect spot to refuel while discussing high scores and gaming strategies with fellow 
+                  arcade enthusiasts.
+                </p>
+                
+                <p className="text-xs opacity-70">
+                  The air smells of artificial cherry and the faint ozone from nearby arcade machines...
+                </p>
+                
+                <div className="mt-3 p-2 bg-purple-900 bg-opacity-50 rounded text-center">
+                  <p className="text-xs text-purple-200">
+                    💫 Daily Gum Reward: 25 gum every 24 hours
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </DraggableResizeableWindow>
       ),
@@ -93,13 +215,7 @@ const ArcadeMain = () => {
 
         {/* Snack Corner */}
         <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.ARCADE_BOTTOM_LEFT,
-              "Snack Corner",
-              "Vending machines hum with stale candy and energy drinks."
-            )
-          }
+          onClick={openSnackCorner}
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
         >
           🍿 Snack Corner
