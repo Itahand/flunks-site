@@ -5,6 +5,7 @@ import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import styled from 'styled-components';
 import { trackProfileActivation, generateSessionId, PROFILE_STEPS } from 'utils/activityTracking';
 import UserDisplay from '../UserDisplay';
+import ProfileIconSelector from './ProfileIconSelector';
 
 // Background pattern definitions
 const backgroundPatterns = {
@@ -328,10 +329,11 @@ const RPGProfileForm: React.FC<RPGProfileFormProps> = ({ onComplete, onCancel })
   const { createProfile, updateProfile, checkUsername, profile, refreshProfile } = useUserProfile();
   
   const [currentStep, setCurrentStep] = useState<FormStep>('username');
+  const [isSelectingIcon, setIsSelectingIcon] = useState(false);
   const [backgroundPattern, setBackgroundPattern] = useState<keyof typeof backgroundPatterns>('checkerboard');
   const [formData, setFormData] = useState({
     username: '',
-    profile_icon: '👤', // Set default icon instead of user selection
+    profile_icon: '🤓', // Default to first emoji from our collection
     discord_id: '',
     email: ''
   });
@@ -567,6 +569,18 @@ const RPGProfileForm: React.FC<RPGProfileFormProps> = ({ onComplete, onCancel })
     }
   };
 
+  const handleIconSelect = (icon: string) => {
+    console.log('🎨 FRESH ICON SELECT - Icon selected:', icon);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        profile_icon: icon
+      };
+      console.log('🎨 FRESH ICON SELECT - Updated formData:', newData);
+      return newData;
+    });
+  };
+
   const handleSubmit = async () => {
     console.log('🚀 Starting handleSubmit with formData:', formData);
     console.log('🚀 Profile icon before submission:', formData.profile_icon);
@@ -656,6 +670,25 @@ const RPGProfileForm: React.FC<RPGProfileFormProps> = ({ onComplete, onCancel })
     console.log('🔍 Confirmation screen - formData:', formData);
     console.log('🔍 Confirmation screen - profile_icon:', formData.profile_icon);
     
+    // If user is selecting icon, show the ProfileIconSelector
+    if (isSelectingIcon) {
+      return (
+        <ProfileIconSelector
+          selectedIcon={formData.profile_icon}
+          onIconSelect={handleIconSelect}
+          onBack={() => {
+            console.log('🔙 Returning to confirmation screen');
+            setIsSelectingIcon(false);
+          }}
+          onNext={() => {
+            console.log('🎨 Icon selected, returning to confirmation');
+            setIsSelectingIcon(false);
+          }}
+          username={formData.username}
+        />
+      );
+    }
+    
     return (
     <UsernameContainer>
       <AstroLogo src="/images/icons/astro-mascot.png" alt="Flunks Astronaut" />
@@ -671,6 +704,22 @@ const RPGProfileForm: React.FC<RPGProfileFormProps> = ({ onComplete, onCancel })
               profileIcon={formData.profile_icon}
               size="medium"
             />
+            <Button
+              onClick={() => {
+                console.log('🎨 Change icon button clicked');
+                setIsSelectingIcon(true);
+              }}
+              style={{
+                marginLeft: '10px',
+                background: '#4a90e2',
+                border: '2px solid #357abd',
+                color: 'white',
+                fontSize: '12px',
+                padding: '4px 8px'
+              }}
+            >
+              🎨 Change Icon
+            </Button>
           </div>
           {formData.discord_id && (
             <div>🎮 Discord: <strong>{formData.discord_id}</strong></div>
