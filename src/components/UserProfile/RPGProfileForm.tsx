@@ -697,7 +697,13 @@ const RPGProfileForm: React.FC<RPGProfileFormProps> = ({ onComplete, onCancel })
           Profile Summary
         </div>
         <div style={{ fontSize: '16px', textAlign: 'left', lineHeight: '1.6' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            marginBottom: '8px',
+            flexWrap: 'wrap',
+            gap: '8px'
+          }}>
             <span style={{ marginRight: '8px' }}>✨ Profile:</span>
             <UserDisplay 
               username={formData.username} 
@@ -710,15 +716,16 @@ const RPGProfileForm: React.FC<RPGProfileFormProps> = ({ onComplete, onCancel })
                 setIsSelectingIcon(true);
               }}
               style={{
-                marginLeft: '10px',
                 background: '#4a90e2',
                 border: '2px solid #357abd',
                 color: 'white',
-                fontSize: '12px',
-                padding: '4px 8px'
+                fontSize: '11px',
+                padding: '6px 10px',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
               }}
             >
-              🎨 Change Icon
+              🎨 Change
             </Button>
           </div>
           {formData.discord_id && (
