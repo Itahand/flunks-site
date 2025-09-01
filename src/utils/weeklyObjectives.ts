@@ -66,6 +66,7 @@ export const checkCrackCodeObjective = async (walletAddress: string): Promise<bo
     const cacheBreaker = Date.now();
     console.log('🕒 Cache breaker timestamp:', cacheBreaker);
     
+    // REVERT: Keep checking digital_lock_attempts since that's where the real data is
     const { data, error } = await supabase
       .from('digital_lock_attempts')
       .select('*')
@@ -80,7 +81,7 @@ export const checkCrackCodeObjective = async (walletAddress: string): Promise<bo
       return false;
     }
 
-    console.log('📊 Crack code data found (8004 success):', data);
+    console.log('📊 Crack code data found (8004 success from digital_lock_attempts):', data);
     const hasCracked = data && data.length > 0;
     console.log('✅ Crack code objective completed:', hasCracked);
     return hasCracked;

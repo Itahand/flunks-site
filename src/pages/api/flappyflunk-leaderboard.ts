@@ -12,21 +12,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // Get scores first, then manually fetch user profiles for those wallets
-  const { data: scoresData, error } = await supabase
+  // Get all scores first
+  const { data: allScores, error } = await supabase
     .from('flappyflunk_scores')
     .select('wallet, score, timestamp, metadata')
     .order('score', { ascending: false })
-    .order('timestamp', { ascending: false }) // Secondary sort by timestamp for ties
-    .limit(100);
+    .order('timestamp', { ascending: false });
 
   if (error) {
     console.error('🔥 Supabase SELECT error:', error);
     return res.status(500).json({ error: error.message });
   }
 
-  // Get unique wallet addresses
-  const walletAddresses = scoresData?.map(row => row.wallet) || [];
+  // Group by wallet and keep only the highest score for each wallet
+  const walletBestScores = new Map();
+  
+  allScores?.forEach((scoreEntry: any) => {
+    const wallet = scoreEntry.wallet;
+    const existingBest = walletBestScores.get(wallet);
+    
+    if (!existingBest || scoreEntry.score > existingBest.score) {
+      walletBestScores.set(wallet, scoreEntry);
+    }
+  });
+
+  // Convert map back to array and sort by score (highest first)
+  const uniqueTopScores = Array.from(walletBestScores.values())
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score; // Higher score first
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(); // More recent first for ties
+    })
+    .slice(0, 50); // Limit to top 50 unique players
+
+  // Get unique wallet addresses for profile lookup
+  const walletAddresses = uniqueTopScores.map(row => row.wallet);
   
   // Fetch user profiles for those wallets
   const { data: profilesData } = await supabase
@@ -41,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   });
 
   // Transform the data to include username or fallback to wallet
-  const transformedData = scoresData?.map((row: any) => {
+  const transformedData = uniqueTopScores.map((row: any) => {
     const userProfile = profileMap.get(row.wallet);
     return {
       wallet: row.wallet,
