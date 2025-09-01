@@ -32,6 +32,7 @@ import ErrorWindow from 'windows/ErrorWindow';
 import { useHouseImage } from '../utils/dayNightHouses';
 import { DynamicHouseIcon } from '../components/DynamicHouseIcon';
 import { useAuth } from 'contexts/AuthContext';
+import { isFeatureEnabled, getCurrentBuildMode } from '../utils/buildMode';
 
 interface Props {
   onClose: () => void;
@@ -65,20 +66,35 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
   // Get authentication and NFT data from auth context
   const { isAuthenticated, flunksCount, hasFlunks } = auth;
 
+  // Development bypass for build mode only
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isLocalhost = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const buildMode = getCurrentBuildMode();
+  const walletBypassEnabled = isFeatureEnabled('enableWalletBypass') && isDevelopment && isLocalhost;
+  
+  // Override authentication for development
+  const effectiveAuth = walletBypassEnabled ? {
+    isAuthenticated: true,
+    flunksCount: 1,
+    hasFlunks: true
+  } : { isAuthenticated, flunksCount, hasFlunks };
+
   // Helper function to handle location access - checks NFT ownership but allows wallet-only auth
   const handleLocationAccess = (
     locationKey: string, 
     openLocationWindow: () => void, 
     e?: React.MouseEvent
   ) => {
-    if (!isAuthenticated) {
+    // Use effective auth (bypassed in development)
+    if (!effectiveAuth.isAuthenticated) {
       // Show connection prompt
       console.log('Please connect your wallet to access locations');
       alert('Please connect your wallet to access this location.');
       return;
     }
     
-    if (!hasFlunks) {
+    if (!effectiveAuth.hasFlunks) {
       // Show NFT requirement message
       alert(`You need at least 1 Flunk NFT to access locations. You currently have ${flunksCount} Flunks.`);
       return;
@@ -90,13 +106,23 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
 
   // Helper function to check clique access and handle unauthorized attempts
   const handleCliqueHouseAccess = (clique: CliqueType, windowId: string, component: JSX.Element, houseName: string) => {
-    if (!isAuthenticated) {
+    if (!effectiveAuth.isAuthenticated) {
       alert('Please connect your wallet to access clique houses.');
       return;
     }
 
-    if (!hasFlunks) {
-      alert(`You need at least 1 Flunk NFT to access locations. You currently have ${flunksCount} Flunks.`);
+    if (!effectiveAuth.hasFlunks) {
+      alert(`You need at least 1 Flunk NFT to access locations. You currently have ${effectiveAuth.flunksCount} Flunks.`);
+      return;
+    }
+
+    // In development bypass mode, skip clique access checks
+    if (walletBypassEnabled) {
+      console.log(`🔧 DEV BYPASS: Accessing ${houseName} without clique verification`);
+      openWindow({
+        key: windowId,
+        window: component,
+      });
       return;
     }
 
@@ -438,7 +464,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
             position: 'absolute',
             top: '20px',
             right: '20px',
-            background: isAuthenticated ? (hasFlunks ? '#4CAF50' : '#FF9800') : '#f44336',
+            background: effectiveAuth.isAuthenticated ? (effectiveAuth.hasFlunks ? '#4CAF50' : '#FF9800') : '#f44336',
             color: 'white',
             padding: '8px 16px',
             borderRadius: '20px',
@@ -448,9 +474,32 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
             fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif'
           }}>
-            {isAuthenticated ? (
-              hasFlunks ? `✅ ${flunksCount} Flunks - Full Access` : `⚠️ Connected - Need Flunks for Access`
+            {walletBypassEnabled ? (
+              `🔧 DEV BYPASS - Full Access`
+            ) : effectiveAuth.isAuthenticated ? (
+              effectiveAuth.hasFlunks ? `✅ ${effectiveAuth.flunksCount} Flunks - Full Access` : `⚠️ Connected - Need Flunks for Access`
             ) : `❌ No Wallet Connected`}
+          </div>
+        )}
+        
+        {/* Development Bypass Button (Build Mode Only) */}
+        {walletBypassEnabled && (
+          <div style={{
+            position: 'absolute',
+            top: '60px',
+            right: '20px',
+            background: 'rgba(255, 165, 0, 0.9)',
+            color: 'black',
+            padding: '6px 12px',
+            borderRadius: '15px',
+            fontSize: '11px',
+            fontWeight: 'bold',
+            zIndex: 1000,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
+            border: '2px solid #FF8C00'
+          }}>
+            🔧 BUILD MODE - Wallet Bypass Active
           </div>
         )}
         

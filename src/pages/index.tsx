@@ -658,7 +658,7 @@ const MonitorScreenWrapper: React.FC<React.PropsWithChildren> = ({ children }) =
 
 const Home: NextPage = () => {
   const [isMounted, setIsMounted] = useState(false);
-  const [hasAccess, setHasAccess] = useState(false);
+  const [hasAccess, setHasAccess] = useState(process.env.NODE_ENV === 'development'); // Force true in dev
   const [checkingAccess, setCheckingAccess] = useState(true);
 
   useEffect(() => {
@@ -689,14 +689,14 @@ const Home: NextPage = () => {
       });
       
     // Access logic based on build mode
-    if (!needsAccessGate || (isLocalhost && isDev)) {
-      // Skip access gate - automatically grant access
-      if (defaultAccessLevel) {
-        // Auto-grant access level for public mode
+    if (!needsAccessGate || (isLocalhost && isDev) || isDev) {
+      // Skip access gate - automatically grant access (FORCE BYPASS FOR DEV)
+      if (defaultAccessLevel || isDev) {
+        // Auto-grant access level for public mode or development
         sessionStorage.setItem('flunks-access-granted', 'true');
-        sessionStorage.setItem('flunks-access-level', defaultAccessLevel);
-        sessionStorage.setItem('flunks-access-code', 'AUTO-GRANTED-PUBLIC');
-        console.log(`🎯 Auto-granted ${defaultAccessLevel} access for ${buildMode} mode`);
+        sessionStorage.setItem('flunks-access-level', defaultAccessLevel || 'BETA');
+        sessionStorage.setItem('flunks-access-code', 'AUTO-GRANTED-DEV');
+        console.log(`🎯 Auto-granted ${defaultAccessLevel || 'BETA'} access for ${buildMode} mode`);
         
         // Dispatch access update event to update all components
         window.dispatchEvent(new CustomEvent('flunks-access-updated'));
@@ -717,8 +717,9 @@ const Home: NextPage = () => {
 
   if (!isMounted || checkingAccess) return null;
 
-  // Show access gate if user doesn't have access
-  if (!hasAccess) {
+  // Show access gate if user doesn't have access - COMPLETELY BYPASS IN DEV
+  const isDev = process.env.NODE_ENV === 'development';
+  if (!hasAccess && !isDev) {
     return (
       <>
         <Head>

@@ -37,6 +37,9 @@ export interface BuildModeConfig {
   // Access Control
   requireAccessCode: boolean;
   showAccessGate: boolean;
+  
+  // Development Features (build mode only)
+  enableWalletBypass: boolean;
 }
 
 // Configuration for each mode
@@ -73,6 +76,9 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     // Public mode should NOT require access codes
     requireAccessCode: false,
     showAccessGate: false,
+    
+    // No wallet bypass in public mode (affects real users)
+    enableWalletBypass: false,
   },
   
   // Build mode - full admin access with all features
@@ -107,6 +113,9 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     // Access control settings (can be overridden by environment)
     requireAccessCode: true,
     showAccessGate: true,
+    
+    // Enable wallet bypass in build mode for development
+    enableWalletBypass: true,
   }
 };
 
