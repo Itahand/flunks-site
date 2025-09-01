@@ -2,6 +2,7 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
+import ShedDigitalLock from "components/ShedDigitalLock";
 
 const GeeksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -27,6 +28,26 @@ const GeeksHouseMain = () => {
             <h1 className="text-xl mb-2">{title}</h1>
             <p>{content}</p>
           </div>
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
+  const openShedWithLock = () => {
+    openWindow({
+      key: WINDOW_IDS.GEEKS_HOUSE_SHED_LOCK,
+      window: (
+        <DraggableResizeableWindow
+          windowsId={WINDOW_IDS.GEEKS_HOUSE_SHED_LOCK}
+          headerTitle="🔒 Shed Security Access"
+          onClose={() => closeWindow(WINDOW_IDS.GEEKS_HOUSE_SHED_LOCK)}
+          initialWidth="450px"
+          initialHeight="700px"
+          resizable={true}
+        >
+          <ShedDigitalLock 
+            onCancel={() => closeWindow(WINDOW_IDS.GEEKS_HOUSE_SHED_LOCK)}
+          />
         </DraggableResizeableWindow>
       ),
     });
@@ -117,6 +138,23 @@ const GeeksHouseMain = () => {
             className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
           >
             🔧 Workshop
+          </button>
+        </div>
+
+        {/* SHED Button - Longer and Ominous */}
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={openShedWithLock}
+            className="bg-gradient-to-b from-red-900 to-black text-red-200 px-8 py-3 rounded-lg hover:from-red-800 hover:to-gray-900 hover:text-red-100 transition-all duration-300 hover:scale-105 min-w-[200px] text-center shadow-lg border-2 border-red-800 hover:border-red-600"
+            style={{
+              fontFamily: 'serif',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+              letterSpacing: '2px'
+            }}
+          >
+            🏚️ SHED
           </button>
         </div>
       </div>

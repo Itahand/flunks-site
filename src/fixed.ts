@@ -115,6 +115,8 @@ export const WINDOW_IDS = {
   GEEKS_HOUSE_COMPUTER_ROOM: "geeks_house_computer_room",
   GEEKS_HOUSE_LIBRARY: "geeks_house_library",
   GEEKS_HOUSE_WORKSHOP: "geeks_house_workshop",
+  GEEKS_HOUSE_SHED: "geeks_house_shed",
+  GEEKS_HOUSE_SHED_LOCK: "geeks_house_shed_lock",
   
   // Prep's House rooms
   PREPS_HOUSE_SALON: "preps_house_salon",
