@@ -217,6 +217,10 @@ const pages = [
     content: "gum-system"
   },
   {
+    title: "Flappy Flunk",
+    content: "flappy-flunk"
+  },
+  {
     title: "Terminal Guide",
     content: "terminal"
   },
@@ -1268,6 +1272,104 @@ const GameManualWindow: React.FC = () => {
                   <strong style={{ color: '#1e3a72' }}>🎯 Quick Tip:</strong> Use the GUM system daily to earn rewards and track your progress in the Flunks ecosystem!
                 </>
               )}
+            </div>
+          </PageContent>
+        );
+        
+      case "flappy-flunk":
+        return (
+          <PageContent>
+            <PageHeader>🐦 Flappy Flunk - High Score Challenge</PageHeader>
+            
+            {/* Game Image Placeholder */}
+            <div style={{
+              textAlign: 'center',
+              margin: '20px 0',
+              padding: '20px',
+              background: 'linear-gradient(135deg, #87CEEB 0%, #98D8E8 50%, #87CEEB 100%)',
+              border: '3px solid #4682B4',
+              borderRadius: '8px',
+              position: 'relative'
+            }}>
+              <div style={{
+                fontSize: '48px',
+                marginBottom: '10px'
+              }}>
+                🐦💨
+              </div>
+              <div style={{
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: '#2F4F4F'
+              }}>
+                Upload Flappy Flunk Image Here
+              </div>
+              <div style={{
+                fontSize: '10px',
+                color: '#696969',
+                marginTop: '5px'
+              }}>
+                Path: /public/images/games/flappy-flunk.png
+              </div>
+            </div>
+
+            <h3>🎮 Game Rules</h3>
+            <div style={{
+              background: '#ffffcc',
+              border: '2px solid #ff6600',
+              padding: '15px',
+              borderRadius: '5px',
+              marginBottom: '20px'
+            }}>
+              <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                <li style={{ marginBottom: '8px' }}>
+                  <strong>🪶 Flap until you can't flap anymore!</strong>
+                </li>
+                <li style={{ marginBottom: '8px' }}>
+                  <strong>🥇 Top 3 win FLOW!</strong>
+                </li>
+                <li style={{ marginBottom: '8px' }}>
+                  <strong>🎁 Top 10 win a special reward to be used later in the semester!</strong>
+                </li>
+                <li style={{ marginBottom: '8px' }}>
+                  <strong>📸 Take pictures of high scores if leaderboard does not reflect your score!</strong>
+                </li>
+                <li style={{ marginBottom: '8px' }}>
+                  <strong>🎓 Winners must own a Flunks NFT</strong>
+                </li>
+              </ul>
+            </div>
+
+            <h3>🏆 How to Play</h3>
+            <p>Navigate through the pipes by clicking or tapping to make your Flunk flap its wings. Avoid hitting the obstacles and try to get the highest score possible!</p>
+            
+            <h3>📊 Leaderboard</h3>
+            <p>Check your ranking against other Flunks High School students. The leaderboard updates in real-time as players submit their scores.</p>
+            
+            <h3>🎯 Competition Details</h3>
+            <div style={{
+              background: '#f0f8ff',
+              border: '1px solid #4682b4',
+              padding: '12px',
+              borderRadius: '4px',
+              marginTop: '15px'
+            }}>
+              <p><strong>Prize Distribution:</strong></p>
+              <p>🥇 <strong>1st Place:</strong> FLOW tokens + Special reward</p>
+              <p>🥈 <strong>2nd Place:</strong> FLOW tokens + Special reward</p>
+              <p>🥉 <strong>3rd Place:</strong> FLOW tokens + Special reward</p>
+              <p>🎁 <strong>4th-10th Place:</strong> Special semester rewards</p>
+            </div>
+
+            <div style={{
+              background: '#fff5ee',
+              border: '2px solid #ff4500',
+              padding: '10px',
+              borderRadius: '5px',
+              marginTop: '20px',
+              textAlign: 'center'
+            }}>
+              <strong>⚠️ Important:</strong> Keep screenshots of your high scores! If there are any leaderboard issues, these will serve as proof of your achievement.
             </div>
           </PageContent>
         );
