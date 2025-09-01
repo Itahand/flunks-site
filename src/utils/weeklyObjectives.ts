@@ -26,10 +26,6 @@ export const checkCafeteriaObjective = async (walletAddress: string): Promise<bo
   try {
     console.log('🔍 Checking cafeteria objective for wallet:', walletAddress);
     
-    // Add timestamp for cache busting
-    const cacheBreaker = Date.now();
-    console.log('🕒 Cache breaker timestamp:', cacheBreaker);
-    
     const { data, error } = await supabase
       .from('cafeteria_button_clicks')
       .select('*')
@@ -42,7 +38,6 @@ export const checkCafeteriaObjective = async (walletAddress: string): Promise<bo
       return false;
     }
 
-    console.log('📊 Cafeteria data found:', data);
     const hasClicked = data && data.length > 0;
     console.log('✅ Cafeteria objective completed:', hasClicked);
     return hasClicked;
@@ -62,11 +57,6 @@ export const checkCrackCodeObjective = async (walletAddress: string): Promise<bo
   try {
     console.log('🔍 Checking crack code objective for wallet:', walletAddress);
     
-    // Add timestamp for cache busting
-    const cacheBreaker = Date.now();
-    console.log('🕒 Cache breaker timestamp:', cacheBreaker);
-    
-    // REVERT: Keep checking digital_lock_attempts since that's where the real data is
     const { data, error } = await supabase
       .from('digital_lock_attempts')
       .select('*')
@@ -81,7 +71,6 @@ export const checkCrackCodeObjective = async (walletAddress: string): Promise<bo
       return false;
     }
 
-    console.log('📊 Crack code data found (8004 success from digital_lock_attempts):', data);
     const hasCracked = data && data.length > 0;
     console.log('✅ Crack code objective completed:', hasCracked);
     return hasCracked;
@@ -94,9 +83,6 @@ export const checkCrackCodeObjective = async (walletAddress: string): Promise<bo
 // Get all weekly objectives status for a user
 export const getWeeklyObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
   console.log('🎯 getWeeklyObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
-  
-  // Add a small random delay to prevent race conditions
-  await new Promise(resolve => setTimeout(resolve, 100));
   
   const [cafeteriaClicked, crackedCode] = await Promise.all([
     checkCafeteriaObjective(walletAddress),
@@ -124,7 +110,6 @@ export const getWeeklyObjectivesStatus = async (walletAddress: string): Promise<
     }
   ];
 
-  // Log final status for debugging
   const progress = calculateObjectiveProgress(completedObjectives);
   console.log('🎯 Final progress calculated:', progress + '%');
   

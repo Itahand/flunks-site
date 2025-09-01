@@ -14,26 +14,17 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
 
   const loadObjectives = async (forceRefresh = false) => {
     if (!primaryWallet?.address) {
-      console.log('❌ No wallet address available for objectives');
       return;
     }
     
     setLoading(true);
     try {
-      console.log('🔄 Loading objectives for wallet:', primaryWallet.address.slice(0, 10) + '...', forceRefresh ? '(FORCE REFRESH)' : '');
-      
-      // Clear any potential local caching on force refresh
       if (forceRefresh) {
-        console.log('🗑️ Clearing local cache for fresh data');
+        console.log('🔄 Force refreshing objectives for wallet:', primaryWallet.address.slice(0, 10) + '...');
       }
       
       const status = await getWeeklyObjectivesStatus(primaryWallet.address);
       setObjectivesStatus(status);
-      
-      // Log the result for debugging
-      const progress = calculateObjectiveProgress(status.completedObjectives);
-      console.log('📊 Objectives loaded - Progress:', progress + '%');
-      console.log('✅ Completed objectives:', status.completedObjectives.filter(obj => obj.completed).map(obj => obj.title));
       
     } catch (error) {
       console.error('❌ Failed to load objectives:', error);
@@ -47,7 +38,6 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
   useEffect(() => {
     // Reset state when wallet changes
     if (primaryWallet?.address !== lastWallet) {
-      console.log('👛 Wallet changed, resetting objectives state');
       setObjectivesStatus(null);
       setLastWallet(primaryWallet?.address || null);
     }
@@ -56,20 +46,19 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
     setObjectivesStatus(null);
     loadObjectives();
     
-    // Reduced refresh interval to prevent excessive refreshes
-    const interval = setInterval(() => loadObjectives(), 30000); // Changed from 10s to 30s
+    // Much longer refresh interval to reduce server load and UI disruption
+    const interval = setInterval(() => loadObjectives(), 120000); // Changed from 30s to 2 minutes
     
-    // Debounced update handler to prevent multiple rapid refreshes
+    // Even more conservative debounced update handler
     let refreshTimeout: NodeJS.Timeout | null = null;
     const handleObjectiveUpdate = () => {
       if (refreshTimeout) {
         clearTimeout(refreshTimeout);
       }
       refreshTimeout = setTimeout(() => {
-        console.log('🔄 Event-triggered objectives refresh');
         loadObjectives(true); // Force refresh on events
         refreshTimeout = null;
-      }, 2000); // Increased delay and debounce
+      }, 5000); // Increased from 2s to 5s delay
     };
 
     window.addEventListener('cafeteriaButtonClicked', handleObjectiveUpdate);
