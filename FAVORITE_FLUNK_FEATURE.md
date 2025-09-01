@@ -14,9 +14,8 @@ Users can now select a favorite Flunk from their collection in OnlyFlunks! The f
 ### 2. Where Your Favorite Appears
 - **OnlyFlunks Grid**: Favorite Flunks show a gold star in the top-right corner
 - **Profile Display**: Your favorite appears in the "My Locker" profile section
-- **Desktop Widget**: Small favorite display in bottom-right corner of desktop
 - **Chat Rooms**: Your favorite appears in the chat sidebar
-- **Other Apps**: Can be easily integrated into other windows
+- **Other Apps**: Can be easily integrated into other windows as needed
 
 ### 3. Features
 - **Persistent Storage**: Favorites are saved in localStorage and remembered across sessions
@@ -35,7 +34,6 @@ Users can now select a favorite Flunk from their collection in OnlyFlunks! The f
 ### Integration Points
 - ✅ OnlyFlunks collection grid and detail views
 - ✅ User profile display ("My Locker")
-- ✅ Desktop widget (bottom-right corner)
 - ✅ Chat Rooms sidebar
 - 🔄 Can be added to other apps as needed
 
@@ -93,5 +91,4 @@ Users can now select a favorite Flunk from their collection in OnlyFlunks! The f
 - `/src/components/YourItems/ItemsGrid.tsx` (added favorite indicators)
 - `/src/components/UserProfile/RPGProfileDisplay.tsx` (added favorite section)
 - `/src/windows/FlunksMessenger.tsx` (added favorite sidebar)
-- `/src/pages/index.tsx` (added desktop widget)
 - `/src/pages/_app.tsx` (added FavoritesProvider)
