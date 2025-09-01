@@ -1281,7 +1281,7 @@ const GameManualWindow: React.FC = () => {
           <PageContent>
             <PageHeader>🐦 Flappy Flunk - High Score Challenge</PageHeader>
             
-            {/* Game Image Placeholder */}
+            {/* Game Image */}
             <div style={{
               textAlign: 'center',
               margin: '20px 0',
@@ -1291,25 +1291,37 @@ const GameManualWindow: React.FC = () => {
               borderRadius: '8px',
               position: 'relative'
             }}>
+              <img 
+                src="/images/games/flappy-flunk.png" 
+                alt="Flappy Flunk Game Screenshot"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '300px',
+                  width: 'auto',
+                  height: 'auto',
+                  borderRadius: '4px',
+                  border: '2px solid #2F4F4F',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                  imageRendering: 'auto'
+                }}
+                onLoad={() => {
+                  console.log('✅ Flappy Flunk image loaded successfully');
+                }}
+                onError={(e) => {
+                  console.error('❌ Failed to load Flappy Flunk image from /images/games/flappy-flunk.png');
+                  // Show fallback
+                  e.currentTarget.style.display = 'none';
+                  const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'block';
+                }}
+              />
               <div style={{
                 fontSize: '48px',
-                marginBottom: '10px'
-              }}>
-                🐦💨
-              </div>
-              <div style={{
-                fontSize: '14px',
-                fontWeight: 'bold',
+                marginBottom: '10px',
+                display: 'none',
                 color: '#2F4F4F'
               }}>
-                Upload Flappy Flunk Image Here
-              </div>
-              <div style={{
-                fontSize: '10px',
-                color: '#696969',
-                marginTop: '5px'
-              }}>
-                Path: /public/images/games/flappy-flunk.png
+                🐦💨 Image not available
               </div>
             </div>
 
