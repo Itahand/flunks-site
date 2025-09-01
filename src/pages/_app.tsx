@@ -27,6 +27,7 @@ import { AudioProvider } from "contexts/AudioContext";
 import { RadioProvider } from "contexts/RadioContext";
 import { GumProvider } from "contexts/GumContext";
 import { AuthProvider } from "contexts/AuthContext";
+import { FavoritesProvider } from "contexts/FavoritesContext";
 import { GumDisplay } from "components/GumDisplay";
 import UserProfilePrompt from "components/UserProfile/UserProfilePrompt";
 import AutoWalletAccessGrant from "components/AutoWalletAccessGrant";
@@ -164,15 +165,17 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                   <UserProfileProvider>
                     <PaginatedItemsProvider>
                       <AuthProvider>
-                        <GumProvider>
-                          <div className="app-container min-h-screen w-full overflow-hidden">
-                            <Component {...pageProps} />
-                          </div>
-                          <Analytics />
-                          <AutoWalletAccessGrant />
-                          <UserProfilePrompt autoShow={false} showToast={false} />
-                          <DynamicUserProfile />
-                        </GumProvider>
+                        <FavoritesProvider>
+                          <GumProvider>
+                            <div className="app-container min-h-screen w-full overflow-hidden">
+                              <Component {...pageProps} />
+                            </div>
+                            <Analytics />
+                            <AutoWalletAccessGrant />
+                            <UserProfilePrompt autoShow={false} showToast={false} />
+                            <DynamicUserProfile />
+                          </GumProvider>
+                        </FavoritesProvider>
                       </AuthProvider>
                     </PaginatedItemsProvider>
                   </UserProfileProvider>

@@ -43,6 +43,9 @@ import RPGProfileForm from "components/UserProfile/RPGProfileForm";
 import { useUserProfile } from "contexts/UserProfileContext";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
+import { useFavorites } from "contexts/FavoritesContext";
+import FavoriteFlunkDisplay from "components/FavoriteFlunkDisplay";
+
 import { GumAdminPanel } from "components/GumAdminPanel";
 import { TimeConfigAdmin } from "components/DayNightHouse";
 
@@ -744,6 +747,21 @@ const Home: NextPage = () => {
       
       <MonitorScreenWrapper>
         <AccessLevelStatus />
+        
+        {/* Favorite Flunk Widget - Bottom Right */}
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          zIndex: 900
+        }}>
+          <FavoriteFlunkDisplay 
+            size="small" 
+            showName={false} 
+            showClique={true}
+          />
+        </div>
+        
         <Desktop />
       </MonitorScreenWrapper>
     </>

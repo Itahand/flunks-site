@@ -3,6 +3,8 @@ import { Button, Frame } from 'react95';
 import { useUserProfile } from 'contexts/UserProfileContext';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { usePaginatedItems } from 'contexts/UserPaginatedItems';
+import { useFavorites } from 'contexts/FavoritesContext';
+import FavoriteFlunkDisplay from 'components/FavoriteFlunkDisplay';
 import styled from 'styled-components';
 
 interface RPGProfileDisplayProps {
@@ -417,6 +419,25 @@ const RPGProfileDisplay: React.FC<RPGProfileDisplayProps> = ({ onEdit }) => {
             <div className="stat-value">{events}</div>
           </StatBox>
         </StatsPanel>
+
+        {/* Favorite Flunk Display */}
+        <div style={{ marginTop: '20px' }}>
+          <div style={{ 
+            color: '#4a90e2', 
+            fontSize: '14px', 
+            marginBottom: '10px',
+            textAlign: 'center',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
+          }}>
+            ⭐ Favorite Flunk
+          </div>
+          <FavoriteFlunkDisplay 
+            size="large" 
+            showName={true} 
+            showClique={true} 
+          />
+        </div>
 
         {/* Info Panel */}
         <InfoPanel variant="well">

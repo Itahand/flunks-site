@@ -28,6 +28,8 @@ import Marquee from "react-fast-marquee";
 // TODO: GUM functionality temporarily disabled - keep imports for future re-implementation
 // import { getGumBalance } from "web3/script-get-gum-balance";
 import { useWindowsContext } from "contexts/WindowsContext";
+import { useFavorites } from "contexts/FavoritesContext";
+import { useAuth } from "contexts/AuthContext";
 import { WINDOW_IDS } from "fixed";
 // import GumballMachine from "windows/GumballMachine";
 import {
@@ -358,6 +360,9 @@ const GridedView: React.FC<{
   setActiveItem: (nft: NftItem) => void;
   pixelMode: boolean;
 }> = ({ items, setActiveItem, pixelMode }) => {
+  const { isFavorite } = useFavorites();
+  const { walletAddress } = useAuth();
+  
   console.log('GridedView rendering with items:', items?.length || 0);
   
   if (!items || items.length === 0) {
@@ -377,43 +382,69 @@ const GridedView: React.FC<{
   
   return (
     <RetroGrid>
-      {items.map((nft: NftItem) => (
-        <RetroItemFrame key={nft.tokenID} variant="window" className="p-2">
-          <RetroImageFrame variant="field" className="relative !flex !flex-col flex-1">
-            <Frame variant="well" className="!w-full !flex-1 !flex !items-center !justify-center overflow-hidden">
-              <CustomImage
-                src={pixelMode ? nft.pixelUrl || nft.MetadataViewsDisplay.thumbnail.url : nft.MetadataViewsDisplay.thumbnail.url}
-                className="w-full h-full object-contain max-h-[150px]"
-                alt={`${nft.collection} #${nft.serialNumber}`}
-                onError={(e) => {
-                  // Fallback to main thumbnail if pixel version fails
-                  e.currentTarget.src = nft.MetadataViewsDisplay.thumbnail.url;
-                }}
-              />
-            </Frame>
-            <div className="w-full flex flex-col items-center gap-1 pt-2 z-10 relative">
-              <Frame
-                variant="well"
-                className="w-full flex items-center justify-between px-2 py-1"
-                style={{ background: '#000040', border: '1px solid #00ffff' }}
-              >
-                <RetroText className="text-xs">
-                  {nft.collection === "Flunks" ? "Flunk" : "Backpack"}
-                </RetroText>
-                <RetroText className="text-xs">#{nft.serialNumber}</RetroText>
+      {items.map((nft: NftItem) => {
+        const isCurrentFavorite = nft.collection === "Flunks" && isFavorite(nft.tokenID, walletAddress || '');
+        
+        return (
+          <RetroItemFrame key={nft.tokenID} variant="window" className="p-2">
+            <RetroImageFrame variant="field" className="relative !flex !flex-col flex-1">
+              {/* Favorite Star Indicator */}
+              {isCurrentFavorite && (
+                <div style={{
+                  position: 'absolute',
+                  top: '4px',
+                  right: '4px',
+                  zIndex: 10,
+                  background: '#FFD700',
+                  border: '1px solid #FFA500',
+                  borderRadius: '50%',
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                }}>
+                  ⭐
+                </div>
+              )}
+              
+              <Frame variant="well" className="!w-full !flex-1 !flex !items-center !justify-center overflow-hidden">
+                <CustomImage
+                  src={pixelMode ? nft.pixelUrl || nft.MetadataViewsDisplay.thumbnail.url : nft.MetadataViewsDisplay.thumbnail.url}
+                  className="w-full h-full object-contain max-h-[150px]"
+                  alt={`${nft.collection} #${nft.serialNumber}`}
+                  onError={(e) => {
+                    // Fallback to main thumbnail if pixel version fails
+                    e.currentTarget.src = nft.MetadataViewsDisplay.thumbnail.url;
+                  }}
+                />
               </Frame>
-              <RetroButton
-                onClick={() => setActiveItem(nft)}
-                variant="raised"
-                className="w-full py-1"
-                style={{ fontSize: '10px' }}
-              >
-                <RetroText style={{ fontSize: '10px' }}>FULL DETAILS</RetroText>
-              </RetroButton>
-            </div>
-          </RetroImageFrame>
-        </RetroItemFrame>
-      ))}
+              <div className="w-full flex flex-col items-center gap-1 pt-2 z-10 relative">
+                <Frame
+                  variant="well"
+                  className="w-full flex items-center justify-between px-2 py-1"
+                  style={{ background: '#000040', border: '1px solid #00ffff' }}
+                >
+                  <RetroText className="text-xs">
+                    {nft.collection === "Flunks" ? "Flunk" : "Backpack"}
+                  </RetroText>
+                  <RetroText className="text-xs">#{nft.serialNumber}</RetroText>
+                </Frame>
+                <RetroButton
+                  onClick={() => setActiveItem(nft)}
+                  variant="raised"
+                  className="w-full py-1"
+                  style={{ fontSize: '10px' }}
+                >
+                  <RetroText style={{ fontSize: '10px' }}>FULL DETAILS</RetroText>
+                </RetroButton>
+              </div>
+            </RetroImageFrame>
+          </RetroItemFrame>
+        );
+      })}
     </RetroGrid>
   );
 };

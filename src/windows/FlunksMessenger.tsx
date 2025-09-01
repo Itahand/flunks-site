@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { useDynamicContext, DynamicWidget } from '@dynamic-labs/sdk-react-core';
 import { useWindowsContext } from 'contexts/WindowsContext';
 import { useUserProfile } from 'contexts/UserProfileContext';
+import { useFavorites } from 'contexts/FavoritesContext';
+import FavoriteFlunkDisplay from 'components/FavoriteFlunkDisplay';
 import DraggableResizeableWindow from 'components/DraggableResizeableWindow';
 import { WINDOW_IDS } from 'fixed';
 import { AI_AGENTS, getAgentResponse } from 'data/aiAgents';
@@ -866,6 +868,28 @@ const FlunksMessenger: React.FC = () => {
             ))}
           </div>
         </OnlineUsersSection>
+
+        {/* My Favorite Flunk */}
+        <div style={{
+          borderTop: '1px inset #c0c0c0',
+          background: '#f0f0f0',
+          padding: '8px'
+        }}>
+          <div style={{
+            fontSize: '10px',
+            fontWeight: 'bold',
+            marginBottom: '6px',
+            color: '#666',
+            textAlign: 'center'
+          }}>
+            My Favorite Flunk
+          </div>
+          <FavoriteFlunkDisplay 
+            size="small" 
+            showName={false} 
+            showClique={true}
+          />
+        </div>
       </ContactList>
 
       <ChatArea className="chat-area">
