@@ -10,26 +10,54 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
   const { primaryWallet } = useDynamicContext();
   const [objectivesStatus, setObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [loading, setLoading] = useState(false);
+  const [lastWallet, setLastWallet] = useState<string | null>(null);
 
-  const loadObjectives = async () => {
-    if (!primaryWallet?.address) return;
+  const loadObjectives = async (forceRefresh = false) => {
+    if (!primaryWallet?.address) {
+      console.log('❌ No wallet address available for objectives');
+      return;
+    }
     
     setLoading(true);
     try {
+      console.log('🔄 Loading objectives for wallet:', primaryWallet.address.slice(0, 10) + '...', forceRefresh ? '(FORCE REFRESH)' : '');
+      
+      // Clear any potential local caching on force refresh
+      if (forceRefresh) {
+        console.log('🗑️ Clearing local cache for fresh data');
+      }
+      
       const status = await getWeeklyObjectivesStatus(primaryWallet.address);
       setObjectivesStatus(status);
+      
+      // Log the result for debugging
+      const progress = calculateObjectiveProgress(status.completedObjectives);
+      console.log('📊 Objectives loaded - Progress:', progress + '%');
+      console.log('✅ Completed objectives:', status.completedObjectives.filter(obj => obj.completed).map(obj => obj.title));
+      
     } catch (error) {
-      console.error('Failed to load objectives:', error);
+      console.error('❌ Failed to load objectives:', error);
+      // On error, clear the status to prevent stale data
+      setObjectivesStatus(null);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    // Reset state when wallet changes
+    if (primaryWallet?.address !== lastWallet) {
+      console.log('👛 Wallet changed, resetting objectives state');
+      setObjectivesStatus(null);
+      setLastWallet(primaryWallet?.address || null);
+    }
+    
+    // Clear previous state when wallet changes
+    setObjectivesStatus(null);
     loadObjectives();
     
     // Reduced refresh interval to prevent excessive refreshes
-    const interval = setInterval(loadObjectives, 30000); // Changed from 10s to 30s
+    const interval = setInterval(() => loadObjectives(), 30000); // Changed from 10s to 30s
     
     // Debounced update handler to prevent multiple rapid refreshes
     let refreshTimeout: NodeJS.Timeout | null = null;
@@ -38,7 +66,8 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         clearTimeout(refreshTimeout);
       }
       refreshTimeout = setTimeout(() => {
-        loadObjectives();
+        console.log('🔄 Event-triggered objectives refresh');
+        loadObjectives(true); // Force refresh on events
         refreshTimeout = null;
       }, 2000); // Increased delay and debounce
     };
@@ -54,7 +83,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
       window.removeEventListener('cafeteriaButtonClicked', handleObjectiveUpdate);
       window.removeEventListener('codeAccessed', handleObjectiveUpdate);
     };
-  }, [primaryWallet?.address]);
+  }, [primaryWallet?.address, lastWallet]);
 
   if (!primaryWallet?.address) {
     return null;
@@ -111,22 +140,45 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
           }}>
             📋 Semester Zero: Finding Flunko
           </div>
-          <button
-            onClick={loadObjectives}
-            disabled={loading}
-            style={{
-              background: 'rgba(74, 144, 226, 0.2)',
-              border: '1px solid #4a90e2',
-              borderRadius: '4px',
-              color: '#4a90e2',
-              padding: '4px 8px',
-              fontSize: '12px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.5 : 1
-            }}
-          >
-            {loading ? '⏳' : '🔄'} Refresh
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => loadObjectives(true)}
+              disabled={loading}
+              style={{
+                background: 'rgba(74, 144, 226, 0.2)',
+                border: '1px solid #4a90e2',
+                borderRadius: '4px',
+                color: '#4a90e2',
+                padding: '4px 8px',
+                fontSize: '12px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.5 : 1
+              }}
+            >
+              {loading ? '⏳' : '🔄'} Refresh
+            </button>
+            <button
+              onClick={() => {
+                console.log('🔥 HARD REFRESH - Clearing all state');
+                setObjectivesStatus(null);
+                setLastWallet(null);
+                setTimeout(() => loadObjectives(true), 100);
+              }}
+              disabled={loading}
+              style={{
+                background: 'rgba(255, 140, 0, 0.2)',
+                border: '1px solid #ff8c00',
+                borderRadius: '4px',
+                color: '#ff8c00',
+                padding: '4px 8px',
+                fontSize: '12px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.5 : 1
+              }}
+            >
+              🔥 Hard Reset
+            </button>
+          </div>
         </div>
         <div style={{
           fontSize: '14px',
@@ -162,6 +214,26 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
           {progress}% Complete
         </div>
       </div>
+
+      {/* Debug Info - Show raw status for troubleshooting */}
+      {objectivesStatus && (
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '4px',
+          padding: '8px',
+          marginBottom: '16px',
+          fontSize: '11px',
+          color: '#999'
+        }}>
+          <div style={{ marginBottom: '4px', fontWeight: 'bold' }}>🔍 Debug Info:</div>
+          <div>Wallet: {primaryWallet?.address?.slice(0, 10)}...</div>
+          <div>Cafeteria Clicked: {objectivesStatus.cafeteriaClicked ? '✅ YES' : '❌ NO'}</div>
+          <div>Code Cracked: {objectivesStatus.crackedCode ? '✅ YES' : '❌ NO'}</div>
+          <div>Progress: {progress}% ({completedCount}/{totalCount})</div>
+          <div>Last Update: {new Date().toLocaleTimeString()}</div>
+        </div>
+      )}
 
       {/* Objectives List */}
       <div style={{

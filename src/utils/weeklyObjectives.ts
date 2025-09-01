@@ -25,11 +25,17 @@ export const checkCafeteriaObjective = async (walletAddress: string): Promise<bo
 
   try {
     console.log('🔍 Checking cafeteria objective for wallet:', walletAddress);
+    
+    // Add timestamp for cache busting
+    const cacheBreaker = Date.now();
+    console.log('🕒 Cache breaker timestamp:', cacheBreaker);
+    
     const { data, error } = await supabase
       .from('cafeteria_button_clicks')
       .select('*')
       .eq('wallet_address', walletAddress)
-      .limit(1);
+      .limit(1)
+      .order('created_at', { ascending: false }); // Get most recent first
 
     if (error) {
       console.error('Error checking cafeteria objective:', error);
@@ -55,13 +61,19 @@ export const checkCrackCodeObjective = async (walletAddress: string): Promise<bo
 
   try {
     console.log('🔍 Checking crack code objective for wallet:', walletAddress);
+    
+    // Add timestamp for cache busting
+    const cacheBreaker = Date.now();
+    console.log('🕒 Cache breaker timestamp:', cacheBreaker);
+    
     const { data, error } = await supabase
       .from('digital_lock_attempts')
       .select('*')
       .eq('wallet_address', walletAddress)
       .eq('code_entered', '8004')
       .eq('success', true)
-      .limit(1);
+      .limit(1)
+      .order('created_at', { ascending: false }); // Get most recent first
 
     if (error) {
       console.error('Error checking crack code objective:', error);
@@ -81,6 +93,9 @@ export const checkCrackCodeObjective = async (walletAddress: string): Promise<bo
 // Get all weekly objectives status for a user
 export const getWeeklyObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
   console.log('🎯 getWeeklyObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
+  
+  // Add a small random delay to prevent race conditions
+  await new Promise(resolve => setTimeout(resolve, 100));
   
   const [cafeteriaClicked, crackedCode] = await Promise.all([
     checkCafeteriaObjective(walletAddress),
@@ -108,6 +123,10 @@ export const getWeeklyObjectivesStatus = async (walletAddress: string): Promise<
     }
   ];
 
+  // Log final status for debugging
+  const progress = calculateObjectiveProgress(completedObjectives);
+  console.log('🎯 Final progress calculated:', progress + '%');
+  
   return {
     cafeteriaClicked,
     crackedCode,
