@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Frame, Button } from 'react95';
 import { useFavorites } from 'contexts/FavoritesContext';
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import styled from 'styled-components';
 
 interface Props {
@@ -124,7 +125,30 @@ const FavoriteFlunkDisplay: React.FC<Props> = ({
   interactive = false,
   className = ''
 }) => {
-  const { favoriteFlunk } = useFavorites();
+  const { favoriteFlunk, loadFavoriteFlunk, isLoading } = useFavorites();
+  const { primaryWallet } = useDynamicContext();
+
+  // Load favorite flunk when wallet changes
+  useEffect(() => {
+    if (primaryWallet?.address) {
+      console.log('🔄 Loading favorite flunk for wallet:', primaryWallet.address);
+      loadFavoriteFlunk(primaryWallet.address);
+    }
+  }, [primaryWallet?.address, loadFavoriteFlunk]);
+
+  if (isLoading) {
+    return (
+      <NoFavoriteContainer size={size} variant="well" className={className}>
+        <div style={{ fontSize: size === 'small' ? '16px' : '24px' }}>⏳</div>
+        <div style={{ 
+          fontSize: size === 'small' ? '10px' : '12px',
+          marginTop: '4px'
+        }}>
+          Loading...
+        </div>
+      </NoFavoriteContainer>
+    );
+  }
 
   if (!favoriteFlunk) {
     return (

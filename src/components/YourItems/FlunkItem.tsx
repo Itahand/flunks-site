@@ -142,20 +142,26 @@ const FlunkItem: React.FC<FlunkItemProps> = (props) => {
 
   const isCurrentFavorite = isFavorite(props.tokenID, walletAddress || '');
 
-  const handleToggleFavorite = () => {
-    if (isCurrentFavorite) {
-      setFavoriteFlunk(null);
-    } else {
-      const favoriteData = {
-        tokenId: props.tokenID,
-        serialNumber: props.serialNumber,
-        name: `Flunk #${props.serialNumber}`,
-        imageUrl: props.MetadataViewsDisplay.thumbnail.url,
-        pixelUrl: props.pixelUrl,
-        clique: _traitsObject?.Clique || '',
-        walletAddress: walletAddress || ''
-      };
-      setFavoriteFlunk(favoriteData);
+  const handleToggleFavorite = async () => {
+    try {
+      if (isCurrentFavorite) {
+        await setFavoriteFlunk(null);
+        console.log('✅ Removed favorite flunk');
+      } else {
+        const favoriteData = {
+          tokenId: props.tokenID,
+          serialNumber: props.serialNumber,
+          name: `Flunk #${props.serialNumber}`,
+          imageUrl: props.MetadataViewsDisplay.thumbnail.url,
+          pixelUrl: props.pixelUrl,
+          clique: _traitsObject?.Clique || '',
+          walletAddress: walletAddress || ''
+        };
+        await setFavoriteFlunk(favoriteData);
+        console.log('✅ Set favorite flunk:', favoriteData.name);
+      }
+    } catch (error) {
+      console.error('❌ Error toggling favorite flunk:', error);
     }
   };
 
