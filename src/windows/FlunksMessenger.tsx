@@ -38,10 +38,13 @@ const MessengerContainer = styled.div`
 `;
 
 const ContactList = styled.div`
-  width: 200px;
+  width: 250px; /* Increased from 200px to 250px for better visibility */
   border-right: 2px inset #c0c0c0;
   display: flex;
   flex-direction: column;
+  overflow: visible; /* Ensure no content is hidden */
+  z-index: 1; /* Ensure proper layering */
+  position: relative; /* Ensure proper positioning context */
   
   @media (max-width: 768px) {
     width: 100%;
@@ -126,12 +129,17 @@ const ContactListHeader = styled.div`
 const ContactItem = styled.div<{ online?: boolean; isSelected?: boolean }>`
   display: flex;
   align-items: center;
-  padding: 6px 12px;
+  padding: 8px 12px; /* Increased padding for better clickability */
   cursor: pointer;
   font-size: 11px;
   background: ${props => props.isSelected ? '#316ac5' : 'transparent'};
   color: ${props => props.isSelected ? 'white' : 'black'};
   border-left: ${props => props.isSelected ? '3px solid #fff' : '3px solid transparent'};
+  min-height: 28px; /* Ensure minimum height for easy clicking */
+  width: 100%; /* Ensure full width clickability */
+  box-sizing: border-box; /* Include padding in width calculation */
+  position: relative; /* Ensure proper positioning */
+  z-index: 2; /* Ensure click events work */
   
   &:hover {
     background: ${props => props.isSelected ? '#316ac5' : '#e0e0e0'};
@@ -146,6 +154,7 @@ const ContactItem = styled.div<{ online?: boolean; isSelected?: boolean }>`
     margin-right: 8px;
     border: 1px solid #333;
     box-shadow: 0 0 3px rgba(0,0,0,0.3);
+    flex-shrink: 0; /* Prevent indicator from shrinking */
   }
   
   @media (max-width: 768px) {
@@ -817,7 +826,10 @@ const FlunksMessenger: React.FC = () => {
           Chat Rooms ({chatRooms.filter(r => r.online).length} active)
         </ContactListHeader>
         <MenuList className="react95-menu-list" style={{ 
-          overflow: 'hidden',
+          overflow: 'visible', /* Changed from hidden to visible for desktop */
+          maxHeight: 'none', /* No height restriction on desktop */
+          position: 'relative', /* Ensure proper positioning */
+          zIndex: 1, /* Ensure proper layering */
           '@media (max-width: 768px)': {
             maxHeight: '80px',
             overflowY: 'auto',

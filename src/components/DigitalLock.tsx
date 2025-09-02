@@ -183,6 +183,10 @@ const DigitalLock: React.FC<DigitalLockProps> = ({ onUnlock, onCancel }) => {
   // Create audio context and sounds
   const createBeep = (frequency: number, duration: number, type: 'success' | 'error' = 'success') => {
     try {
+      // Check if we're on mobile and audio context is available
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      console.log(`🔊 Audio attempt: Mobile=${isMobile}, AudioContext=${!!window.AudioContext}`);
+      
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -200,7 +204,7 @@ const DigitalLock: React.FC<DigitalLockProps> = ({ onUnlock, onCancel }) => {
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + duration);
     } catch (error) {
-      console.log('Audio not supported');
+      console.log('🔇 Audio not supported on this device:', error.message);
     }
   };
 
@@ -266,21 +270,34 @@ const DigitalLock: React.FC<DigitalLockProps> = ({ onUnlock, onCancel }) => {
       // Track ALL attempts (both success and failure) in digital_lock_attempts table
       if (walletAddress) {
         try {
+          console.log(`📱 About to track attempt: Mobile=${/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}`);
+          console.log(`🔍 Tracking details: Wallet=${walletAddress.slice(0,10)}..., Code=${code}, Success=${isSuccess}`);
+          
           await trackDigitalLockAttempt(
             walletAddress,
             user?.username || null,
             code,
             isSuccess
           );
-          console.log(`📊 Digital lock attempt tracked: Code=${code}, Success=${isSuccess}`);
+          console.log(`✅ Digital lock attempt tracked successfully: Code=${code}, Success=${isSuccess}`);
         } catch (error) {
-          console.error('Error tracking digital lock attempt:', error);
+          console.error('❌ Error tracking digital lock attempt:', error);
+          console.error('📱 Mobile tracking error details:', {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            userAgent: navigator.userAgent,
+            connectionType: (navigator as any).connection?.effectiveType || 'unknown'
+          });
         }
+      } else {
+        console.warn('⚠️ No wallet address available for tracking');
       }
       
       // If successful, record in the crack_the_code table
       if (isSuccess && walletAddress) {
         try {
+          console.log(`🌐 About to call /api/crack-the-code API (Mobile=${/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)})`);
+          
           const response = await fetch('/api/crack-the-code', {
             method: 'POST',
             headers: {
@@ -292,6 +309,10 @@ const DigitalLock: React.FC<DigitalLockProps> = ({ onUnlock, onCancel }) => {
             }),
           });
 
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
           const result = await response.json();
           if (result.success) {
             console.log('✅ Code crack recorded successfully!');
@@ -300,10 +321,16 @@ const DigitalLock: React.FC<DigitalLockProps> = ({ onUnlock, onCancel }) => {
               detail: { walletAddress, username: user?.username } 
             }));
           } else {
-            console.error('Failed to record code crack:', result.message);
+            console.error('❌ Failed to record code crack:', result.message);
           }
         } catch (error) {
-          console.error('Error recording code crack:', error);
+          console.error('❌ Error recording code crack:', error);
+          console.error('📱 Mobile API error details:', {
+            errorMessage: error.message,
+            userAgent: navigator.userAgent,
+            connectionType: (navigator as any).connection?.effectiveType || 'unknown',
+            onlineStatus: navigator.onLine
+          });
         }
       }
       

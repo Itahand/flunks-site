@@ -1,6 +1,26 @@
 /* Mobile-specific chat optimizations */
 
-/* Make React95 MenuList scrollable on mobile */
+/* Desktop optimizations for better chat room visibility */
+@media (min-width: 769px) {
+  .flunks-messenger-container .contact-list {
+    min-width: 250px !important;
+    overflow: visible !important;
+  }
+  
+  .flunks-messenger-container .react95-menu-list {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+  
+  .flunks-messenger-container .react95-menu-list-item {
+    min-height: 28px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* Mobile-specific rules */
 @media (max-width: 768px) {
   .flunks-messenger-container .react95-menu-list {
     max-height: 80px !important;

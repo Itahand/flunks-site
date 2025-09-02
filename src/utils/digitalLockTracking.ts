@@ -33,6 +33,13 @@ export const trackDigitalLockAttempt = async (
   success: boolean
 ): Promise<void> => {
   try {
+    console.log(`🎯 trackDigitalLockAttempt called: ${walletAddress.slice(0,10)}..., Code: ${codeEntered}, Success: ${success}`);
+    
+    // Check if supabase client is available
+    if (!supabase) {
+      throw new Error('Supabase client not available');
+    }
+    
     const { error } = await supabase
       .from('digital_lock_attempts')
       .insert([
@@ -45,10 +52,14 @@ export const trackDigitalLockAttempt = async (
       ]);
 
     if (error) {
-      console.error('Error tracking digital lock attempt:', error);
+      console.error('❌ Supabase insert error:', error);
+      throw error;
     }
+    
+    console.log('✅ Digital lock attempt tracked successfully in database');
   } catch (error) {
-    console.error('Error tracking digital lock attempt:', error);
+    console.error('❌ Error in trackDigitalLockAttempt:', error);
+    throw error; // Re-throw so the calling code can handle it
   }
 };
 
