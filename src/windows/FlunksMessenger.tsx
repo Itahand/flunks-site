@@ -42,9 +42,10 @@ const ContactList = styled.div`
   border-right: 2px inset #c0c0c0;
   display: flex;
   flex-direction: column;
-  overflow: visible; /* Ensure no content is hidden */
+  overflow: hidden; /* Prevent content from overflowing the container */
   z-index: 1; /* Ensure proper layering */
   position: relative; /* Ensure proper positioning context */
+  max-height: 100%; /* Ensure it doesn't exceed container height */
   
   @media (max-width: 768px) {
     width: 100%;
@@ -66,6 +67,9 @@ const ContactList = styled.div`
 const OnlineUsersSection = styled.div`
   border-top: 1px inset #c0c0c0;
   background: #f0f0f0;
+  flex: 1; /* Take remaining space */
+  overflow: auto; /* Allow scrolling if too many users */
+  min-height: 0; /* Allow shrinking */
   
   @media (max-width: 768px) {
     display: none; /* Hide online users on mobile to save space */
@@ -826,10 +830,11 @@ const FlunksMessenger: React.FC = () => {
           Chat Rooms ({chatRooms.filter(r => r.online).length} active)
         </ContactListHeader>
         <MenuList className="react95-menu-list" style={{ 
-          overflow: 'visible', /* Changed from hidden to visible for desktop */
-          maxHeight: 'none', /* No height restriction on desktop */
+          overflow: 'auto', /* Allow scrolling when needed */
+          maxHeight: '200px', /* Set reasonable max height to prevent overflow */
           position: 'relative', /* Ensure proper positioning */
           zIndex: 1, /* Ensure proper layering */
+          flex: '0 0 auto', /* Don't grow, don't shrink, use content size */
           '@media (max-width: 768px)': {
             maxHeight: '80px',
             overflowY: 'auto',
