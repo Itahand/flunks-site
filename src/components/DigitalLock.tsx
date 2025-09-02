@@ -263,6 +263,21 @@ const DigitalLock: React.FC<DigitalLockProps> = ({ onUnlock, onCancel }) => {
     setTimeout(async () => {
       const isSuccess = verifyCode(code);
       
+      // Track ALL attempts (both success and failure) in digital_lock_attempts table
+      if (walletAddress) {
+        try {
+          await trackDigitalLockAttempt(
+            walletAddress,
+            user?.username || null,
+            code,
+            isSuccess
+          );
+          console.log(`📊 Digital lock attempt tracked: Code=${code}, Success=${isSuccess}`);
+        } catch (error) {
+          console.error('Error tracking digital lock attempt:', error);
+        }
+      }
+      
       // If successful, record in the crack_the_code table
       if (isSuccess && walletAddress) {
         try {

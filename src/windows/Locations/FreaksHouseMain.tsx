@@ -2,6 +2,7 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
+import CellarDoorDigitalLock from "components/CellarDoorDigitalLock";
 
 const FreaksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -32,6 +33,34 @@ const FreaksHouseMain = () => {
     });
   };
 
+  const openCellarDoorLock = () => {
+    openWindow({
+      key: WINDOW_IDS.FREAKS_HOUSE_CELLAR_DOOR_LOCK,
+      window: (
+        <DraggableResizeableWindow
+          windowsId={WINDOW_IDS.FREAKS_HOUSE_CELLAR_DOOR_LOCK}
+          headerTitle="Cellar Door - Digital Lock"
+          onClose={() => closeWindow(WINDOW_IDS.FREAKS_HOUSE_CELLAR_DOOR_LOCK)}
+          initialWidth="min(400px, 90vw)"
+          initialHeight="min(500px, 80vh)"
+          resizable={false}
+        >
+          <CellarDoorDigitalLock
+            onUnlock={() => {
+              closeWindow(WINDOW_IDS.FREAKS_HOUSE_CELLAR_DOOR_LOCK);
+              openRoom(
+                WINDOW_IDS.FREAKS_HOUSE_CELLAR_DOOR,
+                "Cellar Door",
+                "The ancient lock clicks open with a deep, resonating thud. Beyond the door, stone steps descend into absolute darkness. Cold air flows upward, carrying whispers of forgotten secrets and the faint scent of something long buried..."
+              );
+            }}
+            onCancel={() => closeWindow(WINDOW_IDS.FREAKS_HOUSE_CELLAR_DOOR_LOCK)}
+          />
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
   return (
     <div className="relative w-full h-full flex flex-col">
       {/* Image Section */}
@@ -39,7 +68,7 @@ const FreaksHouseMain = () => {
         <img
           src={timeBasedInfo.currentImage}
           alt={`Freak's House Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
-          className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-500"
+          className="absolute inset-0 w-full h-full object-contain z-0 transition-opacity duration-500"
           onError={(e) => {
             e.currentTarget.src = "/images/backdrops/BLANK.png";
           }}
@@ -117,6 +146,23 @@ const FreaksHouseMain = () => {
             className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
           >
             ☕ Kitchen
+          </button>
+        </div>
+
+        {/* Cellar Door Button - Ominous */}
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={openCellarDoorLock}
+            className="bg-gradient-to-b from-purple-900 to-black text-purple-200 px-8 py-3 rounded-lg hover:from-purple-800 hover:to-gray-900 hover:text-purple-100 transition-all duration-300 hover:scale-105 min-w-[200px] text-center shadow-lg border-2 border-purple-800 hover:border-purple-600"
+            style={{
+              fontFamily: 'serif',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+              letterSpacing: '2px'
+            }}
+          >
+            🚪 CELLAR DOOR
           </button>
         </div>
       </div>
