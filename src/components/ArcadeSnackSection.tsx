@@ -201,7 +201,8 @@ const ArcadeSnackSection: React.FC<ArcadeSnackSectionProps> = ({ onClose }) => {
         </div>
       </BackgroundUploadArea>
 
-      {/* Floating Gum Button */}
+      {/* Floating Gum Button - HIDDEN FOR NOW */}
+      {/* 
       <FloatingGumButton
         $isDisabled={isOnCooldown || isLoading}
         onClick={handleGumClick}
@@ -222,6 +223,7 @@ const ArcadeSnackSection: React.FC<ArcadeSnackSectionProps> = ({ onClose }) => {
           </CooldownDisplay>
         )}
       </FloatingGumButton>
+      */}
 
       {/* Content Overlay */}
       <div className="absolute inset-0 z-20 p-6 flex flex-col justify-between">
