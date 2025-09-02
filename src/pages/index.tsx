@@ -492,30 +492,8 @@ const windowsMemod = useMemo(() => (
           })}
         />
 
-        {/* 14. Flappy Flunk */}
-        <ConditionalAppIcon
-          appId="flappyflunk"
-          title="Flappy Flunk"
-          icon="/images/icons/flappyflunk.png"
-          onDoubleClick={() =>
-            openWindow({
-              key: WINDOW_IDS.FLAPPY_FLUNK,
-              window: (
-                <DraggableResizeableWindow
-                  windowsId={WINDOW_IDS.FLAPPY_FLUNK}
-                  onClose={() => closeWindow(WINDOW_IDS.FLAPPY_FLUNK)}
-                  headerTitle="Flappy Flunk"
-                  initialWidth="480px"
-                  initialHeight="640px"
-                  headerIcon="/images/icons/flappyflunk.png"
-                >
-                  <FlappyFlunkWindow />
-                </DraggableResizeableWindow>
-              ),
-            })
-          }
-        />
-
+        {/* 14. Flappy Flunk - MOVED TO ARCADE */}
+        
         {/* 15. Report Card */}
         <ConditionalAppIcon
           appId="report-card"

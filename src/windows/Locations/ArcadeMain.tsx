@@ -5,6 +5,7 @@ import { useTimeBasedImage } from "utils/timeBasedImages";
 import { useState } from "react";
 import { useAuth } from "contexts/AuthContext";
 import { awardGum } from "utils/gumAPI";
+import FlappyFlunkWindow from "windows/Games/FlappyFlunkWindow";
 
 const ArcadeMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -233,6 +234,30 @@ const ArcadeMain = () => {
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
         >
           🚪 Back Room
+        </button>
+        
+        {/* Flappy Flunk Game */}
+        <button
+          onClick={() =>
+            openWindow({
+              key: WINDOW_IDS.FLAPPY_FLUNK,
+              window: (
+                <DraggableResizeableWindow
+                  windowsId={WINDOW_IDS.FLAPPY_FLUNK}
+                  onClose={() => closeWindow(WINDOW_IDS.FLAPPY_FLUNK)}
+                  headerTitle="Flappy Flunk"
+                  initialWidth="480px"
+                  initialHeight="640px"
+                  headerIcon="/images/icons/flappyflunk.png"
+                >
+                  <FlappyFlunkWindow />
+                </DraggableResizeableWindow>
+              ),
+            })
+          }
+          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-500 transition-all duration-200 hover:scale-105 min-w-[120px] text-center font-bold"
+        >
+          🐦 FLAPPY FLUNK
         </button>
         </div>
       </div>
