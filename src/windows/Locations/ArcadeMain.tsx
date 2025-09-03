@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useAuth } from "contexts/AuthContext";
 import { awardGum } from "utils/gumAPI";
 import FlappyFlunkWindow from "windows/Games/FlappyFlunkWindow";
+import MultiColorText from "components/MultiColorText";
 
 const ArcadeMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -55,116 +56,297 @@ const ArcadeMain = () => {
   };
 
   const openRoom = (roomKey: string, title: string, content: string) => {
+    // Memphis-style colors for the text
+    const memphisColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8E8', '#F7DC6F'];
+    
     openWindow({
       key: roomKey,
       window: (
-        <DraggableResizeableWindow
-          windowsId={roomKey}
-          headerTitle={title}
-          onClose={() => closeWindow(roomKey)}
-          initialWidth="min(400px, 90vw)"
-          initialHeight="min(300px, 60vh)"
-          resizable={false}
+        <div
           style={{
-            backgroundColor: '#C0C0C0',
-            color: '#000000'
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'min(500px, 90vw)',
+            maxHeight: '70vh',
+            backgroundColor: '#1a1a1a',
+            backgroundImage: `
+              radial-gradient(circle at 25% 25%, #FF6B6B 2px, transparent 2px),
+              radial-gradient(circle at 75% 75%, #4ECDC4 1px, transparent 1px),
+              linear-gradient(45deg, transparent 40%, rgba(69, 183, 209, 0.1) 50%, transparent 60%),
+              linear-gradient(-45deg, transparent 40%, rgba(150, 206, 180, 0.1) 50%, transparent 60%),
+              radial-gradient(circle at 50% 50%, #FFEAA7 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px, 60px 60px, 80px 80px, 80px 80px, 30px 30px',
+            backgroundPosition: '0 0, 20px 20px, 0 0, 40px 0, 10px 10px',
+            border: '4px solid #FFFFFF',
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.1)',
+            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden'
           }}
         >
-          <div className="p-4 w-full h-full" style={{
-            backgroundColor: '#C0C0C0',
-            fontFamily: "'MS Sans Serif', 'Arial', sans-serif",
-            fontSize: '14px',
-            fontWeight: 'normal',
-            lineHeight: '1.5',
-            color: '#000000',
-            textShadow: '1px 1px 0px rgba(255, 255, 255, 0.3)',
-            whiteSpace: 'pre-wrap',
-            wordWrap: 'break-word',
-            overflow: 'hidden'
+          {/* Title */}
+          <div style={{
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            padding: '16px 20px',
+            borderBottom: '3px solid #FFFFFF',
+            textAlign: 'center',
+            backgroundImage: 'linear-gradient(90deg, rgba(255,107,107,0.2) 0%, rgba(78,205,196,0.2) 50%, rgba(69,183,209,0.2) 100%)'
           }}>
-            {content}
+            <MultiColorText 
+              text={`🎮 ${title}`}
+              colors={memphisColors}
+              fontSize="20px"
+              fontFamily="'Press Start 2P', monospace"
+            />
           </div>
-        </DraggableResizeableWindow>
+          
+          {/* Content */}
+          <div style={{
+            padding: '24px',
+            flex: 1,
+            overflow: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <MultiColorText 
+              text={content}
+              colors={memphisColors}
+              fontSize="16px"
+              fontFamily="'Press Start 2P', monospace"
+            />
+          </div>
+          
+          {/* Close Button */}
+          <div style={{
+            padding: '16px 24px',
+            display: 'flex',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            borderTop: '2px solid rgba(255,255,255,0.3)'
+          }}>
+            <button
+              onClick={() => closeWindow(roomKey)}
+              style={{
+                backgroundColor: '#FF6B6B',
+                backgroundImage: 'linear-gradient(45deg, #FF6B6B 0%, #4ECDC4 100%)',
+                border: '3px solid #FFFFFF',
+                borderRadius: '8px',
+                color: '#FFFFFF',
+                padding: '12px 24px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                fontFamily: "'Press Start 2P', monospace",
+                cursor: 'pointer',
+                textShadow: '2px 2px 0px rgba(0,0,0,0.8)',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                transition: 'all 0.3s ease',
+                textTransform: 'uppercase'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'scale(1.1) rotate(-2deg)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(255,107,107,0.5)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
       ),
     });
   };
 
   const openSnackCorner = () => {
+    const memphisColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8E8', '#F7DC6F'];
+    
     openWindow({
       key: WINDOW_IDS.ARCADE_BOTTOM_LEFT,
       window: (
-        <DraggableResizeableWindow
-          windowsId={WINDOW_IDS.ARCADE_BOTTOM_LEFT}
-          headerTitle="Snack Corner"
-          onClose={() => closeWindow(WINDOW_IDS.ARCADE_BOTTOM_LEFT)}
-          initialWidth="70vw"
-          initialHeight="70vh"
-          resizable={true}
+        <div
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'min(600px, 90vw)',
+            maxHeight: '80vh',
+            backgroundColor: '#1a1a1a',
+            backgroundImage: `
+              radial-gradient(circle at 25% 25%, #FF6B6B 2px, transparent 2px),
+              radial-gradient(circle at 75% 75%, #4ECDC4 1px, transparent 1px),
+              linear-gradient(45deg, transparent 40%, rgba(69, 183, 209, 0.1) 50%, transparent 60%),
+              linear-gradient(-45deg, transparent 40%, rgba(150, 206, 180, 0.1) 50%, transparent 60%),
+              radial-gradient(circle at 50% 50%, #FFEAA7 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px, 60px 60px, 80px 80px, 80px 80px, 30px 30px',
+            backgroundPosition: '0 0, 20px 20px, 0 0, 40px 0, 10px 10px',
+            border: '4px solid #FFFFFF',
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.1)',
+            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden'
+          }}
         >
-          <div className="relative w-full h-full bg-[#1a1a1a] text-white overflow-hidden">
-            {/* Snack Corner Background Image */}
-            <img
-              src="/images/locations/snack-corner.png"
-              alt="Snack Corner Interior"
-              className="absolute inset-0 w-full h-full object-cover z-0"
-              onError={(e) => {
-                e.currentTarget.src = "/images/backdrops/BLANK.png";
-              }}
+          {/* Title */}
+          <div style={{
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            padding: '16px 20px',
+            borderBottom: '3px solid #FFFFFF',
+            textAlign: 'center',
+            backgroundImage: 'linear-gradient(90deg, rgba(255,107,107,0.2) 0%, rgba(78,205,196,0.2) 50%, rgba(69,183,209,0.2) 100%)'
+          }}>
+            <MultiColorText 
+              text="🍿 Snack Corner"
+              colors={memphisColors}
+              fontSize="20px"
+              fontFamily="'Press Start 2P', monospace"
             />
-            
-            {/* Content Overlay */}
-            <div className="absolute inset-0 z-10 bg-black bg-opacity-50 p-6 flex flex-col justify-between">
-              {/* Top Section - Interactive Button */}
-              <div className="flex justify-center pt-8">
-                <button
-                  onClick={handleSnackGumClaim}
-                  disabled={!walletAddress || gumClaimLoading}
-                  className={`
-                    px-6 py-3 rounded-lg font-bold text-white text-lg shadow-lg transition-all duration-200
-                    ${walletAddress 
-                      ? 'bg-purple-600 hover:bg-purple-700 hover:scale-105 cursor-pointer' 
-                      : 'bg-gray-600 cursor-not-allowed opacity-50'
-                    }
-                    ${gumClaimLoading ? 'animate-pulse' : ''}
-                  `}
-                  title={walletAddress ? 'Claim 25 gum from the snack corner! (24h cooldown)' : 'Connect wallet to claim gum'}
-                >
-                  {gumClaimLoading ? (
-                    <span className="flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                      Claiming...
-                    </span>
-                  ) : (
-                    '🍿 Claim 25 Gum'
-                  )}
-                </button>
-              </div>
-
-              {/* Bottom Section - Description */}
-              <div className="bg-black bg-opacity-80 p-4 rounded">
-                <h1 className="text-2xl mb-3 font-bold">🍿 Snack Corner</h1>
-                <p className="text-sm leading-relaxed mb-3">
-                  The perfect pit stop between gaming sessions. Rows of vending machines line the walls, 
-                  filled with sugary drinks and salty snacks that fuel late-night gaming marathons. 
-                  The neon glow from the machines casts colorful shadows across scattered candy wrappers 
-                  and empty soda cans. A small seating area with retro booth-style seats provides the 
-                  perfect spot to refuel while discussing high scores and gaming strategies with fellow 
-                  arcade enthusiasts.
-                </p>
-                
-                <p className="text-xs opacity-70">
-                  The air smells of artificial cherry and the faint ozone from nearby arcade machines...
-                </p>
-                
-                <div className="mt-3 p-2 bg-purple-900 bg-opacity-50 rounded text-center">
-                  <p className="text-xs text-purple-200">
-                    💫 Daily Gum Reward: 25 gum every 24 hours
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
-        </DraggableResizeableWindow>
+          
+          {/* Content */}
+          <div style={{
+            padding: '24px',
+            flex: 1,
+            overflow: 'auto',
+            textAlign: 'center'
+          }}>
+            <div style={{ marginBottom: '20px' }}>
+              <MultiColorText 
+                text="SUGAR RUSH PARADISE! Cotton candy machines spin pink and blue clouds!"
+                colors={memphisColors}
+                fontSize="14px"
+                fontFamily="'Press Start 2P', monospace"
+              />
+            </div>
+            
+            <div style={{ marginBottom: '16px' }}>
+              <MultiColorText 
+                text="Popcorn kernels POP POP POP in symphony! Soda fountains bubble with rainbow fizz! Giant pretzels twist like golden sculptures!"
+                colors={memphisColors}
+                fontSize="12px"
+                fontFamily="'Press Start 2P', monospace"
+              />
+            </div>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <MultiColorText 
+                text="The sweet aroma of victory and nachos fills the air! Candy machines glow like neon beacons calling to hungry gamers!"
+                colors={['#DDA0DD', '#98D8E8', '#F7DC6F', '#FF6B6B']}
+                fontSize="11px"
+                fontFamily="'Press Start 2P', monospace"
+              />
+            </div>
+            
+            {/* Gum Reward Section */}
+            <div style={{
+              backgroundColor: 'rgba(255,107,107,0.2)',
+              border: '2px solid #FF6B6B',
+              borderRadius: '8px',
+              padding: '16px',
+              marginBottom: '20px'
+            }}>
+              <MultiColorText 
+                text="💫 Daily Gum Reward: 25 gum every 24 hours"
+                colors={['#FFEAA7', '#4ECDC4', '#FF6B6B', '#96CEB4']}
+                fontSize="12px"
+                fontFamily="'Press Start 2P', monospace"
+              />
+            </div>
+
+            {/* Claim Button */}
+            <button
+              onClick={() => {
+                handleSnackGumClaim();
+              }}
+              disabled={!walletAddress || gumClaimLoading}
+              style={{
+                backgroundColor: gumClaimLoading ? '#666666' : '#4ECDC4',
+                backgroundImage: gumClaimLoading ? 'none' : 'linear-gradient(45deg, #4ECDC4 0%, #45B7D1 50%, #96CEB4 100%)',
+                border: '3px solid #FFFFFF',
+                borderRadius: '8px',
+                color: '#FFFFFF',
+                padding: '12px 24px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                fontFamily: "'Press Start 2P', monospace",
+                cursor: gumClaimLoading || !walletAddress ? 'not-allowed' : 'pointer',
+                textShadow: '2px 2px 0px rgba(0,0,0,0.8)',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                transition: 'all 0.3s ease',
+                textTransform: 'uppercase',
+                marginBottom: '16px',
+                opacity: !walletAddress ? 0.5 : 1
+              }}
+              onMouseOver={(e) => {
+                if (!gumClaimLoading && walletAddress) {
+                  e.currentTarget.style.transform = 'scale(1.05) rotate(1deg)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(78,205,196,0.5)';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (!gumClaimLoading && walletAddress) {
+                  e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+                  e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                }
+              }}
+              title={walletAddress ? 'Claim 25 gum from the snack corner! (24h cooldown)' : 'Connect wallet to claim gum'}
+            >
+              {gumClaimLoading ? 'Claiming...' : (walletAddress ? 'Claim 25 Gum' : 'Connect Wallet')}
+            </button>
+          </div>
+          
+          {/* Close Button */}
+          <div style={{
+            padding: '16px 24px',
+            display: 'flex',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            borderTop: '2px solid rgba(255,255,255,0.3)'
+          }}>
+            <button
+              onClick={() => closeWindow(WINDOW_IDS.ARCADE_BOTTOM_LEFT)}
+              style={{
+                backgroundColor: '#FF6B6B',
+                backgroundImage: 'linear-gradient(45deg, #FF6B6B 0%, #4ECDC4 100%)',
+                border: '3px solid #FFFFFF',
+                borderRadius: '8px',
+                color: '#FFFFFF',
+                padding: '12px 24px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                fontFamily: "'Press Start 2P', monospace",
+                cursor: 'pointer',
+                textShadow: '2px 2px 0px rgba(0,0,0,0.8)',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                transition: 'all 0.3s ease',
+                textTransform: 'uppercase'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'scale(1.1) rotate(-2deg)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(255,107,107,0.5)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
       ),
     });
   };
@@ -206,7 +388,7 @@ const ArcadeMain = () => {
             openRoom(
               WINDOW_IDS.ARCADE_TOP_LEFT,
               "Front Area",
-              "Old cabinets blink with forgotten high scores."
+              "NEON LIGHTS FLASH! Rows of vintage arcade cabinets line the walls like colorful soldiers! Street Fighter II, Pac-Man, and Galaga machines hum with electric energy! High score screens flicker with legendary names! The carpet is worn from decades of shuffling feet and victory dances!"
             )
           }
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
@@ -220,7 +402,7 @@ const ArcadeMain = () => {
             openRoom(
               WINDOW_IDS.ARCADE_TOP_RIGHT,
               "Prize Booth",
-              "Dusty plush toys watch from behind the glass."
+              "STUFFED ANIMALS EVERYWHERE! Giant teddy bears and rainbow unicorns hang from every hook! Claw machines filled with mysterious treasures! Spinning wheels of fortune! Tickets cascade like confetti from redemption games! The prize master watches with knowing eyes!"
             )
           }
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
@@ -242,7 +424,7 @@ const ArcadeMain = () => {
             openRoom(
               WINDOW_IDS.ARCADE_BOTTOM_RIGHT,
               "Back Room",
-              "A locked door hides the real secrets of the arcade."
+              "FORBIDDEN ZONE! A mysterious door marked EMPLOYEES ONLY! What secrets lie beyond? Rumors speak of prototype games never released! The door handle is warm to the touch! Strange electronic sounds echo from within! Do you dare to discover what's hidden?"
             )
           }
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"

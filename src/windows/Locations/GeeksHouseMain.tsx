@@ -61,30 +61,88 @@ const GeeksHouseMain = () => {
     openWindow({
       key: roomKey,
       window: (
-        <DraggableResizeableWindow
-          windowsId={roomKey}
-          headerTitle={`${getCliqueIcon('GEEK')} ${title}`}
-          onClose={() => closeWindow(roomKey)}
-          initialWidth="min(400px, 90vw)"
-          initialHeight="min(300px, 60vh)"
-          resizable={false}
+        <div
           style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'min(450px, 90vw)',
+            maxHeight: '70vh',
             backgroundColor: cliqueColors.primary,
-            color: '#FFFFFF'
+            border: '3px solid #FFFFFF',
+            borderRadius: '8px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
-          <div className="p-4 w-full h-full" style={{
+          {/* Title */}
+          <div style={{
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            padding: '12px 16px',
+            borderBottom: '2px solid rgba(255,255,255,0.3)',
+            ...fontStyle,
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#FFFFFF',
+            textAlign: 'center'
+          }}>
+            {getCliqueIcon('GEEK')} {title}
+          </div>
+          
+          {/* Content */}
+          <div style={{
+            padding: '20px',
+            flex: 1,
             backgroundColor: cliqueColors.primary,
             ...fontStyle,
             fontSize: '18px',
             lineHeight: '1.6',
+            color: '#FFFFFF',
             whiteSpace: 'pre-wrap',
             wordWrap: 'break-word',
-            overflow: 'hidden'
+            overflow: 'auto'
           }}>
             {content}
           </div>
-        </DraggableResizeableWindow>
+          
+          {/* Close Button */}
+          <div style={{
+            padding: '12px 20px',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            backgroundColor: 'rgba(0,0,0,0.1)',
+            borderTop: '1px solid rgba(255,255,255,0.2)'
+          }}>
+            <button
+              onClick={() => closeWindow(roomKey)}
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                border: '2px solid rgba(255,255,255,0.5)',
+                borderRadius: '4px',
+                color: '#FFFFFF',
+                padding: '6px 12px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                ...fontStyle,
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.3)';
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
       ),
     });
   };

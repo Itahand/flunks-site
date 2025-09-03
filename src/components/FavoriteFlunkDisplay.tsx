@@ -143,8 +143,24 @@ const FavoriteFlunkDisplay: React.FC<Props> = ({
     console.log('📊 [FavoriteFlunkDisplay] Current state:', {
       isLoading,
       favoriteFlunk,
-      walletAddress: primaryWallet?.address
+      walletAddress: primaryWallet?.address,
+      hasLocalStorage: typeof window !== 'undefined' ? !!localStorage.getItem('flunks_favorite') : false
     });
+    
+    // Check localStorage for debugging
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('flunks_favorite');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          console.log('📱 [FavoriteFlunkDisplay] Found in localStorage:', parsed);
+        } catch (e) {
+          console.warn('⚠️ [FavoriteFlunkDisplay] Invalid localStorage data');
+        }
+      } else {
+        console.log('📭 [FavoriteFlunkDisplay] No localStorage data found');
+      }
+    }
   }, [isLoading, favoriteFlunk, primaryWallet?.address]);
 
   if (isLoading) {
