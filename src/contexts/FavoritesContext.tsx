@@ -25,6 +25,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [favoriteFlunk, setFavoriteFlunkState] = useState<FavoriteFlunk | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentWalletAddress, setCurrentWalletAddress] = useState<string>('');
+  const [failedWallets, setFailedWallets] = useState<Set<string>>(new Set()); // Track failed attempts
 
   // Save favorite to database
   const saveFavoriteToDatabase = useCallback(async (flunk: FavoriteFlunk | null) => {
@@ -63,6 +64,13 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       return;
     }
 
+    // Prevent retry of previously failed wallets (for 5 minutes)
+    if (failedWallets.has(walletAddress)) {
+      console.log('🚫 [FavoritesContext] Wallet previously failed, skipping retry:', walletAddress);
+      setFavoriteFlunkState(null);
+      return;
+    }
+
     console.log('🔄 [FavoritesContext] Loading favorite for wallet:', walletAddress);
     setIsLoading(true);
     
@@ -91,9 +99,31 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
       } else {
         console.warn('⚠️ [FavoritesContext] Database request failed:', response.status, response.statusText);
+        // Mark wallet as failed to prevent retries
+        if (response.status >= 500) {
+          setFailedWallets(prev => new Set(prev).add(walletAddress));
+          // Clear the failed wallet after 5 minutes
+          setTimeout(() => {
+            setFailedWallets(prev => {
+              const newSet = new Set(prev);
+              newSet.delete(walletAddress);
+              return newSet;
+            });
+          }, 5 * 60 * 1000);
+        }
       }
     } catch (dbError) {
       console.warn('❌ [FavoritesContext] Database request error:', dbError);
+      // Mark wallet as failed to prevent retries
+      setFailedWallets(prev => new Set(prev).add(walletAddress));
+      // Clear the failed wallet after 5 minutes
+      setTimeout(() => {
+        setFailedWallets(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(walletAddress);
+          return newSet;
+        });
+      }, 5 * 60 * 1000);
     }
     
     // Fallback to localStorage
@@ -135,7 +165,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log('🏁 [FavoritesContext] Setting isLoading to false');
       setIsLoading(false);
     }
-  }, [isLoading, saveFavoriteToDatabase]); // Include isLoading in dependencies
+  }, [isLoading, failedWallets, saveFavoriteToDatabase]); // Include failedWallets
 
   // Load favorite from database and localStorage as fallback
 
