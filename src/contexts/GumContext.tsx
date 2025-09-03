@@ -220,12 +220,15 @@ export const GumProvider: React.FC<GumProviderProps> = ({
     }
   }, [walletAddress, auth.isAuthenticated, refreshStats, refreshBalance]);
 
-  // Auto refresh
+  // Auto refresh - only when app is visible/active
   useEffect(() => {
     if (!walletAddress || !auth.isAuthenticated || autoRefreshInterval <= 0) return;
 
     const interval = setInterval(() => {
-      refreshBalance();
+      // Only refresh if page is visible and user is active
+      if (document.visibilityState === 'visible') {
+        refreshBalance();
+      }
     }, autoRefreshInterval);
 
     return () => clearInterval(interval);
