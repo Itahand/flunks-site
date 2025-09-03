@@ -1331,7 +1331,7 @@
   border-radius: 15px;
   background-color: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(8px);
-  border: 2px solid rgba(0, 255, 156, 0.4);
+  border: 2px solid rgba(176, 224, 230, 0.6);
   box-shadow: 
     0 4px 20px rgba(0, 0, 0, 0.4),
     inset 0 1px 1px rgba(255, 255, 255, 0.1);
@@ -1357,11 +1357,11 @@
 
 .nav-icon:hover {
   transform: scale(1.15) translateY(-8px);
-  background-color: rgba(0, 255, 156, 0.15);
-  border-color: rgba(0, 255, 156, 0.8);
+  background-color: rgba(176, 224, 230, 0.15);
+  border-color: rgba(176, 224, 230, 0.9);
   box-shadow: 
     0 8px 30px rgba(0, 0, 0, 0.6),
-    0 0 30px rgba(0, 255, 156, 0.4),
+    0 0 30px rgba(176, 224, 230, 0.4),
     inset 0 1px 1px rgba(255, 255, 255, 0.2);
   animation: activePulse 1.5s ease-in-out infinite;
 }
@@ -1382,18 +1382,58 @@
 
 .jocks-house-nav {
   background-image: url('/images/icons/jocks-house-icon.png');
+  border-color: rgba(255, 182, 193, 0.6) !important; /* Light pink for Jocks */
+}
+
+.jocks-house-nav:hover {
+  background-color: rgba(255, 182, 193, 0.15) !important;
+  border-color: rgba(255, 182, 193, 0.9) !important;
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(255, 182, 193, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
 }
 
 .freaks-house-nav {
   background-image: url('/images/icons/freaks-house-icon.png');
+  border-color: rgba(221, 160, 221, 0.6) !important; /* Plum for Freaks */
+}
+
+.freaks-house-nav:hover {
+  background-color: rgba(221, 160, 221, 0.15) !important;
+  border-color: rgba(221, 160, 221, 0.9) !important;
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(221, 160, 221, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
 }
 
 .geeks-house-nav {
   background-image: url('/images/icons/geeks-house-icon.png');
+  border-color: rgba(144, 238, 144, 0.6) !important; /* Light green for Geeks */
+}
+
+.geeks-house-nav:hover {
+  background-color: rgba(144, 238, 144, 0.15) !important;
+  border-color: rgba(144, 238, 144, 0.9) !important;
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(144, 238, 144, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
 }
 
 .preps-house-nav {
   background-image: url('/images/icons/preps-house-icon.png');
+  border-color: rgba(135, 206, 235, 0.6) !important; /* Sky blue for Preps */
+}
+
+.preps-house-nav:hover {
+  background-color: rgba(135, 206, 235, 0.15) !important;
+  border-color: rgba(135, 206, 235, 0.9) !important;
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(135, 206, 235, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Special hover effect for High School in navigation */

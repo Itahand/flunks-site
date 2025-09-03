@@ -89,6 +89,7 @@ export const WINDOW_IDS = {
   HIGH_SCHOOL_CAFETERIA: "high_school_cafeteria",
   HIGH_SCHOOL_GYMNASIUM: "high_school_gymnasium",
   HIGH_SCHOOL_LIBRARY: "high_school_library",
+  HIGH_SCHOOL_LOCKER_ROOM: "high_school_locker_room",
   HIGH_SCHOOL_OFFICE: "high_school_office",
   HIGH_SCHOOL_OFFICE_LOCK: "high_school_office_lock",
   HIGH_SCHOOL_OFFICE_SUCCESS: "high_school_office_success",
