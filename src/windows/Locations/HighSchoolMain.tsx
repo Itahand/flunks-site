@@ -91,10 +91,24 @@ const HighSchoolMain = () => {
           initialWidth="min(30vw, 90vw)"
           initialHeight="min(30vh, 60vh)"
           resizable={true}
+          style={{
+            backgroundColor: '#C0C0C0',
+            color: '#000000'
+          }}
         >
-          <div className="p-3 text-sm leading-relaxed bg-[#1a1a1a] text-white w-full h-full overflow-hidden">
-            <h1 className="text-lg mb-2 font-semibold">{title}</h1>
-            <p className="text-xs leading-relaxed">{content}</p>
+          <div className="p-4 w-full h-full overflow-hidden" style={{
+            backgroundColor: '#C0C0C0',
+            fontFamily: "'MS Sans Serif', 'Arial', sans-serif",
+            fontSize: '14px',
+            fontWeight: 'normal',
+            lineHeight: '1.5',
+            color: '#000000',
+            textShadow: '1px 1px 0px rgba(255, 255, 255, 0.3)',
+            whiteSpace: 'pre-wrap',
+            wordWrap: 'break-word',
+            overflow: 'hidden'
+          }}>
+            {content}
           </div>
         </DraggableResizeableWindow>
       ),

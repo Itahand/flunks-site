@@ -146,27 +146,25 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
             >
               {loading ? '⏳' : '🔄'} Refresh
             </button>
-            <button
-              onClick={() => {
-                console.log('🔥 HARD REFRESH - Clearing all state');
-                setObjectivesStatus(null);
-                setLastWallet(null);
-                setTimeout(() => loadObjectives(true), 100);
-              }}
-              disabled={loading}
-              style={{
-                background: 'rgba(255, 140, 0, 0.2)',
-                border: '1px solid #ff8c00',
-                borderRadius: '4px',
-                color: '#ff8c00',
-                padding: '4px 8px',
-                fontSize: '12px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.5 : 1
-              }}
-            >
-              🔥 Hard Reset
-            </button>
+                        {/* Hard Reset button hidden per user request */}
+            {false && (
+              <button
+                onClick={() => {}}
+                disabled={loading}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid #ff8c00',
+                  borderRadius: '4px',
+                  color: '#ff8c00',
+                  padding: '4px 8px',
+                  fontSize: '12px',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.5 : 1
+                }}
+              >
+                🔥 Hard Reset
+              </button>
+            )}
           </div>
         </div>
         <div style={{

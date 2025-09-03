@@ -18,6 +18,7 @@ export interface BuildModeConfig {
   showDevTools: boolean;
   showBrowser: boolean;
   showYearbook: boolean;
+  showRetroTextDemo: boolean;
   showBulletinBoard: boolean;
   showIconAnimation: boolean;
   showReportCard: boolean;
@@ -57,6 +58,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showDevTools: false,
     showBrowser: false,
     showYearbook: false,
+    showRetroTextDemo: true,
     showBulletinBoard: false,
     showIconAnimation: false,
     showReportCard: false,
@@ -94,6 +96,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showDevTools: true,
     showBrowser: true,
     showYearbook: true,
+    showRetroTextDemo: true,
     showBulletinBoard: true,
     showIconAnimation: true,
     showReportCard: true,

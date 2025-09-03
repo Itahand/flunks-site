@@ -141,6 +141,15 @@ export const APP_PERMISSIONS: AppPermission[] = [
     buildModeFeature: 'showYearbook'
   },
   
+  // Retro Text Demo (showcase new clique colors)
+  {
+    id: 'retro-text-demo',
+    title: '🎮 Retro Text Demo',
+    requiredLevel: ['ADMIN', 'BETA', 'COMMUNITY'],
+    description: 'Preview clique-colored retro text boxes',
+    buildModeFeature: 'showRetroTextDemo'
+  },
+  
   // Icon Animation Lab (dev/admin for now)
   {
     id: 'icon-animation',

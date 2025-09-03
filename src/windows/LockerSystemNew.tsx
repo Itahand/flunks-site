@@ -674,7 +674,8 @@ const LockerSystemNew: React.FC = () => {
                         color: 'white',
                         padding: '30px',
                         borderRadius: '15px',
-                        maxWidth: '400px',
+                        maxWidth: 'min(95%, 500px)',
+                        width: '100%',
                         animation: currentSection === 1 ? 'lockerGlow 3s ease-in-out infinite' : 'none',
                         backdropFilter: 'blur(10px)'
                       }}>
@@ -738,7 +739,7 @@ const LockerSystemNew: React.FC = () => {
                         padding: 'min(40px, 5vw)',
                         borderRadius: '20px',
                         textAlign: 'center',
-                        width: 'min(95%, 800px)',
+                        width: 'min(95%, 500px)',
                         maxWidth: '100%',
                         backdropFilter: 'blur(10px)',
                         border: '1px solid rgba(255,255,255,0.1)'
@@ -1015,7 +1016,8 @@ const LockerSystemNew: React.FC = () => {
                         padding: '25px',
                         borderRadius: '15px',
                         textAlign: 'center',
-                        maxWidth: '450px',
+                        maxWidth: 'min(95%, 500px)',
+                        width: '100%',
                         backdropFilter: 'blur(10px)',
                         border: '2px solid rgba(255,20,147,0.3)',
                         transform: currentSection === 3 ? 'scale(1.02)' : 'scale(1)',

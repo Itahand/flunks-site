@@ -144,28 +144,33 @@ const FlunkItem: React.FC<FlunkItemProps> = (props) => {
 
   const handleToggleFavorite = async () => {
     try {
+      console.log('⭐ [FlunkItem] Toggling favorite. Current state:', { 
+        isCurrentFavorite, 
+        tokenID: props.tokenID, 
+        walletAddress 
+      });
+      
       if (isCurrentFavorite) {
         await setFavoriteFlunk(null);
-        console.log('✅ Removed favorite flunk');
+        console.log('✅ [FlunkItem] Removed favorite flunk');
       } else {
         const favoriteData = {
           tokenId: props.tokenID,
           serialNumber: props.serialNumber,
-          name: `Flunk #${props.serialNumber}`,
-          imageUrl: props.MetadataViewsDisplay.thumbnail.url,
+          name: props.MetadataViewsDisplay.name,
+          imageUrl: props.MetadataViewsDisplay.thumbnail.url || props.pixelUrl || '',
           pixelUrl: props.pixelUrl,
-          clique: _traitsObject?.Clique || '',
+          clique: _traitsObject.Clique,
           walletAddress: walletAddress || ''
         };
+        console.log('💾 [FlunkItem] Setting new favorite:', favoriteData);
         await setFavoriteFlunk(favoriteData);
-        console.log('✅ Set favorite flunk:', favoriteData.name);
+        console.log('✅ [FlunkItem] Set favorite flunk:', favoriteData.name);
       }
     } catch (error) {
-      console.error('❌ Error toggling favorite flunk:', error);
+      console.error('❌ [FlunkItem] Error toggling favorite flunk:', error);
     }
-  };
-
-  useEffect(() => {
+  };  useEffect(() => {
     // Preload pxelated image
     if (props.pixelUrl) {
       const img = new Image();

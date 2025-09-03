@@ -2,6 +2,8 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
+import { getCliqueColors, getCliqueIcon } from "utils/cliqueColors";
+import { getFontStyle } from "utils/fontConfig";
 
 const JocksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -12,20 +14,34 @@ const JocksHouseMain = () => {
   const timeBasedInfo = useTimeBasedImage(dayImage, nightImage);
 
   const openRoom = (roomKey: string, title: string, content: string) => {
+    const cliqueColors = getCliqueColors('JOCK');
+    const fontStyle = getFontStyle('JOCK');
+    
     openWindow({
       key: roomKey,
       window: (
         <DraggableResizeableWindow
           windowsId={roomKey}
-          headerTitle={title}
+          headerTitle={`${getCliqueIcon('JOCK')} ${title}`}
           onClose={() => closeWindow(roomKey)}
           initialWidth="min(400px, 90vw)"
           initialHeight="min(300px, 60vh)"
           resizable={false}
+          style={{
+            backgroundColor: cliqueColors.primary,
+            color: '#FFFFFF'
+          }}
         >
-          <div className="p-4 text-sm leading-relaxed bg-[#1a1a1a] text-white w-full h-full">
-            <h1 className="text-xl mb-2">{title}</h1>
-            <p>{content}</p>
+          <div className="p-4 w-full h-full" style={{
+            backgroundColor: cliqueColors.primary,
+            ...fontStyle,
+            fontSize: '18px',
+            lineHeight: '1.6',
+            whiteSpace: 'pre-wrap',
+            wordWrap: 'break-word',
+            overflow: 'hidden'
+          }}>
+            {content}
           </div>
         </DraggableResizeableWindow>
       ),

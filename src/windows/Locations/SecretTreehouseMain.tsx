@@ -1,6 +1,7 @@
 import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
+import RetroTextBox from "components/RetroTextBox";
 
 const SecretTreehouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -17,9 +18,12 @@ const SecretTreehouseMain = () => {
           initialHeight="300px"
           resizable={false}
         >
-          <div className="p-4 text-sm leading-relaxed bg-[#1a1a1a] text-white w-full h-full">
-            <h1 className="text-xl mb-2">{title}</h1>
-            <p>{content}</p>
+          <div className="p-4 w-full h-full">
+            <RetroTextBox
+              title={title}
+              content={content}
+              className="w-full h-full"
+            />
           </div>
         </DraggableResizeableWindow>
       ),

@@ -16,10 +16,24 @@ const TreehouseMain = () => {
           initialWidth="400px"
           initialHeight="300px"
           resizable={false}
+          style={{
+            backgroundColor: '#C0C0C0',
+            color: '#000000'
+          }}
         >
-          <div className="p-4 text-sm leading-relaxed bg-[#1a1a1a] text-white w-full h-full">
-            <h1 className="text-xl mb-2">{title}</h1>
-            <p>{content}</p>
+          <div className="p-4 w-full h-full" style={{
+            backgroundColor: '#C0C0C0',
+            fontFamily: "'MS Sans Serif', 'Arial', sans-serif",
+            fontSize: '14px',
+            fontWeight: 'normal',
+            lineHeight: '1.5',
+            color: '#000000',
+            textShadow: '1px 1px 0px rgba(255, 255, 255, 0.3)',
+            whiteSpace: 'pre-wrap',
+            wordWrap: 'break-word',
+            overflow: 'hidden'
+          }}>
+            {content}
           </div>
         </DraggableResizeableWindow>
       ),

@@ -3,30 +3,86 @@ import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
 import ShedDigitalLock from "components/ShedDigitalLock";
+import { getCliqueColors, getCliqueIcon, setCliquePrimaryColor, CliqueType } from "utils/cliqueColors";
+import FontPreview from "components/FontPreview";
+import ColorCustomizer from "components/ColorCustomizer";
+import { getFontStyle, setFontByFamily } from "utils/fontConfig";
+import { useState } from "react";
 
 const GeeksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
+  const [fontRefresh, setFontRefresh] = useState(0);
   
   // Use your uploaded day/night images for Geeks House
   const dayImage = "/images/icons/geeks-house-day.png";
   const nightImage = "/images/icons/geeks-house-night.png";
   const timeBasedInfo = useTimeBasedImage(dayImage, nightImage);
 
+  const openFontSelector = () => {
+    openWindow({
+      key: 'font-selector',
+      window: (
+        <FontPreview
+          onClose={() => closeWindow('font-selector')}
+          onFontSelect={(fontFamily: string) => {
+            setFontByFamily(fontFamily);
+            setFontRefresh(prev => prev + 1); // Force re-render
+            closeWindow('font-selector');
+          }}
+        />
+      ),
+    });
+  };
+
+  const openColorCustomizer = () => {
+    openWindow({
+      key: 'color-customizer',
+      window: (
+        <ColorCustomizer
+          onClose={() => closeWindow('color-customizer')}
+          onColorChange={(clique: CliqueType, color: string) => {
+            setCliquePrimaryColor(clique, color);
+            setFontRefresh(prev => prev + 1); // Force re-render
+          }}
+          onPreview={(clique: CliqueType, color: string) => {
+            // Temporarily apply color for preview
+            setCliquePrimaryColor(clique, color);
+            setFontRefresh(prev => prev + 1);
+          }}
+        />
+      ),
+    });
+  };
+
   const openRoom = (roomKey: string, title: string, content: string) => {
+    const cliqueColors = getCliqueColors('GEEK');
+    const fontStyle = getFontStyle('GEEK');
+    
     openWindow({
       key: roomKey,
       window: (
         <DraggableResizeableWindow
           windowsId={roomKey}
-          headerTitle={title}
+          headerTitle={`${getCliqueIcon('GEEK')} ${title}`}
           onClose={() => closeWindow(roomKey)}
           initialWidth="min(400px, 90vw)"
           initialHeight="min(300px, 60vh)"
           resizable={false}
+          style={{
+            backgroundColor: cliqueColors.primary,
+            color: '#FFFFFF'
+          }}
         >
-          <div className="p-4 text-sm leading-relaxed bg-[#1a1a1a] text-white w-full h-full">
-            <h1 className="text-xl mb-2">{title}</h1>
-            <p>{content}</p>
+          <div className="p-4 w-full h-full" style={{
+            backgroundColor: cliqueColors.primary,
+            ...fontStyle,
+            fontSize: '18px',
+            lineHeight: '1.6',
+            whiteSpace: 'pre-wrap',
+            wordWrap: 'break-word',
+            overflow: 'hidden'
+          }}>
+            {content}
           </div>
         </DraggableResizeableWindow>
       ),
@@ -142,7 +198,7 @@ const GeeksHouseMain = () => {
         </div>
 
         {/* SHED Button - Longer and Ominous */}
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center items-center gap-4 mt-4">
           <button
             onClick={openShedWithLock}
             className="bg-gradient-to-b from-red-900 to-black text-red-200 px-8 py-3 rounded-lg hover:from-red-800 hover:to-gray-900 hover:text-red-100 transition-all duration-300 hover:scale-105 min-w-[200px] text-center shadow-lg border-2 border-red-800 hover:border-red-600"
@@ -156,6 +212,24 @@ const GeeksHouseMain = () => {
           >
             🏚️ SHED
           </button>
+          
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={openFontSelector}
+              className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition-colors text-sm"
+              title="Change Font Style"
+            >
+              🔤 Font
+            </button>
+            
+            <button
+              onClick={openColorCustomizer}
+              className="bg-purple-600 text-white px-3 py-2 rounded hover:bg-purple-700 transition-colors text-sm"
+              title="Change Colors (Hex Codes)"
+            >
+              🎨 Colors
+            </button>
+          </div>
         </div>
       </div>
     </div>
