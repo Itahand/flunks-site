@@ -130,13 +130,15 @@ const FavoriteFlunkDisplay: React.FC<Props> = ({
 
   // Load favorite flunk when wallet changes
   useEffect(() => {
-    if (primaryWallet?.address) {
+    if (primaryWallet?.address && !isLoading) {
       console.log('🔄 [FavoriteFlunkDisplay] Loading favorite flunk for wallet:', primaryWallet.address);
       loadFavoriteFlunk(primaryWallet.address);
+    } else if (isLoading) {
+      console.log('🚫 [FavoriteFlunkDisplay] Already loading, skipping request');
     } else {
       console.log('⚠️ [FavoriteFlunkDisplay] No wallet address available');
     }
-  }, [primaryWallet?.address, loadFavoriteFlunk]);
+  }, [primaryWallet?.address, loadFavoriteFlunk, isLoading]);
 
   // Debug the current state
   useEffect(() => {

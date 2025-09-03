@@ -57,6 +57,12 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Load favorite from database and localStorage as fallback
   const loadFavoriteFlunk = useCallback(async (walletAddress: string) => {
+    // Prevent concurrent loads
+    if (isLoading) {
+      console.log('🚫 [FavoritesContext] Already loading, skipping request for:', walletAddress);
+      return;
+    }
+
     console.log('🔄 [FavoritesContext] Loading favorite for wallet:', walletAddress);
     setIsLoading(true);
     
@@ -129,7 +135,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log('🏁 [FavoritesContext] Setting isLoading to false');
       setIsLoading(false);
     }
-  }, [saveFavoriteToDatabase]); // Include saveFavoriteToDatabase in dependencies
+  }, [isLoading, saveFavoriteToDatabase]); // Include isLoading in dependencies
 
   // Load favorite from database and localStorage as fallback
 
