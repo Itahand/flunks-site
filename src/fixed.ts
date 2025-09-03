@@ -221,27 +221,27 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
   },
   [WINDOW_IDS.ARCADE_MAIN]: {
     appName: "Arcade",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/arcade-icon.png",
     key: WINDOW_IDS.ARCADE_MAIN,
   },
   [WINDOW_IDS.ARCADE_TOP_LEFT]: {
     appName: "Arcade TL",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/arcade-icon.png",
     key: WINDOW_IDS.ARCADE_TOP_LEFT,
   },
   [WINDOW_IDS.ARCADE_TOP_RIGHT]: {
     appName: "Arcade TR",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/arcade-icon.png",
     key: WINDOW_IDS.ARCADE_TOP_RIGHT,
   },
   [WINDOW_IDS.ARCADE_BOTTOM_LEFT]: {
     appName: "Arcade BL",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/arcade-icon.png",
     key: WINDOW_IDS.ARCADE_BOTTOM_LEFT,
   },
   [WINDOW_IDS.ARCADE_BOTTOM_RIGHT]: {
     appName: "Arcade BR",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/arcade-icon.png",
     key: WINDOW_IDS.ARCADE_BOTTOM_RIGHT,
   },
   [WINDOW_IDS.MOTEL_MAIN]: {

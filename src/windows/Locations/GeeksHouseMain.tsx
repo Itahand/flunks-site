@@ -27,50 +27,59 @@ const GeeksHouseMain = () => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 'min(450px, 90vw)',
-            maxHeight: '70vh',
+            width: 'min(450px, 95vw)',
+            maxWidth: '450px',
+            maxHeight: 'min(70vh, 500px)',
+            minHeight: '300px',
             backgroundColor: cliqueColors.primary,
             border: '3px solid #FFFFFF',
             borderRadius: '8px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
             zIndex: 1000,
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            overflow: 'hidden'
           }}
         >
           {/* Title */}
           <div style={{
             backgroundColor: 'rgba(0,0,0,0.2)',
-            padding: '12px 16px',
+            padding: 'clamp(8px, 3vw, 12px) clamp(12px, 4vw, 16px)',
             borderBottom: '2px solid rgba(255,255,255,0.3)',
             ...fontStyle,
-            fontSize: '16px',
+            fontSize: 'clamp(14px, 4vw, 16px)',
             fontWeight: 'bold',
             color: '#FFFFFF',
-            textAlign: 'center'
+            textAlign: 'center',
+            minHeight: '50px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
             {getCliqueIcon('GEEK')} {title}
           </div>
           
           {/* Content */}
           <div style={{
-            padding: '20px',
+            padding: 'clamp(12px, 5vw, 20px)',
             flex: 1,
             backgroundColor: cliqueColors.primary,
             ...fontStyle,
-            fontSize: '18px',
+            fontSize: 'clamp(14px, 4vw, 18px)',
             lineHeight: '1.6',
             color: '#FFFFFF',
             whiteSpace: 'pre-wrap',
-            wordWrap: 'break-word',
-            overflow: 'auto'
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
+            overflow: 'auto',
+            minHeight: '0'
           }}>
             {content}
           </div>
           
           {/* Close Button */}
           <div style={{
-            padding: '12px 20px',
+            padding: 'clamp(8px, 3vw, 12px) clamp(12px, 5vw, 20px)',
             display: 'flex',
             justifyContent: 'flex-end',
             backgroundColor: 'rgba(0,0,0,0.1)',
@@ -83,12 +92,14 @@ const GeeksHouseMain = () => {
                 border: '2px solid rgba(255,255,255,0.5)',
                 borderRadius: '4px',
                 color: '#FFFFFF',
-                padding: '6px 12px',
-                fontSize: '14px',
+                padding: 'clamp(4px, 2vw, 6px) clamp(8px, 3vw, 12px)',
+                fontSize: 'clamp(12px, 3.5vw, 14px)',
                 fontWeight: 'bold',
                 cursor: 'pointer',
                 ...fontStyle,
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                minWidth: '60px',
+                whiteSpace: 'nowrap'
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.3)';

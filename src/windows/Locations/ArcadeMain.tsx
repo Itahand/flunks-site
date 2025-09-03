@@ -68,8 +68,10 @@ const ArcadeMain = () => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 'min(500px, 90vw)',
-            maxHeight: '70vh',
+            width: 'min(500px, 95vw)',
+            maxWidth: '500px',
+            maxHeight: 'min(70vh, 600px)',
+            minHeight: '300px',
             backgroundColor: '#1a1a1a',
             backgroundImage: `
               radial-gradient(circle at 25% 25%, #FF6B6B 2px, transparent 2px),
@@ -92,10 +94,14 @@ const ArcadeMain = () => {
           {/* Title */}
           <div style={{
             backgroundColor: 'rgba(0,0,0,0.8)',
-            padding: '16px 20px',
+            padding: 'clamp(8px, 4vw, 16px) clamp(12px, 5vw, 20px)',
             borderBottom: '3px solid #FFFFFF',
             textAlign: 'center',
-            backgroundImage: 'linear-gradient(90deg, rgba(255,107,107,0.2) 0%, rgba(78,205,196,0.2) 50%, rgba(69,183,209,0.2) 100%)'
+            backgroundImage: 'linear-gradient(90deg, rgba(255,107,107,0.2) 0%, rgba(78,205,196,0.2) 50%, rgba(69,183,209,0.2) 100%)',
+            minHeight: '60px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
             <MultiColorText 
               text={`🎮 ${title}`}
@@ -107,26 +113,33 @@ const ArcadeMain = () => {
           
           {/* Content */}
           <div style={{
-            padding: '24px',
+            padding: 'clamp(12px, 6vw, 24px)',
             flex: 1,
             overflow: 'auto',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            textAlign: 'center'
+            textAlign: 'center',
+            minHeight: '0'
           }}>
-            <MultiColorText 
-              text={content}
-              colors={memphisColors}
-              fontSize="16px"
-              fontFamily="'Press Start 2P', monospace"
-            />
+            <div style={{ 
+              maxWidth: '100%', 
+              width: '100%',
+              boxSizing: 'border-box'
+            }}>
+              <MultiColorText 
+                text={content}
+                colors={memphisColors}
+                fontSize="16px"
+                fontFamily="'Press Start 2P', monospace"
+              />
+            </div>
           </div>
           
           {/* Close Button */}
           <div style={{
-            padding: '16px 24px',
+            padding: 'clamp(12px, 4vw, 16px) clamp(16px, 6vw, 24px)',
             display: 'flex',
             justifyContent: 'center',
             backgroundColor: 'rgba(0,0,0,0.6)',
@@ -140,15 +153,17 @@ const ArcadeMain = () => {
                 border: '3px solid #FFFFFF',
                 borderRadius: '8px',
                 color: '#FFFFFF',
-                padding: '12px 24px',
-                fontSize: '14px',
+                padding: 'clamp(8px, 3vw, 12px) clamp(16px, 6vw, 24px)',
+                fontSize: 'clamp(10px, 3.5vw, 14px)',
                 fontWeight: 'bold',
                 fontFamily: "'Press Start 2P', monospace",
                 cursor: 'pointer',
                 textShadow: '2px 2px 0px rgba(0,0,0,0.8)',
                 boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
                 transition: 'all 0.3s ease',
-                textTransform: 'uppercase'
+                textTransform: 'uppercase',
+                minWidth: '80px',
+                whiteSpace: 'nowrap'
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'scale(1.1) rotate(-2deg)';
@@ -179,8 +194,10 @@ const ArcadeMain = () => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 'min(600px, 90vw)',
-            maxHeight: '80vh',
+            width: 'min(600px, 95vw)',
+            maxWidth: '600px',
+            maxHeight: 'min(80vh, 700px)',
+            minHeight: '400px',
             backgroundColor: '#1a1a1a',
             backgroundImage: `
               radial-gradient(circle at 25% 25%, #FF6B6B 2px, transparent 2px),
@@ -203,10 +220,14 @@ const ArcadeMain = () => {
           {/* Title */}
           <div style={{
             backgroundColor: 'rgba(0,0,0,0.8)',
-            padding: '16px 20px',
+            padding: 'clamp(8px, 4vw, 16px) clamp(12px, 5vw, 20px)',
             borderBottom: '3px solid #FFFFFF',
             textAlign: 'center',
-            backgroundImage: 'linear-gradient(90deg, rgba(255,107,107,0.2) 0%, rgba(78,205,196,0.2) 50%, rgba(69,183,209,0.2) 100%)'
+            backgroundImage: 'linear-gradient(90deg, rgba(255,107,107,0.2) 0%, rgba(78,205,196,0.2) 50%, rgba(69,183,209,0.2) 100%)',
+            minHeight: '60px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
             <MultiColorText 
               text="🍿 Snack Corner"
@@ -218,12 +239,17 @@ const ArcadeMain = () => {
           
           {/* Content */}
           <div style={{
-            padding: '24px',
+            padding: 'clamp(12px, 6vw, 24px)',
             flex: 1,
             overflow: 'auto',
-            textAlign: 'center'
+            textAlign: 'center',
+            minHeight: '0'
           }}>
-            <div style={{ marginBottom: '20px' }}>
+            <div style={{ 
+              marginBottom: 'clamp(12px, 5vw, 20px)',
+              maxWidth: '100%',
+              boxSizing: 'border-box'
+            }}>
               <MultiColorText 
                 text="SUGAR RUSH PARADISE! Cotton candy machines spin pink and blue clouds!"
                 colors={memphisColors}
@@ -255,8 +281,10 @@ const ArcadeMain = () => {
               backgroundColor: 'rgba(255,107,107,0.2)',
               border: '2px solid #FF6B6B',
               borderRadius: '8px',
-              padding: '16px',
-              marginBottom: '20px'
+              padding: 'clamp(8px, 4vw, 16px)',
+              marginBottom: 'clamp(12px, 5vw, 20px)',
+              maxWidth: '100%',
+              boxSizing: 'border-box'
             }}>
               <MultiColorText 
                 text="💫 Daily Gum Reward: 25 gum every 24 hours"
@@ -278,8 +306,8 @@ const ArcadeMain = () => {
                 border: '3px solid #FFFFFF',
                 borderRadius: '8px',
                 color: '#FFFFFF',
-                padding: '12px 24px',
-                fontSize: '12px',
+                padding: 'clamp(8px, 3vw, 12px) clamp(16px, 6vw, 24px)',
+                fontSize: 'clamp(10px, 3vw, 12px)',
                 fontWeight: 'bold',
                 fontFamily: "'Press Start 2P', monospace",
                 cursor: gumClaimLoading || !walletAddress ? 'not-allowed' : 'pointer',
@@ -287,8 +315,10 @@ const ArcadeMain = () => {
                 boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
                 transition: 'all 0.3s ease',
                 textTransform: 'uppercase',
-                marginBottom: '16px',
-                opacity: !walletAddress ? 0.5 : 1
+                marginBottom: 'clamp(12px, 4vw, 16px)',
+                opacity: !walletAddress ? 0.5 : 1,
+                minWidth: '120px',
+                whiteSpace: 'nowrap'
               }}
               onMouseOver={(e) => {
                 if (!gumClaimLoading && walletAddress) {

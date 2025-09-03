@@ -568,6 +568,21 @@ const windowsMemod = useMemo(() => (
             })
           }
         />
+
+        {/* 20. Fantasy Football */}
+        <a
+          href="https://sports.yahoo.com/dailyfantasy/league/147616/overview"
+          target="_blank"
+          rel="noreferrer noopener"
+          style={{ textDecoration: "none" }}
+        >
+          <ConditionalAppIcon
+            appId="fantasy-football"
+            title="Fantasy Football"
+            icon="/images/icons/football-field-icon.png"
+            onDoubleClick={() => null}
+          />
+        </a>
         </div>
       </div>
 
