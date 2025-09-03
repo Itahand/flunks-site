@@ -11,6 +11,7 @@ import { useUserProfile } from '../contexts/UserProfileContext';
 import { useGum } from '../contexts/GumContext';
 import WeeklyObjectives from '../components/WeeklyObjectives';
 import FavoriteFlunkDisplay from '../components/FavoriteFlunkDisplay';
+import FavoritesDiagnostic from '../components/FavoritesDiagnostic';
 // WINDOW_IDS lives in src/fixed.ts (baseUrl set to src)
 import { WINDOW_IDS } from 'fixed';
 
@@ -707,6 +708,7 @@ const LockerSystemNew: React.FC = () => {
                             showName={true} 
                             showClique={true} 
                           />
+                          <FavoritesDiagnostic />
                         </div>
                         {/* Scroll indicator removed */}
                         {/*
