@@ -76,10 +76,17 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           // Try to save to database for future syncing
           saveFavoriteToDatabase(parsed);
         } else {
-          console.log('🗑️ [FavoritesContext] Clearing localStorage - different wallet');
+          console.log('� [FavoritesContext] Wallet mismatch, but attempting to use stored favorite anyway');
           console.log('Current wallet:', walletAddress, 'Stored wallet:', parsed.walletAddress);
-          localStorage.removeItem('flunks_favorite');
-          setFavoriteFlunkState(null);
+          
+          // Update the wallet address to current wallet and use the favorite
+          const updatedFavorite = { ...parsed, walletAddress: walletAddress };
+          console.log('✅ [FavoritesContext] Using localStorage favorite with updated wallet');
+          setFavoriteFlunkState(updatedFavorite);
+          
+          // Save the updated favorite to localStorage and database
+          localStorage.setItem('flunks_favorite', JSON.stringify(updatedFavorite));
+          saveFavoriteToDatabase(updatedFavorite);
         }
       } else {
         console.log('📭 [FavoritesContext] No favorite found in localStorage either');
@@ -88,9 +95,11 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     } catch (localError) {
       console.error('❌ [FavoritesContext] localStorage fallback error:', localError);
       setFavoriteFlunkState(null);
+    } finally {
+      // Always set loading to false, regardless of outcome
+      console.log('🏁 [FavoritesContext] Setting isLoading to false');
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   // Save favorite to database

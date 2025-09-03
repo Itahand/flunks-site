@@ -34,7 +34,6 @@ import ReportCard from "windows/ReportCard";
 import IconAnimationWindow from "windows/IconAnimationWindow";
 import BulletinBoard from "windows/BulletinBoard";
 import Yearbook from "windows/Yearbook";
-import RetroTextBoxDemo from "windows/RetroTextBoxDemo";
 import AccessLevelStatus from "components/AccessLevelStatus";
 import ConditionalAppIcon from "components/ConditionalAppIcon";
 import { getUserAccessLevel } from "utils/appPermissions";
@@ -552,19 +551,6 @@ const windowsMemod = useMemo(() => (
             openWindow({
               key: WINDOW_IDS.YEARBOOK,
               window: <Yearbook />
-            })
-          }
-        />
-
-        {/* 19. Retro Text Box Demo */}
-        <ConditionalAppIcon
-          appId="retro-text-demo"
-          title="🎮 Retro Text Demo"
-          icon="/images/icons/attack-64x64.png"
-          onDoubleClick={() =>
-            openWindow({
-              key: WINDOW_IDS.RETRO_TEXT_DEMO,
-              window: <RetroTextBoxDemo />
             })
           }
         />
