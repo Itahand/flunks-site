@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 export interface FavoriteFlunk {
   tokenId: string;
@@ -26,8 +26,37 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [isLoading, setIsLoading] = useState(false);
   const [currentWalletAddress, setCurrentWalletAddress] = useState<string>('');
 
+  // Save favorite to database
+  const saveFavoriteToDatabase = useCallback(async (flunk: FavoriteFlunk | null) => {
+    if (!flunk?.walletAddress) return;
+    
+    try {
+      const response = await fetch('/api/favorite-flunk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet_address: flunk.walletAddress,
+          favorite_flunk_data: flunk
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          console.log('✅ Saved favorite flunk to database');
+        } else {
+          console.warn('⚠️ Database save failed, using localStorage fallback:', result.message);
+        }
+      } else {
+        console.warn('⚠️ Failed to save favorite flunk to database, HTTP error:', response.status);
+      }
+    } catch (error) {
+      console.warn('⚠️ Error saving favorite flunk to database, using localStorage fallback:', error);
+    }
+  }, []);
+
   // Load favorite from database and localStorage as fallback
-  const loadFavoriteFlunk = async (walletAddress: string) => {
+  const loadFavoriteFlunk = useCallback(async (walletAddress: string) => {
     console.log('🔄 [FavoritesContext] Loading favorite for wallet:', walletAddress);
     setIsLoading(true);
     
@@ -100,36 +129,9 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log('🏁 [FavoritesContext] Setting isLoading to false');
       setIsLoading(false);
     }
-  };
+  }, [saveFavoriteToDatabase]); // Include saveFavoriteToDatabase in dependencies
 
-  // Save favorite to database
-  const saveFavoriteToDatabase = async (flunk: FavoriteFlunk | null) => {
-    if (!flunk?.walletAddress) return;
-    
-    try {
-      const response = await fetch('/api/favorite-flunk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          wallet_address: flunk.walletAddress,
-          favorite_flunk_data: flunk
-        })
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          console.log('✅ Saved favorite flunk to database');
-        } else {
-          console.warn('⚠️ Database save failed, using localStorage fallback:', result.message);
-        }
-      } else {
-        console.warn('⚠️ Failed to save favorite flunk to database, HTTP error:', response.status);
-      }
-    } catch (error) {
-      console.warn('⚠️ Error saving favorite flunk to database, using localStorage fallback:', error);
-    }
-  };
+  // Load favorite from database and localStorage as fallback
 
   // Load favorite from localStorage on mount (will be replaced by wallet-based loading)
   useEffect(() => {
@@ -146,7 +148,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   // Enhanced setFavoriteFlunk that saves to both localStorage and database
-  const setFavoriteFlunk = async (flunk: FavoriteFlunk | null) => {
+  const setFavoriteFlunk = useCallback(async (flunk: FavoriteFlunk | null) => {
     console.log('💾 [FavoritesContext] Setting favorite flunk:', flunk);
     setFavoriteFlunkState(flunk);
     
@@ -171,15 +173,15 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     // Save to database for cross-device sync
     await saveFavoriteToDatabase(flunk);
-  };
+  }, [currentWalletAddress, saveFavoriteToDatabase]);
 
-  const isFavorite = (tokenId: string, walletAddress: string) => {
+  const isFavorite = useCallback((tokenId: string, walletAddress: string) => {
     return favoriteFlunk?.tokenId === tokenId && favoriteFlunk?.walletAddress === walletAddress;
-  };
+  }, [favoriteFlunk]);
 
-  const clearFavorite = async () => {
+  const clearFavorite = useCallback(async () => {
     await setFavoriteFlunk(null);
-  };
+  }, [setFavoriteFlunk]);
 
   return (
     <FavoritesContext.Provider 
