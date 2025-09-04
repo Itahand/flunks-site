@@ -10,8 +10,6 @@ import { getUserGumBalance, getUserGumTransactions } from '../utils/gumAPI';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { useGum } from '../contexts/GumContext';
 import WeeklyObjectives from '../components/WeeklyObjectives';
-import FavoriteFlunkDisplay from '../components/FavoriteFlunkDisplay';
-import FavoritesDiagnostic from '../components/FavoritesDiagnostic';
 // WINDOW_IDS lives in src/fixed.ts (baseUrl set to src)
 import { WINDOW_IDS } from 'fixed';
 
@@ -693,23 +691,6 @@ const LockerSystemNew: React.FC = () => {
                           Welcome to your personal locker!
                         </div>
                         
-                        {/* Favorite Flunk Display */}
-                        <div style={{ marginBottom: '20px' }}>
-                          <div style={{ 
-                            fontSize: '14px', 
-                            marginBottom: '10px',
-                            color: '#FFD700',
-                            fontWeight: 'bold'
-                          }}>
-                            ⭐ Your Favorite Flunk
-                          </div>
-                          <FavoriteFlunkDisplay 
-                            size="large" 
-                            showName={true} 
-                            showClique={true} 
-                          />
-                          <FavoritesDiagnostic />
-                        </div>
                         {/* Scroll indicator removed */}
                         {/*
                         <div className="scroll-indicator" style={{ 

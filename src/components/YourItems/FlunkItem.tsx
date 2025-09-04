@@ -8,7 +8,6 @@ import DesktopBackgroundSection from "./ItemDesktopBackgroundSection";
 // import GumSection from "./ItemGumSection";
 import { useEffect, useMemo, useState } from "react";
 import { useWindowsContext } from "contexts/WindowsContext";
-import { useFavorites } from "contexts/FavoritesContext";
 import { useAuth } from "contexts/AuthContext";
 import Graduation from "windows/Graduation";
 import ClaimForm from "windows/ClaimForm";
@@ -134,43 +133,12 @@ interface FlunkItemProps extends ObjectDetails {
 const FlunkItem: React.FC<FlunkItemProps> = (props) => {
   const [canClaimBackpack] = useState(true);
   const { openWindow } = useWindowsContext();
-  const { favoriteFlunk, setFavoriteFlunk, isFavorite } = useFavorites();
   const { walletAddress } = useAuth();
   const [activeSrc, setActiveSrc] = useState(
     props.MetadataViewsDisplay.thumbnail.url
   );
 
-  const isCurrentFavorite = isFavorite(props.tokenID, walletAddress || '');
-
-  const handleToggleFavorite = async () => {
-    try {
-      console.log('⭐ [FlunkItem] Toggling favorite. Current state:', { 
-        isCurrentFavorite, 
-        tokenID: props.tokenID, 
-        walletAddress 
-      });
-      
-      if (isCurrentFavorite) {
-        await setFavoriteFlunk(null);
-        console.log('✅ [FlunkItem] Removed favorite flunk');
-      } else {
-        const favoriteData = {
-          tokenId: props.tokenID,
-          serialNumber: props.serialNumber,
-          name: props.MetadataViewsDisplay.name,
-          imageUrl: props.MetadataViewsDisplay.thumbnail.url || props.pixelUrl || '',
-          pixelUrl: props.pixelUrl,
-          clique: _traitsObject.Clique,
-          walletAddress: walletAddress || ''
-        };
-        console.log('💾 [FlunkItem] Setting new favorite:', favoriteData);
-        await setFavoriteFlunk(favoriteData);
-        console.log('✅ [FlunkItem] Set favorite flunk:', favoriteData.name);
-      }
-    } catch (error) {
-      console.error('❌ [FlunkItem] Error toggling favorite flunk:', error);
-    }
-  };  useEffect(() => {
+  useEffect(() => {
     // Preload pxelated image
     if (props.pixelUrl) {
       const img = new Image();
@@ -219,21 +187,6 @@ const FlunkItem: React.FC<FlunkItemProps> = (props) => {
             >
               <PixelText className="text-xl leading-[1]" isPixelButton={false}>2D</PixelText>
             </PixelButton>
-
-            <Button
-              className="w-full"
-              onClick={handleToggleFavorite}
-              style={{
-                background: isCurrentFavorite ? '#FFD700' : undefined,
-                color: isCurrentFavorite ? '#000' : undefined,
-                border: isCurrentFavorite ? '2px solid #FFA500' : undefined
-              }}
-              title={isCurrentFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <span style={{ fontSize: '16px' }}>
-                {isCurrentFavorite ? '⭐' : '☆'}
-              </span>
-            </Button>
 
             <Button
               className="w-full"

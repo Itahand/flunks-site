@@ -28,7 +28,6 @@ import Marquee from "react-fast-marquee";
 // TODO: GUM functionality temporarily disabled - keep imports for future re-implementation
 // import { getGumBalance } from "web3/script-get-gum-balance";
 import { useWindowsContext } from "contexts/WindowsContext";
-import { useFavorites } from "contexts/FavoritesContext";
 import { useAuth } from "contexts/AuthContext";
 import { WINDOW_IDS } from "fixed";
 // import GumballMachine from "windows/GumballMachine";
@@ -360,7 +359,6 @@ const GridedView: React.FC<{
   setActiveItem: (nft: NftItem) => void;
   pixelMode: boolean;
 }> = ({ items, setActiveItem, pixelMode }) => {
-  const { isFavorite } = useFavorites();
   const { walletAddress } = useAuth();
   
   console.log('GridedView rendering with items:', items?.length || 0);
@@ -383,33 +381,9 @@ const GridedView: React.FC<{
   return (
     <RetroGrid>
       {items.map((nft: NftItem) => {
-        const isCurrentFavorite = nft.collection === "Flunks" && isFavorite(nft.tokenID, walletAddress || '');
-        
         return (
           <RetroItemFrame key={nft.tokenID} variant="window" className="p-2">
             <RetroImageFrame variant="field" className="relative !flex !flex-col flex-1">
-              {/* Favorite Star Indicator */}
-              {isCurrentFavorite && (
-                <div style={{
-                  position: 'absolute',
-                  top: '4px',
-                  right: '4px',
-                  zIndex: 10,
-                  background: '#FFD700',
-                  border: '1px solid #FFA500',
-                  borderRadius: '50%',
-                  width: '20px',
-                  height: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                }}>
-                  ⭐
-                </div>
-              )}
-              
               <Frame variant="well" className="!w-full !flex-1 !flex !items-center !justify-center overflow-hidden">
                 <CustomImage
                   src={pixelMode ? nft.pixelUrl || nft.MetadataViewsDisplay.thumbnail.url : nft.MetadataViewsDisplay.thumbnail.url}
