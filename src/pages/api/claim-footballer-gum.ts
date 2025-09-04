@@ -35,8 +35,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // Award the GUM (100 GUM for footballer flunks)
+    // Award the GUM first (100 GUM for footballer flunks)
     const gumAmount = 100;
+    console.log('💰 Attempting to award', gumAmount, 'GUM...');
+    
     const gumResult = await awardGum(
       walletAddress,
       "footballer_flunk_bonus",
@@ -46,39 +48,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     );
 
-    // Record the claim in our tracking table
-    const { data: claimData, error: claimError } = await supabase
-      .from('footballer_gum_claims')
-      .insert([{
-        wallet_address: walletAddress,
-        gum_awarded: gumAmount,
-        claimed_at: new Date().toISOString(),
-        gum_transaction_successful: gumResult.success
-      }])
-      .select();
+    console.log('💰 GUM award result:', gumResult);
 
-    if (claimError) {
-      console.error('❌ Error recording footballer claim:', claimError);
-      // Still return success if GUM was awarded even if tracking failed
+    // Only record the claim if GUM was successfully awarded
+    if (gumResult.success) {
+      const { data: claimData, error: claimError } = await supabase
+        .from('footballer_gum_claims')
+        .insert([{
+          wallet_address: walletAddress,
+          gum_awarded: gumAmount,
+          claimed_at: new Date().toISOString(),
+          gum_transaction_successful: true
+        }])
+        .select();
+
+      if (claimError) {
+        console.error('❌ Error recording footballer claim (but GUM was awarded):', claimError);
+        return res.status(200).json({ 
+          success: true,
+          gumAwarded: gumAmount,
+          message: `Successfully awarded ${gumAmount} GUM! (Note: Claim tracking may have failed - you can still only claim once)`
+        });
+      }
+
+      console.log('✅ Footballer claim processed successfully:', claimData);
+      
       return res.status(200).json({ 
-        success: gumResult.success,
-        gumAwarded: gumResult.success ? gumAmount : 0,
-        message: gumResult.success 
-          ? `Successfully awarded ${gumAmount} GUM! (Note: Claim tracking may have failed)`
-          : 'Failed to award GUM'
+        success: true,
+        gumAwarded: gumAmount,
+        message: `Successfully awarded ${gumAmount} GUM for your Footballer Flunk!`,
+        claimId: claimData?.[0]?.id
+      });
+    } else {
+      // GUM award failed - don't record claim so they can try again
+      console.error('❌ Failed to award GUM:', gumResult.error);
+      return res.status(400).json({ 
+        success: false,
+        gumAwarded: 0,
+        message: gumResult.error || 'Failed to award GUM. Please try again.'
       });
     }
-
-    console.log('✅ Footballer claim processed successfully:', claimData);
-
-    return res.status(200).json({ 
-      success: gumResult.success,
-      gumAwarded: gumResult.success ? gumAmount : 0,
-      message: gumResult.success 
-        ? `Successfully awarded ${gumAmount} GUM for your Footballer Flunk!`
-        : 'Failed to award GUM',
-      claimId: claimData?.[0]?.id
-    });
     
   } catch (error) {
     console.error('❌ Failed to process footballer claim:', error);
