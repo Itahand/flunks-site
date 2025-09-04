@@ -27,8 +27,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Database error' });
     }
 
-    const alreadyClaimed = data && data.length > 0;
-    console.log('🔍 Footballer claim check result:', { walletAddress, alreadyClaimed });
+    const alreadyClaimed = data && data.length > 0 && data[0].gum_transaction_successful === true;
+    
+    console.log('🔍 Footballer claim check result:', { 
+      walletAddress, 
+      alreadyClaimed,
+      hasFailedClaim: data && data.length > 0 && data[0].gum_transaction_successful === false
+    });
 
     return res.status(200).json({ 
       alreadyClaimed,

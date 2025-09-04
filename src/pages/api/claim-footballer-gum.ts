@@ -29,10 +29,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (existingClaim && existingClaim.length > 0) {
-      return res.status(400).json({ 
-        success: false,
-        message: 'You have already claimed this reward!' 
-      });
+      // Check if previous claim actually succeeded
+      if (existingClaim[0].gum_transaction_successful === true) {
+        console.log('⚠️ Wallet has already successfully claimed footballer reward');
+        return res.status(400).json({ 
+          success: false,
+          message: 'You have already claimed this reward!' 
+        });
+      } else {
+        // Previous claim failed - delete the failed record and allow retry
+        console.log('🔄 Previous claim failed, allowing retry after cleanup...');
+        await supabase
+          .from('footballer_gum_claims')
+          .delete()
+          .eq('wallet_address', walletAddress)
+          .eq('gum_transaction_successful', false);
+        console.log('🗑️ Cleaned up failed claim record');
+      }
     }
 
     // Award the GUM first (100 GUM for footballer flunks)
