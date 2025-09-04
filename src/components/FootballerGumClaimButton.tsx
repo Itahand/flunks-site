@@ -25,15 +25,35 @@ const FootballerGumClaimButton: React.FC<FootballerGumClaimButtonProps> = ({ onC
 
       try {
         // Check if user has any Flunks with footballer traits
-        const hasFootballer = allItems.some(item => 
-          item.collection === 'Flunks' &&
-          item.traits?.traits?.some((trait: any) => 
-            trait.name === 'Torso' && 
-            (trait.value.includes('FOOTBALLER-FLUNK-HOME') || 
-             trait.value.includes('FOOTBALLER-FLUNK-AWAY'))
-          )
-        );
+        console.log('🔍 Checking for footballer traits in allItems:', allItems.length);
+        
+        const hasFootballer = allItems.some(item => {
+          if (item.collection !== 'Flunks') return false;
+          
+          console.log('🏈 Checking Flunk #' + item.tokenID + ' traits:', item.traits?.traits);
+          
+          return item.traits?.traits?.some((trait: any) => {
+            console.log('🔍 Trait:', trait.name, '=', trait.value);
+            
+            if (trait.name === 'Torso') {
+              const hasFootballerTrait = 
+                trait.value === 'Footballer Flunk Home' || 
+                trait.value === 'Footballer Flunk Away' ||
+                trait.value.includes('FOOTBALLER-FLUNK-HOME') || 
+                trait.value.includes('FOOTBALLER-FLUNK-AWAY') ||
+                trait.value.toLowerCase().includes('footballer flunk home') ||
+                trait.value.toLowerCase().includes('footballer flunk away');
+              
+              if (hasFootballerTrait) {
+                console.log('✅ Found footballer trait:', trait.value);
+                return true;
+              }
+            }
+            return false;
+          });
+        });
 
+        console.log('🏈 Final footballer check result:', hasFootballer);
         setHasFootballerFlunk(hasFootballer);
 
         // Check if they've already claimed this reward
@@ -46,6 +66,7 @@ const FootballerGumClaimButton: React.FC<FootballerGumClaimButtonProps> = ({ onC
           
           if (response.ok) {
             const { alreadyClaimed } = await response.json();
+            console.log('🏈 Claim status:', alreadyClaimed ? 'Already claimed' : 'Available to claim');
             setAlreadyClaimed(alreadyClaimed);
           }
         }
