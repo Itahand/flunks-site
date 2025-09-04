@@ -11,6 +11,36 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
   const [objectivesStatus, setObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastWallet, setLastWallet] = useState<string | null>(null);
+  const [currentWeek, setCurrentWeek] = useState<1 | 2>(1);
+
+  // Generate Week 2 placeholder data
+  const getWeek2PlaceholderData = (): ObjectiveStatus => {
+    return {
+      cafeteriaClicked: false,
+      crackedCode: false,
+      completedObjectives: [
+        {
+          id: 'week2-objective-1',
+          title: '???',
+          description: 'To be announced',
+          type: 'custom' as const,
+          completed: false,
+          reward: 10
+        },
+        {
+          id: 'week2-objective-2',
+          title: '???',
+          description: 'To be announced',
+          type: 'custom' as const,
+          completed: false,
+          reward: 15
+        }
+      ]
+    };
+  };
+
+  // Get current objectives data based on selected week
+  const currentObjectivesData = currentWeek === 2 ? getWeek2PlaceholderData() : objectivesStatus;
 
   const loadObjectives = async (forceRefresh = false) => {
     if (!primaryWallet?.address) {
@@ -95,11 +125,11 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
     );
   }
 
-  if (!objectivesStatus) return null;
+  if (!currentObjectivesData) return null;
 
-  const progress = calculateObjectiveProgress(objectivesStatus.completedObjectives);
-  const completedCount = objectivesStatus.completedObjectives.filter(obj => obj.completed).length;
-  const totalCount = objectivesStatus.completedObjectives.length;
+  const progress = calculateObjectiveProgress(currentObjectivesData.completedObjectives);
+  const completedCount = currentObjectivesData.completedObjectives.filter(obj => obj.completed).length;
+  const totalCount = currentObjectivesData.completedObjectives.length;
 
   return (
     <div style={{
@@ -123,11 +153,60 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
           marginBottom: '8px'
         }}>
           <div style={{
-            fontSize: '20px',
-            fontWeight: 'bold',
-            color: '#4a90e2'
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
           }}>
-            📋 Semester Zero: Finding Flunko
+            <div style={{
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#4a90e2'
+            }}>
+              📋 Semester Zero: Finding Flunko
+            </div>
+            
+            {/* Week Navigation */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'rgba(255,255,255,0.05)',
+              borderRadius: '8px',
+              padding: '4px'
+            }}>
+              <button
+                onClick={() => setCurrentWeek(1)}
+                style={{
+                  background: currentWeek === 1 ? 'rgba(74, 144, 226, 0.5)' : 'transparent',
+                  border: currentWeek === 1 ? '1px solid #4a90e2' : '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '4px',
+                  color: currentWeek === 1 ? '#fff' : '#ccc',
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                Week 1
+              </button>
+              <button
+                onClick={() => setCurrentWeek(2)}
+                style={{
+                  background: currentWeek === 2 ? 'rgba(255, 165, 0, 0.5)' : 'transparent',
+                  border: currentWeek === 2 ? '1px solid #ffa500' : '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '4px',
+                  color: currentWeek === 2 ? '#fff' : '#ccc',
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                Week 2 →
+              </button>
+            </div>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
@@ -167,12 +246,13 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
             )}
           </div>
         </div>
+        
         <div style={{
           fontSize: '14px',
           color: '#ccc',
           marginBottom: '12px'
         }}>
-          Weekly Objectives ({completedCount}/{totalCount} Complete)
+          Week {currentWeek} Objectives ({completedCount}/{totalCount} Complete)
         </div>
         
         {/* Progress Bar */}
@@ -228,35 +308,66 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         flexDirection: 'column',
         gap: '12px'
       }}>
-        {objectivesStatus.completedObjectives.map((objective) => (
+        {currentObjectivesData.completedObjectives.map((objective) => (
           <div
             key={objective.id}
             style={{
               background: objective.completed 
                 ? 'rgba(0, 255, 0, 0.1)' 
-                : 'rgba(255, 255, 255, 0.05)',
+                : currentWeek === 2 
+                  ? 'rgba(255, 165, 0, 0.05)' // Orange tint for Week 2
+                  : 'rgba(255, 255, 255, 0.05)',
               border: objective.completed 
                 ? '1px solid rgba(0, 255, 0, 0.3)' 
-                : '1px solid rgba(255, 255, 255, 0.1)',
+                : currentWeek === 2
+                  ? '1px solid rgba(255, 165, 0, 0.3)' // Orange border for Week 2
+                  : '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: '8px',
               padding: '12px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              position: 'relative'
             }}
           >
+            {/* Coming Soon badge for Week 2 */}
+            {currentWeek === 2 && (
+              <div style={{
+                position: 'absolute',
+                top: '-8px',
+                right: '8px',
+                background: 'linear-gradient(45deg, #ff8c00, #ffa500)',
+                color: 'white',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                fontSize: '10px',
+                fontWeight: 'bold',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+              }}>
+                COMING SOON
+              </div>
+            )}
             <div style={{ flex: 1 }}>
               <div style={{
                 fontSize: '16px',
                 fontWeight: 'bold',
-                color: objective.completed ? '#00ff00' : '#fff',
+                color: objective.completed ? '#00ff00' : currentWeek === 2 ? '#ffa500' : '#fff',
                 marginBottom: '4px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px'
               }}>
-                {objective.completed ? '✅' : '⭕'} {objective.title}
+                {objective.completed ? '✅' : currentWeek === 2 ? '🔒' : '⭕'} {objective.title}
+                {currentWeek === 2 && (
+                  <span style={{
+                    fontSize: '12px',
+                    color: '#ffa500',
+                    fontWeight: 'normal'
+                  }}>
+                    (Locked)
+                  </span>
+                )}
               </div>
               <div style={{
                 fontSize: '12px',
@@ -268,10 +379,10 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               {objective.reward && (
                 <div style={{
                   fontSize: '11px',
-                  color: '#4a90e2',
+                  color: currentWeek === 2 ? '#ffa500' : '#4a90e2',
                   fontWeight: 'bold'
                 }}>
-                  🍬 Reward: {objective.reward} GUM
+                  🍬 Reward: +{objective.reward} GUM
                 </div>
               )}
             </div>
