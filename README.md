@@ -1,10 +1,6 @@
 # 🏫 Flunks High School
 
-A nostalgic Web3 social platform bringing back the golden age of internet communities.
-
-## 🎓 Getting Started
-
-This platform requires an access code to enter. Contact the team or join our community for access.
+A nostalgic Web3 social platform bringing back the golden age of internet communities. Proudly built and running on the FLOW network with Cadence.
 
 ## 🚀 For Developers
 
@@ -28,7 +24,7 @@ Local development automatically grants admin access for testing.
 ## 🌐 Community
 
 - **Discord**: [Join our community]
-- **Twitter**: [@flunkshighschool]
+- **Twitter**: [@flunks_nft]
 - **GitHub**: [flunkscommunity]
 
 ---
