@@ -8,6 +8,7 @@ import { awardGum } from "utils/gumAPI";
 import { trackCafeteriaButtonClick } from "utils/cafeteriaButtonTracking";
 import DigitalLock from "components/DigitalLock";
 import SuccessWindow from "components/SuccessWindow";
+import FootballerGumClaimButton from "components/FootballerGumClaimButton";
 
 const HighSchoolMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -334,11 +335,66 @@ const HighSchoolMain = () => {
         {/* Locker Room */}
         <button
           onClick={() =>
-            openRoom(
-              WINDOW_IDS.HIGH_SCHOOL_LOCKER_ROOM,
-              "Locker Room",
-              "Rows of metal lockers stand like silent sentinels. Some doors hang open, revealing forgotten belongings and mysterious notes."
-            )
+            openWindow({
+              key: WINDOW_IDS.HIGH_SCHOOL_LOCKER_ROOM,
+              window: (
+                <DraggableResizeableWindow
+                  windowsId={WINDOW_IDS.HIGH_SCHOOL_LOCKER_ROOM}
+                  headerTitle="Locker Room"
+                  onClose={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_LOCKER_ROOM)}
+                  initialWidth="70vw"
+                  initialHeight="70vh"
+                  resizable={true}
+                >
+                  <div className="relative w-full h-full bg-[#1a1a1a] text-white overflow-hidden">
+                    {/* Locker Room Background Image */}
+                    <img
+                      src="/images/locations/locker-room.png"
+                      alt="Locker Room Interior"
+                      className="absolute inset-0 w-full h-full object-cover z-0"
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/backdrops/BLANK.png";
+                      }}
+                    />
+                    
+                    {/* Content Overlay */}
+                    <div className="absolute inset-0 bg-black bg-opacity-40 z-10 flex flex-col">
+                      {/* Header Section */}
+                      <div className="p-6 text-center">
+                        <h1 className="text-3xl font-bold mb-2">🏃 Locker Room</h1>
+                        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                          Rows of metal lockers stand like silent sentinels. Some doors hang open, revealing 
+                          forgotten belongings and mysterious notes. The air smells of old gym clothes and determination.
+                        </p>
+                      </div>
+
+                      {/* Main Content Area */}
+                      <div className="flex-1 flex items-center justify-center p-6">
+                        <div className="bg-black bg-opacity-80 p-8 rounded-xl max-w-md text-center border border-gray-600">
+                          <div className="text-6xl mb-4">🏈</div>
+                          <h2 className="text-2xl font-bold mb-4 text-yellow-400">Special Footballer Reward!</h2>
+                          
+                          <p className="text-gray-300 mb-6 leading-relaxed">
+                            If you own a Flunks NFT with <strong>Footballer Flunk Home</strong> or 
+                            <strong> Footballer Flunk Away</strong> traits, you can claim a special one-time 
+                            reward of <span className="text-yellow-400 font-bold">100 GUM</span>!
+                          </p>
+                          
+                          <FootballerGumClaimButton />
+                        </div>
+                      </div>
+
+                      {/* Bottom Section - Additional Content */}
+                      <div className="p-6 text-center">
+                        <p className="text-sm text-gray-400">
+                          🔍 Explore the lockers and discover what students left behind...
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </DraggableResizeableWindow>
+              ),
+            })
           }
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
         >

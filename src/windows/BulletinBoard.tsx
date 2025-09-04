@@ -186,8 +186,7 @@ const BulletinBoard: React.FC = () => {
             <BulletinTitle>📋 COMMUNITY CHALLENGES</BulletinTitle>
             <BulletinList>
               <BulletinItem>
-                There's a <TerminalText>terminal code</TerminalText> hidden somewhere on the FHS app, find it. 
-                First one to enter it wins <PrizeText>FLOW</PrizeText>!
+                Drop your Flunk into the <TerminalText>footballers room</TerminalText> on Discord to be eligible for a <PrizeText>FLOW drop</PrizeText>!
               </BulletinItem>
               
               <BulletinItem>
@@ -196,11 +195,7 @@ const BulletinBoard: React.FC = () => {
               </BulletinItem>
               
               <BulletinItem>
-                {isFeatureEnabled('flappyFlunkWeekend') ? (
-                  <>🎮 Flappy Flunk - this weekend only! 🎮</>
-                ) : (
-                  <>Coming Soon... 🔮</>
-                )}
+                Visit the <TerminalText>locker room</TerminalText> inside the school! �
               </BulletinItem>
             </BulletinList>
           </BulletinContent>
