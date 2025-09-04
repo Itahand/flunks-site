@@ -146,7 +146,7 @@ interface GumDisplayProps {
 
 export const GumDisplay: React.FC<GumDisplayProps> = ({
   showDetailedStats = true,
-  refreshInterval = 30000 // 30 seconds
+  refreshInterval = 120000 // 2 minutes - reduced from 30s to minimize invocations
 }) => {
   const { primaryWallet } = useDynamicContext();
   const { hasProfile, profile } = useUserProfile();
@@ -156,6 +156,7 @@ export const GumDisplay: React.FC<GumDisplayProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
+  const [lastRefresh, setLastRefresh] = useState<number>(0);
 
   // Don't show gum display if no profile exists
   if (!hasProfile || !primaryWallet?.address) {
@@ -168,6 +169,13 @@ export const GumDisplay: React.FC<GumDisplayProps> = ({
   // Load gum data
   const loadGumData = async (showAnimation = false) => {
     if (!primaryWallet?.address) return;
+
+    // Throttle requests to max once every 15 seconds
+    const now = Date.now();
+    if (now - lastRefresh < 15000) {
+      console.log('🍬 GumDisplay: Load throttled, last refresh was', (now - lastRefresh) / 1000, 'seconds ago');
+      return;
+    }
 
     if (showAnimation) {
       setIsUpdating(true);
@@ -192,6 +200,7 @@ export const GumDisplay: React.FC<GumDisplayProps> = ({
         setBalance(currentBalance || 0);
       }
       setLastUpdate(Date.now());
+      setLastRefresh(now);
     } catch (err) {
       console.error('Error loading gum data:', err);
       setError('Failed to load gum data');

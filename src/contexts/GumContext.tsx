@@ -45,7 +45,7 @@ interface GumProviderProps {
 
 export const GumProvider: React.FC<GumProviderProps> = ({ 
   children, 
-  autoRefreshInterval = 30000 
+  autoRefreshInterval = 120000  // 2 minutes - reduced from 30s to minimize invocations
 }) => {
   const { primaryWallet } = useDynamicContext();
   const auth = useAuth();
@@ -53,6 +53,7 @@ export const GumProvider: React.FC<GumProviderProps> = ({
   const [stats, setStats] = useState<GumStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastBalanceRefresh, setLastBalanceRefresh] = useState<number>(0);
 
   // Use auth context for wallet address - more reliable
   const walletAddress = auth.walletAddress || primaryWallet?.address;
@@ -65,13 +66,21 @@ export const GumProvider: React.FC<GumProviderProps> = ({
       return;
     }
 
+    // Throttle balance refreshes to max once every 10 seconds
+    const now = Date.now();
+    if (now - lastBalanceRefresh < 10000) {
+      console.log('🍬 GumProvider: Balance refresh throttled, last refresh was', (now - lastBalanceRefresh) / 1000, 'seconds ago');
+      return;
+    }
+
     try {
       setError(null);
       console.log('🍬 GumProvider: Fetching balance for wallet:', walletAddress);
       const newBalance = await getUserGumBalance(walletAddress);
       console.log('🍬 GumProvider: Got balance:', newBalance);
       setBalance(newBalance);
-      
+      setLastBalanceRefresh(now);
+
       // Dispatch custom event for other components
       window.dispatchEvent(new CustomEvent('gumBalanceUpdated', { 
         detail: { balance: newBalance, walletAddress: walletAddress }
@@ -80,9 +89,7 @@ export const GumProvider: React.FC<GumProviderProps> = ({
       console.error('🍬 GumProvider: Error refreshing gum balance:', err);
       setError('Failed to refresh balance');
     }
-  }, [walletAddress, auth.isAuthenticated]);
-
-  // Refresh full stats
+  }, [walletAddress, auth.isAuthenticated, lastBalanceRefresh]);  // Refresh full stats
   const refreshStats = useCallback(async () => {
     if (!walletAddress || !auth.isAuthenticated) {
       console.log('🍬 GumProvider: No wallet address or not authenticated, clearing stats');
@@ -191,19 +198,10 @@ export const GumProvider: React.FC<GumProviderProps> = ({
       
       // Auto-claim daily login bonus when wallet connects
       autoClaimDailyLogin(walletAddress).then(() => {
-        // Refresh balance after potential daily login claim
+        // Refresh balance after potential daily login claim (with delay to allow for processing)
         setTimeout(() => {
-          refreshBalance();
-          // Dispatch event to update tracking displays
-          if (typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('gumBalanceUpdated', {
-              detail: { 
-                walletAddress,
-                source: 'auto_daily_login_complete'
-              }
-            }));
-          }
-        }, 1000);
+          refreshBalance(); // This will be throttled if called too recently
+        }, 2000); // Increased delay to 2 seconds
       }).catch(err => {
         console.warn('🍬 Daily login auto-claim failed (this is normal on first connection):', err);
       });

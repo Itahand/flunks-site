@@ -164,7 +164,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                   <UserProfileProvider>
                     <PaginatedItemsProvider>
                       <AuthProvider>
-                          <GumProvider>
+                          <GumProvider autoRefreshInterval={300000}> {/* 5 minutes - very conservative */}
                             <div className="app-container min-h-screen w-full overflow-hidden">
                               <Component {...pageProps} />
                             </div>
