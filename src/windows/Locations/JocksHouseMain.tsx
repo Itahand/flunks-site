@@ -4,7 +4,7 @@ import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
 import { getCliqueColors, getCliqueIcon } from "utils/cliqueColors";
 import { getFontStyle } from "utils/fontConfig";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { awardGum } from "utils/gumAPI";
 
@@ -14,6 +14,15 @@ const JocksHouseMain = () => {
   const [gumClaimed, setGumClaimed] = useState(false);
   const [lockCode, setLockCode] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
+  
+  // Debug state changes
+  useEffect(() => {
+    console.log('🔄 lockCode state changed to:', lockCode);
+  }, [lockCode]);
+  
+  useEffect(() => {
+    console.log('🔓 isUnlocked state changed to:', isUnlocked);
+  }, [isUnlocked]);
   
   // Use your uploaded day/night images for Jocks House
   const dayImage = "/images/icons/jocks-house-day.png";
@@ -219,21 +228,42 @@ const JocksHouseMain = () => {
   const correctCode = '0730';
 
   const handleCodeSubmit = () => {
+    console.log('Submit attempt - lockCode:', lockCode, 'correctCode:', correctCode);
     if (lockCode === correctCode) {
+      console.log('✅ Correct code entered!');
       setIsUnlocked(true);
     } else {
+      console.log('❌ Incorrect code. Clearing input.');
       alert('Incorrect code! Try again.');
       setLockCode('');
     }
   };
 
   const handleCodeChange = (value: string) => {
-    if (value.length <= 4 && /^\d*$/.test(value)) {
-      setLockCode(value);
+    console.log('Input received:', value); // Debug log
+    const numericValue = value.replace(/[^0-9]/g, ''); // Only allow numbers
+    if (numericValue.length <= 4) {
+      console.log('Setting lockCode to:', numericValue); // Debug log
+      setLockCode(numericValue);
+      console.log('State updated from', lockCode, 'to', numericValue);
+    }
+  };
+
+  const handleKeypadPress = (digit: string) => {
+    console.log('Keypad pressed:', digit);
+    if (digit >= '0' && digit <= '9' && lockCode.length < 4) {
+      const newCode = lockCode + digit;
+      console.log('Adding digit to code:', digit, '- New code:', newCode);
+      setLockCode(newCode);
     }
   };
 
   const openUnderBed = () => {
+    // Reset state when opening the window
+    setLockCode('');
+    setIsUnlocked(false);
+    console.log('🚪 Opening Under the Bed - Digital Lock window');
+    
     openWindow({
       key: WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock',
       window: (
@@ -241,45 +271,78 @@ const JocksHouseMain = () => {
           windowsId={WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock'}
           headerTitle="Under the Bed - Digital Lock"
           onClose={() => closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock')}
-          initialWidth="400px"
-          initialHeight="300px"
+          initialWidth="500px"
+          initialHeight="400px"
           resizable={false}
         >
-          <div className="p-6 w-full h-full bg-gray-900 text-white flex flex-col justify-center items-center">
-            <div className="text-center mb-6">
-              <h2 className="text-xl mb-2">Digital Lock</h2>
-              <p className="text-sm text-gray-300 mb-4">
-                A mysterious lockbox is hidden under the bed. Enter the 4-digit code to unlock its secrets.
+          <div className="p-6 w-full h-full bg-gray-900 text-white flex flex-col justify-center items-center overflow-hidden">
+            <div className="text-center mb-6 px-4">
+              <h2 className="text-xl mb-3">🔒 Locked Trunk</h2>
+              <p className="text-sm text-gray-300 mb-4 leading-relaxed max-w-sm mx-auto break-words">
+                You found a locked trunk under the bed, figure out the code to see what's inside!
               </p>
             </div>
             
             {!isUnlocked ? (
               <>
                 <div className="mb-6">
-                  <div className="flex justify-center mb-4">
-                    <input
-                      type="text"
-                      value={lockCode}
-                      onChange={(e) => handleCodeChange(e.target.value)}
-                      placeholder="0000"
-                      className="w-24 h-12 text-center text-2xl font-mono bg-gray-800 border-2 border-gray-600 rounded text-white focus:border-blue-500 focus:outline-none"
-                      maxLength={4}
-                    />
+                  <div className="flex justify-center mb-2">
+                    <div className="text-xs text-gray-500">
+                      Debug: lockCode = "{lockCode}" (length: {lockCode.length})
+                    </div>
+                  </div>
+                  
+                  {/* Digital Display */}
+                  <div className="flex justify-center mb-6">
+                    <div className="bg-black border-2 border-gray-600 rounded p-4 min-w-[160px] text-center">
+                      <div className="text-2xl font-mono text-green-400 tracking-widest">
+                        {lockCode.padEnd(4, '_').split('').map((char, index) => (
+                          <span key={index} className="mx-1">
+                            {char === '_' ? '○' : char}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Keypad */}
+                  <div className="grid grid-cols-3 gap-2 mb-6 max-w-[200px] mx-auto">
+                    {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map((digit) => (
+                      <button
+                        key={digit}
+                        onClick={() => handleKeypadPress(digit)}
+                        disabled={digit === '*' || digit === '#'}
+                        className={`w-12 h-12 rounded font-mono text-lg font-bold transition-all duration-150 ${
+                          digit === '*' || digit === '#' 
+                            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                            : 'bg-gray-600 hover:bg-gray-500 text-white hover:scale-105 active:scale-95'
+                        }`}
+                      >
+                        {digit}
+                      </button>
+                    ))}
                   </div>
                   
                   <div className="flex justify-center gap-4">
                     <button
                       onClick={handleCodeSubmit}
                       disabled={lockCode.length !== 4}
-                      className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-4 py-2 rounded font-bold transition-all duration-200 hover:scale-105 disabled:cursor-not-allowed"
+                      className={`px-6 py-3 rounded-lg font-bold transition-all duration-200 text-lg ${
+                        lockCode.length === 4 
+                          ? 'bg-green-600 hover:bg-green-700 hover:scale-105 text-white cursor-pointer' 
+                          : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                      }`}
                     >
-                      Unlock
+                      🔓 Unlock
                     </button>
                     <button
-                      onClick={() => setLockCode('')}
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold transition-all duration-200 hover:scale-105"
+                      onClick={() => {
+                        console.log('Clear button clicked');
+                        setLockCode('');
+                      }}
+                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 text-lg"
                     >
-                      Clear
+                      🔄 Clear
                     </button>
                   </div>
                 </div>
@@ -287,8 +350,8 @@ const JocksHouseMain = () => {
             ) : (
               <>
                 <div className="text-center mb-6">
-                  <h2 className="text-xl mb-2">Unlocked Trunk</h2>
-                  <p className="text-sm text-gray-300 mb-4">
+                  <h2 className="text-xl mb-3">📦 Unlocked Trunk</h2>
+                  <p className="text-base text-gray-300 mb-4 leading-relaxed">
                     The lock clicks open, revealing the contents inside...
                   </p>
                 </div>
@@ -312,12 +375,12 @@ const JocksHouseMain = () => {
               </>
             )}
             
-            <div className="mt-4">
+            <div className="mt-6">
               <button
                 onClick={() => closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-bold transition-all duration-200 hover:scale-105"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 text-lg"
               >
-                Close
+                🚪 Close
               </button>
             </div>
           </div>

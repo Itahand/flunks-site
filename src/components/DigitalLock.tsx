@@ -253,11 +253,10 @@ const DigitalLock: React.FC<DigitalLockProps> = ({ onUnlock, onCancel }) => {
     }
     
     setInputCode(newCode);
-    setDisplayMessage(`CODE: ${'*'.repeat(newCode.length)}`);
+    setDisplayMessage(`CODE: ${newCode.padEnd(4, '_')}`);
     
-    if (newCode.length === 4) {
-      setTimeout(() => checkCode(newCode), 500);
-    }
+    // Don't automatically check code when 4 digits entered
+    // Let user click submit button instead
   };
 
   const checkCode = async (code: string) => {
@@ -417,7 +416,7 @@ const DigitalLock: React.FC<DigitalLockProps> = ({ onUnlock, onCancel }) => {
                   handleKeyPress(num);
                 }
               }}
-              disabled={isLocked || (num !== '0' && (num < '0' || num > '9'))}
+              disabled={isLocked || (num === '*' || num === '#')}
             >
               {num}
             </KeyButton>
@@ -425,6 +424,16 @@ const DigitalLock: React.FC<DigitalLockProps> = ({ onUnlock, onCancel }) => {
         </KeypadGrid>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+          <ActionButton 
+            onClick={() => {
+              if (inputCode.length === 4) {
+                checkCode(inputCode);
+              }
+            }} 
+            disabled={inputCode.length !== 4 || isLocked}
+          >
+            UNLOCK
+          </ActionButton>
           <ActionButton $variant="clear" onClick={clearCode} disabled={isLocked}>
             CLEAR
           </ActionButton>
