@@ -734,6 +734,63 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               onTouchEnd={handleTouchLeave}
             >
             </DynamicHouseIcon>
+            
+            <DynamicHouseIcon
+              houseId="football-field"
+              className={`${styles["nav-icon"]} ${styles['football-field-nav']}`}
+              onClick={() => {
+                // On mobile, if this is the second tap, proceed with opening
+                if (isMobile && touchedLocation === 'football-field') {
+                  setTouchedLocation(null);
+                  setHovered(null);
+                  handleLocationAccess('football-field', () => 
+                    openWindow({
+                      key: WINDOW_IDS.FOOTBALL_FIELD_MAIN,
+                      window: (
+                        <DraggableResizeableWindow
+                          windowsId={WINDOW_IDS.FOOTBALL_FIELD_MAIN}
+                          headerTitle="Football Field"
+                          onClose={() => closeWindow(WINDOW_IDS.FOOTBALL_FIELD_MAIN)}
+                          initialWidth="70vw"
+                          initialHeight="70vh"
+                          resizable={true}
+                        >
+                          <FootballFieldMain />
+                        </DraggableResizeableWindow>
+                      ),
+                    })
+                  );
+                } else if (!isMobile) {
+                  // Desktop behavior - immediate open
+                  handleLocationAccess('football-field', () => 
+                    openWindow({
+                      key: WINDOW_IDS.FOOTBALL_FIELD_MAIN,
+                      window: (
+                        <DraggableResizeableWindow
+                          windowsId={WINDOW_IDS.FOOTBALL_FIELD_MAIN}
+                          headerTitle="Football Field"
+                          onClose={() => closeWindow(WINDOW_IDS.FOOTBALL_FIELD_MAIN)}
+                          initialWidth="70vw"
+                          initialHeight="70vh"
+                          resizable={true}
+                        >
+                          <FootballFieldMain />
+                        </DraggableResizeableWindow>
+                      ),
+                    })
+                  );
+                }
+              }}
+              onMouseEnter={() => {
+                setHovered('football-field');
+              }}
+              onMouseLeave={() => {
+                setHovered(null);
+              }}
+              onTouchStart={() => user && handleTouchEnter('football-field')}
+              onTouchEnd={handleTouchLeave}
+            >
+            </DynamicHouseIcon>
           </div>
         </div>
 

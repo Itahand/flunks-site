@@ -10,6 +10,7 @@ import { GumDisplay } from '../components/GumDisplay';
 import { useGum } from '../contexts/GumContext';
 import { getActiveSpecialEvents, canParticipateInEvent, claimSpecialEvent, type SpecialEvent } from '../services/specialEventsService';
 import { canClaimDailyLogin, claimDailyLogin } from '../services/dailyLoginService';
+import { getChapter2ObjectivesStatus, ChapterObjective } from '../utils/weeklyObjectives';
 
 const UserProfile: React.FC = () => {
   const { closeWindow } = useWindowsContext();
@@ -25,6 +26,9 @@ const UserProfile: React.FC = () => {
   const [canClaimDaily, setCanClaimDaily] = useState(false);
   const [claimingDaily, setClaimingDaily] = useState(false);
   const [claimingEvent, setClaimingEvent] = useState<string | null>(null);
+  const [chapter2Objectives, setChapter2Objectives] = useState<ChapterObjective[]>([]);
+  const [chapter2Loading, setChapter2Loading] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const isConnected = !!primaryWallet?.address || devBypass;
@@ -49,6 +53,20 @@ const UserProfile: React.FC = () => {
                     'locker-interior'
   });
 
+  const loadChapter2Objectives = async () => {
+    if (!primaryWallet?.address) return;
+    setChapter2Loading(true);
+    try {
+      const objectiveStatus = await getChapter2ObjectivesStatus(primaryWallet!.address);
+      setChapter2Objectives(objectiveStatus.completedObjectives);
+      console.log('📋 Chapter 2 objectives loaded:', objectiveStatus.completedObjectives);
+    } catch (error) {
+      console.error('❌ Failed to load Chapter 2 objectives:', error);
+    } finally {
+      setChapter2Loading(false);
+    }
+  };
+
   // Check daily login status and load special events
   useEffect(() => {
     if (!primaryWallet?.address) return;
@@ -65,11 +83,26 @@ const UserProfile: React.FC = () => {
     
     checkDailyStatus();
     loadSpecialEvents();
+    loadChapter2Objectives();
     
     // Set up interval to refresh special events
-    const interval = setInterval(loadSpecialEvents, 30000); // Check every 30 seconds
+    const interval = setInterval(() => {
+      loadSpecialEvents();
+      loadChapter2Objectives();
+    }, 30000); // Check every 30 seconds
+    
     return () => clearInterval(interval);
   }, [primaryWallet?.address]);
+
+  const handleFeedbackSubmit = async (feedback: string) => {
+    // Handle feedback submission here
+    console.log('Feedback submitted:', feedback);
+    setFeedbackSubmitted(true);
+    
+    if (primaryWallet) {
+      loadChapter2Objectives(); // Also refresh objectives
+    }
+  };
 
   const handleClaimDailyLogin = async () => {
     if (claimingDaily || !canClaimDaily || !primaryWallet?.address) return;
@@ -577,7 +610,7 @@ const UserProfile: React.FC = () => {
                 </div>
               </div>
 
-              {/* Section 2 - Middle Area */}
+              {/* Section 2 - Week 2 Objectives */}
               <div style={{
                 height: '140vh',
                 minHeight: '600px',
@@ -590,24 +623,151 @@ const UserProfile: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 padding: '20px',
                 borderRadius: '8px',
                 marginBottom: '10px',
                 border: '3px solid #8B4513',
-                boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3)'
+                boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3)',
+                gap: '20px'
               }}>
+                {/* Week 2 Title */}
                 <div style={{
-                  background: 'rgba(0,0,0,0.8)',
+                  background: 'rgba(0,0,0,0.9)',
                   color: '#FFD700',
                   padding: '20px',
                   borderRadius: '8px',
                   textAlign: 'center',
-                  border: '2px solid #8B4513'
+                  border: '2px solid #8B4513',
+                  width: '100%',
+                  maxWidth: '500px'
                 }}>
-                  <h2 style={{ margin: '0 0 10px 0', fontSize: '24px' }}>🎽 Middle Area</h2>
-                  <p style={{ margin: '0', fontSize: '16px' }}>Your varsity jacket and memories</p>
-                  <div style={{ marginTop: '20px', fontSize: '48px' }}>👕🏅📸</div>
+                  <h2 style={{ margin: '0 0 10px 0', fontSize: '28px' }}>📚 Week 2 Objectives</h2>
+                  <p style={{ margin: '0', fontSize: '16px', color: '#DDD' }}>Complete challenges to earn GUM rewards</p>
+                </div>
+
+                {/* Objectives List */}
+                <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {chapter2Loading ? (
+                    <div style={{
+                      background: 'rgba(0,0,0,0.8)',
+                      color: '#FFD700',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      border: '2px solid #8B4513'
+                    }}>
+                      <p style={{ margin: '0', fontSize: '16px' }}>🔄 Loading objectives...</p>
+                    </div>
+                  ) : chapter2Objectives.length > 0 ? (
+                    chapter2Objectives.map((objective) => (
+                      <div key={objective.id} style={{
+                        background: objective.completed ? 'rgba(34, 139, 34, 0.9)' : 'rgba(0,0,0,0.8)',
+                        color: objective.completed ? '#90EE90' : '#FFD700',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        border: objective.completed ? '2px solid #32CD32' : '2px solid #8B4513',
+                        position: 'relative'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div>
+                            <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 'bold' }}>
+                              {objective.completed ? '✅' : '⏳'} {objective.title}
+                            </h3>
+                            <p style={{ margin: '0 0 8px 0', fontSize: '14px', opacity: 0.9 }}>
+                              {objective.description}
+                            </p>
+                            {objective.reward && (
+                              <p style={{ 
+                                margin: '0', 
+                                fontSize: '12px', 
+                                color: objective.completed ? '#90EE90' : '#FFD700',
+                                fontWeight: 'bold'
+                              }}>
+                                🎁 Reward: {objective.reward} GUM
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {objective.completed && (
+                          <div style={{
+                            position: 'absolute',
+                            top: '10px',
+                            right: '10px',
+                            background: '#32CD32',
+                            color: '#000',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                          }}>
+                            COMPLETE
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{
+                      background: 'rgba(0,0,0,0.8)',
+                      color: '#FFD700',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      border: '2px solid #8B4513'
+                    }}>
+                      <p style={{ margin: '0', fontSize: '16px' }}>📋 No objectives available</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Progress Summary */}
+                {chapter2Objectives.length > 0 && (
+                  <div style={{
+                    background: 'rgba(0,0,0,0.8)',
+                    color: '#FFD700',
+                    padding: '15px',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    border: '2px solid #8B4513',
+                    width: '100%',
+                    maxWidth: '300px'
+                  }}>
+                    <p style={{ margin: '0', fontSize: '16px', fontWeight: 'bold' }}>
+                      📊 Progress: {chapter2Objectives.filter(obj => obj.completed).length}/{chapter2Objectives.length}
+                    </p>
+                    <div style={{
+                      background: 'rgba(255,255,255,0.2)',
+                      borderRadius: '10px',
+                      height: '8px',
+                      marginTop: '8px',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{
+                        background: '#32CD32',
+                        height: '100%',
+                        width: `${(chapter2Objectives.filter(obj => obj.completed).length / chapter2Objectives.length) * 100}%`,
+                        borderRadius: '10px',
+                        transition: 'width 0.3s ease'
+                      }} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Hint for digital lock */}
+                <div style={{
+                  background: 'rgba(139, 69, 19, 0.8)',
+                  color: '#FFD700',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  border: '2px solid #8B4513',
+                  width: '100%',
+                  maxWidth: '400px'
+                }}>
+                  <p style={{ margin: '0', fontSize: '14px', fontStyle: 'italic' }}>
+                    � Hint: Check out Jock's House → Bedroom → Under the Bed for a digital lock challenge!
+                  </p>
                 </div>
               </div>
 

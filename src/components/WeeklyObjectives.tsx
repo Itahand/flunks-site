@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { getWeeklyObjectivesStatus, type WeeklyObjective, type ObjectiveStatus, calculateObjectiveProgress } from '../utils/weeklyObjectives';
+import { getObjectivesStatus, type ChapterObjective, type ObjectiveStatus, calculateObjectiveProgress } from '../utils/weeklyObjectives';
 
 interface WeeklyObjectivesProps {
-  onObjectiveComplete?: (objective: WeeklyObjective) => void;
+  currentWeek?: number;
+  onObjectiveComplete?: (objective: ChapterObjective) => void;
 }
 
 const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete }) => {
@@ -16,7 +17,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
   // Generate Week 2 placeholder data
   const getWeek2PlaceholderData = (): ObjectiveStatus => {
     return {
-      cafeteriaClicked: false,
+      fridayNightLightsClicked: false,
       crackedCode: false,
       completedObjectives: [
         {
@@ -53,7 +54,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         console.log('🔄 Force refreshing objectives for wallet:', primaryWallet.address.slice(0, 10) + '...');
       }
       
-      const status = await getWeeklyObjectivesStatus(primaryWallet.address);
+      const status = await getObjectivesStatus(primaryWallet.address);
       setObjectivesStatus(status);
       
     } catch (error) {
@@ -295,7 +296,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         }}>
           <div style={{ marginBottom: '4px', fontWeight: 'bold' }}>🔍 Debug Info:</div>
           <div>Wallet: {primaryWallet?.address?.slice(0, 10)}...</div>
-          <div>Cafeteria Clicked: {objectivesStatus.cafeteriaClicked ? '✅ YES' : '❌ NO'}</div>
+          <div>Friday Night Lights: {objectivesStatus.fridayNightLightsClicked ? '✅ YES' : '❌ NO'}</div>
           <div>Code Cracked: {objectivesStatus.crackedCode ? '✅ YES' : '❌ NO'}</div>
           <div>Progress: {progress}% ({completedCount}/{totalCount})</div>
           <div>Last Update: {new Date().toLocaleTimeString()}</div>

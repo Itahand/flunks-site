@@ -1380,6 +1380,10 @@
   background-image: url('/images/icons/arcade-icon.png');
 }
 
+.football-field-nav {
+  background-image: url('/images/icons/football-field-icon.png');
+}
+
 .jocks-house-nav {
   background-image: url('/images/icons/jocks-house-icon.png');
   border-color: rgba(255, 182, 193, 0.6) !important; /* Light pink for Jocks */

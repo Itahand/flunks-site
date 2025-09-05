@@ -358,4 +358,9 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
     appIcon: "/images/icons/open-book.png",
     key: WINDOW_IDS.YEARBOOK,
   },
+  [WINDOW_IDS.FOOTBALL_FIELD_MAIN]: {
+    appName: "Football Field",
+    appIcon: "/images/icons/football-field-icon.png",
+    key: WINDOW_IDS.FOOTBALL_FIELD_MAIN,
+  },
 };
