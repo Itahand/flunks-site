@@ -45,6 +45,13 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
   // Use real wallet only - no trial mode
   const walletAddress = primaryWallet?.address || null;
   
+  // Mobile data override states
+  const [mobileDataOverride, setMobileDataOverride] = useState<{
+    flunksCount: number;
+    backpacksCount: number;
+    active: boolean;
+  } | null>(null);
+
   const [tokenDataPages, setTokenDataPages] = useState<{
     flunks: string[][];
     backpack: string[][];
@@ -144,8 +151,31 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
       setFlunksMetadata([]);
       setBackpacksMetadata([]);
       setTokenDataPages({ flunks: [], backpack: [] });
+      setMobileDataOverride(null);
     }
   }, [walletAddress]);
+
+  // Listen for mobile data override events
+  useEffect(() => {
+    const handleMobileDataOverride = (event: CustomEvent) => {
+      const { flunksCount, backpacksCount } = event.detail;
+      console.log('📱 Mobile data override received:', { flunksCount, backpacksCount });
+      
+      setMobileDataOverride({
+        flunksCount: flunksCount || 0,
+        backpacksCount: backpacksCount || 0,
+        active: true
+      });
+      
+      // Force a refresh to get the actual data
+      setResetCacheKey(prev => prev + 1);
+    };
+
+    window.addEventListener('mobileNFTDataFixed', handleMobileDataOverride as EventListener);
+    return () => {
+      window.removeEventListener('mobileNFTDataFixed', handleMobileDataOverride as EventListener);
+    };
+  }, []);
 
   const displayedItems = useMemo(() => {
     // Use real blockchain data
@@ -165,8 +195,8 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
 
   const value = {
     displayedItems,
-    flunksCount: tokenData?.flunks?.length || 0,
-    backpacksCount: tokenData?.backpack?.length || 0,
+    flunksCount: mobileDataOverride?.active ? mobileDataOverride.flunksCount : (tokenData?.flunks?.length || 0),
+    backpacksCount: mobileDataOverride?.active ? mobileDataOverride.backpacksCount : (tokenData?.backpack?.length || 0),
     currentPage,
     setPage: setCurrentPage,
     hasMore:
