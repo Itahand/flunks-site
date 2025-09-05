@@ -33,6 +33,19 @@ if (typeof window !== 'undefined') {
     // Add mobile-specific wallet configurations
     config()
       .put("discovery.wallet.method", "POP/RPC") // Better for mobile
-      .put("challenge.handshake", "https://fcl-discovery.onflow.org/authn"); // Direct handshake
+      .put("challenge.handshake", "https://fcl-discovery.onflow.org/authn") // Direct handshake
+      .put("fcl.eventPollRate", 2500) // Slower polling for mobile
+      .put("sdk.transport", "HTTP/POST") // More reliable transport
+      .put("discovery.authn.endpoint", "https://fcl-discovery.onflow.org/api/authn")
+      // Enhanced mobile wallet support
+      .put("discovery.wallet.method.data.supportedMethods", [
+        { method: "HTTP/POST", endpoint: "https://fcl-discovery.onflow.org/authn" },
+        { method: "POP/RPC", endpoint: "https://fcl-discovery.onflow.org/authn" }
+      ]);
+    
+    // Add better error handling for mobile transactions
+    (window as any).FCL_MOBILE_MODE = true;
+    
+    console.log('📱 Mobile FCL configuration complete');
   }
 }

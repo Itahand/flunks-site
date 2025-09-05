@@ -31,6 +31,24 @@ export const FclTransactionProvider = ({ children }: any) => {
   const executeTx = async (tx: () => Promise<string>, txName = "") => {
     let unsub;
     try {
+      // Check for mobile device
+      const isMobile = typeof window !== 'undefined' && (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(navigator.userAgent) ||
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0
+      );
+      
+      if (isMobile) {
+        console.log('📱 Mobile transaction detected - applying enhanced configuration');
+        
+        // Apply mobile-specific FCL configuration before transaction
+        await fcl.config()
+          .put("discovery.wallet.method", "POP/RPC")
+          .put("challenge.handshake", "https://fcl-discovery.onflow.org/authn")
+          .put("fcl.eventPollRate", 2500)
+          .put("sdk.transport", "HTTP/POST");
+      }
+
       dispatch({
         type: "UPDATE_STATUS",
         txStatus: TX_STATUS.STARTED,
@@ -72,10 +90,26 @@ export const FclTransactionProvider = ({ children }: any) => {
       }
     } catch (error) {
       console.error(error);
+      
+      // Enhanced mobile error handling
+      let errorMessage = error.toString();
+      
+      if (typeof window !== 'undefined' && 
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(navigator.userAgent)) {
+        
+        if (errorMessage.includes('ErrInvalidRequest') || errorMessage.includes('Transaction not supported')) {
+          errorMessage = 'Mobile wallet connection issue. Please ensure your wallet app is updated and try connecting again.';
+        } else if (errorMessage.includes('User rejected') || errorMessage.includes('cancelled')) {
+          errorMessage = 'Transaction cancelled by user.';
+        } else {
+          errorMessage = 'Mobile transaction failed. Please check your wallet connection and try again.';
+        }
+      }
+      
       dispatch({
         type: "UPDATE_STATUS",
         txStatus: TX_STATUS.ERROR,
-        txMessage: error.toString() as string,
+        txMessage: errorMessage,
         txName: txName,
       });
     } finally {

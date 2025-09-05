@@ -16,6 +16,8 @@ import {
 import { MarketplaceIndividualNftDto } from "generated/models";
 import { NftItem } from "components/YourItems/ItemsGrid";
 import { ObjectDetails } from "contexts/StakingContext";
+import { usePaginatedItems } from "contexts/UserPaginatedItems";
+import { useStakingContext } from "contexts/StakingContext";
 
 interface GraduationInitProps {
   flunk: ObjectDetails & { pixelUrl: string };
@@ -37,6 +39,10 @@ const GraduationInit: React.FC<GraduationInitProps> = (props) => {
   const divOverlayRef = useRef<HTMLDivElement>(null);
   const [graduatedUrl, setGraduatedUrl] = useState("");
   const [canGraduate, setCanGraduate] = useState(true);
+  
+  // Add context hooks for data refresh after graduation
+  const { refresh: refreshUserItems } = usePaginatedItems();
+  const { refreshStakeInfo } = useStakingContext();
 
   useEffect(() => {
     console.log(flunk.pixelUrl);
@@ -78,7 +84,50 @@ const GraduationInit: React.FC<GraduationInitProps> = (props) => {
     });
   }, [flunk]);
 
+  // Add effect to refresh user data after successful graduation
+  useEffect(() => {
+    if (state.txStatus === TX_STATUS.SUCCESS) {
+      // Add a delay to ensure the blockchain state has updated
+      // Use a longer delay and multiple refresh attempts for blockchain state propagation
+      setTimeout(() => {
+        // First refresh attempt
+        refreshUserItems();
+        refreshStakeInfo();
+        console.log('🎓 Graduation successful! Refreshing NFT data to show graduated images (attempt 1).');
+        
+        // Second refresh attempt after additional delay
+        setTimeout(() => {
+          refreshUserItems();
+          refreshStakeInfo();
+          console.log('🎓 Second refresh attempt to ensure graduated images are displayed.');
+        }, 3000); // Additional 3-second delay
+        
+      }, 5000); // Initial 5-second delay to allow blockchain to update
+    }
+  }, [state.txStatus, refreshUserItems, refreshStakeInfo]);
+
   const handleGraduate = () => {
+    // Enhanced mobile transaction handling
+    if (typeof window !== 'undefined') {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(
+        navigator.userAgent
+      ) || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      
+      if (isMobile) {
+        console.log('📱 Mobile graduation detected - using enhanced transaction flow');
+        
+        // Force FCL mobile configuration before transaction
+        const fcl = require("@onflow/fcl");
+        fcl.config()
+          .put("discovery.wallet.method", "POP/RPC") // Better for mobile
+          .put("challenge.handshake", "https://fcl-discovery.onflow.org/authn")
+          .put("app.detail.title", "Flunks Graduation")
+          .put("app.detail.icon", "https://flunks.net/flunks-logo.png");
+        
+        console.log('📱 Enhanced FCL configuration applied for mobile graduation');
+      }
+    }
+    
     executeTx(
       graduate({
         tokenID: Number(flunk.tokenID),
@@ -315,7 +364,25 @@ const GraduationInit: React.FC<GraduationInitProps> = (props) => {
               </P>
             )}
             {state.txStatus === TX_STATUS.ERROR && (
-              <P>Couldn't break into the system..</P>
+              <>
+                <P>Couldn't break into the system..</P>
+                {typeof window !== 'undefined' && 
+                 /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(navigator.userAgent) && (
+                  <div style={{ marginTop: "1rem", padding: "0.5rem", backgroundColor: "#333", borderRadius: "4px" }}>
+                    <P style={{ fontSize: "0.9rem" }}>
+                      📱 <strong>Mobile Users:</strong> If you're seeing a "Transaction not supported" error, try:
+                      <br />
+                      • Refreshing the page and trying again
+                      <br />
+                      • Switching to desktop if possible
+                      <br />
+                      • Using a different Flow wallet app
+                      <br />
+                      • Checking your wallet app is updated
+                    </P>
+                  </div>
+                )}
+              </>
             )}
             <Button
               onClick={(e) => {

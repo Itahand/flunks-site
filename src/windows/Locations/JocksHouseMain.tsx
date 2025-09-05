@@ -216,15 +216,6 @@ const JocksHouseMain = () => {
       ),
     });
   };
-                </div>
-                </p>
-              </div>
-            </div>
-          </div>
-        </DraggableResizeableWindow>
-      ),
-    });
-  };
 
   const openUnderBed = () => {
     openWindow({
