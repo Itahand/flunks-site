@@ -119,95 +119,92 @@ const JocksHouseMain = () => {
           windowsId={WINDOW_IDS.JOCKS_HOUSE_BEDROOM}
           headerTitle="Jock's Bedroom"
           onClose={() => closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM)}
-          initialWidth="70vw"
-          initialHeight="70vh"
+          initialWidth="90vw"
+          initialHeight="90vh"
           resizable={true}
         >
-          <div className="relative w-full h-full bg-[#1a1a1a] text-white overflow-hidden">
-            {/* Bedroom Background Image */}
-            <img
-              src="/images/locations/jocks-bedroom.png"
-              alt="Jock's Bedroom Interior"
-              className="absolute inset-0 w-full h-full object-cover z-0"
-              onError={(e) => {
-                e.currentTarget.src = "/images/backdrops/BLANK.png";
-              }}
-            />
+          <div className="w-full h-full bg-[#1a1a1a] text-white overflow-auto flex flex-col">
+            {/* Image Section - Takes up most of the space */}
+            <div className="relative flex-1 min-h-[400px] bg-black">
+              <img
+                src="/images/locations/jocks-bedroom.png"
+                alt="Jock's Bedroom Interior"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/backdrops/BLANK.png";
+                }}
+              />
+            </div>
             
-            {/* Content Overlay */}
-            <div className="absolute inset-0 z-10 bg-black bg-opacity-40 p-6 flex flex-col justify-end">
-              {/* Bottom Section - Description and Interactive Buttons */}
-              <div className="bg-black bg-opacity-80 p-3 sm:p-4 rounded">
-                <h1 className="text-xl sm:text-2xl mb-2 sm:mb-3 font-bold">🛏️ Jock's Bedroom</h1>
-                <p className="text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3">
-                  The personal sanctuary of a champion athlete. Every corner of this room speaks to dedication, 
-                  discipline, and the relentless pursuit of excellence. The walls are covered with team photos, 
-                  motivational quotes, and reminders that there are zero excuses for failure. The air still 
-                  carries the faint scent of athletic tape and determination.
-                </p>
-                <p className="text-xs text-gray-300 mb-3 sm:mb-4">
-                  Explore different areas of the bedroom to uncover the secrets of athletic success.
-                </p>
-                
-                {/* Interactive Buttons - Now at bottom with mobile optimization */}
-                <div className="max-w-lg mx-auto px-2 sm:px-0">
-                  {/* First row - 4 buttons with responsive grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
-                    <button
-                      onClick={() => 
-                        openRoom(
-                          WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_closet',
-                          "Walk-in Closet",
-                          "Letterman jackets from multiple sports hang in perfect order. Championship rings sit in a display case. Team captain armbands are neatly organized on shelves."
-                        )
-                      }
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px] sm:min-h-auto"
-                    >
-                      👕 Closet
-                    </button>
-                    
-                    <button
-                      onClick={() => 
-                        openStudyDesk()
-                      }
-                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px] sm:min-h-auto"
-                    >
-                      📚 Desk
-                    </button>
-                    
-                    <button
-                      onClick={() => 
-                        openUnderBed()
-                      }
-                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px] sm:min-h-auto"
-                    >
-                      🛏️ Under the Bed
-                    </button>
-                    
-                    <button
-                      onClick={() => 
-                        openRoom(
-                          WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_trophy',
-                          "Trophy Corner",
-                          "A gleaming display of athletic achievements. MVP awards, state championship trophies, and team photos from winning seasons. Each piece represents countless hours of dedication and zero excuses."
-                        )
-                      }
-                      className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px] sm:min-h-auto"
-                    >
-                      🏆 Trophies
-                    </button>
-                  </div>
+            {/* Description and Buttons Section - Below the image */}
+            <div className="bg-black bg-opacity-90 p-4 sm:p-6 border-t border-gray-600">
+              <h1 className="text-xl sm:text-2xl mb-2 sm:mb-3 font-bold text-center">🛏️ Jock's Bedroom</h1>
+              <p className="text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3 text-center">
+                The personal sanctuary of a champion athlete. Every corner speaks to dedication, 
+                discipline, and the relentless pursuit of excellence.
+              </p>
+              <p className="text-xs text-gray-300 mb-4 text-center">
+                Explore different areas of the bedroom to uncover the secrets of athletic success.
+              </p>
+              
+              {/* Interactive Buttons */}
+              <div className="max-w-lg mx-auto">
+                {/* First row - 4 buttons with responsive grid */}
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4">
+                  <button
+                    onClick={() => 
+                      openRoom(
+                        WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_closet',
+                        "Walk-in Closet",
+                        "Letterman jackets from multiple sports hang in perfect order. Championship rings sit in a display case. Team captain armbands are neatly organized on shelves."
+                      )
+                    }
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
+                  >
+                    👕 Closet
+                  </button>
                   
-                  {/* Second row - Disabled computer button with mobile optimization */}
-                  <div className="flex justify-center">
-                    <button
-                      disabled
-                      className="bg-gray-600 text-gray-400 px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-bold cursor-not-allowed opacity-50 shadow-lg w-full sm:w-64 text-sm sm:text-base min-h-[44px] sm:min-h-auto"
-                      title="Coming soon..."
-                    >
-                      💻 Computer
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => 
+                      openStudyDesk()
+                    }
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
+                  >
+                    📚 Desk
+                  </button>
+                  
+                  <button
+                    onClick={() => 
+                      openUnderBed()
+                    }
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
+                  >
+                    🛏️ Under the Bed
+                  </button>
+                  
+                  <button
+                    onClick={() => 
+                      openRoom(
+                        WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_trophy',
+                        "Trophy Corner",
+                        "A gleaming display of athletic achievements. MVP awards, state championship trophies, and team photos from winning seasons. Each piece represents countless hours of dedication and zero excuses."
+                      )
+                    }
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
+                  >
+                    🏆 Trophies
+                  </button>
+                </div>
+                
+                {/* Second row - Computer button */}
+                <div className="flex justify-center">
+                  <button
+                    disabled
+                    className="bg-gray-600 text-gray-400 px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-bold cursor-not-allowed opacity-50 shadow-lg w-full sm:w-64 text-sm sm:text-base min-h-[44px]"
+                    title="Coming soon..."
+                  >
+                    💻 Computer
+                  </button>
                 </div>
               </div>
             </div>
@@ -219,219 +216,49 @@ const JocksHouseMain = () => {
 
   const openUnderBed = () => {
     openWindow({
-      key: WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock',
+      key: WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_note',
       window: (
         <DraggableResizeableWindow
-          windowsId={WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock'}
-          headerTitle="Under the Bed - Digital Lock"
-          onClose={() => closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock')}
-          initialWidth="400px"
+          windowsId={WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_note'}
+          headerTitle="Under the Bed - Hidden Note"
+          onClose={() => closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_note')}
+          initialWidth="450px"
           initialHeight="300px"
           resizable={false}
         >
           <div className="p-6 w-full h-full bg-gray-900 text-white flex flex-col justify-center items-center">
             <div className="text-center mb-6">
-              <h2 className="text-xl mb-2">🔒 Digital Lock</h2>
-              <p className="text-sm text-gray-300 mb-4">
-                A mysterious lockbox is hidden under the bed. Enter the 4-digit code to unlock its secrets.
+              <h2 className="text-xl mb-4">� Hidden Note</h2>
+              <p className="text-sm text-gray-300 mb-6">
+                You find a crumpled piece of paper hidden under the bed...
               </p>
             </div>
             
-            <div className="bg-black bg-opacity-50 p-4 rounded-lg border border-gray-600">
-              <div className="flex justify-center space-x-2 mb-4">
-                <input
-                  type="text"
-                  maxLength={1}
-                  className="w-12 h-12 text-center text-2xl font-bold bg-gray-800 border border-gray-600 rounded focus:border-blue-500 focus:outline-none"
-                  onInput={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    if (target.value && target.nextElementSibling) {
-                      (target.nextElementSibling as HTMLInputElement).focus();
-                    }
-                  }}
-                />
-                <input
-                  type="text"
-                  maxLength={1}
-                  className="w-12 h-12 text-center text-2xl font-bold bg-gray-800 border border-gray-600 rounded focus:border-blue-500 focus:outline-none"
-                  onInput={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    if (target.value && target.nextElementSibling) {
-                      (target.nextElementSibling as HTMLInputElement).focus();
-                    }
-                  }}
-                />
-                <input
-                  type="text"
-                  maxLength={1}
-                  className="w-12 h-12 text-center text-2xl font-bold bg-gray-800 border border-gray-600 rounded focus:border-blue-500 focus:outline-none"
-                  onInput={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    if (target.value && target.nextElementSibling) {
-                      (target.nextElementSibling as HTMLInputElement).focus();
-                    }
-                  }}
-                />
-                <input
-                  type="text"
-                  maxLength={1}
-                  className="w-12 h-12 text-center text-2xl font-bold bg-gray-800 border border-gray-600 rounded focus:border-blue-500 focus:outline-none"
-                />
-              </div>
-              
-              <div className="flex justify-center space-x-3">
-                <button
-                  onClick={() => {
-                    // Get all input values
-                    const inputs = document.querySelectorAll(`[data-window-id="${WINDOW_IDS.JOCKS_HOUSE_BEDROOM}_under_bed_lock"] input`);
-                    const code = Array.from(inputs).map((input: any) => input.value).join('');
-                    
-                    if (code.length !== 4) {
-                      alert('Please enter a 4-digit code');
-                      return;
-                    }
-                    
-                    // Check if the code is correct
-                    if (code === '0730') {
-                      // Close the lock window first
-                      closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock');
-                      
-                      // Open the unlocked box contents
-                      openWindow({
-                        key: WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_unlocked_box',
-                        window: (
-                          <DraggableResizeableWindow
-                            windowsId={WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_unlocked_box'}
-                            headerTitle="Under the Bed - Unlocked Box"
-                            onClose={() => closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_unlocked_box')}
-                            initialWidth="400px"
-                            initialHeight="350px"
-                            resizable={false}
-                          >
-                            <div className="p-6 w-full h-full bg-gray-900 text-white flex flex-col justify-center items-center">
-                              <div className="text-center mb-6">
-                                <h2 className="text-xl mb-2">📦 Unlocked Box Contents</h2>
-                                <p className="text-sm text-gray-300 mb-4">
-                                  The digital lock has opened! Inside you discover...
-                                </p>
-                              </div>
-                              
-                              {/* Gum Claim Section */}
-                              <div className="bg-green-900 bg-opacity-50 p-4 rounded-lg border border-green-600 mb-4">
-                                <div className="text-center mb-3">
-                                  <h3 className="text-lg font-bold text-green-300">🍬 Hidden Gum Stash!</h3>
-                                  <p className="text-sm text-gray-300">A secret emergency gum supply!</p>
-                                </div>
-                                <button
-                                  onClick={async () => {
-                                    if (!primaryWallet?.address) {
-                                      alert('🔗 Please connect your wallet first to claim GUM!');
-                                      return;
-                                    }
-                                    
-                                    if (gumClaimed) {
-                                      alert('🍬 You have already claimed your hidden GUM stash from this location!');
-                                      return;
-                                    }
-                                    
-                                    try {
-                                      const result = await awardGum(
-                                        primaryWallet.address,
-                                        'jocks_bedroom_hidden_stash',
-                                        { 
-                                          location: 'jocks_house_bedroom_under_bed',
-                                          amount: 100,
-                                          reason: 'Found hidden GUM stash under the bed'
-                                        }
-                                      );
-                                      
-                                      if (result.success) {
-                                        alert(`🍬 SUCCESS! You found ${result.earned} GUM hidden under the bed!\n\n💰 This was a one-time discovery bonus. The stash is now empty.`);
-                                        setGumClaimed(true);
-                                        
-                                        // Dispatch event to update other UI components
-                                        window.dispatchEvent(new CustomEvent('gumBalanceUpdated', {
-                                          detail: { 
-                                            earned: result.earned,
-                                            walletAddress: primaryWallet.address,
-                                            source: 'jocks_bedroom_hidden_stash'
-                                          }
-                                        }));
-                                      } else {
-                                        if (result.error?.includes('cooldown') || result.error?.includes('already claimed')) {
-                                          alert('🕐 You have already claimed this hidden GUM stash! One-time discoveries can only be claimed once per wallet.');
-                                          setGumClaimed(true);
-                                        } else {
-                                          alert(`❌ ${result.error || 'Failed to claim GUM. Please try again.'}`);
-                                        }
-                                      }
-                                    } catch (error) {
-                                      console.error('Error claiming hidden GUM:', error);
-                                      alert('❌ Something went wrong. Please try again.');
-                                    }
-                                  }}
-                                  disabled={gumClaimed}
-                                  className={`w-full px-4 py-3 rounded font-bold transition-all duration-200 hover:scale-105 ${
-                                    gumClaimed 
-                                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50' 
-                                      : 'bg-green-600 hover:bg-green-700 text-white'
-                                  }`}
-                                >
-                                  {gumClaimed ? '🍬 Already Claimed' : '🍬 Claim 100 GUM (One-time only)'}
-                                </button>
-                              </div>
-                              
-                              {/* Smaller Locked Box Section */}
-                              <div className="bg-yellow-900 bg-opacity-50 p-4 rounded-lg border border-yellow-600 w-full">
-                                <div className="text-center">
-                                  <h3 className="text-lg font-bold text-yellow-300 mb-2">🗝️ Mysterious Small Box</h3>
-                                  <p className="text-sm text-gray-300 mb-3">
-                                    You also find a smaller metal box with an old-fashioned key lock. 
-                                    It rattles when shaken - something important is definitely inside.
-                                  </p>
-                                  <div className="bg-black bg-opacity-40 p-3 rounded border border-gray-600">
-                                    <div className="text-2xl mb-2">🔒</div>
-                                    <p className="text-xs text-gray-400">
-                                      This box requires a physical key to open.
-                                      <br />
-                                      The key must be hidden somewhere else...
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </DraggableResizeableWindow>
-                        ),
-                      });
-                    } else {
-                      alert(`❌ INCORRECT CODE: ${code}\n\n🔒 The lock remains sealed. The digital display flashes red briefly before returning to its waiting state. Try again...`);
-                      // Clear inputs for retry
-                      inputs.forEach((input: any) => input.value = '');
-                      (inputs[0] as HTMLInputElement)?.focus();
-                    }
-                  }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition-all duration-200"
-                >
-                  🔓 Unlock
-                </button>
-                
-                <button
-                  onClick={() => {
-                    // Clear all inputs
-                    const inputs = document.querySelectorAll(`[data-window-id="${WINDOW_IDS.JOCKS_HOUSE_BEDROOM}_under_bed_lock"] input`);
-                    inputs.forEach((input: any) => input.value = '');
-                    (inputs[0] as HTMLInputElement)?.focus();
-                  }}
-                  className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded font-bold transition-all duration-200"
-                >
-                  🔄 Clear
-                </button>
+            <div className="bg-yellow-100 text-black p-6 rounded-lg border-2 border-yellow-600 shadow-lg transform rotate-1">
+              <div className="text-center">
+                <div className="text-lg font-bold mb-4 text-gray-800">
+                  📜 Mysterious Message
+                </div>
+                <div className="text-base leading-relaxed font-handwriting" style={{ fontFamily: 'cursive' }}>
+                  "the first to get 5869 wins the flow at the end of the rainbow"
+                </div>
               </div>
             </div>
             
-            <p className="text-xs text-gray-400 mt-4 text-center">
-              Hint: Look around the room for clues...
-            </p>
+            <div className="mt-6 text-center">
+              <p className="text-xs text-gray-400">
+                What could this cryptic message mean? 🤔
+              </p>
+            </div>
+            
+            <div className="mt-4">
+              <button
+                onClick={() => closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_note')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-bold transition-all duration-200 hover:scale-105"
+              >
+                � Close Note
+              </button>
+            </div>
           </div>
         </DraggableResizeableWindow>
       ),

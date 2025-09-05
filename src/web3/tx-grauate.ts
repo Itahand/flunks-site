@@ -24,15 +24,7 @@ export function graduate({tokenID}: GraduateOpts) {
       
       if (isMobile) {
         console.log('📱 Executing mobile-optimized graduation transaction');
-        
-        // Apply mobile-specific FCL configuration
-        fcl.config()
-          .put("discovery.wallet.method", "POP/RPC")
-          .put("challenge.handshake", "https://fcl-discovery.onflow.org/authn")
-          .put("fcl.limit", 9999)
-          .put("fcl.proposer", fcl.authz)
-          .put("fcl.payer", fcl.authz)
-          .put("fcl.authorizations", [fcl.authz]);
+        // Note: Avoid global FCL config changes to prevent interference with data queries
       }
       
       return await fcl.mutate({
@@ -43,12 +35,6 @@ export function graduate({tokenID}: GraduateOpts) {
         // @ts-ignore
         authorizations: [fcl.authz],
         limit: 9999,
-        // Add mobile-specific transaction properties
-        ...(isMobile && {
-          proposer: fcl.authz,
-          payer: fcl.authz,
-          authorizations: [fcl.authz],
-        })
       });
     };
   }

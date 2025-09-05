@@ -87,22 +87,13 @@ const GraduationInit: React.FC<GraduationInitProps> = (props) => {
   // Add effect to refresh user data after successful graduation
   useEffect(() => {
     if (state.txStatus === TX_STATUS.SUCCESS) {
-      // Add a delay to ensure the blockchain state has updated
-      // Use a longer delay and multiple refresh attempts for blockchain state propagation
+      // Conservative refresh approach - only refresh once after a reasonable delay
+      // Avoid multiple refresh attempts that can cause mobile data issues
       setTimeout(() => {
-        // First refresh attempt
         refreshUserItems();
         refreshStakeInfo();
-        console.log('🎓 Graduation successful! Refreshing NFT data to show graduated images (attempt 1).');
-        
-        // Second refresh attempt after additional delay
-        setTimeout(() => {
-          refreshUserItems();
-          refreshStakeInfo();
-          console.log('🎓 Second refresh attempt to ensure graduated images are displayed.');
-        }, 3000); // Additional 3-second delay
-        
-      }, 5000); // Initial 5-second delay to allow blockchain to update
+        console.log('🎓 Graduation successful! Refreshing NFT data to show graduated images.');
+      }, 8000); // Single 8-second delay to ensure blockchain has updated
     }
   }, [state.txStatus, refreshUserItems, refreshStakeInfo]);
 
@@ -115,16 +106,7 @@ const GraduationInit: React.FC<GraduationInitProps> = (props) => {
       
       if (isMobile) {
         console.log('📱 Mobile graduation detected - using enhanced transaction flow');
-        
-        // Force FCL mobile configuration before transaction
-        const fcl = require("@onflow/fcl");
-        fcl.config()
-          .put("discovery.wallet.method", "POP/RPC") // Better for mobile
-          .put("challenge.handshake", "https://fcl-discovery.onflow.org/authn")
-          .put("app.detail.title", "Flunks Graduation")
-          .put("app.detail.icon", "https://flunks.net/flunks-logo.png");
-        
-        console.log('📱 Enhanced FCL configuration applied for mobile graduation');
+        // Note: FCL configuration will be handled by the transaction itself to avoid global interference
       }
     }
     
