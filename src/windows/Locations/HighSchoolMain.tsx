@@ -6,8 +6,6 @@ import { useTimeBasedImage, isDayTime } from "utils/timeBasedImages";
 import { useAuth } from "contexts/AuthContext";
 import { awardGum } from "utils/gumAPI";
 import { trackCafeteriaButtonClick } from "utils/cafeteriaButtonTracking";
-import DigitalLock from "components/DigitalLock";
-import SuccessWindow from "components/SuccessWindow";
 import FootballerGumClaimButton from "components/FootballerGumClaimButton";
 
 const HighSchoolMain = () => {
@@ -111,59 +109,6 @@ const HighSchoolMain = () => {
           }}>
             {content}
           </div>
-        </DraggableResizeableWindow>
-      ),
-    });
-  };
-
-  const openOfficeWithLock = () => {
-    openWindow({
-      key: WINDOW_IDS.HIGH_SCHOOL_OFFICE_LOCK,
-      window: (
-        <DraggableResizeableWindow
-          windowsId={WINDOW_IDS.HIGH_SCHOOL_OFFICE_LOCK}
-          headerTitle="Security Access - Principal's Office"
-          onClose={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_OFFICE_LOCK)}
-          initialWidth="450px"
-          initialHeight="700px"
-          resizable={true}
-        >
-          <DigitalLock 
-            onUnlock={() => {
-              // Close the lock window
-              closeWindow(WINDOW_IDS.HIGH_SCHOOL_OFFICE_LOCK);
-              
-              // Show success window
-              openWindow({
-                key: WINDOW_IDS.HIGH_SCHOOL_OFFICE_SUCCESS,
-                window: (
-                  <DraggableResizeableWindow
-                    windowsId={WINDOW_IDS.HIGH_SCHOOL_OFFICE_SUCCESS}
-                    headerTitle="🎉 ACCESS GRANTED!"
-                    onClose={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_OFFICE_SUCCESS)}
-                    initialWidth="min(500px, 95vw)"
-                    initialHeight="min(600px, 90vh)"
-                    resizable={true}
-                    style={{ background: '#2a2a2a' }}
-                  >
-                    <div style={{ background: '#2a2a2a', width: '100%', height: '100%' }}>
-                      <SuccessWindow 
-                      onContinue={() => {
-                        closeWindow(WINDOW_IDS.HIGH_SCHOOL_OFFICE_SUCCESS);
-                        openRoom(
-                          WINDOW_IDS.HIGH_SCHOOL_OFFICE,
-                          "Principal's Office",
-                          "🔓 ACCESS GRANTED! The desk drawers are slightly open. Student files are scattered about with red marks and strange symbols. You notice a hidden compartment behind the filing cabinet..."
-                        );
-                      }}
-                    />
-                    </div>
-                  </DraggableResizeableWindow>
-                ),
-              });
-            }}
-            onCancel={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_OFFICE_LOCK)}
-          />
         </DraggableResizeableWindow>
       ),
     });
@@ -417,7 +362,13 @@ const HighSchoolMain = () => {
 
         {/* Principal's Office */}
         <button
-          onClick={openOfficeWithLock}
+          onClick={() =>
+            openRoom(
+              WINDOW_IDS.HIGH_SCHOOL_OFFICE,
+              "Principal's Office",
+              "The principal's office is a sterile environment with filing cabinets, awards on the walls, and a large wooden desk. Student disciplinary records are neatly organized, and there's an air of authority that permeates the room. A motivational poster reads 'DISCIPLINE BUILDS CHARACTER'."
+            )
+          }
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
         >
           🏢 Office
