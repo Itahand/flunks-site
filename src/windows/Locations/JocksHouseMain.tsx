@@ -135,79 +135,88 @@ const JocksHouseMain = () => {
             />
             
             {/* Content Overlay */}
-            <div className="absolute inset-0 z-10 bg-black bg-opacity-40 p-6 flex flex-col justify-between">
-              {/* Top Section - Interactive Buttons */}
-              <div className="pt-8 max-w-lg mx-auto">
-                {/* First row - 4 buttons */}
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <button
-                    onClick={() => 
-                      openRoom(
-                        WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_closet',
-                        "Walk-in Closet",
-                        "Letterman jackets from multiple sports hang in perfect order. Championship rings sit in a display case. Team captain armbands are neatly organized on shelves."
-                      )
-                    }
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg"
-                  >
-                    👕 Closet
-                  </button>
-                  
-                  <button
-                    onClick={() => 
-                      openStudyDesk()
-                    }
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg"
-                  >
-                    📚 Desk
-                  </button>
-                  
-                  <button
-                    onClick={() => 
-                      openUnderBed()
-                    }
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg"
-                  >
-                    🛏️ Under the Bed
-                  </button>
-                  
-                  <button
-                    onClick={() => 
-                      openRoom(
-                        WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_trophy',
-                        "Trophy Corner",
-                        "A gleaming display of athletic achievements. MVP awards, state championship trophies, and team photos from winning seasons. Each piece represents countless hours of dedication and zero excuses."
-                      )
-                    }
-                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg"
-                  >
-                    🏆 Trophies
-                  </button>
-                </div>
-                
-                {/* Second row - Disabled computer button */}
-                <div className="flex justify-center">
-                  <button
-                    disabled
-                    className="bg-gray-600 text-gray-400 px-6 py-3 rounded-lg font-bold cursor-not-allowed opacity-50 shadow-lg w-64"
-                    title="Coming soon..."
-                  >
-                    💻 Computer
-                  </button>
-                </div>
-              </div>
-
-              {/* Bottom Section - Description */}
-              <div className="bg-black bg-opacity-80 p-4 rounded">
-                <h1 className="text-2xl mb-3 font-bold">🛏️ Jock's Bedroom</h1>
-                <p className="text-sm leading-relaxed mb-3">
+            <div className="absolute inset-0 z-10 bg-black bg-opacity-40 p-6 flex flex-col justify-end">
+              {/* Bottom Section - Description and Interactive Buttons */}
+              <div className="bg-black bg-opacity-80 p-3 sm:p-4 rounded">
+                <h1 className="text-xl sm:text-2xl mb-2 sm:mb-3 font-bold">🛏️ Jock's Bedroom</h1>
+                <p className="text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3">
                   The personal sanctuary of a champion athlete. Every corner of this room speaks to dedication, 
                   discipline, and the relentless pursuit of excellence. The walls are covered with team photos, 
                   motivational quotes, and reminders that there are zero excuses for failure. The air still 
                   carries the faint scent of athletic tape and determination.
                 </p>
-                <p className="text-xs text-gray-300">
+                <p className="text-xs text-gray-300 mb-3 sm:mb-4">
                   Explore different areas of the bedroom to uncover the secrets of athletic success.
+                </p>
+                
+                {/* Interactive Buttons - Now at bottom with mobile optimization */}
+                <div className="max-w-lg mx-auto px-2 sm:px-0">
+                  {/* First row - 4 buttons with responsive grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+                    <button
+                      onClick={() => 
+                        openRoom(
+                          WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_closet',
+                          "Walk-in Closet",
+                          "Letterman jackets from multiple sports hang in perfect order. Championship rings sit in a display case. Team captain armbands are neatly organized on shelves."
+                        )
+                      }
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px] sm:min-h-auto"
+                    >
+                      👕 Closet
+                    </button>
+                    
+                    <button
+                      onClick={() => 
+                        openStudyDesk()
+                      }
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px] sm:min-h-auto"
+                    >
+                      📚 Desk
+                    </button>
+                    
+                    <button
+                      onClick={() => 
+                        openUnderBed()
+                      }
+                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px] sm:min-h-auto"
+                    >
+                      🛏️ Under the Bed
+                    </button>
+                    
+                    <button
+                      onClick={() => 
+                        openRoom(
+                          WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_trophy',
+                          "Trophy Corner",
+                          "A gleaming display of athletic achievements. MVP awards, state championship trophies, and team photos from winning seasons. Each piece represents countless hours of dedication and zero excuses."
+                        )
+                      }
+                      className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px] sm:min-h-auto"
+                    >
+                      🏆 Trophies
+                    </button>
+                  </div>
+                  
+                  {/* Second row - Disabled computer button with mobile optimization */}
+                  <div className="flex justify-center">
+                    <button
+                      disabled
+                      className="bg-gray-600 text-gray-400 px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-bold cursor-not-allowed opacity-50 shadow-lg w-full sm:w-64 text-sm sm:text-base min-h-[44px] sm:min-h-auto"
+                      title="Coming soon..."
+                    >
+                      💻 Computer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+                </div>
                 </p>
               </div>
             </div>
