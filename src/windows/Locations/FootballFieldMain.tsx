@@ -2,7 +2,7 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import RetroTextBox from "components/RetroTextBox";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "contexts/AuthContext";
 import { awardGum } from "utils/gumAPI";
 import { trackFridayNightLightsClick } from "utils/fridayNightLightsTracking";
@@ -12,6 +12,18 @@ const FootballFieldMain = () => {
   const { walletAddress, user } = useAuth();
   const [buttonClickLoading, setButtonClickLoading] = useState(false);
 
+  // Create audio instance for Friday Night Lights
+  const fridayNightLightsAudio = useMemo(() => new Audio("/sounds/friday-night-lights.mp3"), []);
+
+  const playFridayNightLightsSound = () => {
+    try {
+      fridayNightLightsAudio.currentTime = 0; // Reset to beginning
+      fridayNightLightsAudio.play().catch(console.error);
+    } catch (error) {
+      console.warn('Could not play Friday Night Lights audio:', error);
+    }
+  };
+
   const handleFridayNightLightsClick = async () => {
     if (!walletAddress || !user) {
       alert("Please connect your wallet first!");
@@ -19,6 +31,9 @@ const FootballFieldMain = () => {
     }
 
     if (buttonClickLoading) return;
+
+    // Play the Friday Night Lights audio immediately when clicked
+    playFridayNightLightsSound();
 
     setButtonClickLoading(true);
     try {
