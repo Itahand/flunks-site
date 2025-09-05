@@ -12,6 +12,8 @@ const JocksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   const { primaryWallet } = useDynamicContext();
   const [gumClaimed, setGumClaimed] = useState(false);
+  const [lockCode, setLockCode] = useState('');
+  const [isUnlocked, setIsUnlocked] = useState(false);
   
   // Use your uploaded day/night images for Jocks House
   const dayImage = "/images/icons/jocks-house-day.png";
@@ -214,6 +216,23 @@ const JocksHouseMain = () => {
     });
   };
 
+  const correctCode = '0730';
+
+  const handleCodeSubmit = () => {
+    if (lockCode === correctCode) {
+      setIsUnlocked(true);
+    } else {
+      alert('Incorrect code! Try again.');
+      setLockCode('');
+    }
+  };
+
+  const handleCodeChange = (value: string) => {
+    if (value.length <= 4 && /^\d*$/.test(value)) {
+      setLockCode(value);
+    }
+  };
+
   const openUnderBed = () => {
     openWindow({
       key: WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock',
@@ -228,35 +247,77 @@ const JocksHouseMain = () => {
         >
           <div className="p-6 w-full h-full bg-gray-900 text-white flex flex-col justify-center items-center">
             <div className="text-center mb-6">
-              <h2 className="text-xl mb-4">� Hidden Note</h2>
-              <p className="text-sm text-gray-300 mb-6">
-                You find a crumpled piece of paper hidden under the bed...
+              <h2 className="text-xl mb-2">Digital Lock</h2>
+              <p className="text-sm text-gray-300 mb-4">
+                A mysterious lockbox is hidden under the bed. Enter the 4-digit code to unlock its secrets.
               </p>
             </div>
             
-            <div className="bg-yellow-100 text-black p-6 rounded-lg border-2 border-yellow-600 shadow-lg transform rotate-1">
-              <div className="text-center">
-                <div className="text-lg font-bold mb-4 text-gray-800">
-                  📜 Mysterious Message
+            {!isUnlocked ? (
+              <>
+                <div className="mb-6">
+                  <div className="flex justify-center mb-4">
+                    <input
+                      type="text"
+                      value={lockCode}
+                      onChange={(e) => handleCodeChange(e.target.value)}
+                      placeholder="0000"
+                      className="w-24 h-12 text-center text-2xl font-mono bg-gray-800 border-2 border-gray-600 rounded text-white focus:border-blue-500 focus:outline-none"
+                      maxLength={4}
+                    />
+                  </div>
+                  
+                  <div className="flex justify-center gap-4">
+                    <button
+                      onClick={handleCodeSubmit}
+                      disabled={lockCode.length !== 4}
+                      className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-4 py-2 rounded font-bold transition-all duration-200 hover:scale-105 disabled:cursor-not-allowed"
+                    >
+                      Unlock
+                    </button>
+                    <button
+                      onClick={() => setLockCode('')}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold transition-all duration-200 hover:scale-105"
+                    >
+                      Clear
+                    </button>
+                  </div>
                 </div>
-                <div className="text-base leading-relaxed font-handwriting" style={{ fontFamily: 'cursive' }}>
-                  "the first to get 5869 wins the flow at the end of the rainbow"
+              </>
+            ) : (
+              <>
+                <div className="text-center mb-6">
+                  <h2 className="text-xl mb-2">Unlocked Trunk</h2>
+                  <p className="text-sm text-gray-300 mb-4">
+                    The lock clicks open, revealing the contents inside...
+                  </p>
                 </div>
-              </div>
-            </div>
-            
-            <div className="mt-6 text-center">
-              <p className="text-xs text-gray-400">
-                What could this cryptic message mean? 🤔
-              </p>
-            </div>
+                
+                <div className="bg-yellow-100 text-black p-6 rounded-lg border-2 border-yellow-600 shadow-lg transform rotate-1">
+                  <div className="text-center">
+                    <div className="text-lg font-bold mb-4 text-gray-800">
+                      Mysterious Message
+                    </div>
+                    <div className="text-base leading-relaxed font-handwriting" style={{ fontFamily: 'cursive' }}>
+                      "the first to get 5869 wins the flow at the end of the rainbow"
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-6 text-center">
+                  <p className="text-xs text-gray-400">
+                    What could this cryptic message mean?
+                  </p>
+                </div>
+              </>
+            )}
             
             <div className="mt-4">
               <button
-                onClick={() => closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_note')}
+                onClick={() => closeWindow(WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_under_bed_lock')}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-bold transition-all duration-200 hover:scale-105"
               >
-                � Close Note
+                Close
               </button>
             </div>
           </div>
