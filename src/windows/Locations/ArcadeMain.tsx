@@ -3,57 +3,16 @@ import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
 import { useState } from "react";
-import { useAuth } from "contexts/AuthContext";
-import { awardGum } from "utils/gumAPI";
 import FlappyFlunkWindow from "windows/Games/FlappyFlunkWindow";
 import MultiColorText from "components/MultiColorText";
 
 const ArcadeMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
-  const { walletAddress, user } = useAuth();
-  const [gumClaimLoading, setGumClaimLoading] = useState(false);
   
   // Use your uploaded day/night images for Arcade
   const dayImage = "/images/icons/arcade-day.png";
   const nightImage = "/images/icons/arcade-night.png";
   const timeBasedInfo = useTimeBasedImage(dayImage, nightImage);
-
-  // Handle snack corner gum claim
-  const handleSnackGumClaim = async () => {
-    if (!walletAddress) {
-      alert('Please connect your wallet first to claim gum!');
-      return;
-    }
-
-    setGumClaimLoading(true);
-    
-    try {
-      // Get username - could be from user object or wallet address as fallback
-      const username = user?.email || user?.username || walletAddress.slice(0, 8) + '...';
-      
-      // Award gum for the snack corner visit
-      const gumResult = await awardGum(
-        walletAddress,
-        "arcade_snack",
-        { username, location: 'arcade_snack_corner' }
-      );
-
-      if (gumResult.success) {
-        alert(`🍿 Snack time! +${gumResult.earned} gum awarded! Come back in 24 hours for more.`);
-      } else {
-        if (gumResult.error?.includes('cooldown') || gumResult.error?.includes('limit')) {
-          alert('🕐 You can only claim snack gum once every 24 hours. Come back later!');
-        } else {
-          alert(`❌ ${gumResult.error || 'Failed to claim gum. Please try again.'}`);
-        }
-      }
-    } catch (error) {
-      console.error('Error claiming snack gum:', error);
-      alert('❌ Something went wrong. Please try again.');
-    } finally {
-      setGumClaimLoading(false);
-    }
-  };
 
   const openRoom = (roomKey: string, title: string, content: string) => {
     // Memphis-style colors for the text
@@ -275,67 +234,6 @@ const ArcadeMain = () => {
                 fontFamily="'Press Start 2P', monospace"
               />
             </div>
-            
-            {/* Gum Reward Section */}
-            <div style={{
-              backgroundColor: 'rgba(255,107,107,0.2)',
-              border: '2px solid #FF6B6B',
-              borderRadius: '8px',
-              padding: 'clamp(8px, 4vw, 16px)',
-              marginBottom: 'clamp(12px, 5vw, 20px)',
-              maxWidth: '100%',
-              boxSizing: 'border-box'
-            }}>
-              <MultiColorText 
-                text="💫 Daily Gum Reward: 25 gum every 24 hours"
-                colors={['#FFEAA7', '#4ECDC4', '#FF6B6B', '#96CEB4']}
-                fontSize="12px"
-                fontFamily="'Press Start 2P', monospace"
-              />
-            </div>
-
-            {/* Claim Button */}
-            <button
-              onClick={() => {
-                handleSnackGumClaim();
-              }}
-              disabled={!walletAddress || gumClaimLoading}
-              style={{
-                backgroundColor: gumClaimLoading ? '#666666' : '#4ECDC4',
-                backgroundImage: gumClaimLoading ? 'none' : 'linear-gradient(45deg, #4ECDC4 0%, #45B7D1 50%, #96CEB4 100%)',
-                border: '3px solid #FFFFFF',
-                borderRadius: '8px',
-                color: '#FFFFFF',
-                padding: 'clamp(8px, 3vw, 12px) clamp(16px, 6vw, 24px)',
-                fontSize: 'clamp(10px, 3vw, 12px)',
-                fontWeight: 'bold',
-                fontFamily: "'Press Start 2P', monospace",
-                cursor: gumClaimLoading || !walletAddress ? 'not-allowed' : 'pointer',
-                textShadow: '2px 2px 0px rgba(0,0,0,0.8)',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                transition: 'all 0.3s ease',
-                textTransform: 'uppercase',
-                marginBottom: 'clamp(12px, 4vw, 16px)',
-                opacity: !walletAddress ? 0.5 : 1,
-                minWidth: '120px',
-                whiteSpace: 'nowrap'
-              }}
-              onMouseOver={(e) => {
-                if (!gumClaimLoading && walletAddress) {
-                  e.currentTarget.style.transform = 'scale(1.05) rotate(1deg)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(78,205,196,0.5)';
-                }
-              }}
-              onMouseOut={(e) => {
-                if (!gumClaimLoading && walletAddress) {
-                  e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-                  e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-                }
-              }}
-              title={walletAddress ? 'Claim 25 gum from the snack corner! (24h cooldown)' : 'Connect wallet to claim gum'}
-            >
-              {gumClaimLoading ? 'Claiming...' : (walletAddress ? 'Claim 25 Gum' : 'Connect Wallet')}
-            </button>
           </div>
           
           {/* Close Button */}

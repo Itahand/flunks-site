@@ -2,6 +2,9 @@
 
 A nostalgic Web3 social platform bringing back the golden age of internet communities. Proudly built and running on the FLOW network with Cadence.
 
+## Contracts
+0x8d0e87b65159ae63
+
 ## 🚀 For Developers
 
 ### Local Development
