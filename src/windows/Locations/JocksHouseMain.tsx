@@ -1,7 +1,7 @@
 import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
-import { useTimeBasedImage } from "utils/timeBasedImage";
+import { useTimeBasedImage } from "utils/timeBasedImages";
 import { getCliqueColors, getCliqueIcon } from "utils/cliqueColors";
 import { getFontStyle } from "utils/fontConfig";
 import { useState } from "react";
