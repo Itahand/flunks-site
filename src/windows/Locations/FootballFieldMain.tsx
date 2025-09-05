@@ -1,28 +1,50 @@
-import { useWindowsContext } from "contexts/WindowsContext";
-import DraggableResizeableWindow from "components/DraggableResizeableWindow";
-import { WINDOW_IDS } from "fixed";
-import RetroTextBox from "components/RetroTextBox";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "contexts/AuthContext";
 import { awardGum } from "utils/gumAPI";
-import { trackFridayNightLightsClick } from "utils/fridayNightLightsTracking";
+import { trackFridayNightLightsClick, checkFridayNightLightsClicked } from "../../utils/fridayNightLightsTracking";
 
 const FootballFieldMain = () => {
-  const { openWindow, closeWindow } = useWindowsContext();
   const { walletAddress, user } = useAuth();
   const [buttonClickLoading, setButtonClickLoading] = useState(false);
+  const [hasClaimedGum, setHasClaimedGum] = useState(false);
 
-  // Create audio instance for Friday Night Lights
-  const fridayNightLightsAudio = useMemo(() => new Audio("/sounds/friday-night-lights.mp3"), []);
+  // Create audio instance for Friday Night Lights - set to loop
+  const fridayNightLightsAudio = useMemo(() => {
+    const audio = new Audio("/sounds/friday-night-lights.mp3");
+    audio.loop = true;
+    audio.volume = 0.6; // Set volume to 60%
+    return audio;
+  }, []);
 
-  const playFridayNightLightsSound = () => {
-    try {
-      fridayNightLightsAudio.currentTime = 0; // Reset to beginning
-      fridayNightLightsAudio.play().catch(console.error);
-    } catch (error) {
-      console.warn('Could not play Friday Night Lights audio:', error);
-    }
-  };
+  // Start playing audio when component mounts and check if user has already claimed GUM
+  useEffect(() => {
+    const startAudio = async () => {
+      try {
+        await fridayNightLightsAudio.play();
+      } catch (error) {
+        console.warn('Could not auto-play Friday Night Lights audio:', error);
+      }
+    };
+
+    const checkGumStatus = async () => {
+      if (walletAddress) {
+        try {
+          const hasClicked = await checkFridayNightLightsClicked(walletAddress);
+          setHasClaimedGum(hasClicked);
+        } catch (error) {
+          console.error("Failed to check GUM claim status:", error);
+        }
+      }
+    };
+
+    startAudio();
+    checkGumStatus();
+
+    // Cleanup function to pause audio when component unmounts
+    return () => {
+      fridayNightLightsAudio.pause();
+    };
+  }, [fridayNightLightsAudio, walletAddress]);
 
   const handleFridayNightLightsClick = async () => {
     if (!walletAddress || !user) {
@@ -30,10 +52,7 @@ const FootballFieldMain = () => {
       return;
     }
 
-    if (buttonClickLoading) return;
-
-    // Play the Friday Night Lights audio immediately when clicked
-    playFridayNightLightsSound();
+    if (buttonClickLoading || hasClaimedGum) return;
 
     setButtonClickLoading(true);
     try {
@@ -43,8 +62,10 @@ const FootballFieldMain = () => {
       if (tracked) {
         // Award 50 GUM for clicking Friday Night Lights
         await awardGum(walletAddress, "friday_night_lights", { amount: 50, description: "Friday Night Lights click" });
+        setHasClaimedGum(true);
         alert("🏈 FRIDAY NIGHT LIGHTS! You earned 50 GUM! The crowd roars with excitement!");
       } else {
+        setHasClaimedGum(true);
         alert("🏈 You've already experienced Friday Night Lights! The magic only happens once.");
       }
     } catch (error) {
@@ -55,32 +76,9 @@ const FootballFieldMain = () => {
     }
   };
 
-  const openRoom = (roomKey: string, title: string, content: string) => {
-    openWindow({
-      key: roomKey,
-      window: (
-        <DraggableResizeableWindow
-          windowsId={roomKey}
-          headerTitle={title}
-          onClose={() => closeWindow(roomKey)}
-          initialWidth="400px"
-          initialHeight="300px"
-          resizable={false}
-        >
-          <div className="p-4 w-full h-full">
-            <RetroTextBox
-              title={title}
-              content={content}
-              className="w-full h-full"
-            />
-          </div>
-        </DraggableResizeableWindow>
-      ),
-    });
-  };
-
   return (
     <div className="relative w-full h-full">
+      {/* Background Image */}
       <img
         src="/images/backdrops/football-field.png"
         alt="Football Field Background"
@@ -90,62 +88,46 @@ const FootballFieldMain = () => {
           e.currentTarget.src = "/images/backdrops/BLANK.png";
         }}
       />
+      
+      {/* Dark Overlay to dim the background */}
+      <div className="absolute inset-0 bg-black bg-opacity-60 z-5"></div>
 
-      {/* Friday Night Lights Button - Center of field */}
-      <button
-        onClick={handleFridayNightLightsClick}
-        disabled={buttonClickLoading}
-        className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 
-          px-6 py-3 rounded-lg font-bold text-lg transition-all duration-200 
-          ${buttonClickLoading 
-            ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
-            : 'bg-yellow-600 hover:bg-yellow-500 text-white hover:scale-110 shadow-lg hover:shadow-xl'
-          }`}
-      >
-        {buttonClickLoading ? '⏳ Loading...' : '🏈 FRIDAY NIGHT LIGHTS'}
-      </button>
+      {/* Central Content Container */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 text-center max-w-2xl px-4">
+        {/* Friday Night Lights Button - Enhanced prominence */}
+        <button
+          onClick={handleFridayNightLightsClick}
+          disabled={buttonClickLoading || hasClaimedGum}
+          className={`mb-6 px-10 py-5 rounded-xl font-bold text-2xl transition-all duration-300 shadow-2xl border-2 
+            ${buttonClickLoading 
+              ? 'bg-gray-600 text-gray-300 cursor-not-allowed border-gray-500' 
+              : hasClaimedGum
+              ? 'bg-gray-700 text-gray-400 cursor-not-allowed border-gray-600'
+              : 'bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-white border-yellow-400 hover:scale-110 hover:shadow-yellow-500/50'
+            }`}
+        >
+          {buttonClickLoading 
+            ? '⏳ Loading...' 
+            : hasClaimedGum 
+            ? '🏈 LIGHTS CLAIMED' 
+            : '🏈 FRIDAY NIGHT LIGHTS'
+          }
+        </button>
 
-      {/* Bleachers/Stands */}
-      <button
-        onClick={() =>
-          openRoom(
-            WINDOW_IDS.FOOTBALL_FIELD_STANDS,
-            "Bleachers",
-            "Metal bleachers echo with the cheers of past games. Old programs and popcorn containers litter the ground."
-          )
-        }
-        className="absolute top-4 left-4 bg-gray-900 text-white px-3 py-2 rounded z-10 hover:bg-gray-700 transition-transform duration-200 hover:scale-105"
-      >
-        🏟️ Stands
-      </button>
-
-      {/* Locker Room */}
-      <button
-        onClick={() =>
-          openRoom(
-            WINDOW_IDS.FOOTBALL_FIELD_LOCKER_ROOM,
-            "Locker Room",
-            "The smell of sweat and determination lingers. Motivational speeches still echo off the tiled walls."
-          )
-        }
-        className="absolute top-4 right-4 bg-gray-900 text-white px-3 py-2 rounded z-10 hover:bg-gray-700 transition-transform duration-200 hover:scale-105"
-      >
-        👕 Locker Room
-      </button>
-
-      {/* Equipment Shed */}
-      <button
-        onClick={() =>
-          openRoom(
-            WINDOW_IDS.FOOTBALL_FIELD_EQUIPMENT_SHED,
-            "Equipment Shed",
-            "Helmets, shoulder pads, and practice equipment stored in organized chaos."
-          )
-        }
-        className="absolute bottom-4 left-4 bg-gray-900 text-white px-3 py-2 rounded z-10 hover:bg-gray-700 transition-transform duration-200 hover:scale-105"
-      >
-        ⚡ Equipment
-      </button>
+        {/* Small Town Football Blurb */}
+        <div className="bg-black bg-opacity-70 backdrop-blur-sm rounded-lg p-6 border border-gray-600 shadow-xl">
+          <p className="text-white text-lg leading-relaxed italic font-medium">
+            "In small towns across America, Friday nights meant everything. 
+            The whole community would gather under those bright lights, 
+            where heroes were made and dreams were born. 
+            The roar of the crowd, the smell of popcorn, 
+            and the hope that this might be the night that changes everything."
+          </p>
+          <p className="text-yellow-400 text-sm mt-3 font-semibold">
+            — Where legends were forged under the Friday night sky
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
