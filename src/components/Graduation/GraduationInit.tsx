@@ -98,18 +98,6 @@ const GraduationInit: React.FC<GraduationInitProps> = (props) => {
   }, [state.txStatus, refreshUserItems, refreshStakeInfo]);
 
   const handleGraduate = () => {
-    // Enhanced mobile transaction handling
-    if (typeof window !== 'undefined') {
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(
-        navigator.userAgent
-      ) || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      
-      if (isMobile) {
-        console.log('📱 Mobile graduation detected - using enhanced transaction flow');
-        // Note: FCL configuration will be handled by the transaction itself to avoid global interference
-      }
-    }
-    
     executeTx(
       graduate({
         tokenID: Number(flunk.tokenID),
@@ -348,22 +336,6 @@ const GraduationInit: React.FC<GraduationInitProps> = (props) => {
             {state.txStatus === TX_STATUS.ERROR && (
               <>
                 <P>Couldn't break into the system..</P>
-                {typeof window !== 'undefined' && 
-                 /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(navigator.userAgent) && (
-                  <div style={{ marginTop: "1rem", padding: "0.5rem", backgroundColor: "#333", borderRadius: "4px" }}>
-                    <P style={{ fontSize: "0.9rem" }}>
-                      📱 <strong>Mobile Users:</strong> If you're seeing a "Transaction not supported" error, try:
-                      <br />
-                      • Refreshing the page and trying again
-                      <br />
-                      • Switching to desktop if possible
-                      <br />
-                      • Using a different Flow wallet app
-                      <br />
-                      • Checking your wallet app is updated
-                    </P>
-                  </div>
-                )}
               </>
             )}
             <Button

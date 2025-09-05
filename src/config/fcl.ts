@@ -20,32 +20,3 @@ config({
   "0xf086a545ce3c552d", // Finoa
   "0xf086a545ce3c552d", // NuFi
 ]);
-
-// Enhanced wallet discovery for mobile
-if (typeof window !== 'undefined') {
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(
-    navigator.userAgent
-  ) || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-  if (isMobile) {
-    console.log('📱 Enhanced FCL configuration for mobile wallets');
-    
-    // Add mobile-specific wallet configurations
-    config()
-      .put("discovery.wallet.method", "POP/RPC") // Better for mobile
-      .put("challenge.handshake", "https://fcl-discovery.onflow.org/authn") // Direct handshake
-      .put("fcl.eventPollRate", 2500) // Slower polling for mobile
-      .put("sdk.transport", "HTTP/POST") // More reliable transport
-      .put("discovery.authn.endpoint", "https://fcl-discovery.onflow.org/api/authn")
-      // Enhanced mobile wallet support
-      .put("discovery.wallet.method.data.supportedMethods", [
-        { method: "HTTP/POST", endpoint: "https://fcl-discovery.onflow.org/authn" },
-        { method: "POP/RPC", endpoint: "https://fcl-discovery.onflow.org/authn" }
-      ]);
-    
-    // Add better error handling for mobile transactions
-    (window as any).FCL_MOBILE_MODE = true;
-    
-    console.log('📱 Mobile FCL configuration complete');
-  }
-}
