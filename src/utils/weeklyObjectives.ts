@@ -145,17 +145,26 @@ export const getObjectivesStatus = async (walletAddress: string): Promise<Object
 export const getChapter2ObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
   console.log('🎯 getChapter2ObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
   
-  const [crackedCodeChapter2] = await Promise.all([
+  const [fridayNightLightsClicked, crackedCodeChapter2] = await Promise.all([
+    checkFridayNightLightsClicked(walletAddress),
     checkCrackCodeObjectiveChapter2(walletAddress)
   ]);
 
-  console.log('📊 Chapter 2 Objectives status:', { crackedCodeChapter2 });
+  console.log('📊 Chapter 2 Objectives status:', { fridayNightLightsClicked, crackedCodeChapter2 });
 
   const completedObjectives: ChapterObjective[] = [
     {
+      id: 'slacker_chapter2',
+      title: 'The Slacker',
+      description: 'Click the Friday Night Lights button on the football field',
+      type: 'friday_night_lights',
+      completed: fridayNightLightsClicked,
+      reward: 50
+    },
+    {
       id: 'overachiever_chapter2',
       title: 'The Overachiever', 
-      description: 'Crack the digital lock code (0730)',
+      description: 'Find and unlock the trunk',
       type: 'crack_code',
       completed: crackedCodeChapter2,
       reward: 100
@@ -166,7 +175,7 @@ export const getChapter2ObjectivesStatus = async (walletAddress: string): Promis
   console.log('🎯 Chapter 2 Final progress calculated:', progress + '%');
   
   return {
-    fridayNightLightsClicked: false, // Not part of Chapter 2
+    fridayNightLightsClicked,
     crackedCode: false, // Chapter 1 code not relevant for Chapter 2
     crackedCodeChapter2,
     completedObjectives

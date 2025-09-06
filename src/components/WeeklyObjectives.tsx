@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { getObjectivesStatus, type ChapterObjective, type ObjectiveStatus, calculateObjectiveProgress } from '../utils/weeklyObjectives';
+import { getObjectivesStatus, getChapter2ObjectivesStatus, type ChapterObjective, type ObjectiveStatus, calculateObjectiveProgress } from '../utils/weeklyObjectives';
 
 interface WeeklyObjectivesProps {
   currentWeek?: number;
@@ -10,38 +10,13 @@ interface WeeklyObjectivesProps {
 const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete }) => {
   const { primaryWallet } = useDynamicContext();
   const [objectivesStatus, setObjectivesStatus] = useState<ObjectiveStatus | null>(null);
+  const [chapter2ObjectivesStatus, setChapter2ObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastWallet, setLastWallet] = useState<string | null>(null);
-  const [currentWeek, setCurrentWeek] = useState<1 | 2>(1);
-
-  // Generate Week 2 placeholder data
-  const getWeek2PlaceholderData = (): ObjectiveStatus => {
-    return {
-      fridayNightLightsClicked: false,
-      crackedCode: false,
-      completedObjectives: [
-        {
-          id: 'week2-objective-1',
-          title: '???',
-          description: 'To be announced',
-          type: 'custom' as const,
-          completed: false,
-          reward: 10
-        },
-        {
-          id: 'week2-objective-2',
-          title: '???',
-          description: 'To be announced',
-          type: 'custom' as const,
-          completed: false,
-          reward: 15
-        }
-      ]
-    };
-  };
+  const [currentWeek, setCurrentWeek] = useState<1 | 2>(2);
 
   // Get current objectives data based on selected week
-  const currentObjectivesData = currentWeek === 2 ? getWeek2PlaceholderData() : objectivesStatus;
+  const currentObjectivesData = currentWeek === 2 ? chapter2ObjectivesStatus : objectivesStatus;
 
   const loadObjectives = async (forceRefresh = false) => {
     if (!primaryWallet?.address) {
@@ -54,13 +29,20 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         console.log('🔄 Force refreshing objectives for wallet:', primaryWallet.address.slice(0, 10) + '...');
       }
       
-      const status = await getObjectivesStatus(primaryWallet.address);
+      // Load both Chapter 1 and Chapter 2 objectives
+      const [status, chapter2Status] = await Promise.all([
+        getObjectivesStatus(primaryWallet.address),
+        getChapter2ObjectivesStatus(primaryWallet.address)
+      ]);
+      
       setObjectivesStatus(status);
+      setChapter2ObjectivesStatus(chapter2Status);
       
     } catch (error) {
       console.error('❌ Failed to load objectives:', error);
       // On error, clear the status to prevent stale data
       setObjectivesStatus(null);
+      setChapter2ObjectivesStatus(null);
     } finally {
       setLoading(false);
     }
@@ -70,11 +52,13 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
     // Reset state when wallet changes
     if (primaryWallet?.address !== lastWallet) {
       setObjectivesStatus(null);
+      setChapter2ObjectivesStatus(null);
       setLastWallet(primaryWallet?.address || null);
     }
     
     // Clear previous state when wallet changes
     setObjectivesStatus(null);
+    setChapter2ObjectivesStatus(null);
     loadObjectives();
     
     // Much longer refresh interval to reduce server load and UI disruption
@@ -189,7 +173,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                   transition: 'all 0.3s ease'
                 }}
               >
-                Week 1
+                Chapter 1
               </button>
               <button
                 onClick={() => setCurrentWeek(2)}
@@ -205,7 +189,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                   transition: 'all 0.3s ease'
                 }}
               >
-                Week 2 →
+                Chapter 2
               </button>
             </div>
           </div>
@@ -253,7 +237,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
           color: '#ccc',
           marginBottom: '12px'
         }}>
-          Week {currentWeek} Objectives ({completedCount}/{totalCount} Complete)
+          Chapter {currentWeek} Objectives ({completedCount}/{totalCount} Complete)
         </div>
         
         {/* Progress Bar */}
@@ -283,26 +267,6 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         </div>
       </div>
 
-      {/* Debug Info - Show raw status for troubleshooting */}
-      {objectivesStatus && (
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.05)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: '4px',
-          padding: '8px',
-          marginBottom: '16px',
-          fontSize: '11px',
-          color: '#999'
-        }}>
-          <div style={{ marginBottom: '4px', fontWeight: 'bold' }}>🔍 Debug Info:</div>
-          <div>Wallet: {primaryWallet?.address?.slice(0, 10)}...</div>
-          <div>Friday Night Lights: {objectivesStatus.fridayNightLightsClicked ? '✅ YES' : '❌ NO'}</div>
-          <div>Code Cracked: {objectivesStatus.crackedCode ? '✅ YES' : '❌ NO'}</div>
-          <div>Progress: {progress}% ({completedCount}/{totalCount})</div>
-          <div>Last Update: {new Date().toLocaleTimeString()}</div>
-        </div>
-      )}
-
       {/* Objectives List */}
       <div style={{
         display: 'flex',
@@ -316,12 +280,12 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               background: objective.completed 
                 ? 'rgba(0, 255, 0, 0.1)' 
                 : currentWeek === 2 
-                  ? 'rgba(255, 165, 0, 0.05)' // Orange tint for Week 2
+                  ? 'rgba(255, 165, 0, 0.05)' // Orange tint for Chapter 2
                   : 'rgba(255, 255, 255, 0.05)',
               border: objective.completed 
                 ? '1px solid rgba(0, 255, 0, 0.3)' 
                 : currentWeek === 2
-                  ? '1px solid rgba(255, 165, 0, 0.3)' // Orange border for Week 2
+                  ? '1px solid rgba(255, 165, 0, 0.3)' // Orange border for Chapter 2
                   : '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: '8px',
               padding: '12px',
@@ -332,43 +296,17 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               position: 'relative'
             }}
           >
-            {/* Coming Soon badge for Week 2 */}
-            {currentWeek === 2 && (
-              <div style={{
-                position: 'absolute',
-                top: '-8px',
-                right: '8px',
-                background: 'linear-gradient(45deg, #ff8c00, #ffa500)',
-                color: 'white',
-                padding: '2px 8px',
-                borderRadius: '12px',
-                fontSize: '10px',
-                fontWeight: 'bold',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-              }}>
-                COMING SOON
-              </div>
-            )}
             <div style={{ flex: 1 }}>
               <div style={{
                 fontSize: '16px',
                 fontWeight: 'bold',
-                color: objective.completed ? '#00ff00' : currentWeek === 2 ? '#ffa500' : '#fff',
+                color: objective.completed ? '#00ff00' : '#fff',
                 marginBottom: '4px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px'
               }}>
-                {objective.completed ? '✅' : currentWeek === 2 ? '🔒' : '⭕'} {objective.title}
-                {currentWeek === 2 && (
-                  <span style={{
-                    fontSize: '12px',
-                    color: '#ffa500',
-                    fontWeight: 'normal'
-                  }}>
-                    (Locked)
-                  </span>
-                )}
+                {objective.completed ? '✅' : '⭕'} {objective.title}
               </div>
               <div style={{
                 fontSize: '12px',

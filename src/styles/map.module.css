@@ -1384,6 +1384,11 @@
   background-image: url('/images/icons/football-field-icon.png');
 }
 
+/* Special hover effect for Football Field in navigation */
+.nav-icon.football-field-nav:hover {
+  animation: heartbeat 2.4s ease-in-out infinite, activePulse 1.5s ease-in-out infinite;
+}
+
 .jocks-house-nav {
   background-image: url('/images/icons/jocks-house-icon.png');
   border-color: rgba(255, 182, 193, 0.6) !important; /* Light pink for Jocks */
