@@ -2,11 +2,15 @@ import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "contexts/AuthContext";
 import { awardGum } from "utils/gumAPI";
 import { trackFridayNightLightsClick, checkFridayNightLightsClicked } from "../../utils/fridayNightLightsTracking";
+import { getFontStyle } from "utils/fontConfig";
 
 const FootballFieldMain = () => {
   const { walletAddress, user } = useAuth();
   const [buttonClickLoading, setButtonClickLoading] = useState(false);
   const [hasClaimedGum, setHasClaimedGum] = useState(false);
+
+  // Get font styling for JOCK clique (football field is jock territory)
+  const fontStyle = getFontStyle('JOCK');
 
   // Create audio instance for Friday Night Lights - set to loop
   const fridayNightLightsAudio = useMemo(() => {
@@ -105,6 +109,11 @@ const FootballFieldMain = () => {
               ? 'bg-gray-700 text-gray-400 cursor-not-allowed border-gray-600'
               : 'bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-white border-yellow-400 hover:scale-110 hover:shadow-yellow-500/50'
             }`}
+          style={{
+            ...fontStyle,
+            fontSize: '24px', // Override for larger button text
+            fontWeight: 'bold',
+          }}
         >
           {buttonClickLoading 
             ? '⏳ Loading...' 
@@ -116,14 +125,29 @@ const FootballFieldMain = () => {
 
         {/* Small Town Football Blurb */}
         <div className="bg-black bg-opacity-70 backdrop-blur-sm rounded-lg p-6 border border-gray-600 shadow-xl">
-          <p className="text-white text-lg leading-relaxed italic font-medium">
+          <p 
+            className="text-white text-lg leading-relaxed italic font-medium"
+            style={{
+              ...fontStyle,
+              fontSize: '18px', // Specific size for main quote
+              lineHeight: '1.6',
+            }}
+          >
             "In small towns across America, Friday nights meant everything. 
             The whole community would gather under those bright lights, 
             where heroes were made and dreams were born. 
             The roar of the crowd, the smell of popcorn, 
             and the hope that this might be the night that changes everything."
           </p>
-          <p className="text-yellow-400 text-sm mt-3 font-semibold">
+          <p 
+            className="text-yellow-400 text-sm mt-3 font-semibold"
+            style={{
+              ...fontStyle,
+              fontSize: '14px', // Smaller size for attribution
+              color: '#FBBF24', // Yellow-400 color
+              fontWeight: '600',
+            }}
+          >
             — Where legends were forged under the Friday night sky
           </p>
         </div>
