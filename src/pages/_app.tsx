@@ -150,15 +150,36 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                         process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID ||
                         "53675303-5e80-4fe5-88a4-e6caae677432",
                       walletConnectors: [FlowWalletConnectors],
-                      // Basic walletsFilter - let Dynamic handle mobile detection
+                      // Restore v3.x mobile wallet configuration
                       walletsFilter: (wallets) => {
                         console.log('🔍 Dynamic walletsFilter - Available wallets:', wallets.map(w => ({ 
                           key: w?.key || 'unknown', 
                           name: w?.name || 'unknown'
                         })));
                         
-                        // Return wallets as-is, let Dynamic Labs handle mobile/desktop logic
-                        return Array.isArray(wallets) ? wallets : [];
+                        if (!Array.isArray(wallets)) return [];
+                        
+                        // Check if we're on mobile
+                        const isMobile = typeof window !== 'undefined' && (
+                          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                          window.innerWidth <= 768
+                        );
+                        
+                        if (isMobile) {
+                          // On mobile: prioritize Dapper and Blocto (the working combo)
+                          const mobileWallets = wallets.filter(w => 
+                            w.key?.includes('dapper') || 
+                            w.key?.includes('blocto') ||
+                            w.key === 'dapper' ||
+                            w.key === 'blocto'
+                          );
+                          
+                          console.log('📱 Mobile detected - filtered wallets:', mobileWallets.map(w => w.key));
+                          return mobileWallets.length > 0 ? mobileWallets : wallets;
+                        }
+                        
+                        // Desktop: return all wallets
+                        return wallets;
                       }
                     }}
                   >
