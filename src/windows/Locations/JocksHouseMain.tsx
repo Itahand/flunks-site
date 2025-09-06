@@ -16,9 +16,53 @@ const DigitalLockWindow = ({ onClose, primaryWallet }: {
 }) => {
   const [localLockCode, setLocalLockCode] = useState('');
   const [localIsUnlocked, setLocalIsUnlocked] = useState(false);
+  const [hasAlreadyClaimed, setHasAlreadyClaimed] = useState(false);
+  const [checkingClaim, setCheckingClaim] = useState(true);
+  const [claimError, setClaimError] = useState<string | null>(null);
   const correctCode = '0730';
   
   console.log('🔄 DigitalLockWindow render - localLockCode:', `"${localLockCode}"`, 'length:', localLockCode.length);
+
+  // Check if user has already claimed this digital lock
+  useEffect(() => {
+    const checkDigitalLockClaim = async () => {
+      if (!primaryWallet?.address) {
+        setCheckingClaim(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/check-digital-lock-claim', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            walletAddress: primaryWallet.address
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setHasAlreadyClaimed(data.hasAlreadyClaimed);
+          if (data.hasAlreadyClaimed) {
+            setLocalIsUnlocked(true); // Show the unlocked state immediately
+          }
+        } else {
+          console.error('Error checking digital lock claim:', data.error);
+          setClaimError('Failed to check lock status');
+        }
+      } catch (error) {
+        console.error('Network error checking digital lock claim:', error);
+        setClaimError('Network error checking lock status');
+      } finally {
+        setCheckingClaim(false);
+      }
+    };
+
+    checkDigitalLockClaim();
+  }, [primaryWallet?.address]);
 
   const playBeep = (frequency = 800, duration = 100) => {
     try {
@@ -89,6 +133,42 @@ const DigitalLockWindow = ({ onClose, primaryWallet }: {
     if (success) {
       console.log('✅ Local Correct code entered!');
       playBeep(1000, 500);
+      
+      // Check if user has already claimed this - prevent double claiming
+      if (hasAlreadyClaimed) {
+        console.log('⚠️ User has already claimed this digital lock');
+        setLocalIsUnlocked(true);
+        return;
+      }
+
+      // Record the successful unlock claim
+      if (primaryWallet?.address) {
+        try {
+          const response = await fetch('/api/claim-digital-lock', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              walletAddress: primaryWallet.address
+            })
+          });
+
+          const claimData = await response.json();
+
+          if (claimData.success) {
+            console.log('✅ Digital lock claim recorded successfully');
+            setHasAlreadyClaimed(true);
+          } else {
+            console.error('❌ Failed to record digital lock claim:', claimData.error);
+            setClaimError('Failed to record unlock - but lock is still opened');
+          }
+        } catch (error) {
+          console.error('❌ Network error recording digital lock claim:', error);
+          setClaimError('Network error recording unlock - but lock is still opened');
+        }
+      }
+
       setLocalIsUnlocked(true);
     } else {
       console.log('❌ Local Incorrect code.');
@@ -114,21 +194,48 @@ const DigitalLockWindow = ({ onClose, primaryWallet }: {
         </p>
       </div>
       
-      {!localIsUnlocked ? (
+      {/* Loading State */}
+      {checkingClaim && (
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-gray-400">Checking lock status...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {claimError && (
+        <div className="text-center mb-4">
+          <p className="text-yellow-400 text-sm">⚠️ {claimError}</p>
+        </div>
+      )}
+      
+      {!checkingClaim && !localIsUnlocked ? (
         <div className="w-full max-w-sm mx-auto">
+          {/* Show already claimed message if applicable */}
+          {hasAlreadyClaimed && (
+            <div className="bg-yellow-100 text-black p-4 rounded-lg border-2 border-yellow-600 mb-6">
+              <div className="text-center">
+                <p className="font-bold">🔓 Already Unlocked!</p>
+                <p className="text-sm mt-2">You've already unlocked this trunk before. The contents are revealed below.</p>
+              </div>
+            </div>
+          )}
+
           {/* Digital Display */}
           <div className="bg-black border-2 border-gray-600 rounded-lg p-4 mb-6">
             <div className="text-center">
-              <div className="text-xs text-gray-400 mb-2">ENTER 4-DIGIT CODE</div>
+              <div className="text-xs text-gray-400 mb-2">
+                {hasAlreadyClaimed ? 'ALREADY UNLOCKED' : 'ENTER 4-DIGIT CODE'}
+              </div>
               <div className="text-2xl font-mono text-green-400 tracking-widest">
-                {localLockCode.padEnd(4, '_').split('').map((char, index) => (
+                {hasAlreadyClaimed ? '✓✓✓✓' : localLockCode.padEnd(4, '_').split('').map((char, index) => (
                   <span key={index} className="mx-1">
                     {char === '_' ? '○' : char}
                   </span>
                 ))}
               </div>
               <div className="text-xs text-gray-500 mt-2">
-                Debug: "{localLockCode}" (length: {localLockCode.length})
+                {hasAlreadyClaimed ? 'Lock previously opened' : `Debug: "${localLockCode}" (length: ${localLockCode.length})`}
               </div>
             </div>
           </div>
@@ -144,9 +251,9 @@ const DigitalLockWindow = ({ onClose, primaryWallet }: {
                   console.log('🖱️ Local Button clicked:', digit);
                   handleLocalKeypadPress(digit);
                 }}
-                disabled={digit === '*' || digit === '#'}
+                disabled={digit === '*' || digit === '#' || hasAlreadyClaimed}
                 className={`w-12 h-12 rounded font-mono text-lg font-bold transition-all duration-150 border-2 ${
-                  digit === '*' || digit === '#' 
+                  digit === '*' || digit === '#' || hasAlreadyClaimed
                     ? 'bg-gray-700 text-gray-500 cursor-not-allowed border-gray-600'
                     : 'bg-gray-600 hover:bg-gray-500 text-white hover:scale-105 active:scale-95 border-gray-500 hover:border-gray-400'
                 }`}
@@ -158,32 +265,49 @@ const DigitalLockWindow = ({ onClose, primaryWallet }: {
           
           {/* Action Buttons */}
           <div className="flex justify-center gap-3">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🖱️ Local UNLOCK button clicked, lockCode:', `"${localLockCode}"`, 'length:', localLockCode.length);
-                handleLocalCodeSubmit(e);
-              }}
-              disabled={localLockCode.length !== 4}
-              className={`px-6 py-3 rounded-lg font-bold transition-all duration-200 text-lg ${
-                localLockCode.length === 4 
-                  ? 'bg-green-600 hover:bg-green-700 hover:scale-105 text-white cursor-pointer' 
-                  : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              🔓 UNLOCK ({localLockCode.length}/4)
-            </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                clearLocalCode();
-              }}
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 text-lg"
-            >
-              🔄 CLEAR
-            </button>
+            {hasAlreadyClaimed ? (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setLocalIsUnlocked(true);
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 text-lg"
+              >
+                🔓 VIEW CONTENTS
+              </button>
+            ) : (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('🖱️ Local UNLOCK button clicked, lockCode:', `"${localLockCode}"`, 'length:', localLockCode.length);
+                  handleLocalCodeSubmit(e);
+                }}
+                disabled={localLockCode.length !== 4}
+                className={`px-6 py-3 rounded-lg font-bold transition-all duration-200 text-lg ${
+                  localLockCode.length === 4 
+                    ? 'bg-green-600 hover:bg-green-700 hover:scale-105 text-white cursor-pointer' 
+                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                🔓 UNLOCK ({localLockCode.length}/4)
+              </button>
+            )}
+            
+            {!hasAlreadyClaimed && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  clearLocalCode();
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 text-lg"
+              >
+                🔄 CLEAR
+              </button>
+            )}
+            
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -201,11 +325,19 @@ const DigitalLockWindow = ({ onClose, primaryWallet }: {
           <div className="text-center mb-6">
             <h2 className="text-xl mb-3">📦 Unlocked Trunk</h2>
             <p className="text-base text-gray-300 mb-4 leading-relaxed">
-              The lock clicks open, revealing the contents inside...
+              {hasAlreadyClaimed 
+                ? "You've already unlocked this trunk. Here are the contents you discovered..."
+                : "The lock clicks open, revealing the contents inside..."
+              }
             </p>
             {primaryWallet?.address && (
               <p className="text-xs text-green-400 mb-2">
-                🎯 Success tracked for wallet: {primaryWallet.address.slice(0, 8)}...{primaryWallet.address.slice(-4)}
+                🎯 {hasAlreadyClaimed ? 'Previously unlocked by' : 'Success tracked for'} wallet: {primaryWallet.address.slice(0, 8)}...{primaryWallet.address.slice(-4)}
+              </p>
+            )}
+            {hasAlreadyClaimed && (
+              <p className="text-xs text-yellow-400 mb-2">
+                ⚠️ One-time unlock: This trunk can only be unlocked once per wallet
               </p>
             )}
           </div>
