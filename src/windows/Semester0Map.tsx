@@ -33,6 +33,7 @@ import { useHouseImage } from '../utils/dayNightHouses';
 import { DynamicHouseIcon } from '../components/DynamicHouseIcon';
 import { useAuth } from 'contexts/AuthContext';
 import { isFeatureEnabled, getCurrentBuildMode } from '../utils/buildMode';
+import { useTimeBasedAccess } from '../hooks/useTimeBasedAccess';
 
 interface Props {
   onClose: () => void;
@@ -63,6 +64,9 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
   const { user, primaryWallet } = useDynamicContext();
   const auth = useAuth();
   
+  // Time-based access hook for location restrictions
+  const { isLocationOpen, getTimeUntilOpen } = useTimeBasedAccess();
+  
   // Get authentication and NFT data from auth context
   const { isAuthenticated, flunksCount, hasFlunks } = auth;
 
@@ -79,6 +83,15 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
     flunksCount: 1,
     hasFlunks: true
   } : { isAuthenticated, flunksCount, hasFlunks };
+
+  // Football field time-based access rule: Friday through Monday
+  const footballFieldTimeRule = {
+    name: "Football Field",
+    description: "Available Friday through Monday for game weekends",
+    timeWindows: [
+      { startHour: 0, endHour: 24, days: [5, 6, 0, 1] } // Friday, Saturday, Sunday, Monday (all day)
+    ]
+  };
 
   // Helper function to handle location access - checks NFT ownership but allows wallet-only auth
   const handleLocationAccess = (
@@ -735,62 +748,65 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
             >
             </DynamicHouseIcon>
             
-            <DynamicHouseIcon
-              houseId="football-field"
-              className={`${styles["nav-icon"]} ${styles['football-field-nav']}`}
-              onClick={() => {
-                // On mobile, if this is the second tap, proceed with opening
-                if (isMobile && touchedLocation === 'football-field') {
-                  setTouchedLocation(null);
+            {/* Football Field - only visible Friday through Monday */}
+            {isLocationOpen(footballFieldTimeRule) && (
+              <DynamicHouseIcon
+                houseId="football-field"
+                className={`${styles["nav-icon"]} ${styles['football-field-nav']}`}
+                onClick={() => {
+                  // On mobile, if this is the second tap, proceed with opening
+                  if (isMobile && touchedLocation === 'football-field') {
+                    setTouchedLocation(null);
+                    setHovered(null);
+                    handleLocationAccess('football-field', () => 
+                      openWindow({
+                        key: WINDOW_IDS.FOOTBALL_FIELD_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.FOOTBALL_FIELD_MAIN}
+                            headerTitle="Football Field"
+                            onClose={() => closeWindow(WINDOW_IDS.FOOTBALL_FIELD_MAIN)}
+                            initialWidth="70vw"
+                            initialHeight="70vh"
+                            resizable={true}
+                          >
+                            <FootballFieldMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      })
+                    );
+                  } else if (!isMobile) {
+                    // Desktop behavior - immediate open
+                    handleLocationAccess('football-field', () => 
+                      openWindow({
+                        key: WINDOW_IDS.FOOTBALL_FIELD_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.FOOTBALL_FIELD_MAIN}
+                            headerTitle="Football Field"
+                            onClose={() => closeWindow(WINDOW_IDS.FOOTBALL_FIELD_MAIN)}
+                            initialWidth="70vw"
+                            initialHeight="70vh"
+                            resizable={true}
+                          >
+                            <FootballFieldMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      })
+                    );
+                  }
+                }}
+                onMouseEnter={() => {
+                  setHovered('football-field');
+                }}
+                onMouseLeave={() => {
                   setHovered(null);
-                  handleLocationAccess('football-field', () => 
-                    openWindow({
-                      key: WINDOW_IDS.FOOTBALL_FIELD_MAIN,
-                      window: (
-                        <DraggableResizeableWindow
-                          windowsId={WINDOW_IDS.FOOTBALL_FIELD_MAIN}
-                          headerTitle="Football Field"
-                          onClose={() => closeWindow(WINDOW_IDS.FOOTBALL_FIELD_MAIN)}
-                          initialWidth="70vw"
-                          initialHeight="70vh"
-                          resizable={true}
-                        >
-                          <FootballFieldMain />
-                        </DraggableResizeableWindow>
-                      ),
-                    })
-                  );
-                } else if (!isMobile) {
-                  // Desktop behavior - immediate open
-                  handleLocationAccess('football-field', () => 
-                    openWindow({
-                      key: WINDOW_IDS.FOOTBALL_FIELD_MAIN,
-                      window: (
-                        <DraggableResizeableWindow
-                          windowsId={WINDOW_IDS.FOOTBALL_FIELD_MAIN}
-                          headerTitle="Football Field"
-                          onClose={() => closeWindow(WINDOW_IDS.FOOTBALL_FIELD_MAIN)}
-                          initialWidth="70vw"
-                          initialHeight="70vh"
-                          resizable={true}
-                        >
-                          <FootballFieldMain />
-                        </DraggableResizeableWindow>
-                      ),
-                    })
-                  );
-                }
-              }}
-              onMouseEnter={() => {
-                setHovered('football-field');
-              }}
-              onMouseLeave={() => {
-                setHovered(null);
-              }}
-              onTouchStart={() => user && handleTouchEnter('football-field')}
-              onTouchEnd={handleTouchLeave}
-            >
-            </DynamicHouseIcon>
+                }}
+                onTouchStart={() => user && handleTouchEnter('football-field')}
+                onTouchEnd={handleTouchLeave}
+              >
+              </DynamicHouseIcon>
+            )}
           </div>
         </div>
 

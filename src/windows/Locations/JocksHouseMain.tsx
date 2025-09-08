@@ -1,5 +1,7 @@
 import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
+import JocksCloset from "components/JocksCloset";
+import TimeBasedAccessWindow from "windows/TimeBasedAccessWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
 import { getCliqueColors, getCliqueIcon } from "utils/cliqueColors";
@@ -476,6 +478,110 @@ const JocksHouseMain = () => {
     });
   };
 
+  const openCloset = () => {
+    openWindow({
+      key: "jocks-closet",
+      window: (
+        <DraggableResizeableWindow
+          windowsId="jocks-closet"
+          headerTitle="Jock's Closet"
+          onClose={() => closeWindow("jocks-closet")}
+          initialWidth="90vw"
+          initialHeight="95vh"
+          resizable={true}
+        >
+          <div className="w-full h-full bg-black text-white overflow-y-auto flex flex-col">
+            {/* Closet image section - flexible height */}
+            <div className="relative w-full flex-shrink-0" style={{ minHeight: '60vh' }}>
+              <img
+                src="/images/locations/jocks-closet.png"
+                alt="Jock's Closet Interior"
+                className="w-full h-full object-contain"
+                style={{
+                  objectFit: 'contain',
+                  objectPosition: 'center'
+                }}
+                onError={(e) => {
+                  e.currentTarget.src = "/images/backdrops/BLANK.png";
+                }}
+              />
+            </div>
+            
+            {/* Interactive Buttons section - fixed at bottom */}
+            <div className="bg-black bg-opacity-90 p-3 border-t border-gray-600 flex-shrink-0">
+              <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                <button className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm min-h-[44px] flex items-center justify-center">
+                  📻 Cassette Box
+                </button>
+                <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm min-h-[44px] flex items-center justify-center">
+                  🖼️ Picture Frame
+                </button>
+                <button 
+                  onClick={() => openBackpackAccessDemo()}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm min-h-[44px] flex items-center justify-center cursor-pointer"
+                  title="Get a fortune cookie message"
+                >
+                  � Fortune Cookie
+                </button>
+                <button 
+                  onClick={() => openTimeBasedAccessDemo()}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm min-h-[44px] flex items-center justify-center"
+                >
+                  � Time Access
+                </button>
+              </div>
+            </div>
+          </div>
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
+  const openBackpackAccessDemo = () => {
+    // Simple fortune cookie message for everyone
+    openWindow({
+      key: "fortune-cookie",
+      window: (
+        <DraggableResizeableWindow
+          windowsId="fortune-cookie"
+          headerTitle="� Fortune Cookie"
+          onClose={() => closeWindow("fortune-cookie")}
+          initialWidth="400px"
+          initialHeight="300px"
+          resizable={false}
+        >
+          <div className="p-6 text-center bg-gradient-to-br from-yellow-100 to-orange-100 h-full flex flex-col justify-center">
+            <div className="text-6xl mb-4">�</div>
+            <h2 className="text-xl font-bold mb-4 text-orange-800">Fortune Cookie</h2>
+            <div className="bg-white p-4 rounded-lg shadow-lg border-2 border-orange-200">
+              <p className="text-lg font-medium text-gray-800 italic">
+                "Good things come to those who wait"
+              </p>
+            </div>
+          </div>
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
+  const openTimeBasedAccessDemo = () => {
+    openWindow({
+      key: "time-based-access-demo",
+      window: (
+        <DraggableResizeableWindow
+          windowsId="time-based-access-demo"
+          headerTitle="🕐 Time-Based Access Control"
+          onClose={() => closeWindow("time-based-access-demo")}
+          initialWidth="750px"
+          initialHeight="90vh"
+          resizable={true}
+        >
+          <TimeBasedAccessWindow onClose={() => closeWindow("time-based-access-demo")} />
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
   const openBedroom = () => {
     openWindow({
       key: WINDOW_IDS.JOCKS_HOUSE_BEDROOM,
@@ -517,13 +623,7 @@ const JocksHouseMain = () => {
                 {/* First row - 4 buttons with responsive grid */}
                 <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4">
                   <button
-                    onClick={() => 
-                      openRoom(
-                        WINDOW_IDS.JOCKS_HOUSE_BEDROOM + '_closet',
-                        "Walk-in Closet",
-                        "Letterman jackets from multiple sports hang in perfect order. Championship rings sit in a display case. Team captain armbands are neatly organized on shelves."
-                      )
-                    }
+                    onClick={() => openCloset()}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
                   >
                     👕 Closet
