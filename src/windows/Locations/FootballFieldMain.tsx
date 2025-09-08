@@ -139,17 +139,6 @@ const FootballFieldMain = () => {
             The roar of the crowd, the smell of popcorn, 
             and the hope that this might be the night that changes everything."
           </p>
-          <p 
-            className="text-yellow-400 text-sm mt-3 font-semibold"
-            style={{
-              ...fontStyle,
-              fontSize: '14px', // Smaller size for attribution
-              color: '#FBBF24', // Yellow-400 color
-              fontWeight: '600',
-            }}
-          >
-            — Where legends were forged under the Friday night sky
-          </p>
         </div>
       </div>
     </div>
