@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { checkFridayNightLightsClicked } from './fridayNightLightsTracking';
+import { checkCafeteriaButtonClicked } from './cafeteriaButtonTracking';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -20,16 +21,17 @@ export interface ChapterObjective {
   id: string;
   title: string;
   description: string;
-  type: 'friday_night_lights' | 'crack_code' | 'daily_checkin' | 'custom';
+  type: 'friday_night_lights' | 'crack_code' | 'daily_checkin' | 'picture_day_voting' | 'custom';
   completed: boolean;
   completedAt?: string;
   reward?: number; // gum reward if applicable
 }
 
 export interface ObjectiveStatus {
-  fridayNightLightsClicked: boolean;
+  fridayNightLightsClicked: boolean; // Chapter 1: cafeteria check-in, Chapter 2: Friday Night Lights
   crackedCode: boolean; // Chapter 1 code
   crackedCodeChapter2?: boolean; // Chapter 2 code
+  votedInPictureDay?: boolean; // Chapter 3 - Picture Day voting
   completedObjectives: ChapterObjective[];
 }
 // The Friday Night Lights checking is handled by the imported function
@@ -101,24 +103,54 @@ export const checkCrackCodeObjectiveChapter2 = async (walletAddress: string): Pr
   }
 };
 
+// Check if user has voted for at least one flunk in Picture Day
+export const checkPictureDayVoting = async (walletAddress: string): Promise<boolean> => {
+  if (!hasValidSupabaseConfig || !supabase) {
+    console.warn('Supabase not configured, cannot check Picture Day voting objective');
+    return false;
+  }
+
+  try {
+    console.log('🔍 Checking Picture Day voting objective for wallet:', walletAddress);
+    
+    const { data, error } = await supabase
+      .from('picture_day_votes')
+      .select('*')
+      .eq('user_wallet', walletAddress)
+      .limit(1);
+
+    if (error) {
+      console.error('Error checking Picture Day voting objective:', error);
+      return false;
+    }
+
+    const hasVoted = data && data.length > 0;
+    console.log('✅ Picture Day voting objective completed:', hasVoted);
+    return hasVoted;
+  } catch (err) {
+    console.error('Failed to check Picture Day voting objective:', err);
+    return false;
+  }
+};
+
 // Get Chapter 1 objectives status for a user
 export const getObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
   console.log('🎯 getObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
   
-  const [fridayNightLightsClicked, crackedCode] = await Promise.all([
-    checkFridayNightLightsClicked(walletAddress),
+  const [cafeteriaButtonClicked, crackedCode] = await Promise.all([
+    checkCafeteriaButtonClicked(walletAddress),
     checkCrackCodeObjective(walletAddress)
   ]);
 
-  console.log('📊 Objectives status:', { fridayNightLightsClicked, crackedCode });
+  console.log('📊 Objectives status:', { cafeteriaButtonClicked, crackedCode });
 
   const completedObjectives: ChapterObjective[] = [
     {
       id: 'slacker',
       title: 'The Slacker',
-      description: 'Click the Friday Night Lights button on the football field',
-      type: 'friday_night_lights',
-      completed: fridayNightLightsClicked,
+      description: 'Check into the cafeteria',
+      type: 'daily_checkin',
+      completed: cafeteriaButtonClicked,
       reward: 50
     },
     {
@@ -135,7 +167,7 @@ export const getObjectivesStatus = async (walletAddress: string): Promise<Object
   console.log('🎯 Final progress calculated:', progress + '%');
   
   return {
-    fridayNightLightsClicked,
+    fridayNightLightsClicked: cafeteriaButtonClicked, // Keep interface compatible
     crackedCode,
     completedObjectives
   };
@@ -178,6 +210,36 @@ export const getChapter2ObjectivesStatus = async (walletAddress: string): Promis
     fridayNightLightsClicked,
     crackedCode: false, // Chapter 1 code not relevant for Chapter 2
     crackedCodeChapter2,
+    completedObjectives
+  };
+};
+
+// Get Chapter 3 objectives status for a user
+export const getChapter3ObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
+  console.log('🎯 getChapter3ObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
+  
+  const votedInPictureDay = await checkPictureDayVoting(walletAddress);
+
+  console.log('📊 Chapter 3 Objectives status:', { votedInPictureDay });
+
+  const completedObjectives: ChapterObjective[] = [
+    {
+      id: 'slacker_chapter3',
+      title: 'The Slacker',
+      description: 'Vote for a flunk! Log in and vote for at least one flunk in Picture Day',
+      type: 'picture_day_voting',
+      completed: votedInPictureDay,
+      reward: 50
+    }
+  ];
+
+  const progress = calculateObjectiveProgress(completedObjectives);
+  console.log('🎯 Chapter 3 Final progress calculated:', progress + '%');
+  
+  return {
+    fridayNightLightsClicked: false, // Not relevant for Chapter 3
+    crackedCode: false, // Not relevant for Chapter 3
+    votedInPictureDay,
     completedObjectives
   };
 };

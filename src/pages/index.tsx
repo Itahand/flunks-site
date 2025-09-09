@@ -555,6 +555,16 @@ const windowsMemod = useMemo(() => (
           }
         />
 
+        {/* 19. Picture Day - Build Mode Only */}
+        <ConditionalAppIcon
+          appId="picture-day"
+          title="Picture Day"
+          icon="/images/icons/picture-day.png"
+          onDoubleClick={() => {
+            window.location.href = '/picture-day';
+          }}
+        />
+
         {/* 20. Fantasy Football */}
         <a
           href="https://sports.yahoo.com/dailyfantasy/league/147616/overview"

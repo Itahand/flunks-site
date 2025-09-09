@@ -3,22 +3,21 @@ import { Window, WindowContent, Button } from 'react95';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import { getCurrentBuildMode, isFeatureEnabled } from '../utils/buildMode';
-import '../styles/picture-day.css';
 
 // Clique configurations with 90s colors
 const CLIQUES = [
   { 
     id: 'preps', 
     name: 'The Preps', 
-    primaryColor: '#96CEB4', 
-    secondaryColor: '#B4DCC4',
-    accentColor: '#D1EAD5',
+    primaryColor: '#7CB342', // More green color
+    secondaryColor: '#8BC34A',
+    accentColor: '#AED581',
     pattern: 'plaid'
   },
   { 
     id: 'jocks', 
     name: 'The Jocks', 
-    primaryColor: '#FF6B6B', 
+    primaryColor: '#FF6B6B', // Keep the red color
     secondaryColor: '#FF8E8E',
     accentColor: '#FFB3B3',
     pattern: 'letterman'
@@ -26,7 +25,7 @@ const CLIQUES = [
   { 
     id: 'geeks', 
     name: 'The Geeks', 
-    primaryColor: '#4ECDC4', 
+    primaryColor: '#4ECDC4', // Keep the light color
     secondaryColor: '#7FDDD6',
     accentColor: '#B3F0ED',
     pattern: 'calculator'
@@ -34,9 +33,9 @@ const CLIQUES = [
   { 
     id: 'freaks', 
     name: 'The Freaks', 
-    primaryColor: '#45B7D1', 
-    secondaryColor: '#6CC7DD',
-    accentColor: '#A3DCE9',
+    primaryColor: '#BA68C8', // Pastel purple
+    secondaryColor: '#CE93D8',
+    accentColor: '#E1BEE7',
     pattern: 'grunge'
   }
 ];
@@ -47,6 +46,10 @@ const PictureDayContainer = styled.div`
   background-attachment: fixed;
   padding: 20px;
   font-family: 'Comic Sans MS', cursive, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 const YearbookHeader = styled.div`
@@ -82,23 +85,43 @@ const Subtitle = styled.p`
 
 const CliqueGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  max-width: 1200px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+  max-width: 900px;
+  width: 100%;
   margin: 0 auto;
+  justify-items: center;
+  align-items: center;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    max-width: 400px;
+  }
 `;
 
-const CliqueCard = styled.div<{ primaryColor: string; secondaryColor: string; accentColor: string }>`
+const CliqueCard = styled.div<{ 
+  primaryColor: string; 
+  secondaryColor: string; 
+  accentColor: string;
+  cliqueid: string;
+}>`
   background: ${props => `linear-gradient(145deg, ${props.primaryColor}, ${props.secondaryColor})`};
   border: 4px solid ${props => props.accentColor};
   border-radius: 15px;
-  padding: 20px;
+  padding: 25px 20px;
   text-align: center;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
   transform: rotate(${Math.random() * 4 - 2}deg);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   
   &:hover {
     transform: scale(1.05) rotate(0deg);
@@ -112,45 +135,161 @@ const CliqueCard = styled.div<{ primaryColor: string; secondaryColor: string; ac
     left: -50%;
     width: 200%;
     height: 200%;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 10px,
-      rgba(255, 255, 255, 0.1) 10px,
-      rgba(255, 255, 255, 0.1) 20px
-    );
+    ${props => {
+      switch (props.cliqueid) {
+        case 'preps':
+          return `
+            background: repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 15px,
+              rgba(255, 255, 255, 0.15) 15px,
+              rgba(255, 255, 255, 0.15) 30px
+            ),
+            repeating-linear-gradient(
+              -45deg,
+              transparent,
+              transparent 15px,
+              rgba(255, 255, 255, 0.1) 15px,
+              rgba(255, 255, 255, 0.1) 30px
+            );
+          `;
+        case 'jocks':
+          return `
+            background: radial-gradient(
+              circle at 25% 25%, rgba(255, 255, 255, 0.2) 2px, transparent 2px
+            ),
+            radial-gradient(
+              circle at 75% 75%, rgba(255, 255, 255, 0.15) 3px, transparent 3px
+            );
+            background-size: 40px 40px, 60px 60px;
+          `;
+        case 'geeks':
+          return `
+            background: 
+              linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.1) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1) 76%, transparent 77%, transparent),
+              linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.1) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1) 76%, transparent 77%, transparent);
+            background-size: 30px 30px;
+          `;
+        case 'freaks':
+          return `
+            background: 
+              repeating-conic-gradient(
+                from 0deg at 50% 50%,
+                transparent 0deg 60deg,
+                rgba(255, 255, 255, 0.1) 60deg 120deg
+              );
+            background-size: 50px 50px;
+          `;
+        default:
+          return `
+            background: repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 10px,
+              rgba(255, 255, 255, 0.1) 10px,
+              rgba(255, 255, 255, 0.1) 20px
+            );
+          `;
+      }
+    }}
     pointer-events: none;
   }
 `;
 
-const CliqueName = styled.h2`
+const CliqueName = styled.h2<{ cliqueid: string }>`
   color: #FFFFFF;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   font-size: 1.8rem;
   margin-bottom: 15px;
   position: relative;
   z-index: 1;
+  font-family: ${props => {
+    switch (props.cliqueid) {
+      case 'preps':
+        return "'Georgia', 'Times New Roman', serif";
+      case 'jocks':
+        return "'Impact', 'Arial Black', sans-serif";
+      case 'geeks':
+        return "'Courier New', 'Monaco', monospace";
+      case 'freaks':
+        return "'Brush Script MT', cursive, sans-serif";
+      default:
+        return "'Comic Sans MS', cursive, sans-serif";
+    }
+  }};
+  ${props => {
+    switch (props.cliqueid) {
+      case 'preps':
+        return 'font-style: italic; letter-spacing: 1px;';
+      case 'jocks':
+        return 'text-transform: uppercase; font-weight: 900; letter-spacing: 2px;';
+      case 'geeks':
+        return 'font-weight: normal; letter-spacing: 0.5px;';
+      case 'freaks':
+        return 'transform: rotate(-1deg); font-size: 2rem;';
+      default:
+        return '';
+    }
+  }}
 `;
 
-const CliqueDescription = styled.p`
+const CliqueDescription = styled.p<{ cliqueid: string }>`
   color: #FFFFFF;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
   font-size: 1rem;
   margin-bottom: 20px;
   position: relative;
   z-index: 1;
+  font-family: ${props => {
+    switch (props.cliqueid) {
+      case 'preps':
+        return "'Georgia', 'Times New Roman', serif";
+      case 'jocks':
+        return "'Arial', 'Helvetica', sans-serif";
+      case 'geeks':
+        return "'Courier New', 'Monaco', monospace";
+      case 'freaks':
+        return "'Comic Sans MS', cursive, sans-serif";
+      default:
+        return "'Comic Sans MS', cursive, sans-serif";
+    }
+  }};
+  ${props => {
+    switch (props.cliqueid) {
+      case 'preps':
+        return 'font-style: italic; line-height: 1.4;';
+      case 'jocks':
+        return 'font-weight: bold; text-transform: uppercase; font-size: 0.9rem;';
+      case 'geeks':
+        return 'line-height: 1.3; font-size: 0.9rem;';
+      case 'freaks':
+        return 'transform: rotate(0.5deg); line-height: 1.5;';
+      default:
+        return '';
+    }
+  }}
 `;
 
 const VoteButton = styled(Button)<{ primaryColor: string }>`
   background: ${props => props.primaryColor} !important;
   color: white !important;
   font-weight: bold !important;
-  font-size: 1.1rem !important;
-  padding: 10px 20px !important;
+  font-size: 0.9rem !important;
+  padding: 12px 8px !important;
   border: 2px solid rgba(255, 255, 255, 0.3) !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  width: 100% !important;
+  max-width: 260px !important;
+  margin: 10px auto 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
   position: relative;
   z-index: 1;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
   
   &:hover {
     transform: translateY(-2px) !important;
@@ -220,7 +359,6 @@ const RetroPattern = styled.div<{ pattern: string }>`
 
 const PictureDay: React.FC = () => {
   const router = useRouter();
-  const [stats, setStats] = useState<any>(null);
 
   // Check if Picture Day is enabled in current build mode
   const isPictureDayEnabled = isFeatureEnabled('showPictureDay');
@@ -233,28 +371,6 @@ const PictureDay: React.FC = () => {
       return;
     }
   }, [isPictureDayEnabled, router]);
-
-  useEffect(() => {
-    if (isPictureDayEnabled) {
-      // Load voting stats
-      fetchVotingStats();
-      
-      // Set up real-time updates every 5 seconds
-      const interval = setInterval(fetchVotingStats, 5000);
-      
-      return () => clearInterval(interval);
-    }
-  }, [isPictureDayEnabled]);
-
-  const fetchVotingStats = async () => {
-    try {
-      const response = await fetch('/api/picture-day/stats');
-      const data = await response.json();
-      setStats(data);
-    } catch (error) {
-      console.error('Failed to fetch voting stats:', error);
-    }
-  };
 
   const handleCliqueSelect = (cliqueId: string) => {
     router.push(`/picture-day/${cliqueId}`);
@@ -279,13 +395,12 @@ const PictureDay: React.FC = () => {
   return (
     <PictureDayContainer>
       <YearbookHeader>
-        <MainTitle className="picture-day-title">📸 Picture Day 1995 📸</MainTitle>
-        <Subtitle>Choose Your Clique's Champion!</Subtitle>
-        <Subtitle>Vote for the face that will represent your crew in the yearbook!</Subtitle>
+        <MainTitle className="picture-day-title">📸 Picture Day 📸</MainTitle>
+        <Subtitle>Vote for which Flunk you want to be the main characters in each clique!</Subtitle>
       </YearbookHeader>
       
-      <Window style={{ maxWidth: '1400px', margin: '0 auto', background: 'rgba(255, 255, 255, 0.9)' }}>
-        <WindowContent>
+      <Window style={{ maxWidth: '1000px', margin: '20px auto', background: 'rgba(255, 255, 255, 0.9)' }}>
+        <WindowContent style={{ padding: '30px' }}>
           <CliqueGrid>
             {CLIQUES.map((clique) => (
               <CliqueCard
@@ -294,26 +409,23 @@ const PictureDay: React.FC = () => {
                 primaryColor={clique.primaryColor}
                 secondaryColor={clique.secondaryColor}
                 accentColor={clique.accentColor}
+                cliqueid={clique.id}
               >
                 <DecorationStars className="sparkle-decoration">⭐✨</DecorationStars>
                 <RetroPattern pattern={clique.pattern} />
                 
-                <CliqueName>{clique.name}</CliqueName>
-                <CliqueDescription>
-                  Click to vote for your favorite Flunk to represent {clique.name} in the yearbook!
-                </CliqueDescription>
-                
-                {stats && stats[clique.id] && (
-                  <div style={{ color: 'white', marginBottom: '15px', fontSize: '0.9rem' }}>
-                    Total Votes: {stats[clique.id].totalVotes || 0}
-                  </div>
-                )}
+                <div>
+                  <CliqueName cliqueid={clique.id}>{clique.name}</CliqueName>
+                  <CliqueDescription cliqueid={clique.id}>
+                    Click to vote for your favorite Flunk to be the main character for {clique.name}!
+                  </CliqueDescription>
+                </div>
                 
                 <VoteButton 
                   onClick={() => handleCliqueSelect(clique.id)}
                   primaryColor={clique.primaryColor}
                 >
-                  Enter Voting Booth
+                  Vote Now
                 </VoteButton>
               </CliqueCard>
             ))}

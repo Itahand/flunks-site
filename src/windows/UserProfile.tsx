@@ -10,7 +10,7 @@ import { GumDisplay } from '../components/GumDisplay';
 import { useGum } from '../contexts/GumContext';
 import { getActiveSpecialEvents, canParticipateInEvent, claimSpecialEvent, type SpecialEvent } from '../services/specialEventsService';
 import { canClaimDailyLogin, claimDailyLogin } from '../services/dailyLoginService';
-import { getChapter2ObjectivesStatus, ChapterObjective } from '../utils/weeklyObjectives';
+import { getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, ChapterObjective } from '../utils/weeklyObjectives';
 
 const UserProfile: React.FC = () => {
   const { closeWindow } = useWindowsContext();
@@ -20,7 +20,7 @@ const UserProfile: React.FC = () => {
   const { profile, hasProfile, loading: profileLoading } = useUserProfile();
   const { balance, refreshBalance, refreshStats } = useGum();
   const [devBypass, setDevBypass] = useState(false);
-  const [currentSection, setCurrentSection] = useState<1 | 2 | 3>(1);
+  const [currentSection, setCurrentSection] = useState<1 | 2 | 3 | 4>(4); // Default to Chapter 3 - Picture Day
   const [showProfileCreation, setShowProfileCreation] = useState(false);
   const [specialEvents, setSpecialEvents] = useState<SpecialEvent[]>([]);
   const [canClaimDaily, setCanClaimDaily] = useState(false);
@@ -28,6 +28,8 @@ const UserProfile: React.FC = () => {
   const [claimingEvent, setClaimingEvent] = useState<string | null>(null);
   const [chapter2Objectives, setChapter2Objectives] = useState<ChapterObjective[]>([]);
   const [chapter2Loading, setChapter2Loading] = useState(false);
+  const [chapter3Objectives, setChapter3Objectives] = useState<ChapterObjective[]>([]);
+  const [chapter3Loading, setChapter3Loading] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -67,6 +69,20 @@ const UserProfile: React.FC = () => {
     }
   };
 
+  const loadChapter3Objectives = async () => {
+    if (!primaryWallet?.address) return;
+    setChapter3Loading(true);
+    try {
+      const objectiveStatus = await getChapter3ObjectivesStatus(primaryWallet!.address);
+      setChapter3Objectives(objectiveStatus.completedObjectives);
+      console.log('📋 Chapter 3 objectives loaded:', objectiveStatus.completedObjectives);
+    } catch (error) {
+      console.error('❌ Failed to load Chapter 3 objectives:', error);
+    } finally {
+      setChapter3Loading(false);
+    }
+  };
+
   // Check daily login status and load special events
   useEffect(() => {
     if (!primaryWallet?.address) return;
@@ -84,11 +100,13 @@ const UserProfile: React.FC = () => {
     checkDailyStatus();
     loadSpecialEvents();
     loadChapter2Objectives();
+    loadChapter3Objectives();
     
     // Set up interval to refresh special events
     const interval = setInterval(() => {
       loadSpecialEvents();
       loadChapter2Objectives();
+      loadChapter3Objectives();
     }, 30000); // Check every 30 seconds
     
     return () => clearInterval(interval);
@@ -101,6 +119,7 @@ const UserProfile: React.FC = () => {
     
     if (primaryWallet) {
       loadChapter2Objectives(); // Also refresh objectives
+      loadChapter3Objectives(); // Also refresh Chapter 3 objectives
     }
   };
 
@@ -215,7 +234,7 @@ const UserProfile: React.FC = () => {
   };
 
   // Smooth scroll to specific section
-  const scrollToSection = (section: 1 | 2 | 3) => {
+  const scrollToSection = (section: 1 | 2 | 3 | 4) => {
     // Scroll functionality disabled
     console.log(`Scroll to section ${section} disabled`);
     // if (scrollContainerRef.current) {
@@ -250,13 +269,17 @@ const UserProfile: React.FC = () => {
       
       const topHeight = containerHeight * 0.8;
       const middleHeight = containerHeight * 1.4;
+      const gumSectionHeight = containerHeight * 0.8;
+      const chapter3Height = containerHeight * 1.2;
       
       if (scrollTop < topHeight * 0.5) {
         setCurrentSection(1);
       } else if (scrollTop < topHeight + middleHeight * 0.5) {
         setCurrentSection(2);
-      } else {
+      } else if (scrollTop < topHeight + middleHeight + gumSectionHeight * 0.5) {
         setCurrentSection(3);
+      } else {
+        setCurrentSection(4);
       }
     }
   };
@@ -513,10 +536,10 @@ const UserProfile: React.FC = () => {
               gap: '5px',
               zIndex: 100
             }}>
-              {[1, 2, 3].map(section => (
+              {[1, 2, 3, 4].map(section => (
                 <button
                   key={section}
-                  onClick={() => scrollToSection(section as 1 | 2 | 3)}
+                  onClick={() => scrollToSection(section as 1 | 2 | 3 | 4)}
                   style={{
                     background: currentSection === section ? '#FFD700' : 'rgba(255,255,255,0.8)',
                     color: currentSection === section ? '#654321' : '#8B4513',
@@ -899,6 +922,163 @@ const UserProfile: React.FC = () => {
                   <div style={{ fontSize: '14px', color: '#CCC' }}>
                     Don't forget your daily check-in for GUM rewards!
                   </div>
+                </div>
+              </div>
+
+              {/* Section 4 - Chapter 3: Picture Day */}
+              <div style={{
+                height: '120vh',
+                minHeight: '600px',
+                background: `linear-gradient(135deg, rgba(255, 20, 147, 0.9) 0%, rgba(199, 21, 133, 0.95) 50%, rgba(139, 69, 19, 1) 100%)`,
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                padding: '20px',
+                borderRadius: '8px',
+                marginBottom: '10px',
+                border: '3px solid #FF1493',
+                boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3)',
+                gap: '20px'
+              }}>
+                {/* Chapter 3 Title */}
+                <div style={{
+                  background: 'rgba(0,0,0,0.9)',
+                  color: '#FFD700',
+                  padding: '20px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  border: '2px solid #FF1493',
+                  width: '100%',
+                  maxWidth: '500px'
+                }}>
+                  <h2 style={{ margin: '0 0 10px 0', fontSize: '28px' }}>📸 Chapter 3: Picture Day</h2>
+                  <p style={{ margin: '0', fontSize: '16px', color: '#DDD' }}>Vote for your favorite flunks in the yearbook!</p>
+                </div>
+
+                {/* Objectives List */}
+                <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {chapter3Loading ? (
+                    <div style={{
+                      background: 'rgba(0,0,0,0.8)',
+                      color: '#FFD700',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      border: '2px solid #FF1493'
+                    }}>
+                      <p style={{ margin: '0', fontSize: '16px' }}>🔄 Loading objectives...</p>
+                    </div>
+                  ) : chapter3Objectives.length > 0 ? (
+                    chapter3Objectives.map((objective) => (
+                      <div key={objective.id} style={{
+                        background: objective.completed ? 'rgba(34, 139, 34, 0.9)' : 'rgba(0,0,0,0.8)',
+                        color: objective.completed ? '#90EE90' : '#FFD700',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        border: objective.completed ? '2px solid #32CD32' : '2px solid #FF1493',
+                        position: 'relative'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div>
+                            <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 'bold' }}>
+                              {objective.completed ? '✅' : '⏳'} {objective.title}
+                            </h3>
+                            <p style={{ margin: '0 0 8px 0', fontSize: '14px', opacity: 0.9 }}>
+                              {objective.description}
+                            </p>
+                            {objective.reward && (
+                              <p style={{ 
+                                margin: '0', 
+                                fontSize: '12px', 
+                                color: objective.completed ? '#90EE90' : '#FF1493',
+                                fontWeight: 'bold'
+                              }}>
+                                🎁 Reward: {objective.reward} GUM
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {objective.completed && (
+                          <div style={{
+                            position: 'absolute',
+                            top: '10px',
+                            right: '10px',
+                            background: '#32CD32',
+                            color: '#000',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                          }}>
+                            COMPLETE
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{
+                      background: 'rgba(0,0,0,0.8)',
+                      color: '#FFD700',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      border: '2px solid #FF1493'
+                    }}>
+                      <p style={{ margin: '0', fontSize: '16px' }}>📋 No objectives available</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Progress Summary */}
+                {chapter3Objectives.length > 0 && (
+                  <div style={{
+                    background: 'rgba(0,0,0,0.8)',
+                    color: '#FFD700',
+                    padding: '15px',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    border: '2px solid #FF1493',
+                    width: '100%',
+                    maxWidth: '300px'
+                  }}>
+                    <p style={{ margin: '0', fontSize: '16px', fontWeight: 'bold' }}>
+                      📊 Progress: {chapter3Objectives.filter(obj => obj.completed).length}/{chapter3Objectives.length}
+                    </p>
+                    <div style={{
+                      background: 'rgba(255,255,255,0.2)',
+                      borderRadius: '10px',
+                      height: '8px',
+                      marginTop: '8px',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{
+                        background: '#FF1493',
+                        height: '100%',
+                        width: `${(chapter3Objectives.filter(obj => obj.completed).length / chapter3Objectives.length) * 100}%`,
+                        borderRadius: '10px',
+                        transition: 'width 0.3s ease'
+                      }} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Link to Picture Day */}
+                <div style={{
+                  background: 'rgba(255, 20, 147, 0.8)',
+                  color: '#FFD700',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  border: '2px solid #FF1493',
+                  width: '100%',
+                  maxWidth: '400px'
+                }}>
+                  <p style={{ margin: '0', fontSize: '14px', fontStyle: 'italic' }}>
+                    📸 Head to Picture Day to vote for your favorite flunks in each clique yearbook photo!
+                  </p>
                 </div>
               </div>
             </div>

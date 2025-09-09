@@ -6,7 +6,6 @@ import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { VOTING_TIERS } from '../../utils/votingPower';
 import { useVotingEligibility } from '../../hooks/useVoting';
 import { getCurrentBuildMode, isFeatureEnabled } from '../../utils/buildMode';
-import '../styles/picture-day.css';
 
 // Clique configurations
 const CLIQUE_CONFIGS = {
@@ -390,6 +389,11 @@ const CliquePage: React.FC = () => {
         alert(`Vote cast successfully for ${result.candidateName}!`);
         // Immediately update voting data
         fetchVotingData();
+        
+        // Dispatch event to notify other components (like objectives)
+        window.dispatchEvent(new CustomEvent('pictureVoteComplete', {
+          detail: { clique, candidateId, candidateName: result.candidateName }
+        }));
       } else {
         alert(result.error || 'Failed to submit vote');
       }
@@ -434,9 +438,11 @@ const CliquePage: React.FC = () => {
     );
   }
 
-  const winningCandidate = votingData?.candidates.reduce((prev, current) => 
-    (prev.votes > current.votes) ? prev : current
-  );
+  const winningCandidate = votingData?.candidates?.length > 0 
+    ? votingData.candidates.reduce((prev, current) => 
+        (prev.votes > current.votes) ? prev : current
+      )
+    : null;
 
   const isAuthenticated = !!user && !!primaryWallet?.address;
   const votingPower = votingData?.userVoteStatus?.votingPower;

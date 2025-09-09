@@ -140,6 +140,13 @@ export const APP_PERMISSIONS: AppPermission[] = [
     description: 'Browse student yearbook entries',
     buildModeFeature: 'showYearbook'
   },
+  {
+    id: 'picture-day',
+    title: 'Picture Day',
+    requiredLevel: ['ADMIN', 'BETA', 'COMMUNITY'],
+    description: '90s yearbook voting system for clique representatives',
+    buildModeFeature: 'showPictureDay'
+  },
   
   // Retro Text Demo (showcase new clique colors)
   {
@@ -184,10 +191,30 @@ export const APP_PERMISSIONS: AppPermission[] = [
  * Check if user has permission to see an app
  */
 export const hasAppPermission = (appId: string, userAccessLevel?: AccessLevel): boolean => {
-  // If no access level (not logged in), deny all
-  if (!userAccessLevel) return false;
-  
   const appPermission = APP_PERMISSIONS.find(app => app.id === appId);
+  
+  // Special case for Picture Day - show for debugging
+  if (appId === 'picture-day') {
+    console.log(`🎯 Picture Day Permission Check:`, {
+      appId,
+      userAccessLevel,
+      appPermission,
+      buildModeFeature: appPermission?.buildModeFeature,
+      featureEnabled: appPermission?.buildModeFeature ? isFeatureEnabled(appPermission.buildModeFeature as any) : 'N/A'
+    });
+  }
+  
+  // If no access level (not logged in), deny all except Picture Day for testing
+  if (!userAccessLevel) {
+    if (appId === 'picture-day') {
+      // Still check build mode feature for Picture Day
+      if (appPermission?.buildModeFeature) {
+        return isFeatureEnabled(appPermission.buildModeFeature as any);
+      }
+      return true;
+    }
+    return false;
+  }
   
   // If app not in permissions list, allow by default (for backwards compatibility)
   if (!appPermission) return true;

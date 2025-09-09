@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { getObjectivesStatus, getChapter2ObjectivesStatus, type ChapterObjective, type ObjectiveStatus, calculateObjectiveProgress } from '../utils/weeklyObjectives';
+import { getObjectivesStatus, getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, type ChapterObjective, type ObjectiveStatus, calculateObjectiveProgress } from '../utils/weeklyObjectives';
 
 interface WeeklyObjectivesProps {
   currentWeek?: number;
@@ -11,12 +11,15 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
   const { primaryWallet } = useDynamicContext();
   const [objectivesStatus, setObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [chapter2ObjectivesStatus, setChapter2ObjectivesStatus] = useState<ObjectiveStatus | null>(null);
+  const [chapter3ObjectivesStatus, setChapter3ObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastWallet, setLastWallet] = useState<string | null>(null);
-  const [currentWeek, setCurrentWeek] = useState<1 | 2>(2);
+  const [currentWeek, setCurrentWeek] = useState<1 | 2 | 3>(3); // Default to Chapter 3 - Picture Day
 
   // Get current objectives data based on selected week
-  const currentObjectivesData = currentWeek === 2 ? chapter2ObjectivesStatus : objectivesStatus;
+  const currentObjectivesData = currentWeek === 3 ? chapter3ObjectivesStatus : 
+                              currentWeek === 2 ? chapter2ObjectivesStatus : 
+                              objectivesStatus;
 
   const loadObjectives = async (forceRefresh = false) => {
     if (!primaryWallet?.address) {
@@ -29,20 +32,23 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         console.log('🔄 Force refreshing objectives for wallet:', primaryWallet.address.slice(0, 10) + '...');
       }
       
-      // Load both Chapter 1 and Chapter 2 objectives
-      const [status, chapter2Status] = await Promise.all([
+      // Load Chapter 1, Chapter 2, and Chapter 3 objectives
+      const [status, chapter2Status, chapter3Status] = await Promise.all([
         getObjectivesStatus(primaryWallet.address),
-        getChapter2ObjectivesStatus(primaryWallet.address)
+        getChapter2ObjectivesStatus(primaryWallet.address),
+        getChapter3ObjectivesStatus(primaryWallet.address)
       ]);
       
       setObjectivesStatus(status);
       setChapter2ObjectivesStatus(chapter2Status);
+      setChapter3ObjectivesStatus(chapter3Status);
       
     } catch (error) {
       console.error('❌ Failed to load objectives:', error);
       // On error, clear the status to prevent stale data
       setObjectivesStatus(null);
       setChapter2ObjectivesStatus(null);
+      setChapter3ObjectivesStatus(null);
     } finally {
       setLoading(false);
     }
@@ -53,12 +59,14 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
     if (primaryWallet?.address !== lastWallet) {
       setObjectivesStatus(null);
       setChapter2ObjectivesStatus(null);
+      setChapter3ObjectivesStatus(null);
       setLastWallet(primaryWallet?.address || null);
     }
     
     // Clear previous state when wallet changes
     setObjectivesStatus(null);
     setChapter2ObjectivesStatus(null);
+    setChapter3ObjectivesStatus(null);
     loadObjectives();
     
     // Much longer refresh interval to reduce server load and UI disruption
@@ -78,6 +86,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
 
     window.addEventListener('cafeteriaButtonClicked', handleObjectiveUpdate);
     window.addEventListener('codeAccessed', handleObjectiveUpdate);
+    window.addEventListener('pictureVoteComplete', handleObjectiveUpdate); // Add Picture Day voting event
     
     return () => {
       clearInterval(interval);
@@ -86,6 +95,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
       }
       window.removeEventListener('cafeteriaButtonClicked', handleObjectiveUpdate);
       window.removeEventListener('codeAccessed', handleObjectiveUpdate);
+      window.removeEventListener('pictureVoteComplete', handleObjectiveUpdate);
     };
   }, [primaryWallet?.address, lastWallet]);
 
@@ -191,6 +201,22 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               >
                 Chapter 2
               </button>
+              <button
+                onClick={() => setCurrentWeek(3)}
+                style={{
+                  background: currentWeek === 3 ? 'rgba(255, 20, 147, 0.5)' : 'transparent',
+                  border: currentWeek === 3 ? '1px solid #ff1493' : '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '4px',
+                  color: currentWeek === 3 ? '#fff' : '#ccc',
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                Chapter 3
+              </button>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -279,14 +305,18 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
             style={{
               background: objective.completed 
                 ? 'rgba(0, 255, 0, 0.1)' 
-                : currentWeek === 2 
-                  ? 'rgba(255, 165, 0, 0.05)' // Orange tint for Chapter 2
-                  : 'rgba(255, 255, 255, 0.05)',
+                : currentWeek === 3 
+                  ? 'rgba(255, 20, 147, 0.05)' // Pink tint for Chapter 3
+                  : currentWeek === 2 
+                    ? 'rgba(255, 165, 0, 0.05)' // Orange tint for Chapter 2
+                    : 'rgba(255, 255, 255, 0.05)',
               border: objective.completed 
                 ? '1px solid rgba(0, 255, 0, 0.3)' 
-                : currentWeek === 2
-                  ? '1px solid rgba(255, 165, 0, 0.3)' // Orange border for Chapter 2
-                  : '1px solid rgba(255, 255, 255, 0.1)',
+                : currentWeek === 3
+                  ? '1px solid rgba(255, 20, 147, 0.3)' // Pink border for Chapter 3
+                  : currentWeek === 2
+                    ? '1px solid rgba(255, 165, 0, 0.3)' // Orange border for Chapter 2
+                    : '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: '8px',
               padding: '12px',
               display: 'flex',
@@ -318,7 +348,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               {objective.reward && (
                 <div style={{
                   fontSize: '11px',
-                  color: currentWeek === 2 ? '#ffa500' : '#4a90e2',
+                  color: currentWeek === 3 ? '#ff1493' : currentWeek === 2 ? '#ffa500' : '#4a90e2',
                   fontWeight: 'bold'
                 }}>
                   🍬 Reward: +{objective.reward} GUM

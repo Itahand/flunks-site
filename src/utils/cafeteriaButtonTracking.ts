@@ -59,3 +59,33 @@ export const getCafeteriaButtonStats = async () => {
     return null;
   }
 };
+
+// Check if a user has clicked the cafeteria button
+export const checkCafeteriaButtonClicked = async (walletAddress: string): Promise<boolean> => {
+  if (!hasValidSupabaseConfig || !supabase) {
+    console.warn('Supabase not configured, cannot check cafeteria button click');
+    return false;
+  }
+
+  try {
+    console.log('🔍 Checking cafeteria button click for wallet:', walletAddress);
+    
+    const { data, error } = await supabase
+      .from('cafeteria_button_clicks')
+      .select('*')
+      .eq('wallet_address', walletAddress)
+      .limit(1);
+
+    if (error) {
+      console.error('Error checking cafeteria button click:', error);
+      return false;
+    }
+
+    const hasClicked = data && data.length > 0;
+    console.log('✅ Cafeteria button clicked:', hasClicked);
+    return hasClicked;
+  } catch (err) {
+    console.error('Failed to check cafeteria button click:', err);
+    return false;
+  }
+};

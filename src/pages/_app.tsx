@@ -7,6 +7,7 @@ import "config/fcl";
 import "../styles/globals.css";
 import "../styles/dynamic-fixes.css";
 import "../styles/mobile-chat.css";
+import "../styles/picture-day.css";
 import WindowsProvider from "contexts/WindowsContext";
 import ClaimBackpackProvider from "contexts/BackpackClaimContext";
 import {
