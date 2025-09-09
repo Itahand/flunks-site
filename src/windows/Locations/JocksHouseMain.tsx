@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { awardGum } from "utils/gumAPI";
 import { trackDigitalLockAttempt } from "utils/digitalLockTracking";
+import { useBackpackAccess } from "hooks/useBackpackAccess";
 
 // Separate DigitalLock component to avoid state closure issues
 const DigitalLockWindow = ({ onClose, primaryWallet }: { 
@@ -379,6 +380,7 @@ const JocksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   const { primaryWallet } = useDynamicContext();
   const [gumClaimed, setGumClaimed] = useState(false);
+  const { hasBackpackBase } = useBackpackAccess();
   
   // Use your uploaded day/night images for Jocks House
   const dayImage = "/images/icons/jocks-house-day.png";
@@ -492,7 +494,7 @@ const JocksHouseMain = () => {
         >
           <div className="w-full h-full bg-black text-white overflow-y-auto flex flex-col">
             {/* Closet image section - flexible height */}
-            <div className="relative w-full flex-shrink-0" style={{ minHeight: '60vh' }}>
+            <div className="relative w-full flex-shrink-0" style={{ height: '50vh', maxHeight: '400px' }}>
               <img
                 src="/images/locations/jocks-closet.png"
                 alt="Jock's Closet Interior"
@@ -517,7 +519,7 @@ const JocksHouseMain = () => {
                   🖼️ Picture Frame
                 </button>
                 <button 
-                  onClick={() => openBackpackAccessDemo()}
+                  onClick={() => openTeddyBackpackAccess()}
                   className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm min-h-[44px] flex items-center justify-center cursor-pointer"
                   title="Get a fortune cookie message"
                 >
@@ -562,6 +564,64 @@ const JocksHouseMain = () => {
         </DraggableResizeableWindow>
       ),
     });
+  };
+
+
+  const openTeddyBackpackAccess = () => {
+    // Check if user has teddy backpack
+    const hasTeddyBackpack = hasBackpackBase('Teddy');
+    
+    if (hasTeddyBackpack) {
+      // Show the fortune message for users with teddy backpack
+      openWindow({
+        key: "teddy-backpack-access",
+        window: (
+          <DraggableResizeableWindow
+            windowsId="teddy-backpack-access"
+            headerTitle="🎒 Teddy Backpack"
+            onClose={() => closeWindow("teddy-backpack-access")}
+            initialWidth="400px"
+            initialHeight="300px"
+            resizable={false}
+          >
+            <div className="p-6 text-center bg-gradient-to-br from-orange-100 to-red-100 h-full flex flex-col justify-center">
+              <div className="text-6xl mb-4">🎒</div>
+              <h2 className="text-xl font-bold mb-4 text-orange-800">Teddy Backpack</h2>
+              <div className="bg-white p-4 rounded-lg shadow-lg border-2 border-orange-200">
+                <p className="text-lg font-medium text-gray-800 italic">
+                  "Good things come to those who wait"
+                </p>
+              </div>
+            </div>
+          </DraggableResizeableWindow>
+        ),
+      });
+    } else {
+      // Show access denied message
+      openWindow({
+        key: "teddy-backpack-denied",
+        window: (
+          <DraggableResizeableWindow
+            windowsId="teddy-backpack-denied"
+            headerTitle="🚫 Access Denied"
+            onClose={() => closeWindow("teddy-backpack-denied")}
+            initialWidth="400px"
+            initialHeight="250px"
+            resizable={false}
+          >
+            <div className="p-6 text-center bg-gradient-to-br from-red-100 to-gray-100 h-full flex flex-col justify-center">
+              <div className="text-6xl mb-4">🚫</div>
+              <h2 className="text-xl font-bold mb-4 text-red-800">Access Denied</h2>
+              <div className="bg-white p-4 rounded-lg shadow-lg border-2 border-red-200">
+                <p className="text-lg font-medium text-gray-800">
+                  Users must have a teddy backpack to access this area.
+                </p>
+              </div>
+            </div>
+          </DraggableResizeableWindow>
+        ),
+      });
+    }
   };
 
   const openTimeBasedAccessDemo = () => {

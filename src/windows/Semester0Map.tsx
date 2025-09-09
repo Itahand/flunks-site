@@ -522,7 +522,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
             className={styles["background-map"]}
             alt="Semester 0 Map"
           />      {/* Screen dimming overlay - appears when hovering over any target location */}
-      {!isMobile && (hovered === 'high-school' || hovered === 'arcade' || hovered === 'freaks-house' || hovered === 'geeks-house' || hovered === 'jocks-house' || hovered === 'preps-house') && (
+      {!isMobile && (hovered === 'high-school' || hovered === 'arcade' || hovered === 'football-field' || hovered === 'freaks-house' || hovered === 'geeks-house' || hovered === 'jocks-house' || hovered === 'preps-house') && (
         <div className={styles["map-overlay"]} />
       )}
 
@@ -532,6 +532,9 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
       )}
       {!isMobile && hovered === 'arcade' && (
         <div className={`${styles["map-location-hover"]} ${styles["arcade"]}`} />
+      )}
+      {!isMobile && hovered === 'football-field' && (
+        <div className={`${styles["map-location-hover"]} ${styles["football-field"]}`} />
       )}
       {!isMobile && hovered === 'jocks-house' && (
         <div className={`${styles["map-location-hover"]} ${styles["jocks-house"]}`} />

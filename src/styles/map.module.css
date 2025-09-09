@@ -619,6 +619,10 @@
   background-image: url('/images/icons/preps-house-icon.png');
 }
 
+.map-location-hover.football-field {
+  background-image: url('/images/icons/football-field-icon.png');
+}
+
 @keyframes mapLocationPulse {
   0%, 100% { 
     transform: translate(-50%, -50%) scale(1);

@@ -1,0 +1,199 @@
+/* Picture Day 90s Yearbook Styles */
+
+/* 90s Retro Animations */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+@keyframes neon-glow {
+  0%, 100% { 
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor;
+  }
+  50% { 
+    text-shadow: 
+      0 0 2px currentColor,
+      0 0 5px currentColor,
+      0 0 8px currentColor;
+  }
+}
+
+@keyframes vote-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+  100% { transform: scale(1); }
+}
+
+/* Apply animations */
+.picture-day-title {
+  animation: wiggle 3s ease-in-out infinite;
+}
+
+.clique-card:hover {
+  animation: float 2s ease-in-out infinite;
+}
+
+.sparkle-decoration {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.winning-candidate {
+  animation: vote-pulse 2s ease-in-out infinite;
+}
+
+.neon-text {
+  animation: neon-glow 3s ease-in-out infinite;
+}
+
+/* 90s Pattern Backgrounds */
+.pattern-dots {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.pattern-stripes {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(255,255,255,0.1) 10px,
+    rgba(255,255,255,0.1) 20px
+  );
+}
+
+.pattern-zigzag {
+  background-image: 
+    linear-gradient(135deg, rgba(255,255,255,0.1) 25%, transparent 25%), 
+    linear-gradient(225deg, rgba(255,255,255,0.1) 25%, transparent 25%), 
+    linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%), 
+    linear-gradient(315deg, rgba(255,255,255,0.1) 25%, transparent 25%);
+  background-size: 20px 20px;
+  background-position: 10px 0, 10px 0, 0 0, 0 0;
+}
+
+/* Retro Button Styles */
+.retro-button {
+  background: linear-gradient(145deg, #ff6b6b, #ff5252) !important;
+  border: 2px solid #fff !important;
+  box-shadow: 
+    inset -2px -2px 4px rgba(0,0,0,0.3),
+    inset 2px 2px 4px rgba(255,255,255,0.3),
+    0 4px 8px rgba(0,0,0,0.3) !important;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+  transition: all 0.2s ease !important;
+}
+
+.retro-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    inset -2px -2px 4px rgba(0,0,0,0.3),
+    inset 2px 2px 4px rgba(255,255,255,0.3),
+    0 6px 12px rgba(0,0,0,0.4) !important;
+}
+
+.retro-button:active {
+  transform: translateY(0px) !important;
+  box-shadow: 
+    inset 2px 2px 4px rgba(0,0,0,0.3),
+    inset -2px -2px 4px rgba(255,255,255,0.3),
+    0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+/* 90s Yearbook Paper Texture */
+.yearbook-paper {
+  background: 
+    linear-gradient(90deg, transparent 78px, rgba(0,0,0,0.1) 79px, rgba(0,0,0,0.1) 81px, transparent 82px),
+    linear-gradient(rgba(255,255,255,0.95), rgba(255,255,255,0.95));
+  background-size: 82px 100%, 100% 100%;
+}
+
+/* Polaroid Photo Effect */
+.polaroid-photo {
+  background: white;
+  padding: 10px 10px 50px 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transform: rotate(-2deg);
+  transition: transform 0.3s ease;
+}
+
+.polaroid-photo:hover {
+  transform: rotate(0deg) scale(1.05);
+}
+
+/* Scrapbook Elements */
+.scrapbook-tape {
+  position: relative;
+}
+
+.scrapbook-tape::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 20px;
+  background: rgba(255, 255, 0, 0.3);
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 0, 0.5);
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .picture-day-title {
+    font-size: 2rem !important;
+  }
+  
+  .clique-card {
+    transform: none !important;
+    margin-bottom: 20px;
+  }
+  
+  .candidates-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  
+  .polaroid-photo {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .clique-card {
+    border-width: 3px !important;
+  }
+  
+  .retro-button {
+    border-width: 3px !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .picture-day-title,
+  .clique-card:hover,
+  .sparkle-decoration,
+  .winning-candidate,
+  .neon-text {
+    animation: none !important;
+  }
+  
+  .polaroid-photo {
+    transition: none !important;
+  }
+}

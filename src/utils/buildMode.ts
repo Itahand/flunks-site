@@ -22,6 +22,7 @@ export interface BuildModeConfig {
   showBulletinBoard: boolean;
   showIconAnimation: boolean;
   showReportCard: boolean;
+  showPictureDay: boolean;
   
   // Special Announcements
   flappyFlunkWeekend: boolean;
@@ -62,6 +63,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showBulletinBoard: false,
     showIconAnimation: false,
     showReportCard: false,
+    showPictureDay: false,
     
     // Special Announcements - visible on public site
     flappyFlunkWeekend: true,
@@ -100,6 +102,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showBulletinBoard: true,
     showIconAnimation: true,
     showReportCard: true,
+    showPictureDay: true,
     
     // Special Announcements - visible in build mode
     flappyFlunkWeekend: true,

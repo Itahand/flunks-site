@@ -1,0 +1,574 @@
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { Window, WindowContent, Button } from 'react95';
+import styled from 'styled-components';
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { VOTING_TIERS } from '../../utils/votingPower';
+import { useVotingEligibility } from '../../hooks/useVoting';
+import { getCurrentBuildMode, isFeatureEnabled } from '../../utils/buildMode';
+import '../styles/picture-day.css';
+
+// Clique configurations
+const CLIQUE_CONFIGS = {
+  preps: { 
+    name: 'The Preps', 
+    primaryColor: '#96CEB4', 
+    secondaryColor: '#B4DCC4',
+    accentColor: '#D1EAD5',
+    pattern: 'plaid',
+    bgPattern: 'argyle'
+  },
+  jocks: { 
+    name: 'The Jocks', 
+    primaryColor: '#FF6B6B', 
+    secondaryColor: '#FF8E8E',
+    accentColor: '#FFB3B3',
+    pattern: 'letterman',
+    bgPattern: 'football'
+  },
+  geeks: { 
+    name: 'The Geeks', 
+    primaryColor: '#4ECDC4', 
+    secondaryColor: '#7FDDD6',
+    accentColor: '#B3F0ED',
+    pattern: 'calculator',
+    bgPattern: 'binary'
+  },
+  freaks: { 
+    name: 'The Freaks', 
+    primaryColor: '#45B7D1', 
+    secondaryColor: '#6CC7DD',
+    accentColor: '#A3DCE9',
+    pattern: 'grunge',
+    bgPattern: 'lightning'
+  }
+};
+
+const VotingContainer = styled.div<{ primaryColor: string; secondaryColor: string }>`
+  min-height: 100vh;
+  background: linear-gradient(135deg, ${props => props.primaryColor} 0%, ${props => props.secondaryColor} 100%);
+  background-attachment: fixed;
+  padding: 20px;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    background-image: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.3) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 50%);
+    pointer-events: none;
+  }
+`;
+
+const YearbookPage = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 30px;
+    bottom: 0;
+    width: 3px;
+    background: repeating-linear-gradient(
+      to bottom,
+      #FF69B4 0px,
+      #FF69B4 15px,
+      transparent 15px,
+      transparent 30px
+    );
+  }
+`;
+
+const PageHeader = styled.div`
+  text-align: center;
+  margin-bottom: 40px;
+  margin-left: 20px;
+`;
+
+const CliqueTitle = styled.h1<{ primaryColor: string }>`
+  color: ${props => props.primaryColor};
+  font-size: 2.5rem;
+  font-family: 'Times New Roman', serif;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  transform: rotate(-1deg);
+`;
+
+const PageSubtitle = styled.p`
+  font-size: 1.1rem;
+  color: #666;
+  margin: 10px 0;
+  font-style: italic;
+`;
+
+const CandidatesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin: 40px 20px;
+`;
+
+const CandidateCard = styled.div<{ accentColor: string; isWinning: boolean }>`
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  border: 3px solid ${props => props.isWinning ? '#FFD700' : props.accentColor};
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: ${props => props.isWinning ? '0 0 20px rgba(255, 215, 0, 0.5)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
+  transform: ${props => props.isWinning ? 'scale(1.05)' : 'none'};
+  transition: all 0.3s ease;
+  position: relative;
+  
+  ${props => props.isWinning && `
+    &::before {
+      content: '👑';
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      font-size: 2rem;
+      z-index: 1;
+    }
+  `}
+  
+  &:hover {
+    transform: ${props => props.isWinning ? 'scale(1.08)' : 'scale(1.02)'};
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+`;
+
+const PhotoFrame = styled.div<{ accentColor: string }>`
+  width: 200px;
+  height: 250px;
+  margin: 0 auto 15px;
+  border: 5px solid ${props => props.accentColor};
+  border-radius: 5px;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+  }
+`;
+
+const PhotoPlaceholder = styled.div`
+  color: #999;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 20px;
+`;
+
+const CandidatePhoto = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const CandidateName = styled.h3`
+  color: #333;
+  font-size: 1.2rem;
+  margin: 15px 0 10px;
+  font-family: 'Times New Roman', serif;
+`;
+
+const VoteCount = styled.div<{ primaryColor: string; isWinning: boolean }>`
+  color: ${props => props.isWinning ? '#FFD700' : props.primaryColor};
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin: 10px 0;
+  ${props => props.isWinning && 'text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);'}
+`;
+
+const VoteButton = styled(Button)<{ primaryColor: string; disabled: boolean }>`
+  background: ${props => props.disabled ? '#ccc' : props.primaryColor} !important;
+  color: white !important;
+  font-weight: bold !important;
+  padding: 12px 24px !important;
+  margin: 10px 0 !important;
+  opacity: ${props => props.disabled ? 0.6 : 1} !important;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'} !important;
+  
+  &:hover {
+    transform: ${props => props.disabled ? 'none' : 'translateY(-1px)'} !important;
+  }
+`;
+
+const BackButton = styled(Button)`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+`;
+
+const RealTimeIndicator = styled.div`
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 255, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 1000;
+  animation: pulse 2s infinite;
+  
+  @keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+  }
+`;
+
+const VotingPowerDisplay = styled.div<{ tierColor: string }>`
+  background: linear-gradient(145deg, ${props => props.tierColor}, ${props => props.tierColor}CC);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px 0;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+`;
+
+const AuthPrompt = styled.div`
+  background: linear-gradient(145deg, #FF6B6B, #FF8E8E);
+  border: 3px solid #FFB3B3;
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  margin: 20px 0;
+  color: white;
+  font-size: 1.2rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+`;
+
+const VoteProgress = styled.div`
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px 0;
+`;
+
+const ProgressBar = styled.div<{ percentage: number; color: string }>`
+  background: ${props => props.color};
+  height: 8px;
+  border-radius: 4px;
+  width: ${props => props.percentage}%;
+  transition: width 0.3s ease;
+`;
+
+const ScrapbookStickers = styled.div`
+  position: absolute;
+  top: 20px;
+  right: 100px;
+  font-size: 1.5rem;
+  transform: rotate(15deg);
+`;
+
+interface VotingData {
+  candidates: Array<{
+    id: string;
+    name: string;
+    photoUrl?: string;
+    votes: number;
+    userVotedFor: boolean;
+  }>;
+  totalVotes: number;
+  userVoteStatus?: {
+    votingPower: {
+      maxVotes: number;
+      flunksCount: number;
+      tier: string;
+    };
+    votesUsed: number;
+    remainingVotes: number;
+    canVote: boolean;
+  };
+  requiresAuth: boolean;
+}
+
+const CliquePage: React.FC = () => {
+  const router = useRouter();
+  const { clique } = router.query;
+  const [votingData, setVotingData] = useState<VotingData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { user, primaryWallet } = useDynamicContext();
+  
+  // Use client-side hook for faster Flunks count access
+  const votingEligibility = useVotingEligibility();
+  
+  // Check if Picture Day is enabled in current build mode
+  const isPictureDayEnabled = isFeatureEnabled('showPictureDay');
+
+  const config = clique ? CLIQUE_CONFIGS[clique as keyof typeof CLIQUE_CONFIGS] : null;
+
+  // If not in build mode, redirect
+  useEffect(() => {
+    if (!isPictureDayEnabled) {
+      console.log('Picture Day is only available in build mode');
+      router.push('/');
+      return;
+    }
+  }, [isPictureDayEnabled, router]);
+
+  useEffect(() => {
+    if (clique && isPictureDayEnabled) {
+      fetchVotingData();
+      
+      // Set up real-time updates every 3 seconds
+      const interval = setInterval(fetchVotingData, 3000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [clique, primaryWallet, isPictureDayEnabled]);
+
+  const fetchVotingData = async () => {
+    try {
+      const headers: any = {};
+      if (primaryWallet?.address) {
+        headers['x-wallet-address'] = primaryWallet.address;
+      }
+
+      const response = await fetch(`/api/picture-day/clique/${clique}`, { headers });
+      const data = await response.json();
+      setVotingData(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Failed to fetch voting data:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleVote = async (candidateId: string) => {
+    if (!primaryWallet?.address) {
+      alert('Please connect your wallet to vote!');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/picture-day/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          clique,
+          candidateId,
+          userWallet: primaryWallet.address,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert(`Vote cast successfully for ${result.candidateName}!`);
+        // Immediately update voting data
+        fetchVotingData();
+      } else {
+        alert(result.error || 'Failed to submit vote');
+      }
+    } catch (error) {
+      console.error('Error submitting vote:', error);
+      alert('Error submitting vote');
+    }
+  };
+
+  if (loading) {
+    return (
+      <VotingContainer primaryColor="#667eea" secondaryColor="#764ba2">
+        <div style={{ textAlign: 'center', paddingTop: '200px', color: 'white', fontSize: '1.5rem' }}>
+          Loading yearbook page...
+        </div>
+      </VotingContainer>
+    );
+  }
+
+  if (!isPictureDayEnabled) {
+    return (
+      <VotingContainer primaryColor="#667eea" secondaryColor="#764ba2">
+        <div style={{ 
+          textAlign: 'center', 
+          paddingTop: '200px', 
+          color: 'white', 
+          fontSize: '1.5rem' 
+        }}>
+          🔒 Picture Day is currently only available in build mode...
+        </div>
+      </VotingContainer>
+    );
+  }
+
+  if (!config) {
+    return (
+      <VotingContainer primaryColor="#667eea" secondaryColor="#764ba2">
+        <div style={{ textAlign: 'center', paddingTop: '200px', color: 'white', fontSize: '1.5rem' }}>
+          Clique not found!
+        </div>
+      </VotingContainer>
+    );
+  }
+
+  const winningCandidate = votingData?.candidates.reduce((prev, current) => 
+    (prev.votes > current.votes) ? prev : current
+  );
+
+  const isAuthenticated = !!user && !!primaryWallet?.address;
+  const votingPower = votingData?.userVoteStatus?.votingPower;
+  const canUserVote = votingData?.userVoteStatus?.canVote || false;
+
+  return (
+    <VotingContainer primaryColor={config.primaryColor} secondaryColor={config.secondaryColor}>
+      <RealTimeIndicator>🔴 LIVE VOTING</RealTimeIndicator>
+      
+      <BackButton onClick={() => router.push('/picture-day')}>
+        ← Back to Cliques
+      </BackButton>
+
+      <YearbookPage>
+        <ScrapbookStickers>✨🌟⭐</ScrapbookStickers>
+        
+        <PageHeader>
+          <CliqueTitle primaryColor={config.primaryColor}>
+            {config.name} Picture Day
+          </CliqueTitle>
+          <PageSubtitle>
+            Vote for your favorite Flunk to represent {config.name} in the 1995 yearbook!
+          </PageSubtitle>
+          {votingData && (
+            <div style={{ color: config.primaryColor, fontWeight: 'bold', marginTop: '10px' }}>
+              Total Votes Cast: {votingData.totalVotes}
+            </div>
+          )}
+        </PageHeader>
+
+        {/* Authentication Check */}
+        {!isAuthenticated && (
+          <AuthPrompt>
+            🔐 Connect your wallet to vote!<br/>
+            <small>You need to be logged in with Dynamic XYZ to participate in Picture Day voting.</small>
+          </AuthPrompt>
+        )}
+
+        {/* Voting Power Display */}
+        {isAuthenticated && votingPower && (
+          <VotingPowerDisplay tierColor={VOTING_TIERS[votingPower.maxVotes as keyof typeof VOTING_TIERS]?.color || '#999'}>
+            <div style={{ fontSize: '1.2rem', marginBottom: '10px' }}>
+              🗳️ Your Voting Power: {votingPower.tier}
+            </div>
+            <div style={{ fontSize: '0.9rem', marginBottom: '10px' }}>
+              {votingPower.flunksCount} Flunks = {votingPower.maxVotes} {votingPower.maxVotes === 1 ? 'vote' : 'votes'} per clique
+            </div>
+            {votingData?.userVoteStatus && (
+              <VoteProgress>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', fontSize: '0.8rem' }}>
+                  <span>Votes Used: {votingData.userVoteStatus.votesUsed}/{votingPower.maxVotes}</span>
+                  <span>Remaining: {votingData.userVoteStatus.remainingVotes}</span>
+                </div>
+                <ProgressBar 
+                  percentage={(votingData.userVoteStatus.votesUsed / votingPower.maxVotes) * 100}
+                  color={votingData.userVoteStatus.remainingVotes > 0 ? '#4ECDC4' : '#FF6B6B'}
+                />
+              </VoteProgress>
+            )}
+          </VotingPowerDisplay>
+        )}
+
+        <CandidatesGrid>
+          {votingData?.candidates.map((candidate) => {
+            const isWinning = winningCandidate?.id === candidate.id && votingData.totalVotes > 0;
+            
+            return (
+              <CandidateCard
+                key={candidate.id}
+                accentColor={config.accentColor}
+                isWinning={isWinning}
+              >
+                <PhotoFrame accentColor={config.accentColor}>
+                  {candidate.photoUrl ? (
+                    <CandidatePhoto 
+                      src={candidate.photoUrl} 
+                      alt={candidate.name}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <PhotoPlaceholder>
+                      📷<br/>
+                      Photo Coming Soon!<br/>
+                      <small>Upload your Flunk's pic!</small>
+                    </PhotoPlaceholder>
+                  )}
+                </PhotoFrame>
+                
+                <CandidateName>{candidate.name}</CandidateName>
+                
+                <VoteCount primaryColor={config.primaryColor} isWinning={isWinning}>
+                  {candidate.votes} {candidate.votes === 1 ? 'vote' : 'votes'}
+                  {isWinning && votingData.totalVotes > 0 && ' 👑'}
+                </VoteCount>
+                
+                {candidate.userVotedFor && (
+                  <div style={{ color: config.primaryColor, fontSize: '0.9rem', fontStyle: 'italic' }}>
+                    ✓ You voted for this Flunk!
+                  </div>
+                )}
+                
+                <VoteButton
+                  onClick={() => handleVote(candidate.id)}
+                  primaryColor={config.primaryColor}
+                  disabled={!isAuthenticated || !canUserVote}
+                >
+                  {!isAuthenticated ? 
+                    'Connect Wallet to Vote' : 
+                    !canUserVote ? 
+                      (votingPower?.maxVotes === 0 ? 'Need Flunks to Vote' : 'No Votes Left') :
+                      'Vote for This Flunk!'
+                  }
+                </VoteButton>
+              </CandidateCard>
+            );
+          })}
+        </CandidatesGrid>
+
+        {/* Upload section for admins */}
+        <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: '#f9f9f9', borderRadius: '10px' }}>
+          <h3 style={{ color: config.primaryColor, marginBottom: '10px' }}>
+            📸 Admin: Upload Candidate Photos
+          </h3>
+          <p style={{ color: '#666', fontSize: '0.9rem' }}>
+            Contact an admin to upload Flunk photos for the voting candidates.
+          </p>
+        </div>
+      </YearbookPage>
+    </VotingContainer>
+  );
+};
+
+export default CliquePage;
