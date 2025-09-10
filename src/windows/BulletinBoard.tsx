@@ -186,7 +186,7 @@ const BulletinBoard: React.FC = () => {
             <BulletinTitle>📋 COMMUNITY CHALLENGES</BulletinTitle>
             <BulletinList>
               <BulletinItem>
-                Drop your Flunk into the <TerminalText>footballers room</TerminalText> on Discord to be eligible for a <PrizeText>FLOW drop</PrizeText>!
+                Go into the <TerminalText>Picture Day app</TerminalText> and vote for which flunk should represent the clique!
               </BulletinItem>
               
               <BulletinItem>
@@ -195,7 +195,8 @@ const BulletinBoard: React.FC = () => {
               </BulletinItem>
               
               <BulletinItem>
-                Visit the <TerminalText>locker room</TerminalText> inside the school! �
+                Use AI to create an image of your favorite flunk as a kid taking a picture during photo day at school 
+                and share on <TerminalText>X</TerminalText> (tag <AstronautText>@flunks_nft</AstronautText>) and inside the <TerminalText>discord</TerminalText>!
               </BulletinItem>
             </BulletinList>
           </BulletinContent>
