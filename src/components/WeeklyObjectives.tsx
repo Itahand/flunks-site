@@ -141,84 +141,96 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         textAlign: 'center',
         marginBottom: '20px'
       }}>
+        {/* Title */}
+        <div style={{
+          fontSize: '18px',
+          fontWeight: 'bold',
+          color: '#4a90e2',
+          marginBottom: '12px'
+        }}>
+          📋 Semester Zero: Finding Flunko
+        </div>
+        
+        {/* Chapter Navigation - Mobile Optimized */}
         <div style={{
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '8px'
+          gap: '12px',
+          marginBottom: '12px'
         }}>
+          {/* Chapter Buttons Row */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '12px'
+            justifyContent: 'center',
+            gap: '8px',
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: '8px',
+            padding: '8px',
+            width: '100%',
+            maxWidth: '320px',
+            overflowX: 'auto',
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#4a90e2 transparent'
           }}>
-            <div style={{
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: '#4a90e2'
-            }}>
-              📋 Semester Zero: Finding Flunko
-            </div>
-            
-            {/* Week Navigation */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'rgba(255,255,255,0.05)',
-              borderRadius: '8px',
-              padding: '4px'
-            }}>
-              <button
-                onClick={() => setCurrentWeek(1)}
-                style={{
-                  background: currentWeek === 1 ? 'rgba(74, 144, 226, 0.5)' : 'transparent',
-                  border: currentWeek === 1 ? '1px solid #4a90e2' : '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '4px',
-                  color: currentWeek === 1 ? '#fff' : '#ccc',
-                  padding: '6px 12px',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                Chapter 1
-              </button>
-              <button
-                onClick={() => setCurrentWeek(2)}
-                style={{
-                  background: currentWeek === 2 ? 'rgba(255, 165, 0, 0.5)' : 'transparent',
-                  border: currentWeek === 2 ? '1px solid #ffa500' : '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '4px',
-                  color: currentWeek === 2 ? '#fff' : '#ccc',
-                  padding: '6px 12px',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                Chapter 2
-              </button>
-              <button
-                onClick={() => setCurrentWeek(3)}
-                style={{
-                  background: currentWeek === 3 ? 'rgba(255, 20, 147, 0.5)' : 'transparent',
-                  border: currentWeek === 3 ? '1px solid #ff1493' : '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '4px',
-                  color: currentWeek === 3 ? '#fff' : '#ccc',
-                  padding: '6px 12px',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                Chapter 3
-              </button>
-            </div>
+            <button
+              onClick={() => setCurrentWeek(1)}
+              style={{
+                background: currentWeek === 1 ? 'rgba(74, 144, 226, 0.5)' : 'transparent',
+                border: currentWeek === 1 ? '1px solid #4a90e2' : '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '4px',
+                color: currentWeek === 1 ? '#fff' : '#ccc',
+                padding: '8px 14px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                minWidth: '80px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Chapter 1
+            </button>
+            <button
+              onClick={() => setCurrentWeek(2)}
+              style={{
+                background: currentWeek === 2 ? 'rgba(255, 165, 0, 0.5)' : 'transparent',
+                border: currentWeek === 2 ? '1px solid #ffa500' : '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '4px',
+                color: currentWeek === 2 ? '#fff' : '#ccc',
+                padding: '8px 14px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                minWidth: '80px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Chapter 2
+            </button>
+            <button
+              onClick={() => setCurrentWeek(3)}
+              style={{
+                background: currentWeek === 3 ? 'rgba(255, 20, 147, 0.5)' : 'transparent',
+                border: currentWeek === 3 ? '1px solid #ff1493' : '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '4px',
+                color: currentWeek === 3 ? '#fff' : '#ccc',
+                padding: '8px 14px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                minWidth: '80px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Chapter 3
+            </button>
           </div>
+          
+          {/* Refresh Button Row */}
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
               onClick={() => loadObjectives(true)}
@@ -228,7 +240,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                 border: '1px solid #4a90e2',
                 borderRadius: '4px',
                 color: '#4a90e2',
-                padding: '4px 8px',
+                padding: '6px 12px',
                 fontSize: '12px',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 opacity: loading ? 0.5 : 1
@@ -246,7 +258,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                   border: '1px solid #ff8c00',
                   borderRadius: '4px',
                   color: '#ff8c00',
-                  padding: '4px 8px',
+                  padding: '6px 12px',
                   fontSize: '12px',
                   cursor: loading ? 'not-allowed' : 'pointer',
                   opacity: loading ? 0.5 : 1
