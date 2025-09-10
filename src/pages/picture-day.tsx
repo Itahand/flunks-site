@@ -43,6 +43,10 @@ const CLIQUES = [
 const PictureDayContainer = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image: url('/images/backdrops/picture-day-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   background-attachment: fixed;
   padding: 20px;
   font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -50,6 +54,26 @@ const PictureDayContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: relative;
+  
+  /* Dimming overlay to make text readable */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(102, 126, 234, 0.7); /* Purple overlay with transparency */
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  /* Ensure all content is above the overlay */
+  > * {
+    position: relative;
+    z-index: 2;
+  }
 `;
 
 const YearbookHeader = styled.div`
@@ -58,7 +82,7 @@ const YearbookHeader = styled.div`
 `;
 
 const MainTitle = styled.h1`
-  font-size: 3rem;
+  font-size: 6rem;
   color: #FFD700;
   text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
   font-family: 'Times New Roman', serif;
@@ -71,7 +95,7 @@ const MainTitle = styled.h1`
   background-clip: text;
   
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 4rem;
   }
 `;
 
@@ -396,11 +420,22 @@ const PictureDay: React.FC = () => {
     <PictureDayContainer>
       <YearbookHeader>
         <MainTitle className="picture-day-title">📸 Picture Day 📸</MainTitle>
-        <Subtitle>Vote for which Flunk you want to be the main characters in each clique!</Subtitle>
       </YearbookHeader>
       
       <Window style={{ maxWidth: '1000px', margin: '20px auto', background: 'rgba(255, 255, 255, 0.9)' }}>
-        <WindowContent style={{ padding: '30px' }}>
+        <WindowContent style={{ padding: '30px 30px 20px 30px' }}>
+          {/* Move subtitle into the white box */}
+          <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+            <Subtitle style={{ 
+              color: '#333', 
+              textShadow: 'none', 
+              fontSize: '1.3rem',
+              fontWeight: 'bold'
+            }}>
+              Vote for which Flunk you want to be the main characters in each clique!
+            </Subtitle>
+          </div>
+          
           <CliqueGrid>
             {CLIQUES.map((clique) => (
               <CliqueCard

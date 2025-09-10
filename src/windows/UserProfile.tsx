@@ -11,7 +11,6 @@ import { useGum } from '../contexts/GumContext';
 import { getActiveSpecialEvents, canParticipateInEvent, claimSpecialEvent, type SpecialEvent } from '../services/specialEventsService';
 import { canClaimDailyLogin, claimDailyLogin } from '../services/dailyLoginService';
 import { getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, ChapterObjective } from '../utils/weeklyObjectives';
-import { getMyLockerBackground } from '../utils/myLockerBackground';
 
 const UserProfile: React.FC = () => {
   const { closeWindow } = useWindowsContext();
@@ -32,7 +31,6 @@ const UserProfile: React.FC = () => {
   const [chapter3Objectives, setChapter3Objectives] = useState<ChapterObjective[]>([]);
   const [chapter3Loading, setChapter3Loading] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
-  const [currentBackground, setCurrentBackground] = useState<string>(getMyLockerBackground());
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const isConnected = !!primaryWallet?.address || devBypass;
@@ -84,21 +82,6 @@ const UserProfile: React.FC = () => {
       setChapter3Loading(false);
     }
   };
-
-  // Time-based background effect - updates every minute to check for background changes
-  useEffect(() => {
-    const updateBackground = () => {
-      setCurrentBackground(getMyLockerBackground());
-    };
-
-    // Update background immediately
-    updateBackground();
-
-    // Set up interval to check every minute for background changes
-    const backgroundInterval = setInterval(updateBackground, 60000); // Check every minute
-
-    return () => clearInterval(backgroundInterval);
-  }, []);
 
   // Check daily login status and load special events
   useEffect(() => {
@@ -311,11 +294,11 @@ const UserProfile: React.FC = () => {
         width: '100%',
         height: '100%',
         position: 'relative',
-        backgroundImage: currentBackground,
+        backgroundImage: 'url(/images/my-locker-front.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        background: `${currentBackground}, linear-gradient(135deg, #654321 0%, #8B4513 20%, #A0522D 40%, #CD853F 60%, #8B4513 80%, #654321 100%)`,
+        background: `url(/images/my-locker-front.png), linear-gradient(135deg, #654321 0%, #8B4513 20%, #A0522D 40%, #CD853F 60%, #8B4513 80%, #654321 100%)`,
         overflow: 'hidden'
       }}>
         

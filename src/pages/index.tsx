@@ -39,6 +39,7 @@ import ConditionalAppIcon from "components/ConditionalAppIcon";
 import { getUserAccessLevel } from "utils/appPermissions";
 import { BACKGROUND_CONFIG } from "config/backgroundConfig";
 import useThemeSettings from "store/useThemeSettings";
+import { getTimeBasedDesktopBackground } from "utils/timeBasedDesktopBackground";
 import RPGProfileForm from "components/UserProfile/RPGProfileForm";
 import { useUserProfile } from "contexts/UserProfileContext";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
@@ -634,8 +635,12 @@ const windowsMemod = useMemo(() => (
 const MonitorScreenWrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { desktopBackground, desktopBackgroundType } = useThemeSettings();
   
+  // Use time-based background for main desktop
+  const timeBasedBackground = getTimeBasedDesktopBackground();
+  const backgroundImageUrl = timeBasedBackground.replace('url(', '').replace(')', '');
+  
   // Debug logging
-  console.log('Desktop Background Settings:', { desktopBackground, desktopBackgroundType });
+  console.log('Desktop Background Settings:', { desktopBackground, desktopBackgroundType, timeBasedBackground });
   
   return (
     <CustomMonitor
@@ -648,7 +653,7 @@ const MonitorScreenWrapper: React.FC<React.PropsWithChildren> = ({ children }) =
       }}
       showBottomBar
       enableScrollingBackground={BACKGROUND_CONFIG.enableScrolling}
-      customBackgroundImage={desktopBackgroundType === 'image' ? desktopBackground : BACKGROUND_CONFIG.imageUrl}
+      customBackgroundImage={backgroundImageUrl}
       scrollingPattern={BACKGROUND_CONFIG.pattern}
       scrollingSpeed={BACKGROUND_CONFIG.speed}
       scrollingOpacity={BACKGROUND_CONFIG.opacity}

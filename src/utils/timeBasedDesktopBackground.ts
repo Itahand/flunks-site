@@ -1,7 +1,7 @@
-// Time-based background utility for My Locker
+// Time-based background utility for Main Desktop
 // Shows my-background.png from 8 AM to 4 PM, my-background-2.png for all other times
 
-export const getMyLockerBackground = (): string => {
+export const getTimeBasedDesktopBackground = (): string => {
   const now = new Date();
   const currentHour = now.getHours();
   
