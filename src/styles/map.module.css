@@ -623,6 +623,10 @@
   background-image: url('/images/icons/football-field-icon.png');
 }
 
+.map-location-hover.rug-doctor {
+  background-image: url('/images/icons/rug-doctor-icon.png');
+}
+
 @keyframes mapLocationPulse {
   0%, 100% { 
     transform: translate(-50%, -50%) scale(1);
@@ -1386,6 +1390,10 @@
 
 .football-field-nav {
   background-image: url('/images/icons/football-field-icon.png');
+}
+
+.rug-doctor-nav {
+  background-image: url('/images/icons/rug-doctor-icon.png');
 }
 
 /* Special hover effect for Football Field in navigation */

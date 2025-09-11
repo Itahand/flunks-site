@@ -65,6 +65,12 @@ export const WINDOW_IDS = {
   LAKE_TREE_MAIN: "lake_tree_main",
   SNACK_SHACK_MAIN: "snack_shack_main",
   RUG_DOCTOR_MAIN: "rug_doctor_main",
+  
+  // Rug Doctor rooms
+  RUG_DOCTOR_FRONT_COUNTER: "rug_doctor_front_counter",
+  RUG_DOCTOR_CLEANING_BAY: "rug_doctor_cleaning_bay", 
+  RUG_DOCTOR_STORAGE_ROOM: "rug_doctor_storage_room",
+  RUG_DOCTOR_BACK_OFFICE: "rug_doctor_back_office",
   FOUR_THIEVES_BAR_MAIN: "four_thieves_bar_main",
   SHED_MAIN: "shed_main",
   POLICE_STATION_MAIN: "police_station_main",

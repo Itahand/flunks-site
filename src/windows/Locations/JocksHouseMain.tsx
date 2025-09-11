@@ -521,9 +521,9 @@ const JocksHouseMain = () => {
                 <button 
                   onClick={() => openTeddyBackpackAccess()}
                   className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm min-h-[44px] flex items-center justify-center cursor-pointer"
-                  title="Get a fortune cookie message"
+                  title="Access teddy backpack content"
                 >
-                  � Fortune Cookie
+                  🎒 Teddy Backpack
                 </button>
                 <button 
                   onClick={() => openTimeBasedAccessDemo()}
@@ -888,7 +888,7 @@ const JocksHouseMain = () => {
 
         {/* Time Info Display */}
         <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm z-20">
-          {timeBasedInfo.currentTime}
+          jacket pocket
         </div>
       </div>
 

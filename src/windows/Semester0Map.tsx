@@ -522,7 +522,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
             className={styles["background-map"]}
             alt="Semester 0 Map"
           />      {/* Screen dimming overlay - appears when hovering over any target location */}
-      {!isMobile && (hovered === 'high-school' || hovered === 'arcade' || hovered === 'football-field' || hovered === 'freaks-house' || hovered === 'geeks-house' || hovered === 'jocks-house' || hovered === 'preps-house') && (
+      {!isMobile && (hovered === 'high-school' || hovered === 'arcade' || hovered === 'football-field' || hovered === 'rug-doctor' || hovered === 'freaks-house' || hovered === 'geeks-house' || hovered === 'jocks-house' || hovered === 'preps-house') && (
         <div className={styles["map-overlay"]} />
       )}
 
@@ -535,6 +535,9 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
       )}
       {!isMobile && hovered === 'football-field' && (
         <div className={`${styles["map-location-hover"]} ${styles["football-field"]}`} />
+      )}
+      {!isMobile && hovered === 'rug-doctor' && (
+        <div className={`${styles["map-location-hover"]} ${styles["rug-doctor"]}`} />
       )}
       {!isMobile && hovered === 'jocks-house' && (
         <div className={`${styles["map-location-hover"]} ${styles["jocks-house"]}`} />
@@ -810,6 +813,64 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               >
               </DynamicHouseIcon>
             )}
+            
+            {/* Rug Doctor */}
+            <DynamicHouseIcon
+              houseId="rug-doctor"
+              className={`${styles["nav-icon"]} ${styles['rug-doctor-nav']}`}
+              onClick={() => {
+                // On mobile, if this is the second tap, proceed with opening
+                if (isMobile && touchedLocation === 'rug-doctor') {
+                  setTouchedLocation(null);
+                  setHovered(null);
+                  handleLocationAccess('rug-doctor', () => 
+                    openWindow({
+                      key: WINDOW_IDS.RUG_DOCTOR_MAIN,
+                      window: (
+                        <DraggableResizeableWindow
+                          windowsId={WINDOW_IDS.RUG_DOCTOR_MAIN}
+                          headerTitle="Rug Doctor"
+                          onClose={() => closeWindow(WINDOW_IDS.RUG_DOCTOR_MAIN)}
+                          initialWidth="70vw"
+                          initialHeight="70vh"
+                          resizable={true}
+                        >
+                          <RugDoctorMain />
+                        </DraggableResizeableWindow>
+                      ),
+                    })
+                  );
+                } else if (!isMobile) {
+                  // Desktop behavior - immediate open
+                  handleLocationAccess('rug-doctor', () => 
+                    openWindow({
+                      key: WINDOW_IDS.RUG_DOCTOR_MAIN,
+                      window: (
+                        <DraggableResizeableWindow
+                          windowsId={WINDOW_IDS.RUG_DOCTOR_MAIN}
+                          headerTitle="Rug Doctor"
+                          onClose={() => closeWindow(WINDOW_IDS.RUG_DOCTOR_MAIN)}
+                          initialWidth="70vw"
+                          initialHeight="70vh"
+                          resizable={true}
+                        >
+                          <RugDoctorMain />
+                        </DraggableResizeableWindow>
+                      ),
+                    })
+                  );
+                }
+              }}
+              onMouseEnter={() => {
+                setHovered('rug-doctor');
+              }}
+              onMouseLeave={() => {
+                setHovered(null);
+              }}
+              onTouchStart={() => user && handleTouchEnter('rug-doctor')}
+              onTouchEnd={handleTouchLeave}
+            >
+            </DynamicHouseIcon>
           </div>
         </div>
 
