@@ -37,19 +37,89 @@ const RugDoctorMain: React.FC = () => {
     });
   };
 
+  const openFrontCounter = () => {
+    openWindow({
+      key: WINDOW_IDS.RUG_DOCTOR_FRONT_COUNTER,
+      window: (
+        <DraggableResizeableWindow
+          windowsId={WINDOW_IDS.RUG_DOCTOR_FRONT_COUNTER}
+          headerTitle="Front Counter"
+          onClose={() => closeWindow(WINDOW_IDS.RUG_DOCTOR_FRONT_COUNTER)}
+          initialWidth="500px"
+          initialHeight="600px"
+          resizable={true}
+        >
+          <div className="w-full h-full bg-gradient-to-b from-orange-50 to-amber-50 flex flex-col">
+            {/* Counter Image */}
+            <div className="flex-1 relative bg-gray-100 border-b-2 border-orange-300">
+              <img
+                src="/images/locations/rug-doctor-counter.png"
+                alt="Rug Doctor Front Counter"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/backdrops/BLANK.png";
+                }}
+              />
+              {/* Overlay for better text visibility if needed */}
+              <div className="absolute inset-0 bg-black bg-opacity-10"></div>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="p-4 bg-gradient-to-r from-orange-100 to-amber-100 border-t-2 border-orange-300">
+              <div className="grid grid-cols-1 gap-3">
+                <button
+                  onClick={() => {
+                    openRoom(
+                      WINDOW_IDS.RUG_DOCTOR_FRONT_COUNTER + "_pricing",
+                      "Price List",
+                      "Standard Cleaning: $25 - Basic steam cleaning for everyday rugs.\n\nDeep Clean Special: $45 - Heavy-duty cleaning for stubborn stains and odors.\n\nDeluxe Package: $65 - Full restoration service including stain protection treatment.\n\nPet Odor Removal: $35 - Specialized enzyme treatment for pet accidents.\n\nAntique Rug Care: $85 - Gentle hand-cleaning for valuable vintage pieces."
+                    );
+                  }}
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white px-4 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-md"
+                >
+                  📋 View Price List
+                </button>
+                
+                <button
+                  onClick={() => {
+                    openRoom(
+                      WINDOW_IDS.RUG_DOCTOR_FRONT_COUNTER + "_schedule",
+                      "Schedule Appointment",
+                      "The receptionist smiles warmly and pulls out the appointment book.\n\n'We have availability this week on:\n- Tuesday at 2:00 PM\n- Thursday at 10:00 AM\n- Friday at 3:30 PM\n- Saturday at 9:00 AM'\n\n'What type of cleaning service are you interested in today? We can also do a quick assessment of your rug to recommend the best treatment.'"
+                    );
+                  }}
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white px-4 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-md"
+                >
+                  📅 Schedule Appointment
+                </button>
+                
+                <button
+                  onClick={() => {
+                    openRoom(
+                      WINDOW_IDS.RUG_DOCTOR_FRONT_COUNTER + "_chat",
+                      "Chat with Receptionist",
+                      "'Welcome to Rug Doctor! I'm Sarah, and I've been working here for three years now. We take pride in making your rugs look like new again.'\n\n'You know, we've seen it all - from red wine spills to muddy paw prints. Just last week, someone brought in a beautiful Persian rug that their cat had... well, let's just say it needed our special treatment!'\n\n'Is there anything specific you'd like to know about our services? I'm happy to help!'"
+                    );
+                  }}
+                  className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white px-4 py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-md"
+                >
+                  💬 Chat with Receptionist
+                </button>
+              </div>
+            </div>
+          </div>
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
   return (
     <div className="relative w-full h-full flex flex-col md:flex-row">
       {/* Left Side Buttons - Hidden on mobile */}
       <div className="hidden md:flex w-64 bg-gradient-to-b from-orange-900 to-amber-800 flex-col justify-center gap-8 p-6 shadow-2xl">
         {/* Front Counter */}
         <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.RUG_DOCTOR_FRONT_COUNTER,
-              "Front Counter",
-              "Customer service with a smile. The receptionist greets you warmly while industrial cleaning machines hum in the background. Price lists hang on the wall showing various cleaning packages."
-            )
-          }
+          onClick={openFrontCounter}
           className="bg-gradient-to-br from-orange-600 to-orange-800 hover:from-orange-500 hover:to-orange-700 text-yellow-100 px-6 py-6 rounded-xl border-4 border-orange-400 hover:border-orange-300 transition-all duration-300 hover:scale-110 text-center text-lg font-black shadow-lg hover:shadow-xl transform hover:-translate-y-1"
           style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
         >
@@ -145,13 +215,7 @@ const RugDoctorMain: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
           {/* Front Counter */}
           <button
-            onClick={() =>
-              openRoom(
-                WINDOW_IDS.RUG_DOCTOR_FRONT_COUNTER,
-                "Front Counter",
-                "Customer service with a smile. The receptionist greets you warmly while industrial cleaning machines hum in the background. Price lists hang on the wall showing various cleaning packages."
-              )
-            }
+            onClick={openFrontCounter}
             className="bg-gradient-to-br from-orange-600 to-orange-800 hover:from-orange-500 hover:to-orange-700 text-yellow-100 px-4 py-4 rounded-lg border-3 border-orange-400 hover:border-orange-300 transition-all duration-300 hover:scale-105 text-center text-base font-black shadow-lg"
             style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
           >

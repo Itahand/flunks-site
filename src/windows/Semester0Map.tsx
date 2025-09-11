@@ -617,8 +617,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
         </div>
       )}
 
-      {/* Pause Button */}
-      <div style={{
+      {/* Pause Button - HIDDEN FOR NOW */}
+      {/* <div style={{
         position: 'absolute',
         top: 20,
         left: 20,
@@ -631,7 +631,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
         >
           Pause
         </Button>
-      </div>
+      </div> */}
     </div>
 
       {/* Bottom Navigation Bar - Now outside map window */}
@@ -814,8 +814,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               </DynamicHouseIcon>
             )}
             
-            {/* Rug Doctor - HIDDEN FOR NOW */}
-            {/* <DynamicHouseIcon
+            {/* Rug Doctor */}
+            <DynamicHouseIcon
               houseId="rug-doctor"
               className={`${styles["nav-icon"]} ${styles['rug-doctor-nav']}`}
               onClick={() => {
@@ -870,7 +870,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               onTouchStart={() => user && handleTouchEnter('rug-doctor')}
               onTouchEnd={handleTouchLeave}
             >
-            </DynamicHouseIcon> */}
+            </DynamicHouseIcon>
           </div>
         </div>
 
