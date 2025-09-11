@@ -814,8 +814,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               </DynamicHouseIcon>
             )}
             
-            {/* Rug Doctor */}
-            <DynamicHouseIcon
+            {/* Rug Doctor - HIDDEN FOR NOW */}
+            {/* <DynamicHouseIcon
               houseId="rug-doctor"
               className={`${styles["nav-icon"]} ${styles['rug-doctor-nav']}`}
               onClick={() => {
@@ -870,7 +870,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               onTouchStart={() => user && handleTouchEnter('rug-doctor')}
               onTouchEnd={handleTouchLeave}
             >
-            </DynamicHouseIcon>
+            </DynamicHouseIcon> */}
           </div>
         </div>
 
