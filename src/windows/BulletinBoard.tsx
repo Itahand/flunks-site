@@ -186,8 +186,7 @@ const BulletinBoard: React.FC = () => {
             <BulletinTitle>📋 COMMUNITY CHALLENGES</BulletinTitle>
             <BulletinList>
               <BulletinItem>
-                Go into the <TerminalText>Picture Day app</TerminalText> and vote for which flunk should represent the clique!
-              </BulletinItem>
+                Go into the <TerminalText>Picture Day app</TerminalText> and vote for which flunk should represent the cli              </BulletinItem>
               
               <BulletinItem>
                 First person to have the <AstronautText>Astronaut holder</AstronautText> reach out to Flunks 

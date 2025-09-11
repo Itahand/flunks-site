@@ -73,29 +73,38 @@ const RugDoctorMain: React.FC = () => {
       </div>
 
       {/* Center Image Section */}
-      <div className="relative flex-1">
-        <img
-          src={timeBasedInfo.currentImage}
-          alt={`Rug Doctor Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
-          className="absolute inset-0 w-full h-full object-contain z-0 transition-opacity duration-500"
-          onError={(e) => {
-            e.currentTarget.src = "/images/backdrops/BLANK.png";
-          }}
-        />
+      <div className="relative flex-1 bg-gradient-to-b from-orange-900 to-amber-800 flex flex-col">
+        {/* Top gray strip */}
+        <div className="h-2 bg-gray-600"></div>
+        
+        {/* Main image area with orange background */}
+        <div className="relative flex-1 bg-gradient-to-br from-orange-800 to-amber-900">
+          <img
+            src={timeBasedInfo.currentImage}
+            alt={`Rug Doctor Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
+            className="absolute inset-0 w-full h-full object-contain z-0 transition-opacity duration-500"
+            onError={(e) => {
+              e.currentTarget.src = "/images/backdrops/BLANK.png";
+            }}
+          />
 
-        {/* Day/Night Atmospheric Overlay */}
-        <div 
-          className={`absolute inset-0 z-1 transition-all duration-500 ${
-            !timeBasedInfo.isDay 
-              ? 'bg-blue-900 bg-opacity-20' 
-              : 'bg-yellow-100 bg-opacity-10'
-          }`}
-        />
+          {/* Day/Night Atmospheric Overlay */}
+          <div 
+            className={`absolute inset-0 z-1 transition-all duration-500 ${
+              !timeBasedInfo.isDay 
+                ? 'bg-blue-900 bg-opacity-10' 
+                : 'bg-yellow-100 bg-opacity-5'
+            }`}
+          />
 
-        {/* Time Info Display */}
-        <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm z-20">
-          {timeBasedInfo.currentTime}
+          {/* Time Info Display */}
+          <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm z-20">
+            {timeBasedInfo.currentTime}
+          </div>
         </div>
+        
+        {/* Bottom gray strip */}
+        <div className="h-2 bg-gray-600"></div>
       </div>
 
       {/* Right Side Buttons - Hidden on mobile */}
