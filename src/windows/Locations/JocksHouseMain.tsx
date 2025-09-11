@@ -380,7 +380,7 @@ const JocksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   const { primaryWallet } = useDynamicContext();
   const [gumClaimed, setGumClaimed] = useState(false);
-  const { hasBackpackBase } = useBackpackAccess();
+  const { hasBackpackBase, backpackAccess } = useBackpackAccess();
   
   // Use your uploaded day/night images for Jocks House
   const dayImage = "/images/icons/jocks-house-day.png";
@@ -570,6 +570,14 @@ const JocksHouseMain = () => {
   const openTeddyBackpackAccess = () => {
     // Check if user has teddy backpack
     const hasTeddyBackpack = hasBackpackBase('Teddy');
+    
+    // Debug logging
+    console.log('Teddy Backpack Access Check:', {
+      hasTeddyBackpack,
+      totalBackpackTraits: backpackAccess.traits.length,
+      teddyTraits: backpackAccess.traits.filter(trait => trait.base === 'Teddy').length,
+      allBases: backpackAccess.traits.map(trait => trait.base)
+    });
     
     if (hasTeddyBackpack) {
       // Show the fortune message for users with teddy backpack
