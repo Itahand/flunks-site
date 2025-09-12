@@ -73,22 +73,6 @@ const YearbookPage = styled.div`
   padding: 30px;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
   position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 30px;
-    bottom: 0;
-    width: 3px;
-    background: repeating-linear-gradient(
-      to bottom,
-      #FF69B4 0px,
-      #FF69B4 15px,
-      transparent 15px,
-      transparent 30px
-    );
-  }
 `;
 
 const PageHeader = styled.div`
@@ -109,9 +93,21 @@ const CliqueTitle = styled.h1<{ primaryColor: string }>`
 
 const PageSubtitle = styled.p`
   font-size: 1.1rem;
-  color: #666;
+  color: #000000 !important;
   margin: 10px 0;
   font-style: italic;
+  font-weight: 700 !important;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
+`;
+
+const ForceBlackText = styled.p`
+  font-size: 1.1rem !important;
+  color: #000000 !important;
+  margin: 10px 0 !important;
+  font-style: italic !important;
+  font-weight: 900 !important;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9) !important;
+  filter: contrast(2) !important;
 `;
 
 const CandidatesGrid = styled.div`
@@ -210,6 +206,11 @@ const VoteButton = styled(Button)<{ primaryColor: string; disabled: boolean }>`
   margin: 10px 0 !important;
   opacity: ${props => props.disabled ? 0.6 : 1} !important;
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'} !important;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
   
   &:hover {
     transform: ${props => props.disabled ? 'none' : 'translateY(-1px)'} !important;
@@ -221,6 +222,18 @@ const BackButton = styled(Button)`
   top: 20px;
   left: 20px;
   z-index: 10;
+`;
+
+const RefreshButton = styled(Button)`
+  background: #4CAF50 !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  margin-left: 15px !important;
+  font-size: 0.9rem !important;
+  
+  &:hover {
+    background: #45a049 !important;
+  }
 `;
 
 const RealTimeIndicator = styled.div`
@@ -340,8 +353,8 @@ const CliquePage: React.FC = () => {
     if (clique && isPictureDayEnabled) {
       fetchVotingData();
       
-      // Set up real-time updates every 3 seconds
-      const interval = setInterval(fetchVotingData, 3000);
+      // Set up updates every hour (3,600,000 milliseconds)
+      const interval = setInterval(fetchVotingData, 3600000);
       
       return () => clearInterval(interval);
     }
@@ -446,12 +459,10 @@ const CliquePage: React.FC = () => {
 
   const isAuthenticated = !!user && !!primaryWallet?.address;
   const votingPower = votingData?.userVoteStatus?.votingPower;
-  const canUserVote = votingData?.userVoteStatus?.canVote || false;
+  const hasRemainingVotes = votingData?.userVoteStatus?.remainingVotes > 0;
 
   return (
     <VotingContainer primaryColor={config.primaryColor} secondaryColor={config.secondaryColor}>
-      <RealTimeIndicator>🔴 LIVE VOTING</RealTimeIndicator>
-      
       <BackButton onClick={() => router.push('/picture-day')}>
         ← Back to Cliques
       </BackButton>
@@ -463,12 +474,32 @@ const CliquePage: React.FC = () => {
           <CliqueTitle primaryColor={config.primaryColor}>
             {config.name} Picture Day
           </CliqueTitle>
-          <PageSubtitle>
+          <div style={{ 
+            fontSize: '1.1rem',
+            color: '#000000',
+            margin: '10px 0',
+            fontStyle: 'italic',
+            fontWeight: '900',
+            textShadow: '2px 2px 4px rgba(255, 255, 255, 0.9)',
+            filter: 'contrast(3)',
+            textAlign: 'center'
+          }}>
             Vote for your favorite Flunk to represent {config.name} in the 1995 yearbook!
-          </PageSubtitle>
+          </div>
           {votingData && (
-            <div style={{ color: config.primaryColor, fontWeight: 'bold', marginTop: '10px' }}>
-              Total Votes Cast: {votingData.totalVotes}
+            <div style={{ 
+              color: config.primaryColor, 
+              fontWeight: 'bold', 
+              marginTop: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexWrap: 'wrap'
+            }}>
+              <span>Total Votes Cast: {votingData.totalVotes}</span>
+              <RefreshButton onClick={fetchVotingData} disabled={loading}>
+                {loading ? '🔄 Updating...' : '🔄 Refresh Votes'}
+              </RefreshButton>
             </div>
           )}
         </PageHeader>
@@ -506,7 +537,7 @@ const CliquePage: React.FC = () => {
         )}
 
         <CandidatesGrid>
-          {votingData?.candidates.map((candidate) => {
+          {votingData?.candidates && Array.isArray(votingData.candidates) ? votingData.candidates.map((candidate) => {
             const isWinning = winningCandidate?.id === candidate.id && votingData.totalVotes > 0;
             
             return (
@@ -549,18 +580,28 @@ const CliquePage: React.FC = () => {
                 <VoteButton
                   onClick={() => handleVote(candidate.id)}
                   primaryColor={config.primaryColor}
-                  disabled={!isAuthenticated || !canUserVote}
+                  disabled={!isAuthenticated || !hasRemainingVotes}
                 >
                   {!isAuthenticated ? 
                     'Connect Wallet to Vote' : 
-                    !canUserVote ? 
+                    !hasRemainingVotes ? 
                       (votingPower?.maxVotes === 0 ? 'Need Flunks to Vote' : 'No Votes Left') :
                       'Vote for This Flunk!'
                   }
                 </VoteButton>
               </CandidateCard>
             );
-          })}
+          }) : (
+            <div style={{ 
+              gridColumn: '1 / -1', 
+              textAlign: 'center', 
+              padding: '40px', 
+              color: config.primaryColor,
+              fontSize: '1.2rem' 
+            }}>
+              📷 No candidates yet! Check back soon for voting options.
+            </div>
+          )}
         </CandidatesGrid>
 
         {/* Upload section for admins */}

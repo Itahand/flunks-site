@@ -57,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return {
             id: candidate.id,
             name: candidate.name,
-            photoUrl: candidate.photo_url,
+            photoUrl: candidate.image_url,
             votes: 0,
             userVotedFor: false
           };
@@ -71,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return {
           id: candidate.id,
           name: candidate.name,
-          photoUrl: candidate.photo_url,
+          photoUrl: candidate.image_url,
           votes: votes?.length || 0,
           userVotedFor
         };

@@ -90,10 +90,11 @@ const PictureDayAdmin: React.FC = () => {
       // This would typically require admin authentication
       const response = await fetch('/api/picture-day/admin/candidates');
       const data = await response.json();
-      setCandidates(data);
+      setCandidates(Array.isArray(data) ? data : []);
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch candidates:', error);
+      setCandidates([]); // Set empty array on error
       setLoading(false);
     }
   };
@@ -140,8 +141,8 @@ const PictureDayAdmin: React.FC = () => {
   };
 
   const filteredCandidates = selectedClique === 'all' 
-    ? candidates 
-    : candidates.filter(c => c.clique === selectedClique);
+    ? (Array.isArray(candidates) ? candidates : [])
+    : (Array.isArray(candidates) ? candidates.filter(c => c.clique === selectedClique) : []);
 
   if (loading) {
     return (

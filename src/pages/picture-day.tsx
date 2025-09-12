@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Window, WindowContent, Button } from 'react95';
+import { Button } from 'react95';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import { getCurrentBuildMode, isFeatureEnabled } from '../utils/buildMode';
@@ -76,9 +76,33 @@ const PictureDayContainer = styled.div`
   }
 `;
 
+const HomeButton = styled.button`
+  background: #c0c0c0;
+  border: 2px outset #c0c0c0;
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  color: black;
+  border-radius: 4px;
+  margin-left: 20px;
+  
+  &:hover {
+    background: #d0d0d0;
+  }
+  
+  &:active {
+    border: 2px inset #c0c0c0;
+  }
+`;
+
 const YearbookHeader = styled.div`
   text-align: center;
   margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 `;
 
 const MainTitle = styled.h1`
@@ -418,55 +442,47 @@ const PictureDay: React.FC = () => {
 
   return (
     <PictureDayContainer>
+      {/* Main Title */}
       <YearbookHeader>
         <MainTitle className="picture-day-title">📸 Picture Day 📸</MainTitle>
+        <HomeButton onClick={() => router.push('/')}>
+          homescreen
+        </HomeButton>
       </YearbookHeader>
       
-      <Window style={{ maxWidth: '1000px', margin: '20px auto', background: 'rgba(255, 255, 255, 0.9)' }}>
-        <WindowContent style={{ padding: '30px 30px 20px 30px' }}>
-          {/* Move subtitle into the white box */}
-          <div style={{ textAlign: 'center', marginBottom: '25px' }}>
-            <Subtitle style={{ 
-              color: '#333', 
-              textShadow: 'none', 
-              fontSize: '1.3rem',
-              fontWeight: 'bold'
-            }}>
-              Vote for which Flunk you want to be the main characters in each clique!
-            </Subtitle>
-          </div>
-          
-          <CliqueGrid>
-            {CLIQUES.map((clique) => (
-              <CliqueCard
-                key={clique.id}
-                className="clique-card pattern-stripes"
-                primaryColor={clique.primaryColor}
-                secondaryColor={clique.secondaryColor}
-                accentColor={clique.accentColor}
-                cliqueid={clique.id}
-              >
-                <DecorationStars className="sparkle-decoration">⭐✨</DecorationStars>
-                <RetroPattern pattern={clique.pattern} />
-                
-                <div>
-                  <CliqueName cliqueid={clique.id}>{clique.name}</CliqueName>
-                  <CliqueDescription cliqueid={clique.id}>
-                    Click to vote for your favorite Flunk to be the main character for {clique.name}!
-                  </CliqueDescription>
-                </div>
-                
-                <VoteButton 
-                  onClick={() => handleCliqueSelect(clique.id)}
-                  primaryColor={clique.primaryColor}
-                >
-                  Vote Now
-                </VoteButton>
-              </CliqueCard>
-            ))}
-          </CliqueGrid>
-        </WindowContent>
-      </Window>
+      <Subtitle>
+        Vote for which Flunk you want to be the main characters in each clique!
+      </Subtitle>
+      
+      <CliqueGrid>
+        {CLIQUES.map((clique) => (
+          <CliqueCard
+            key={clique.id}
+            className="clique-card pattern-stripes"
+            primaryColor={clique.primaryColor}
+            secondaryColor={clique.secondaryColor}
+            accentColor={clique.accentColor}
+            cliqueid={clique.id}
+          >
+            <DecorationStars className="sparkle-decoration">⭐✨</DecorationStars>
+            <RetroPattern pattern={clique.pattern} />
+            
+            <div>
+              <CliqueName cliqueid={clique.id}>{clique.name}</CliqueName>
+              <CliqueDescription cliqueid={clique.id}>
+                Click to vote for your favorite Flunk to be the main character for {clique.name}!
+              </CliqueDescription>
+            </div>
+            
+            <VoteButton 
+              onClick={() => handleCliqueSelect(clique.id)}
+              primaryColor={clique.primaryColor}
+            >
+              Vote Now
+            </VoteButton>
+          </CliqueCard>
+        ))}
+      </CliqueGrid>
     </PictureDayContainer>
   );
 };

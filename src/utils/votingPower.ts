@@ -103,23 +103,7 @@ export async function canUserVoteForCandidate(
     return { canVote: false, reason: `You've used all ${voteStatus.votingPower.maxVotes} votes for this clique` };
   }
 
-  // Check if user already voted for this specific candidate
-  if (!supabase) {
-    throw new Error('Database not configured');
-  }
-
-  const { data: existingVote } = await supabase
-    .from('picture_day_votes')
-    .select('*')
-    .eq('user_wallet', userWallet)
-    .eq('clique', clique)
-    .eq('candidate_id', candidateId)
-    .single();
-
-  if (existingVote) {
-    return { canVote: false, reason: 'You already voted for this candidate' };
-  }
-
+  // Allow multiple votes for the same candidate as long as user has remaining votes
   return { canVote: true };
 }
 
