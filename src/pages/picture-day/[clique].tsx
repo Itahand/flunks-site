@@ -571,8 +571,6 @@ const CliquePage: React.FC = () => {
                   )}
                 </PhotoFrame>
                 
-                <CandidateName>{candidate.name}</CandidateName>
-                
                 <VoteCount primaryColor={config.primaryColor} isWinning={isWinning}>
                   {candidate.votes} {candidate.votes === 1 ? 'vote' : 'votes'}
                   {isWinning && votingData.totalVotes > 0 && ' 👑'}
