@@ -351,8 +351,9 @@ const CliquePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { user, primaryWallet } = useDynamicContext();
   
-  // Test mode - check for ?test=true in URL
-  const isTestMode = router.query.test === 'true';
+  // Test mode - check for ?test=true in URL (multiple ways to ensure it works)
+  const isTestMode = router.query.test === 'true' || 
+                     (typeof window !== 'undefined' && window.location.search.includes('test=true'));
   
   // Use client-side hook for faster Flunks count access
   const votingEligibility = useVotingEligibility();
@@ -516,6 +517,8 @@ const CliquePage: React.FC = () => {
   console.log('🔍 Frontend Debug:', {
     isAuthenticated,
     isTestMode,
+    routerQuery: router.query,
+    windowSearch: typeof window !== 'undefined' ? window.location.search : 'N/A',
     votingData: votingData?.userVoteStatus,
     votingPower,
     hasRemainingVotes,

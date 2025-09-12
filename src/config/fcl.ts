@@ -1,8 +1,12 @@
 import { config } from "@onflow/fcl";
 
-// Use environment variable for Flow network configuration
+// Configure FCL for Flow mainnet
+const FLOW_ACCESS_NODE = process.env.NEXT_PUBLIC_FLOW_ACCESS_NODE || "https://rest-mainnet.onflow.org";
+
+console.log('🌊 Configuring FCL with access node:', FLOW_ACCESS_NODE);
+
 config({
-  "accessNode.api": process.env.NEXT_PUBLIC_FLOW_ACCESS_NODE,
+  "accessNode.api": FLOW_ACCESS_NODE,
   "discovery.wallet": "https://fcl-discovery.onflow.org/authn", // Flow wallet discovery
   "app.detail.title": "Flunks", // App name for wallet approval
   "app.detail.icon": "https://flunks.net/flunks-logo.png", // App icon
