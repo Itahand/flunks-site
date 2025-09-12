@@ -31,11 +31,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Get user's Flunks count
     const flunksCount = await getFlunksCount(userWallet);
+    console.log('🔍 Vote API: Flunks count for wallet', userWallet, ':', flunksCount);
 
     // Check if user can vote for this candidate
     const voteCheck = await canUserVoteForCandidate(userWallet, clique, candidateId, flunksCount);
+    console.log('🔍 Vote API: Vote check result:', voteCheck);
     
     if (!voteCheck.canVote) {
+      console.log('❌ Vote API: Vote blocked:', voteCheck.reason);
       return res.status(400).json({ error: voteCheck.reason });
     }
 
@@ -48,8 +51,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .single();
 
     if (candidateError || !candidate) {
+      console.log('❌ Vote API: Invalid candidate:', candidateError, candidate);
       return res.status(400).json({ error: 'Invalid candidate' });
     }
+
+    console.log('✅ Vote API: Valid candidate found:', candidate.name);
 
     // Cast the vote
     const { data: voteData, error: voteError } = await supabase
@@ -63,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ]);
 
     if (voteError) {
-      console.error('Error casting vote:', voteError);
+      console.error('❌ Vote API: Error casting vote:', voteError);
       return res.status(500).json({ error: 'Failed to cast vote' });
     }
 

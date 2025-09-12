@@ -434,7 +434,8 @@ const CliquePage: React.FC = () => {
           }));
         }
       } else {
-        alert(result.error || 'Failed to submit vote');
+        console.error('Vote failed:', result);
+        alert(`Voting failed: ${result.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error submitting vote:', error);
