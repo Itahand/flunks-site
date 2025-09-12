@@ -10,10 +10,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  // Only allow access in build mode
-  if (!isBuildMode) {
-    return res.status(403).json({ error: 'Picture Day clique data is only available in build mode' });
-  }
+  // Picture Day API is now available in both build and public modes
+  // Removed build mode restriction
 
   const { clique } = req.query;
   const userWallet = req.headers['x-wallet-address'] as string;
