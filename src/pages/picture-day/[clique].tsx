@@ -526,10 +526,24 @@ const CliquePage: React.FC = () => {
         {/* Voting Power Display */}
         {isAuthenticated && votingPower && (
           <VotingPowerDisplay tierColor={VOTING_TIERS[votingPower.maxVotes as keyof typeof VOTING_TIERS]?.color || '#999'}>
-            <div style={{ fontSize: '1.2rem', marginBottom: '10px' }}>
+            <div style={{ 
+              fontSize: '1.2rem', 
+              marginBottom: '10px',
+              color: '#000000',
+              fontWeight: '900',
+              textShadow: '2px 2px 4px rgba(255, 255, 255, 0.9)',
+              filter: 'contrast(3)'
+            }}>
               🗳️ Your Voting Power: {votingPower.tier}
             </div>
-            <div style={{ fontSize: '0.9rem', marginBottom: '10px' }}>
+            <div style={{ 
+              fontSize: '0.9rem', 
+              marginBottom: '10px',
+              color: '#000000',
+              fontWeight: '900',
+              textShadow: '2px 2px 4px rgba(255, 255, 255, 0.9)',
+              filter: 'contrast(3)'
+            }}>
               {votingPower.flunksCount} Flunks = {votingPower.maxVotes} {votingPower.maxVotes === 1 ? 'vote' : 'votes'} per clique
             </div>
             {votingData?.userVoteStatus && (
