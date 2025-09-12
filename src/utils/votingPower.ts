@@ -125,6 +125,10 @@ export async function getFlunksCount(walletAddress: string): Promise<number> {
     
     const result = await getOwnerTokenIdsWhale(walletAddress);
     
+    console.log('🔍 VotingPower: Raw result from getOwnerTokenIdsWhale:', result);
+    console.log('🔍 VotingPower: Result type:', typeof result);
+    console.log('🔍 VotingPower: Result keys:', result ? Object.keys(result) : 'null');
+    
     if (!result || typeof result !== 'object') {
       console.warn('⚠️ VotingPower: Invalid data received:', result);
       return 0;
@@ -133,6 +137,7 @@ export async function getFlunksCount(walletAddress: string): Promise<number> {
     const flunks = Array.isArray(result.flunks) ? result.flunks : [];
     const flunksCount = flunks.length;
     
+    console.log('✅ VotingPower: Flunks array:', flunks);
     console.log('✅ VotingPower: Flunks count retrieved:', flunksCount);
     return flunksCount;
     

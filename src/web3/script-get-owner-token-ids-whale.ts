@@ -27,6 +27,14 @@ export const getOwnerTokenIdsWhale = async (address: string) => {
   return await fcl
     .send([fcl.script(CODE), fcl.args([fcl.arg(address, t.Address)])])
     .then(fcl.decode)
+    .then(result => {
+      console.log('🎯 Raw FCL result:', result);
+      console.log('🎯 Flunks array:', result?.flunks);
+      console.log('🎯 Flunks count:', result?.flunks?.length);
+      console.log('🎯 Backpack array:', result?.backpack);
+      console.log('🎯 Backpack count:', result?.backpack?.length);
+      return result;
+    })
     .catch(error => {
       console.error('❌ FCL Script Error:', error);
       throw error;
