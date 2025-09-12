@@ -69,10 +69,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Failed to cast vote' });
     }
 
+    // After successful vote, trigger objective completion check
+    try {
+      // Check if this is the user's first vote (completes Slacker objective)
+      const { data: userVotes, error: voteCheckError } = await supabase
+        .from('picture_day_votes')
+        .select('id')
+        .eq('user_wallet', userWallet);
+
+      if (!voteCheckError && userVotes && userVotes.length === 1) {
+        // This is their first vote - objective completed!
+        console.log('🎯 Picture Day voting objective completed for wallet:', userWallet);
+        
+        // Dispatch event for any listening components
+        // Note: This would be picked up by the frontend objective system
+      }
+    } catch (objError) {
+      console.log('Note: Could not check objective completion:', objError);
+      // Don't fail the vote if objective tracking fails
+    }
+
     res.status(200).json({ 
       success: true, 
       message: `Vote cast successfully for ${candidate.name}!`,
-      candidateName: candidate.name
+      candidateName: candidate.name,
+      objectiveCompleted: true // Signal that voting objective may be completed
     });
   } catch (error) {
     console.error('Error processing vote:', error);

@@ -407,6 +407,13 @@ const CliquePage: React.FC = () => {
         window.dispatchEvent(new CustomEvent('pictureVoteComplete', {
           detail: { clique, candidateId, candidateName: result.candidateName }
         }));
+        
+        // If objective was completed, also dispatch objective refresh
+        if (result.objectiveCompleted) {
+          window.dispatchEvent(new CustomEvent('objectiveCompleted', {
+            detail: { type: 'picture_day_voting', wallet: primaryWallet?.address }
+          }));
+        }
       } else {
         alert(result.error || 'Failed to submit vote');
       }
@@ -484,7 +491,7 @@ const CliquePage: React.FC = () => {
             filter: 'contrast(3)',
             textAlign: 'center'
           }}>
-            Vote for your favorite Flunk to represent {config.name} in the 1995 yearbook!
+            Vote for your favorite Flunk to represent {config.name} in the yearbook!
           </div>
           {votingData && (
             <div style={{ 
@@ -603,16 +610,6 @@ const CliquePage: React.FC = () => {
             </div>
           )}
         </CandidatesGrid>
-
-        {/* Upload section for admins */}
-        <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: '#f9f9f9', borderRadius: '10px' }}>
-          <h3 style={{ color: config.primaryColor, marginBottom: '10px' }}>
-            📸 Admin: Upload Candidate Photos
-          </h3>
-          <p style={{ color: '#666', fontSize: '0.9rem' }}>
-            Contact an admin to upload Flunk photos for the voting candidates.
-          </p>
-        </div>
       </YearbookPage>
     </VotingContainer>
   );

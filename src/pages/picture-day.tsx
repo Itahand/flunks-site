@@ -85,7 +85,28 @@ const HomeButton = styled.button`
   cursor: pointer;
   color: black;
   border-radius: 4px;
-  margin-left: 20px;
+  
+  &:hover {
+    background: #d0d0d0;
+  }
+  
+  &:active {
+    border: 2px inset #c0c0c0;
+  }
+`;
+
+const BottomHomeButton = styled.button`
+  background: #c0c0c0;
+  border: 2px outset #c0c0c0;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  color: black;
+  border-radius: 4px;
+  margin-top: 40px;
+  position: relative;
+  z-index: 2;
   
   &:hover {
     background: #d0d0d0;
@@ -102,7 +123,7 @@ const YearbookHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-direction: column;
 `;
 
 const MainTitle = styled.h1`
@@ -442,12 +463,9 @@ const PictureDay: React.FC = () => {
 
   return (
     <PictureDayContainer>
-      {/* Main Title */}
+      {/* Main Title - Centered */}
       <YearbookHeader>
         <MainTitle className="picture-day-title">📸 Picture Day 📸</MainTitle>
-        <HomeButton onClick={() => router.push('/')}>
-          homescreen
-        </HomeButton>
       </YearbookHeader>
       
       <Subtitle>
@@ -483,6 +501,11 @@ const PictureDay: React.FC = () => {
           </CliqueCard>
         ))}
       </CliqueGrid>
+      
+      {/* Home Button - Centered at Bottom */}
+      <BottomHomeButton onClick={() => router.push('/')}>
+        homescreen
+      </BottomHomeButton>
     </PictureDayContainer>
   );
 };
