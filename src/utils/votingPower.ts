@@ -134,6 +134,10 @@ export async function getFlunksCount(walletAddress: string): Promise<number> {
       return 0;
     }
     
+    console.log('🔍 VotingPower: result.flunks type:', typeof result.flunks);
+    console.log('🔍 VotingPower: result.flunks isArray:', Array.isArray(result.flunks));
+    console.log('🔍 VotingPower: result.flunks sample:', result.flunks ? result.flunks.slice(0, 3) : 'null');
+    
     const flunks = Array.isArray(result.flunks) ? result.flunks : [];
     const flunksCount = flunks.length;
     
