@@ -351,6 +351,9 @@ const CliquePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { user, primaryWallet } = useDynamicContext();
   
+  // Test mode - check for ?test=true in URL
+  const isTestMode = router.query.test === 'true';
+  
   // Use client-side hook for faster Flunks count access
   const votingEligibility = useVotingEligibility();
   
@@ -384,10 +387,28 @@ const CliquePage: React.FC = () => {
       const headers: any = {};
       if (primaryWallet?.address) {
         headers['x-wallet-address'] = primaryWallet.address;
+      } else if (isTestMode) {
+        // Use test wallet address for simulation
+        headers['x-wallet-address'] = '0x1234567890123456789012345678901234567890';
       }
 
       const response = await fetch(`/api/picture-day/clique/${clique}`, { headers });
       const data = await response.json();
+      
+      // If in test mode and no user vote status, simulate it
+      if (isTestMode && !data.userVoteStatus) {
+        data.userVoteStatus = {
+          votingPower: {
+            maxVotes: 2,
+            flunksCount: 15,
+            tier: 'Regular Voter (11-20 Flunks)'
+          },
+          votesUsed: 0,
+          remainingVotes: 2,
+          canVote: true
+        };
+      }
+      
       setVotingData(data);
       setLoading(false);
     } catch (error) {
@@ -397,7 +418,9 @@ const CliquePage: React.FC = () => {
   };
 
   const handleVote = async (candidateId: string) => {
-    if (!primaryWallet?.address) {
+    const walletAddress = primaryWallet?.address || (isTestMode ? '0x1234567890123456789012345678901234567890' : null);
+    
+    if (!walletAddress) {
       alert('Please connect your wallet to vote!');
       return;
     }
@@ -411,7 +434,7 @@ const CliquePage: React.FC = () => {
         body: JSON.stringify({
           clique,
           candidateId,
-          userWallet: primaryWallet.address,
+          userWallet: walletAddress,
         }),
       });
 
@@ -484,7 +507,7 @@ const CliquePage: React.FC = () => {
       )
     : null;
 
-  const isAuthenticated = !!user && !!primaryWallet?.address;
+  const isAuthenticated = !!user && !!primaryWallet?.address || isTestMode;
   const votingPower = votingData?.userVoteStatus?.votingPower;
   const hasRemainingVotes = isAuthenticated && votingPower && 
     (votingData?.userVoteStatus?.remainingVotes ?? 0) > 0;
@@ -492,6 +515,7 @@ const CliquePage: React.FC = () => {
   // Debug logging
   console.log('🔍 Frontend Debug:', {
     isAuthenticated,
+    isTestMode,
     votingData: votingData?.userVoteStatus,
     votingPower,
     hasRemainingVotes,
@@ -552,6 +576,19 @@ const CliquePage: React.FC = () => {
         {/* Voting Power Display */}
         {isAuthenticated && votingPower && (
           <VotingPowerDisplay tierColor={VOTING_TIERS[votingPower.maxVotes as keyof typeof VOTING_TIERS]?.color || '#999'}>
+            {isTestMode && (
+              <div style={{ 
+                fontSize: '0.8rem', 
+                marginBottom: '5px',
+                color: '#000000',
+                fontWeight: '900',
+                textShadow: '2px 2px 4px rgba(255, 255, 255, 0.9)',
+                filter: 'contrast(3)',
+                fontStyle: 'italic'
+              }}>
+                🧪 TEST MODE - Simulated Wallet
+              </div>
+            )}
             <div style={{ 
               fontSize: '1.2rem', 
               marginBottom: '10px',
