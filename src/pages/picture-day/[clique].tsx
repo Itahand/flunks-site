@@ -113,8 +113,15 @@ const ForceBlackText = styled.p`
 const CandidatesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  margin: 40px 20px;
+  gap: 20px;
+  justify-items: center;
+  padding: 20px 0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 15px 10px;
+  }
 `;
 
 const CandidateCard = styled.div<{ accentColor: string; isWinning: boolean }>`
@@ -127,6 +134,9 @@ const CandidateCard = styled.div<{ accentColor: string; isWinning: boolean }>`
   transform: ${props => props.isWinning ? 'scale(1.05)' : 'none'};
   transition: all 0.3s ease;
   position: relative;
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
   
   ${props => props.isWinning && `
     &::before {
@@ -142,6 +152,11 @@ const CandidateCard = styled.div<{ accentColor: string; isWinning: boolean }>`
   &:hover {
     transform: ${props => props.isWinning ? 'scale(1.08)' : 'scale(1.02)'};
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  @media (max-width: 768px) {
+    max-width: 300px;
+    padding: 15px;
   }
 `;
 

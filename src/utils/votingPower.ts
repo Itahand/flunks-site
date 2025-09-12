@@ -108,26 +108,13 @@ export async function canUserVoteForCandidate(
 }
 
 /**
- * Get Flunks count from wallet using API endpoint with caching
+ * Get Flunks count from wallet using direct blockchain call
  */
 export async function getFlunksCount(walletAddress: string): Promise<number> {
   try {
     console.log('🔍 VotingPower: Getting Flunks count for wallet:', walletAddress);
     
-    // First try the API endpoint approach (better for caching)
-    try {
-      const response = await fetch(`/api/user-flunks-count?wallet=${walletAddress}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ VotingPower: Flunks count from API:', data.flunksCount);
-        return data.flunksCount || 0;
-      }
-    } catch (apiError) {
-      console.warn('⚠️ VotingPower: API endpoint failed, trying direct call');
-    }
-    
-    // Fallback to direct function call
+    // Use direct function call (works both client and server-side)
     const { getOwnerTokenIdsWhale } = await import('../web3/script-get-owner-token-ids-whale');
     
     const result = await getOwnerTokenIdsWhale(walletAddress);
