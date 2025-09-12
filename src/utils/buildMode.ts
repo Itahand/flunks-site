@@ -63,7 +63,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showBulletinBoard: false,
     showIconAnimation: false,
     showReportCard: false,
-    showPictureDay: false,
+    showPictureDay: true,
     
     // Special Announcements - visible on public site
     flappyFlunkWeekend: true,
