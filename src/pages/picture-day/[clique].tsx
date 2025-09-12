@@ -486,7 +486,17 @@ const CliquePage: React.FC = () => {
 
   const isAuthenticated = !!user && !!primaryWallet?.address;
   const votingPower = votingData?.userVoteStatus?.votingPower;
-  const hasRemainingVotes = votingData?.userVoteStatus?.remainingVotes > 0;
+  const hasRemainingVotes = isAuthenticated && votingPower && 
+    (votingData?.userVoteStatus?.remainingVotes ?? 0) > 0;
+
+  // Debug logging
+  console.log('🔍 Frontend Debug:', {
+    isAuthenticated,
+    votingData: votingData?.userVoteStatus,
+    votingPower,
+    hasRemainingVotes,
+    remainingVotes: votingData?.userVoteStatus?.remainingVotes
+  });
 
   return (
     <VotingContainer primaryColor={config.primaryColor} secondaryColor={config.secondaryColor}>
