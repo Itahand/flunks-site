@@ -15,6 +15,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     console.log('🔍 API: Getting Flunks count for wallet:', wallet);
     
+    // Check if this is a test wallet address
+    if (wallet === '0x1234567890123456789012345678901234567890') {
+      console.log('🧪 API: Test mode detected, returning simulated data');
+      return res.status(200).json({ 
+        flunksCount: 15,
+        backpacksCount: 3,
+        totalNFTs: 18,
+        wallet,
+        testMode: true
+      });
+    }
+    
     const result = await getOwnerTokenIdsWhale(wallet);
     
     if (!result || typeof result !== 'object') {
