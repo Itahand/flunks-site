@@ -191,11 +191,13 @@ const CandidateName = styled.h3`
 `;
 
 const VoteCount = styled.div<{ primaryColor: string; isWinning: boolean }>`
-  color: ${props => props.isWinning ? '#FFD700' : props.primaryColor};
-  font-weight: bold;
-  font-size: 1.1rem;
-  margin: 10px 0;
-  ${props => props.isWinning && 'text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);'}
+  color: ${props => props.isWinning ? '#FFD700' : '#000000'} !important;
+  font-weight: 900 !important;
+  font-size: 1.2rem !important;
+  margin: 10px 0 !important;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9) !important;
+  filter: contrast(3) !important;
+  ${props => props.isWinning && 'text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;'}
 `;
 
 const VoteButton = styled(Button)<{ primaryColor: string; disabled: boolean }>`
@@ -263,8 +265,10 @@ const VotingPowerDisplay = styled.div<{ tierColor: string }>`
   padding: 15px;
   margin: 20px 0;
   text-align: center;
-  color: white;
-  font-weight: bold;
+  color: #000000 !important;
+  font-weight: 900 !important;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9) !important;
+  filter: contrast(3) !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 `;
 
@@ -577,7 +581,14 @@ const CliquePage: React.FC = () => {
                 </VoteCount>
                 
                 {candidate.userVotedFor && (
-                  <div style={{ color: config.primaryColor, fontSize: '0.9rem', fontStyle: 'italic' }}>
+                  <div style={{ 
+                    color: '#000000',
+                    fontSize: '0.9rem',
+                    fontStyle: 'italic',
+                    fontWeight: '900',
+                    textShadow: '2px 2px 4px rgba(255, 255, 255, 0.9)',
+                    filter: 'contrast(3)'
+                  }}>
                     ✓ You voted for this Flunk!
                   </div>
                 )}
