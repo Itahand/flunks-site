@@ -4,7 +4,9 @@ import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
 import { useState } from "react";
 import FlappyFlunkWindow from "windows/Games/FlappyFlunkWindow";
+import FlunkJumpWindow from "windows/Games/FlunkJumpWindow";
 import MultiColorText from "components/MultiColorText";
+import { isFeatureEnabled } from "utils/buildMode";
 
 const ArcadeMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -383,6 +385,32 @@ const ArcadeMain = () => {
         >
           🐦 FLAPPY FLUNK
         </button>
+        
+        {/* Flunk Jump Game - Build Mode Only */}
+        {isFeatureEnabled('showFlunkJump') && (
+          <button
+            onClick={() =>
+              openWindow({
+                key: WINDOW_IDS.FLUNK_JUMP,
+                window: (
+                  <DraggableResizeableWindow
+                    windowsId={WINDOW_IDS.FLUNK_JUMP}
+                    onClose={() => closeWindow(WINDOW_IDS.FLUNK_JUMP)}
+                    headerTitle="Flunk Jump"
+                    initialWidth="480px"
+                    initialHeight="640px"
+                    headerIcon="/images/icons/flunkjump.png"
+                  >
+                    <FlunkJumpWindow />
+                  </DraggableResizeableWindow>
+                ),
+              })
+            }
+            className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-500 transition-all duration-200 hover:scale-105 min-w-[120px] text-center font-bold"
+          >
+            🦘 FLUNK JUMP
+          </button>
+        )}
         </div>
       </div>
     </div>

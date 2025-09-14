@@ -41,6 +41,7 @@ export const WINDOW_IDS = {
   DINER_BOTTOM_RIGHT: "diner_bottom_right",
   FLAPPY_FLUNK: "flappy_flunk",
   FLAPPY_FLUNK_LEADERBOARD: "flappy_flunk_leaderboard",
+  FLUNK_JUMP: "flunk_jump",
   FHS_SCHOOL: "fhs_school",
   FLUNKS_MESSENGER: "flunks_messenger",
   FLUNK_CREATOR: "flunk_creator",
@@ -308,6 +309,11 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
     appName: "Flappy Leaderboard",
     appIcon: "/images/icons/flappyflunk.png",
     key: WINDOW_IDS.FLAPPY_FLUNK_LEADERBOARD,
+  },
+  [WINDOW_IDS.FLUNK_JUMP]: {
+    appName: "Flunk Jump",
+    appIcon: "/images/icons/flunkjump.png",
+    key: WINDOW_IDS.FLUNK_JUMP,
   },
   [WINDOW_IDS.FLUNKS_MESSENGER]: {
     appName: "Chat Rooms",
