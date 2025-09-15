@@ -1,0 +1,103 @@
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.score-display {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.controls-mobile {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.controls-mobile div {
+  margin: 2px 0;
+}
+
+.grid {
+  width: 400px;
+  height: 600px;
+  background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
+  position: relative;
+  font-size: 100px;
+  text-align: center;
+  border: 3px solid #333;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.doodler {
+  width: 87px;
+  height: 85px;
+  background-color: #FFD700;
+  border: 2px solid #FFA500;
+  border-radius: 50% 50% 0 0;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doodler::before {
+  content: '👤';
+  font-size: 40px;
+}
+
+.platform {
+  width: 85px;
+  height: 15px;
+  background: linear-gradient(to bottom, #90EE90, #228B22);
+  border: 1px solid #006400;
+  border-radius: 8px;
+  position: absolute;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.game-over button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.game-over button:hover {
+  background: #45a049;
+}
+
+@media (max-width: 480px) {
+  .grid {
+    width: 350px;
+    height: 500px;
+  }
+  
+  .game-container {
+    padding: 10px;
+  }
+}

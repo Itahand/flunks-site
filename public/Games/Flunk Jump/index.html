@@ -1,25 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <script src="index.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="style.css"></link>
     <title>Flunk Jump</title>
-    <link rel="stylesheet" href="flunkjump.css">
-</head>
-<body>
-    <div id="gameContainer">
-        <div id="scoreDisplay">Score: <span id="score">0</span></div>
-        <div id="instructions">
-            <div class="desktop-controls">Desktop: Use arrow keys or WASD to move left/right</div>
-            <div class="mobile-controls">Mobile: Tilt your phone left/right to move, or tap sides of screen</div>
-        </div>
-        <canvas id="gameCanvas" width="400" height="600"></canvas>
-        <div id="gameOverScreen" style="display: none;">
-            <h2>Game Over!</h2>
-            <p>Final Score: <span id="finalScore">0</span></p>
-            <button id="restartBtn">Play Again</button>
-        </div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <div class="game-container">
+      <div class="score-display">Score: <span id="score">0</span></div>
+      <div class="controls-mobile">
+        <div>Mobile: Tilt device or tap left/right to move</div>
+        <div>Desktop: Use arrow keys</div>
+      </div>
+      <div class="grid">
+
+      </div>
+      <div class="game-over" id="gameOverScreen" style="display: none;">
+        <h2>Game Over!</h2>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <button onclick="location.reload()">Play Again</button>
+      </div>
     </div>
-    <script src="flunkjump.js"></script>
-</body>
+  </body>
 </html>
