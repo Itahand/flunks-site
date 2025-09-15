@@ -1,363 +1,301 @@
-//board
-let board;
-let boardWidth = 360;
-let boardHeight = 576;
-let context;
-
-//flunk jumper
-let jumperWidth = 46;
-let jumperHeight = 46;
-let jumperX = boardWidth/2 - jumperWidth/2;
-let jumperY = boardHeight*7/8 - jumperHeight;
-
-let jumper = {
-    x : jumperX,
-    y : jumperY,
-    width : jumperWidth,
-    height : jumperHeight
-}
-
-//physics
-let velocityX = 0; 
-let velocityY = 0; //jumper jump speed
-let initialVelocityY = -8; //starting velocity Y
-let gravity = 0.4;
-
-//mobile gyroscope
-let gyroEnabled = false;
-let gyroSensitivity = 0.3; // Adjust sensitivity (0.1 = low, 1.0 = high)
-let gyroMultiplier = 8; // How much movement per degree of tilt
-
-//platforms
-let platformArray = [];
-let platformWidth = 60;
-let platformHeight = 18;
-
-let score = 0;
-let maxScore = 0;
-let gameOver = false;
-
-window.onload = function() {
-    board = document.getElementById("board");
-    board.height = boardHeight;
-    board.width = boardWidth;
-    context = board.getContext("2d");
-
-    velocityY = initialVelocityY;
-    placePlatforms();
-    requestAnimationFrame(update);
-    document.addEventListener("keydown", moveJumper);
-    
-    // Initialize mobile controls
-    initializeMobileControls();
-}
-
-function update() {
-    requestAnimationFrame(update);
-    if (gameOver) {
-        return;
-    }
-    context.clearRect(0, 0, board.width, board.height);
-
-    //jumper
-    jumper.x += velocityX;
-    if (jumper.x > boardWidth) {
-        jumper.x = 0;
-    }
-    else if (jumper.x + jumper.width < 0) {
-        jumper.x = boardWidth;
-    }
-
-    velocityY += gravity;
-    jumper.y += velocityY;
-    if (jumper.y > board.height) {
-        gameOver = true;
-        endGame();
+class FlunkJumpGame {
+    constructor() {
+        this.canvas = document.getElementById('gameCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.score = 0;
+        this.gameRunning = false;
+        
+        // Player properties
+        this.player = {
+            x: this.canvas.width / 2 - 15,
+            y: this.canvas.height - 100,
+            width: 30,
+            height: 30,
+            velocityX: 0,
+            velocityY: 0,
+            onGround: false,
+            jumpPower: -15,
+            speed: 5
+        };
+        
+        // Platforms
+        this.platforms = [];
+        this.generateInitialPlatforms();
+        
+        // Camera offset for scrolling
+        this.cameraY = 0;
+        
+        // Mobile controls
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        this.gyroEnabled = false;
+        this.lastGamma = 0;
+        
+        this.setupControls();
+        this.setupMobileControls();
+        
+        // Game loop
+        this.gameLoop = this.gameLoop.bind(this);
+        this.startGame();
     }
     
-    // Draw jumper (simple rectangle for now)
-    context.fillStyle = "#ff6b6b";
-    context.fillRect(jumper.x, jumper.y, jumper.width, jumper.height);
+    generateInitialPlatforms() {
+        // Ground platform
+        this.platforms.push({
+            x: 0,
+            y: this.canvas.height - 20,
+            width: this.canvas.width,
+            height: 20,
+            type: 'ground'
+        });
+        
+        // Generate platforms going up
+        for (let i = 1; i < 50; i++) {
+            this.platforms.push({
+                x: Math.random() * (this.canvas.width - 80),
+                y: this.canvas.height - 20 - (i * 120),
+                width: 80,
+                height: 15,
+                type: 'normal'
+            });
+        }
+    }
     
-    // Add simple face
-    context.fillStyle = "white";
-    context.fillRect(jumper.x + 8, jumper.y + 8, 6, 6); // left eye
-    context.fillRect(jumper.x + 32, jumper.y + 8, 6, 6); // right eye
-    context.fillStyle = "black";
-    context.fillRect(jumper.x + 15, jumper.y + 25, 16, 4); // smile
-
-    //platforms
-    for (let i = 0; i < platformArray.length; i++) {
-        let platform = platformArray[i];
-        if (velocityY < 0 && jumper.y < boardHeight*3/4) {
-            platform.y -= initialVelocityY; //slide platform down
-        }
-        if (detectCollision(jumper, platform) && velocityY >= 0) {
-            velocityY = initialVelocityY; //jump
-        }
+    setupControls() {
+        this.keys = {};
         
-        // Draw platform
-        context.fillStyle = "#4ecdc4";
-        context.fillRect(platform.x, platform.y, platform.width, platform.height);
-        // Add platform border
-        context.strokeStyle = "#45b7d1";
-        context.lineWidth = 2;
-        context.strokeRect(platform.x, platform.y, platform.width, platform.height);
+        document.addEventListener('keydown', (e) => {
+            this.keys[e.key.toLowerCase()] = true;
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            this.keys[e.key.toLowerCase()] = false;
+        });
     }
-
-    // clear platforms and add new platform
-    while (platformArray.length > 0 && platformArray[0].y >= boardHeight) {
-        platformArray.shift(); //removes first element from the array
-        newPlatform(); //replace with new platform on top
-    }
-
-    //score
-    updateScore();
-    context.fillStyle = "black";
-    context.font = "bold 18px Arial";
-    context.fillText(score, 10, 25);
     
-    // Update score display
-    document.getElementById("current-score").textContent = score;
-
-    if (gameOver) {
-        context.fillStyle = "rgba(0, 0, 0, 0.7)";
-        context.fillRect(0, 0, boardWidth, boardHeight);
-        
-        context.fillStyle = "white";
-        context.font = "bold 24px Arial";
-        context.textAlign = "center";
-        context.fillText("GAME OVER", boardWidth/2, boardHeight/2 - 40);
-        
-        context.fillStyle = "#ffff00";
-        context.font = "bold 32px Arial";
-        context.fillText(score, boardWidth/2, boardHeight/2);
-        
-        context.fillStyle = "white";
-        context.font = "16px Arial";
-        context.fillText("Press SPACE to restart", boardWidth/2, boardHeight/2 + 40);
-        context.textAlign = "start";
-    }
-}
-
-function moveJumper(e) {
-    if (e.code == "ArrowRight" || e.code == "KeyD") { //move right
-        velocityX = 4;
-    }
-    else if (e.code == "ArrowLeft" || e.code == "KeyA") { //move left
-        velocityX = -4;
-    }
-    else if (e.code == "Space" && gameOver) {
-        resetGame();
-    }
-}
-
-function placePlatforms() {
-    platformArray = [];
-
-    //starting platform
-    let platform = {
-        x : boardWidth/2,
-        y : boardHeight - 50,
-        width : platformWidth,
-        height : platformHeight
-    }
-    platformArray.push(platform);
-
-    for (let i = 0; i < 6; i++) {
-        let randomX = Math.floor(Math.random() * boardWidth*3/4);
-        let platform = {
-            x : randomX,
-            y : boardHeight - 75*i - 150,
-            width : platformWidth,
-            height : platformHeight
-        }
-        platformArray.push(platform);
-    }
-}
-
-function newPlatform() {
-    let randomX = Math.floor(Math.random() * boardWidth*3/4);
-    let platform = {
-        x : randomX,
-        y : -platformHeight,
-        width : platformWidth,
-        height : platformHeight
-    }
-    platformArray.push(platform);
-}
-
-function detectCollision(a, b) {
-    return a.x < b.x + b.width &&   
-           a.x + a.width > b.x &&   
-           a.y < b.y + b.height &&  
-           a.y + a.height > b.y;    
-}
-
-function updateScore() {
-    let points = Math.floor(50*Math.random()); 
-    if (velocityY < 0) { //negative going up
-        maxScore += points;
-        if (score < maxScore) {
-            score = maxScore;
-        }
-    }
-    else if (velocityY >= 0) {
-        maxScore -= points;
-    }
-}
-
-function endGame() {
-    // Send score to parent window (Flunks arcade)
-    if (window.parent && score > 0) {
-        console.log('🦘 Flunk Jump - Final Score:', score);
-        window.parent.postMessage({
-            type: 'FLUNK_JUMP_SCORE',
-            score: score
-        }, '*');
-    }
-}
-
-// Mobile Controls and Gyroscope Support
-function initializeMobileControls() {
-    // Check if device supports gyroscope
-    if (window.DeviceOrientationEvent) {
-        // Request permission for iOS 13+
-        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-            // iOS 13+ requires permission
-            const gyroButton = document.createElement('button');
-            gyroButton.textContent = '📱 Enable Gyro Controls';
-            gyroButton.style.cssText = `
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                background: #4ecdc4;
-                color: white;
-                border: none;
-                padding: 8px 12px;
-                border-radius: 5px;
-                font-size: 12px;
-                cursor: pointer;
-                z-index: 1000;
-            `;
+    setupMobileControls() {
+        if (this.isMobile) {
+            // Request device orientation permission for iOS 13+
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                this.canvas.addEventListener('touchstart', () => {
+                    DeviceOrientationEvent.requestPermission()
+                        .then(response => {
+                            if (response == 'granted') {
+                                this.enableGyroscope();
+                            }
+                        })
+                        .catch(console.error);
+                }, { once: true });
+            } else {
+                this.enableGyroscope();
+            }
             
-            gyroButton.onclick = function() {
-                DeviceOrientationEvent.requestPermission()
-                    .then(response => {
-                        if (response === 'granted') {
-                            enableGyroControls();
-                            gyroButton.textContent = '✅ Gyro Active';
-                            gyroButton.style.background = '#4CAF50';
-                        } else {
-                            gyroButton.textContent = '❌ Gyro Denied';
-                            gyroButton.style.background = '#f44336';
-                        }
-                    })
-                    .catch(console.error);
-            };
+            // Touch controls for jumping and movement
+            this.canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = this.canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                
+                if (x < this.canvas.width / 2) {
+                    this.player.velocityX = -this.player.speed;
+                } else {
+                    this.player.velocityX = this.player.speed;
+                }
+            });
             
-            document.body.appendChild(gyroButton);
-        } else {
-            // Android and older iOS - enable directly
-            enableGyroControls();
+            this.canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.player.velocityX *= 0.8; // Gradual stop
+            });
         }
     }
     
-    // Add touch controls for mobile
-    addTouchControls();
-}
-
-function enableGyroControls() {
-    gyroEnabled = true;
-    console.log('🎮 Gyroscope controls enabled!');
+    enableGyroscope() {
+        this.gyroEnabled = true;
+        window.addEventListener('deviceorientation', (e) => {
+            this.handleGyroscope(e);
+        });
+    }
     
-    window.addEventListener('deviceorientation', handleGyroscope);
-}
-
-function handleGyroscope(event) {
-    if (!gyroEnabled || gameOver) return;
-    
-    // Get the gamma value (left/right tilt)
-    const gamma = event.gamma; // -90 to 90 degrees
-    
-    if (gamma !== null) {
-        // Convert tilt to movement velocity
-        // Negative gamma = tilt left, positive gamma = tilt right
-        const tiltThreshold = 5; // Ignore small tilts
+    handleGyroscope(event) {
+        if (!this.gyroEnabled || !this.gameRunning) return;
         
-        if (Math.abs(gamma) > tiltThreshold) {
-            // Scale the tilt to movement speed
-            velocityX = (gamma / 90) * gyroMultiplier * gyroSensitivity;
+        const gamma = event.gamma || 0; // Left-right tilt
+        const sensitivity = 0.3;
+        
+        if (Math.abs(gamma) > 5) { // Dead zone
+            this.player.velocityX = gamma * sensitivity;
             
-            // Cap the maximum velocity
-            velocityX = Math.max(-6, Math.min(6, velocityX));
-        } else {
-            // Gradually reduce velocity when phone is level
-            velocityX *= 0.9;
+            // Clamp velocity
+            if (this.player.velocityX > this.player.speed) {
+                this.player.velocityX = this.player.speed;
+            } else if (this.player.velocityX < -this.player.speed) {
+                this.player.velocityX = -this.player.speed;
+            }
         }
     }
-}
-
-function addTouchControls() {
-    // Add touch areas for non-gyro mobile control
-    board.addEventListener('touchstart', handleTouchStart);
-    board.addEventListener('touchmove', handleTouchMove);
     
-    // Prevent scrolling on touch
-    board.addEventListener('touchstart', preventDefault);
-    board.addEventListener('touchmove', preventDefault);
-}
-
-function preventDefault(e) {
-    e.preventDefault();
-}
-
-function handleTouchStart(e) {
-    if (gameOver) {
-        // Reset game on touch when game over
-        resetGame();
-        return;
+    handleInput() {
+        if (!this.gameRunning) return;
+        
+        // Desktop controls
+        if (this.keys['arrowleft'] || this.keys['a']) {
+            this.player.velocityX = -this.player.speed;
+        } else if (this.keys['arrowright'] || this.keys['d']) {
+            this.player.velocityX = this.player.speed;
+        } else if (!this.isMobile) {
+            this.player.velocityX *= 0.8; // Friction
+        }
     }
     
-    const touch = e.touches[0];
-    const rect = board.getBoundingClientRect();
-    const touchX = touch.clientX - rect.left;
+    updatePlayer() {
+        if (!this.gameRunning) return;
+        
+        // Apply gravity
+        this.player.velocityY += 0.8;
+        
+        // Update position
+        this.player.x += this.player.velocityX;
+        this.player.y += this.player.velocityY;
+        
+        // Keep player in bounds horizontally
+        if (this.player.x < 0) {
+            this.player.x = 0;
+            this.player.velocityX = 0;
+        } else if (this.player.x + this.player.width > this.canvas.width) {
+            this.player.x = this.canvas.width - this.player.width;
+            this.player.velocityX = 0;
+        }
+        
+        // Check platform collisions
+        this.player.onGround = false;
+        for (let platform of this.platforms) {
+            if (this.checkCollision(this.player, platform)) {
+                if (this.player.velocityY > 0) { // Falling down
+                    this.player.y = platform.y - this.player.height;
+                    this.player.velocityY = this.player.jumpPower;
+                    this.player.onGround = true;
+                    
+                    // Update score based on height
+                    const currentHeight = Math.floor((this.canvas.height - this.player.y) / 10);
+                    if (currentHeight > this.score) {
+                        this.score = currentHeight;
+                        this.updateScoreDisplay();
+                    }
+                }
+            }
+        }
+        
+        // Camera follows player when going up
+        if (this.player.y < this.canvas.height / 2) {
+            this.cameraY = this.canvas.height / 2 - this.player.y;
+        }
+        
+        // Game over condition
+        if (this.player.y > this.canvas.height + this.cameraY + 100) {
+            this.endGame();
+        }
+    }
     
-    // Determine movement based on touch position
-    if (touchX < boardWidth / 2) {
-        velocityX = -4; // Move left
-    } else {
-        velocityX = 4;  // Move right
+    checkCollision(rect1, rect2) {
+        return rect1.x < rect2.x + rect2.width &&
+               rect1.x + rect1.width > rect2.x &&
+               rect1.y < rect2.y + rect2.height &&
+               rect1.y + rect1.height > rect2.y;
+    }
+    
+    render() {
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Save context for camera transformation
+        this.ctx.save();
+        this.ctx.translate(0, this.cameraY);
+        
+        // Draw platforms
+        this.ctx.fillStyle = '#8B4513';
+        for (let platform of this.platforms) {
+            if (platform.y + this.cameraY > -50 && platform.y + this.cameraY < this.canvas.height + 50) {
+                this.ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                
+                // Platform border
+                this.ctx.strokeStyle = '#654321';
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeRect(platform.x, platform.y, platform.width, platform.height);
+            }
+        }
+        
+        // Draw player (simple kangaroo-like character)
+        this.ctx.fillStyle = '#FF6B6B';
+        this.ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
+        
+        // Player border
+        this.ctx.strokeStyle = '#FF4444';
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(this.player.x, this.player.y, this.player.width, this.player.height);
+        
+        // Simple kangaroo ears
+        this.ctx.fillStyle = '#FF6B6B';
+        this.ctx.fillRect(this.player.x + 5, this.player.y - 8, 6, 8);
+        this.ctx.fillRect(this.player.x + 19, this.player.y - 8, 6, 8);
+        
+        // Restore context
+        this.ctx.restore();
+    }
+    
+    updateScoreDisplay() {
+        document.getElementById('score').textContent = this.score;
+    }
+    
+    startGame() {
+        this.gameRunning = true;
+        this.gameLoop();
+    }
+    
+    endGame() {
+        this.gameRunning = false;
+        document.getElementById('finalScore').textContent = this.score;
+        document.getElementById('gameOverScreen').style.display = 'block';
+        
+        // Send score to parent window for leaderboard
+        if (window.parent) {
+            window.parent.postMessage({
+                type: 'FLUNK_JUMP_SCORE',
+                score: this.score
+            }, '*');
+        }
+    }
+    
+    restartGame() {
+        this.score = 0;
+        this.cameraY = 0;
+        this.player.x = this.canvas.width / 2 - 15;
+        this.player.y = this.canvas.height - 100;
+        this.player.velocityX = 0;
+        this.player.velocityY = 0;
+        
+        document.getElementById('gameOverScreen').style.display = 'none';
+        this.updateScoreDisplay();
+        this.startGame();
+    }
+    
+    gameLoop() {
+        if (!this.gameRunning) return;
+        
+        this.handleInput();
+        this.updatePlayer();
+        this.render();
+        
+        requestAnimationFrame(this.gameLoop);
     }
 }
 
-function handleTouchMove(e) {
-    if (gameOver) return;
+// Initialize game when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    const game = new FlunkJumpGame();
     
-    const touch = e.touches[0];
-    const rect = board.getBoundingClientRect();
-    const touchX = touch.clientX - rect.left;
-    
-    // Continuous movement based on touch position
-    if (touchX < boardWidth / 2) {
-        velocityX = -4; // Move left
-    } else {
-        velocityX = 4;  // Move right
-    }
-}
-
-function resetGame() {
-    jumper = {
-        x : jumperX,
-        y : jumperY,
-        width : jumperWidth,
-        height : jumperHeight
-    }
-
-    velocityX = 0;
-    velocityY = initialVelocityY;
-    score = 0;
-    maxScore = 0;
-    gameOver = false;
-    placePlatforms();
-}
+    // Restart button functionality
+    document.getElementById('restartBtn').addEventListener('click', () => {
+        game.restartGame();
+    });
+});

@@ -1,96 +1,109 @@
 body {
     margin: 0;
-    padding: 0;
+    padding: 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     font-family: 'Arial', sans-serif;
-    color: white;
-    text-align: center;
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
 }
 
-.game-container {
-    background: rgba(0, 0, 0, 0.3);
+#gameContainer {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 20px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-h1 {
-    margin: 0 0 10px 0;
-    font-size: 28px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    color: #ffff00;
-}
-
-.score-display {
-    font-size: 18px;
+#scoreDisplay {
+    text-align: center;
+    font-size: 24px;
     font-weight: bold;
+    color: white;
     margin-bottom: 10px;
-    color: #00ffff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
-#board {
-    border: 3px solid #fff;
-    border-radius: 10px;
-    background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    touch-action: none; /* Prevent scrolling on mobile */
-}
-
-/* Mobile optimizations */
-@media (max-width: 480px) {
-    .game-container {
-        padding: 10px;
-        margin: 10px;
-    }
-    
-    h1 {
-        font-size: 24px;
-    }
-    
-    .score-display {
-        font-size: 16px;
-    }
-    
-    .controls {
-        font-size: 12px;
-    }
-    
-    .controls p {
-        margin: 3px 0;
-    }
-}
-
-.controls {
-    margin-top: 15px;
+#instructions {
+    text-align: center;
+    color: white;
+    margin-bottom: 15px;
     font-size: 14px;
-    color: #cccccc;
+    opacity: 0.9;
 }
 
-.controls p {
+.desktop-controls, .mobile-controls {
     margin: 5px 0;
 }
 
-.game-over {
+#gameCanvas {
+    display: block;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    background: #87CEEB;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+#gameOverScreen {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     color: white;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 30px;
+    border-radius: 15px;
     text-align: center;
-    font-size: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
 
-.final-score {
-    color: #ffff00;
-    font-size: 24px;
-    font-weight: bold;
-    margin: 10px 0;
+#gameOverScreen h2 {
+    margin-top: 0;
+    color: #ff6b6b;
+}
+
+#restartBtn {
+    background: linear-gradient(45deg, #ff6b6b, #ffa500);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-top: 15px;
+}
+
+#restartBtn:hover {
+    transform: scale(1.05);
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    #gameContainer {
+        padding: 15px;
+    }
+    
+    #gameCanvas {
+        width: 100%;
+        max-width: 350px;
+        height: auto;
+    }
+    
+    #instructions {
+        font-size: 12px;
+    }
+    
+    .desktop-controls {
+        display: none;
+    }
 }
