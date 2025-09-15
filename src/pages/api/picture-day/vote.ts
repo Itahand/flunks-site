@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '../../../lib/supabase';
 import { canUserVoteForCandidate, getFlunksCount } from '../../../utils/votingPower';
+import { awardGum } from '../../../utils/gumAPI';
 
 // Check if we're in build mode
 const isBuildMode = process.env.NEXT_PUBLIC_BUILD_MODE === 'build';
@@ -84,6 +85,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!voteCheckError && userVotes && userVotes.length === 1) {
         // This is their first vote - objective completed!
         console.log('🎯 Picture Day voting objective completed for wallet:', userWallet);
+        
+        // Award GUM for completing the Slacker objective (voting)
+        try {
+          const gumResult = await awardGum(userWallet, 'picture_day_voting', {
+            objective: 'slacker_chapter3',
+            clique,
+            candidateId,
+            candidateName: candidate.name
+          });
+          
+          if (gumResult.success) {
+            console.log(`✅ Awarded ${gumResult.earned} GUM to ${userWallet} for Picture Day voting objective`);
+          } else {
+            console.error('❌ Failed to award GUM for Picture Day voting:', gumResult.error);
+          }
+        } catch (gumError) {
+          console.error('❌ Error awarding GUM for Picture Day voting:', gumError);
+        }
         
         // Dispatch event for any listening components
         // Note: This would be picked up by the frontend objective system
