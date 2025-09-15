@@ -137,18 +137,18 @@ const PrepsHouseMain = () => {
       {/* Room Buttons Section */}
       <div className="bg-gray-800 p-4 border-t border-gray-600">
         <div className="flex gap-4 flex-wrap justify-center max-w-4xl mx-auto">
-        {/* Back Porch */}
+        {/* Kitchen */}
         <button
           onClick={() =>
             openRoom(
               WINDOW_IDS.PREPS_HOUSE_SALON,
-              "Back Porch",
-              "A pristine covered porch with white wicker furniture and perfectly arranged potted plants. The view overlooks an immaculate garden."
+              "Kitchen",
+              "A gourmet kitchen with marble countertops and stainless steel appliances. Fresh herbs grow in designer planters by the window. Only the finest ingredients."
             )
           }
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
         >
-          🌸 Back Porch
+          �️ Kitchen
         </button>
 
         {/* Bedroom */}

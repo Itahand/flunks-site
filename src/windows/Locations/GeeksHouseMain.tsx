@@ -197,18 +197,18 @@ const GeeksHouseMain = () => {
             💻 Computer Room
           </button>
 
-          {/* Library */}
+          {/* Kitchen */}
           <button
             onClick={() =>
               openRoom(
                 WINDOW_IDS.GEEKS_HOUSE_LIBRARY,
-                "Library",
-                "Floor-to-ceiling bookshelves filled with technical manuals and science fiction novels."
+                "Kitchen",
+                "Energy drinks and instant ramen dominate the counter space. Multiple coffee makers and a microwave that's seen too much use. Circuit boards double as trivets."
               )
             }
             className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
           >
-            📖 Library
+            🍜 Kitchen
           </button>
 
           {/* Workshop */}
