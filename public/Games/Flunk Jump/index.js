@@ -3,9 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const doodler = document.createElement('div')
   let isGameOver = false
   let speed = 3
-  let platformCount = 5
+  let basePlatformCount = 6  // Start with more platforms for easier beginning
+  let platformCount = basePlatformCount
   let platforms = []
   let score = 0
+  let platformCounter = 0  // Track total platforms created
   let doodlerLeftSpace = 50
   let startPoint = 150
   let doodlerBottomSpace = startPoint
@@ -19,26 +21,134 @@ document.addEventListener('DOMContentLoaded', () => {
   let rightTimerId
 
   class Platform {
-    constructor(newPlatBottom) {
+    constructor(newPlatBottom, platformNumber = 0) {
       this.left = Math.random() * 315
       this.bottom = newPlatBottom
       this.visual = document.createElement('div')
+      
+      // Determine platform type based on platform number
+      if (platformNumber > 0 && platformNumber % 20 === 0) {
+        // Special platform every 20 platforms
+        this.type = 'special'
+        this.jumpHeight = 300  // Higher jump
+        this.width = 50        // Shorter width
+      } else if (platformNumber === 0) {
+        // First platform is always normal for easy start
+        this.type = 'normal'
+        this.jumpHeight = 200  // Standard jump
+        this.width = 85
+      } else {
+        // Random platform type for normal platforms
+        const rand = Math.random()
+        if (rand < 0.6) {
+          this.type = 'normal'
+          this.jumpHeight = 200  // Standard jump
+          this.width = 85
+        } else if (rand < 0.85) {
+          this.type = 'low'
+          this.jumpHeight = 150  // Lower jump
+          this.width = 85
+        } else {
+          this.type = 'high'
+          this.jumpHeight = 250  // Higher jump
+          this.width = 85
+        }
+      }
 
       const visual = this.visual
       visual.classList.add('platform')
       visual.style.left = this.left + 'px'
       visual.style.bottom = this.bottom + 'px'
+      visual.style.width = this.width + 'px'
+      
+      // Set platform colors based on type
+      if (this.type === 'special') {
+        visual.style.backgroundColor = '#ff6b35'  // Orange special platform
+        visual.style.border = '2px solid #ff4500'
+        visual.style.boxShadow = '0 0 10px rgba(255, 107, 53, 0.5)'
+      } else if (this.type === 'high') {
+        visual.style.backgroundColor = '#4CAF50'  // Green for high jump
+      } else if (this.type === 'low') {
+        visual.style.backgroundColor = '#f44336'  // Red for low jump
+      } else {
+        visual.style.backgroundColor = '#2196F3'  // Blue for normal
+      }
+      
       grid.appendChild(visual)
     }
   }
 
+  // Dynamic platform count based on score
+  function getPlatformCount() {
+    if (score < 100) {
+      return 6;  // Easy start with 6 platforms
+    } else if (score < 200) {
+      return 5;  // Reduce to 5 platforms after 100 points
+    } else if (score < 300) {
+      return 4;  // Reduce to 4 platforms after 200 points
+    } else if (score < 500) {
+      return 3;  // Reduce to 3 platforms after 300 points
+    } else {
+      return 2;  // Minimum 2 platforms for extreme difficulty
+    }
+  }
+
+  // Show difficulty increase notification
+  function showDifficultyNotification(score) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 69, 87, 0.9);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 2000;
+      text-align: center;
+      border: 2px solid #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    `;
+    
+    let message = '';
+    if (score === 100) message = 'DIFFICULTY UP! Fewer platforms!';
+    else if (score === 200) message = 'GETTING HARDER! Even fewer platforms!';
+    else if (score === 300) message = 'EXPERT MODE! Minimal platforms!';
+    else if (score === 500) message = 'INSANE MODE! Maximum difficulty!';
+    
+    notification.textContent = message;
+    grid.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 3000);
+  }
 
   function createPlatforms() {
-    for(let i =0; i < platformCount; i++) {
-      let platGap = 600 / platformCount
+    platformCount = getPlatformCount();  // Update platform count based on score
+    for(let i = 0; i < platformCount; i++) {
+      let platGap = 600 / platformCount  // Adjust gap based on current platform count
       let newPlatBottom = 100 + i * platGap
-      let newPlatform = new Platform (newPlatBottom)
-      platforms.push(newPlatform)
+      platformCounter++  // Increment platform counter
+      
+      // For the first platform, ensure it's a normal platform positioned for easy access
+      if (i === 0) {
+        let newPlatform = new Platform(newPlatBottom, 0) // Pass 0 to force normal platform
+        // Position first platform closer to starting position
+        newPlatform.left = Math.max(0, Math.min(250, Math.random() * 200 + 50)) // Keep within reasonable range
+        newPlatform.visual.style.left = newPlatform.left + 'px'
+        platforms.push(newPlatform)
+      } else {
+        let newPlatform = new Platform(newPlatBottom, platformCounter)
+        platforms.push(newPlatform)
+      }
       console.log(platforms)
     }
   }
@@ -63,7 +173,16 @@ document.addEventListener('DOMContentLoaded', () => {
               scoreDisplay.textContent = 'Score: ' + score
             }
             
-            var newPlatform = new Platform(600)
+            // Check for difficulty milestones and show notifications
+            if (score === 100 || score === 200 || score === 300 || score === 500) {
+              showDifficultyNotification(score);
+            }
+            
+            // Dynamic platform spacing based on current difficulty
+            let currentPlatformCount = getPlatformCount();
+            let dynamicSpacing = 600 / currentPlatformCount;
+            platformCounter++  // Increment platform counter
+            var newPlatform = new Platform(600 + dynamicSpacing, platformCounter)
             platforms.push(newPlatform)
           }
       }) 
@@ -110,12 +229,12 @@ function fall() {
           (doodlerBottomSpace >= platform.bottom) &&
           (doodlerBottomSpace <= (platform.bottom + 15)) &&
           ((doodlerLeftSpace + 60) >= platform.left) && 
-          (doodlerLeftSpace <= (platform.left + 85)) &&
+          (doodlerLeftSpace <= (platform.left + platform.width)) &&
           !isJumping
           ) {
             console.log('tick')
             startPoint = doodlerBottomSpace
-            jump()
+            jump(platform.jumpHeight)  // Pass the jump height to the jump function
             console.log('start', startPoint)
             isJumping = true
           }
@@ -124,7 +243,7 @@ function fall() {
     },20)
 }
 
-  function jump() {
+  function jump(jumpHeight = 200) {  // Default to 200 if no height specified
     clearInterval(downTimerId)
     isJumping = true
     upTimerId = setInterval(function () {
@@ -134,7 +253,7 @@ function fall() {
       doodler.style.bottom = doodlerBottomSpace + 'px'
       console.log('2',doodlerBottomSpace)
       console.log('s',startPoint)
-      if (doodlerBottomSpace > (startPoint + 200)) {
+      if (doodlerBottomSpace > (startPoint + jumpHeight)) {  // Use dynamic jump height
         fall()
         isJumping = false
       }
@@ -142,33 +261,49 @@ function fall() {
   }
 
   function moveLeft() {
+    // Clear any existing movement
     if (isGoingRight) {
         clearInterval(rightTimerId)
         isGoingRight = false
     }
+    
+    // Don't start a new interval if already going left
+    if (isGoingLeft) return;
+    
     isGoingLeft = true
     leftTimerId = setInterval(function () {
         if (doodlerLeftSpace >= 0) {
-          console.log('going left')
-          doodlerLeftSpace -=5
-           doodler.style.left = doodlerLeftSpace + 'px'
-        } else moveRight()
+          doodlerLeftSpace -= 5
+          doodler.style.left = doodlerLeftSpace + 'px'
+        } else {
+          // Stop at boundary instead of reversing
+          doodlerLeftSpace = 0
+          doodler.style.left = doodlerLeftSpace + 'px'
+        }
     },20)
   }
 
   function moveRight() {
+    // Clear any existing movement
     if (isGoingLeft) {
         clearInterval(leftTimerId)
         isGoingLeft = false
     }
+    
+    // Don't start a new interval if already going right
+    if (isGoingRight) return;
+    
     isGoingRight = true
     rightTimerId = setInterval(function () {
       //changed to 313 to fit doodle image
       if (doodlerLeftSpace <= 313) {
-        console.log('going right')
-        doodlerLeftSpace +=5
+        doodlerLeftSpace += 5
         doodler.style.left = doodlerLeftSpace + 'px'
-      } else moveLeft()
+      } else {
+        // Stop at boundary instead of reversing
+        doodlerLeftSpace = 313
+        doodler.style.left = doodlerLeftSpace + 'px'
+      }
     },20)
   }
   
@@ -181,13 +316,34 @@ function fall() {
 
   //assign functions to keyCodes
   function control(e) {
+    // Prevent default browser behavior for arrow keys
+    if(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      e.preventDefault();
+    }
+    
     doodler.style.bottom = doodlerBottomSpace + 'px'
     if(e.key === 'ArrowLeft') {
       moveLeft()
+      console.log('⬅️ Moving left');
     } else if (e.key === 'ArrowRight') {
       moveRight()
+      console.log('➡️ Moving right');
     } else if (e.key === 'ArrowUp') {
       moveStraight()
+      console.log('⬆️ Moving straight');
+    }
+  }
+
+  // Handle key release to stop movement
+  function controlStop(e) {
+    // Prevent default browser behavior for arrow keys
+    if(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      e.preventDefault();
+    }
+    
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      moveStraight()
+      console.log('🛑 Stopping movement');
     }
   }
 
@@ -271,27 +427,64 @@ function fall() {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.9);
       color: white;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 15px 20px;
+      border-radius: 8px;
       text-align: center;
       font-family: Arial, sans-serif;
       z-index: 1000;
+      border: 2px solid #333;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      max-width: 200px;
+      min-width: 180px;
     `;
     gameOverDiv.innerHTML = `
-      <h2>Game Over!</h2>
-      <p>Final Score: ${score}</p>
-      <button onclick="location.reload()" style="
-        background: #4CAF50;
+      <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #ff4757;">Game Over!</h3>
+      <p style="margin: 0 0 12px 0; font-size: 14px; color: #00ffff;">Score: ${score}</p>
+      <button id="playAgainBtn" style="
+        background: linear-gradient(135deg, #4CAF50, #45a049);
         color: white;
         border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
+        padding: 8px 16px;
+        border-radius: 4px;
         cursor: pointer;
-        font-size: 16px;
-      ">Play Again</button>
+        font-size: 12px;
+        font-weight: bold;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Play Again</button>
     `;
+    
+    // Add click event listener for play again button
+    const playAgainBtn = gameOverDiv.querySelector('#playAgainBtn');
+    playAgainBtn.addEventListener('click', () => {
+      console.log('🔄 Restarting game...');
+      // Reset all game variables
+      isGameOver = false;
+      score = 0;
+      platformCounter = 0;  // Reset platform counter
+      doodlerLeftSpace = 50;
+      doodlerBottomSpace = startPoint;
+      platforms = [];
+      isJumping = true;
+      isGoingLeft = false;
+      isGoingRight = false;
+      
+      // Clear all intervals
+      clearInterval(upTimerId);
+      clearInterval(downTimerId);
+      clearInterval(leftTimerId);
+      clearInterval(rightTimerId);
+      
+      // Clear the grid and restart
+      while (grid.firstChild) {
+        grid.removeChild(grid.firstChild);
+      }
+      
+      // Restart the game
+      start();
+    });
     grid.appendChild(gameOverDiv);
     
     clearInterval(upTimerId)
@@ -306,10 +499,11 @@ function fall() {
       createPlatforms()
       createDoodler()
       setInterval(movePlatforms,30)
-      jump(startPoint)
+      fall()  // Start by falling instead of jumping
       
-      // Desktop controls
-      document.addEventListener('keyup', control)
+      // Desktop controls - use passive: false to allow preventDefault
+      document.addEventListener('keydown', control, { passive: false })
+      document.addEventListener('keyup', controlStop, { passive: false })
       
       // Mobile touch controls
       grid.addEventListener('touchstart', handleTouchStart, { passive: false })
@@ -324,5 +518,10 @@ function fall() {
       console.log('🦘 Flunk Jump game started! Use arrow keys or touch/tilt to play.');
     } 
   }
+  
+  // Auto-start the game but allow external control
   start()
+  
+  // Also allow manual start command from parent
+  window.startFlunkJump = start;
 })

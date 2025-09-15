@@ -410,7 +410,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
             fontSize: '14px',
             color: '#32cd32'
           }}>
-            You're ready for the next semester!
+            You're ready for the next chapter!
           </div>
         </div>
       )}

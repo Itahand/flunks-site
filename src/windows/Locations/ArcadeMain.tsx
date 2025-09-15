@@ -397,8 +397,8 @@ const ArcadeMain = () => {
                     windowsId={WINDOW_IDS.FLUNK_JUMP}
                     onClose={() => closeWindow(WINDOW_IDS.FLUNK_JUMP)}
                     headerTitle="Flunk Jump"
-                    initialWidth="480px"
-                    initialHeight="640px"
+                    initialWidth="420px"
+                    initialHeight="660px"
                     headerIcon="/images/icons/flunkjump.png"
                   >
                     <FlunkJumpWindow />
