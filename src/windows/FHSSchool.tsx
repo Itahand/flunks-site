@@ -142,7 +142,7 @@ interface Props {
 
 const FHSSchool: React.FC<Props> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('home');
-  const [selectedMonth, setSelectedMonth] = useState('August');
+  const [selectedMonth, setSelectedMonth] = useState('September');
 
   const renderCalendarForMonth = (month: string) => {
     const monthData = {
@@ -166,8 +166,7 @@ const FHSSchool: React.FC<Props> = ({ onClose }) => {
         events: [
           { day: 1, label: 'Labor Day', color: 'bg-red-400' },
           { day: 12, label: 'Picture Day', color: 'bg-blue-400' },
-          { day: 20, label: 'Homecoming', color: 'bg-pink-400' },
-          { day: 27, label: '2nd Arcade Challenge Begins', color: 'bg-purple-400' }
+          { day: 27, label: 'Homecoming', color: 'bg-pink-400' }
         ]
       },
       October: {
@@ -177,6 +176,7 @@ const FHSSchool: React.FC<Props> = ({ onClose }) => {
         bgColor: 'bg-orange-100',
         textColor: 'text-orange-700',
         events: [
+          { day: 4, label: '2nd Arcade Challenge Begins', color: 'bg-purple-400' },
           { day: 13, label: 'Columbus Day', color: 'bg-red-400' },
           { day: 25, label: '3rd Arcade Challenge Begins', color: 'bg-purple-400' },
           { day: 31, label: 'Halloween', color: 'bg-purple-400' }
