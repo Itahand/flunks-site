@@ -34,9 +34,11 @@ import ReportCard from "windows/ReportCard";
 import IconAnimationWindow from "windows/IconAnimationWindow";
 import BulletinBoard from "windows/BulletinBoard";
 import Yearbook from "windows/Yearbook";
+import BuyMeADeloreanWindow from "windows/BuyMeADeloreanWindow";
 import AccessLevelStatus from "components/AccessLevelStatus";
 import ConditionalAppIcon from "components/ConditionalAppIcon";
 import { getUserAccessLevel } from "utils/appPermissions";
+import { isFeatureEnabled } from "utils/buildMode";
 import { BACKGROUND_CONFIG } from "config/backgroundConfig";
 import useThemeSettings from "store/useThemeSettings";
 import { getTimeBasedDesktopBackground } from "utils/timeBasedDesktopBackground";
@@ -566,7 +568,31 @@ const windowsMemod = useMemo(() => (
           }}
         />
 
-        {/* 20. Fantasy Football */}
+        {/* 20. Buy me a DeLorean - Build Mode Only */}
+        {isFeatureEnabled('showDeloreanTracker') && (
+          <ConditionalAppIcon
+            appId="buy-me-a-delorean"
+            title="Buy me a DeLorean"
+            icon="/images/icons/delorean.png"
+            onDoubleClick={() => openWindow({
+              key: WINDOW_IDS.BUY_ME_A_DELOREAN,
+              window: (
+                <DraggableResizeableWindow
+                  windowsId={WINDOW_IDS.BUY_ME_A_DELOREAN}
+                  onClose={() => closeWindow(WINDOW_IDS.BUY_ME_A_DELOREAN)}
+                  headerTitle="Buy me a DeLorean - Time Travel Fund Tracker"
+                  initialWidth="800px"
+                  initialHeight="600px"
+                  headerIcon="/images/icons/delorean.png"
+                >
+                  <BuyMeADeloreanWindow />
+                </DraggableResizeableWindow>
+              )
+            })}
+          />
+        )}
+
+        {/* 21. Fantasy Football */}
         <a
           href="https://sports.yahoo.com/dailyfantasy/league/147616/overview"
           target="_blank"

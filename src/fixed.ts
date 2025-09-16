@@ -146,6 +146,9 @@ export const WINDOW_IDS = {
   FOOTBALL_FIELD_STANDS: "football_field_stands",
   FOOTBALL_FIELD_LOCKER_ROOM: "football_field_locker_room",
   FOOTBALL_FIELD_EQUIPMENT_SHED: "football_field_equipment_shed",
+  
+  // DeLorean Tracker
+  BUY_ME_A_DELOREAN: "buy_me_a_delorean",
 };
 
 export const WINDOW_APP_INFO_TO_WINDOW_ID = {
@@ -374,5 +377,10 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
     appName: "Football Field",
     appIcon: "/images/icons/football-field-icon.png",
     key: WINDOW_IDS.FOOTBALL_FIELD_MAIN,
+  },
+  [WINDOW_IDS.BUY_ME_A_DELOREAN]: {
+    appName: "Buy me a DeLorean",
+    appIcon: "/images/icons/delorean.png",
+    key: WINDOW_IDS.BUY_ME_A_DELOREAN,
   },
 };
