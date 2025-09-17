@@ -66,7 +66,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showBulletinBoard: false,
     showIconAnimation: false,
     showReportCard: false,
-    showPictureDay: true,
+    showPictureDay: false,
     showDeloreanTracker: false,
     
     // Special Announcements - visible on public site
