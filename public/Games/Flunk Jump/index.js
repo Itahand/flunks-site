@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let platforms = []
   let score = 0
   let platformCounter = 0  // Track total platforms created
-  let doodlerLeftSpace = 50
-  let startPoint = 150
+  let doodlerLeftSpace = 156  // Center the doodler (400px grid width / 2 - 87px doodler width / 2)
+  let startPoint = 300  // Start higher for better building placement
   let doodlerBottomSpace = startPoint
   const gravity = 0.9
   let upTimerId
@@ -19,6 +19,48 @@ document.addEventListener('DOMContentLoaded', () => {
   let isGoingRight = false
   let leftTimerId
   let rightTimerId
+  let backgroundScrollTimer
+  
+  // Background scrolling variables
+  let backgroundPosition = 0
+  let lastDoodlerPosition = startPoint
+  const backgroundHeight = 1200  // Reduced height for better gameplay loop (20-30 points)
+  
+  // Function to create continuous slow background scroll
+  function startBackgroundScroll() {
+    backgroundScrollTimer = setInterval(() => {
+      // Continuous slow upward scroll (0.5px every 50ms = slower movement)
+      backgroundPosition -= 0.5
+      
+      // Reset background position when it scrolls beyond the image height
+      if (backgroundPosition <= -backgroundHeight) {
+        backgroundPosition = 0
+      }
+      
+      grid.style.backgroundPosition = `0px ${backgroundPosition}px`
+    }, 50) // Update every 50ms for smooth animation
+  }
+  
+  // Function to update background position for smooth infinite scroll
+  function updateBackground() {
+    // Calculate how much the doodler has moved up
+    const doodlerMovement = doodlerBottomSpace - lastDoodlerPosition
+    
+    // Add extra movement when doodler is jumping up (parallax effect)
+    if (doodlerMovement > 0 && doodlerBottomSpace > 200) {
+      // Additional scrolling based on doodler movement (on top of continuous scroll)
+      backgroundPosition -= doodlerMovement * 0.3
+      
+      // Reset background position when it scrolls beyond the image height
+      if (backgroundPosition <= -backgroundHeight) {
+        backgroundPosition = 0
+      }
+      
+      grid.style.backgroundPosition = `0px ${backgroundPosition}px`
+    }
+    
+    lastDoodlerPosition = doodlerBottomSpace
+  }
 
   class Platform {
     constructor(newPlatBottom, platformNumber = 0) {
@@ -155,6 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function movePlatforms() {
     if (doodlerBottomSpace > 200) {
+        // Update background position for scrolling effect
+        updateBackground()
+        
         platforms.forEach(platform => {
           platform.bottom -= 4
           let visual = platform.visual
@@ -193,9 +238,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function createDoodler() {
     grid.appendChild(doodler)
     doodler.classList.add('doodler')
-    doodlerLeftSpace = platforms[0].left
+    
+    // Position doodler in center of screen with down sprite
     doodler.style.left = doodlerLeftSpace + 'px'
     doodler.style.bottom = doodlerBottomSpace + 'px'
+    
+    // Set initial sprite to down (falling/ready to drop)
+    setDoodlerDownSprite()
     
     // Create score display
     const scoreDisplay = document.createElement('div')
@@ -215,8 +264,22 @@ document.addEventListener('DOMContentLoaded', () => {
     grid.appendChild(scoreDisplay)
   }
 
+  // Functions to change doodler sprite based on movement direction
+  function setDoodlerUpSprite() {
+    doodler.style.backgroundImage = "url('doodler-up.png')";
+  }
+
+  function setDoodlerDownSprite() {
+    doodler.style.backgroundImage = "url('doodler-down.png')";
+  }
+
+  function setDoodlerDefaultSprite() {
+    doodler.style.backgroundImage = "url('doodler-guy.png')";
+  }
+
 function fall() {
   isJumping = false
+  setDoodlerDownSprite()  // Set falling sprite
     clearInterval(upTimerId)
     downTimerId = setInterval(function () {
       doodlerBottomSpace -= 5
@@ -246,11 +309,16 @@ function fall() {
   function jump(jumpHeight = 200) {  // Default to 200 if no height specified
     clearInterval(downTimerId)
     isJumping = true
+    setDoodlerUpSprite()  // Set jumping sprite
     upTimerId = setInterval(function () {
       console.log(startPoint)
       console.log('1', doodlerBottomSpace)
       doodlerBottomSpace += 20
       doodler.style.bottom = doodlerBottomSpace + 'px'
+      
+      // Update background during jump
+      updateBackground()
+      
       console.log('2',doodlerBottomSpace)
       console.log('s',startPoint)
       if (doodlerBottomSpace > (startPoint + jumpHeight)) {  // Use dynamic jump height
@@ -415,6 +483,13 @@ function fall() {
       console.log('Score sent to parent:', score);
     }
     
+    // Clear all intervals
+    clearInterval(upTimerId)
+    clearInterval(downTimerId)
+    clearInterval(leftTimerId)
+    clearInterval(rightTimerId)
+    
+    // Clear the grid but keep the doodler
     while (grid.firstChild) {
       console.log('remove')
       grid.removeChild(grid.firstChild)
@@ -436,61 +511,133 @@ function fall() {
       z-index: 1000;
       border: 2px solid #333;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      max-width: 200px;
-      min-width: 180px;
+      max-width: 250px;
+      min-width: 200px;
     `;
     gameOverDiv.innerHTML = `
       <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #ff4757;">Game Over!</h3>
       <p style="margin: 0 0 12px 0; font-size: 14px; color: #00ffff;">Score: ${score}</p>
-      <button id="playAgainBtn" style="
-        background: linear-gradient(135deg, #4CAF50, #45a049);
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: bold;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Play Again</button>
+      <p style="margin: 0; font-size: 12px; color: #ffd700;">Click the restart platform below to play again!</p>
     `;
-    
-    // Add click event listener for play again button
-    const playAgainBtn = gameOverDiv.querySelector('#playAgainBtn');
-    playAgainBtn.addEventListener('click', () => {
-      console.log('🔄 Restarting game...');
-      // Reset all game variables
-      isGameOver = false;
-      score = 0;
-      platformCounter = 0;  // Reset platform counter
-      doodlerLeftSpace = 50;
-      doodlerBottomSpace = startPoint;
-      platforms = [];
-      isJumping = true;
-      isGoingLeft = false;
-      isGoingRight = false;
-      
-      // Clear all intervals
-      clearInterval(upTimerId);
-      clearInterval(downTimerId);
-      clearInterval(leftTimerId);
-      clearInterval(rightTimerId);
-      
-      // Clear the grid and restart
-      while (grid.firstChild) {
-        grid.removeChild(grid.firstChild);
-      }
-      
-      // Restart the game
-      start();
-    });
     grid.appendChild(gameOverDiv);
     
-    clearInterval(upTimerId)
-    clearInterval(downTimerId)
-    clearInterval(leftTimerId)
-    clearInterval(rightTimerId)
+    // Create restart platform at the bottom
+    createRestartPlatform();
+    
+    // Position doodler on the restart platform
+    createGameOverDoodler();
+  }
+
+  function createRestartPlatform() {
+    const restartPlatform = document.createElement('div');
+    restartPlatform.id = 'restartPlatform';
+    restartPlatform.classList.add('platform');
+    restartPlatform.style.cssText = `
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 20px;
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      border: 3px solid #ff6b35;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.6);
+      z-index: 999;
+      animation: restartPlatformPulse 1.5s infinite alternate;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      font-size: 10px;
+      font-weight: bold;
+      color: #333;
+    `;
+    restartPlatform.textContent = 'CLICK TO RESTART';
+    
+    // Add CSS animation for the pulsing effect
+    if (!document.querySelector('#restartPlatformStyles')) {
+      const style = document.createElement('style');
+      style.id = 'restartPlatformStyles';
+      style.textContent = `
+        @keyframes restartPlatformPulse {
+          0% {
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.6);
+            transform: translateX(-50%) scale(1);
+          }
+          100% {
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.9);
+            transform: translateX(-50%) scale(1.05);
+          }
+        }
+        
+        #restartPlatform:hover {
+          background: linear-gradient(135deg, #ffed4e, #ffd700);
+          transform: translateX(-50%) scale(1.1) !important;
+          box-shadow: 0 8px 25px rgba(255, 215, 0, 1);
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    // Add click event listener for restart
+    restartPlatform.addEventListener('click', restartGame);
+    
+    grid.appendChild(restartPlatform);
+    return restartPlatform;
+  }
+
+  function createGameOverDoodler() {
+    const gameOverDoodler = document.createElement('div');
+    gameOverDoodler.classList.add('doodler');
+    gameOverDoodler.style.cssText = `
+      position: absolute;
+      bottom: 45px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 87px;
+      height: 85px;
+      background-image: url('doodler-guy.png');
+      z-index: 1000;
+    `;
+    grid.appendChild(gameOverDoodler);
+    return gameOverDoodler;
+  }
+
+  function restartGame() {
+    console.log('🔄 Restarting game via platform click...');
+    
+    // Reset all game variables
+    isGameOver = false;
+    score = 0;
+    platformCounter = 0;  // Reset platform counter
+    doodlerLeftSpace = 156;  // Center the doodler (400px grid width / 2 - 87px doodler width / 2)
+    doodlerBottomSpace = startPoint;
+    platforms = [];
+    isJumping = true;
+    isGoingLeft = false;
+    isGoingRight = false;
+    
+    // Reset background scrolling
+    backgroundPosition = 0;
+    lastDoodlerPosition = startPoint;
+    grid.style.backgroundPosition = '0px 0px';
+    
+    // Clear all intervals including background scroll
+    clearInterval(upTimerId);
+    clearInterval(downTimerId);
+    clearInterval(leftTimerId);
+    clearInterval(rightTimerId);
+    clearInterval(backgroundScrollTimer);
+    
+    // Clear the grid completely
+    while (grid.firstChild) {
+      grid.removeChild(grid.firstChild);
+    }
+    
+    // Restart the game
+    start();
   }
 
 
@@ -499,7 +646,12 @@ function fall() {
       createPlatforms()
       createDoodler()
       setInterval(movePlatforms,30)
-      fall()  // Start by falling instead of jumping
+      
+      // Start continuous background scrolling
+      startBackgroundScroll()
+      
+      // Start falling naturally (no initial jump) - ready for building placement
+      fall()  // Begin falling from center position
       
       // Desktop controls - use passive: false to allow preventDefault
       document.addEventListener('keydown', control, { passive: false })
