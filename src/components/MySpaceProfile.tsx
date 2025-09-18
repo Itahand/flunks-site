@@ -232,7 +232,7 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
   return (
     <ProfileContainer bgColor={profile.backgroundColor} pattern={profile.backgroundPattern}>
       <ProfileHeader>
-        🏠 MyPlace.com - {profile.name}'s Profile
+        🏠 MyPlace.com - Profile
       </ProfileHeader>
       
       <ProfileContent>
@@ -253,9 +253,9 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
             </ProfilePictureSection>
             
             <UserDetailsSection>
-              <UserName color={profile.backgroundColor}>
+              {/* <UserName color={profile.backgroundColor}>
                 {profile.name}
-              </UserName>
+              </UserName> */}
               
               <UserStats>
                 <StatItem><strong>Mood:</strong> {profile.mood}</StatItem>
