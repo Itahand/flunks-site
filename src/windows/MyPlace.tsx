@@ -4,6 +4,8 @@ import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import AppLoader from "components/AppLoader";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useCliqueAccess, CliqueType } from "hooks/useCliqueAccess";
+import MySpaceProfile from "../components/MySpaceProfile";
 import Image from "next/image";
 
 const Container = styled.div`
@@ -59,7 +61,7 @@ const CharacterGrid = styled.div`
 const CharacterSlot = styled.div<{ locked: boolean }>`
   position: relative;
   width: 150px;
-  height: 200px;
+  height: 320px;
   border: 3px solid ${props => props.locked ? '#444' : '#00ffff'};
   border-radius: 12px;
   cursor: ${props => props.locked ? 'not-allowed' : 'pointer'};
@@ -90,7 +92,7 @@ const CharacterSlot = styled.div<{ locked: boolean }>`
   
   @media (max-width: 768px) {
     width: 120px;
-    height: 160px;
+    height: 260px;
   }
 `;
 
@@ -162,20 +164,30 @@ const WalletStatus = styled.div`
 `;
 
 const characterSlots = [
-  { clique: "geek", imageId: "myplacegeek", label: "Geek", color: "#00ff00" },
-  { clique: "prep", imageId: "myplaceprep", label: "Prep", color: "#ff69b4" },
-  { clique: "jock", imageId: "myplacejock", label: "Jock", color: "#ffa500" },
-  { clique: "freak", imageId: "myplacefreak", label: "Freak", color: "#800080" },
+  { clique: "the-nerds", imageId: "images/myplace/myplace-geek", label: "Geek", color: "#059669" },
+  { clique: "the-populars", imageId: "images/myplace/myspace-prep", label: "Prep", color: "#ff69b4" },
+  { clique: "the-jocks", imageId: "images/myplace/myplace-jock", label: "Jock", color: "#1e3a8a" },
+  { clique: "the-outcasts", imageId: "images/myplace/myplace-freak", label: "Freak", color: "#2c1810" },
 ];
 
 const MyPlace = () => {
   const { closeWindow, openWindow } = useWindowsContext();
   const { user } = useDynamicContext();
+  const { hasAccess } = useCliqueAccess();
 
   const userHasTrait = (clique: string) => {
-    // For now, let's allow all classes if user is connected
-    // In production, this would check: user?.flunks?.some((nft: any) => nft.traits?.clique === clique);
-    return !!user; // Temporary: unlock all if user is connected
+    // Map our clique names to CliqueType
+    const cliqueMap: Record<string, CliqueType> = {
+      'the-nerds': 'GEEK',
+      'the-populars': 'PREP', 
+      'the-jocks': 'JOCK',
+      'the-outcasts': 'FREAK',
+      'the-artists': 'GEEK', // Map to GEEK for now
+      'the-rebels': 'FREAK', // Map to FREAK for now
+    };
+    
+    const cliqueType = cliqueMap[clique];
+    return cliqueType ? hasAccess(cliqueType) : false;
   };
 
   const handleCharacterClick = (character: typeof characterSlots[0]) => {
@@ -192,44 +204,13 @@ const MyPlace = () => {
       window: (
         <DraggableResizeableWindow
           windowsId={`${character.clique}_profile`}
-          headerTitle={`${character.label}'s MySpace Profile`}
+          headerTitle={`${character.label}'s MyPlace Profile`}
           onClose={() => closeWindow(`${character.clique}_profile`)}
           initialWidth="90%"
           initialHeight="90%"
           resizable={true}
         >
-          <div style={{ 
-            padding: '20px', 
-            background: `linear-gradient(135deg, ${character.color}22, ${character.color}11)`,
-            height: '100%',
-            overflow: 'auto'
-          }}>
-            <h1 style={{ 
-              fontFamily: 'Press Start 2P', 
-              color: character.color,
-              textAlign: 'center',
-              marginBottom: '20px'
-            }}>
-              Coming Soon: {character.label}'s Profile
-            </h1>
-            <p style={{
-              fontFamily: 'Arial',
-              fontSize: '16px',
-              color: '#fff',
-              textAlign: 'center',
-              lineHeight: '1.6'
-            }}>
-              This will be a retro MySpace-style profile page for the {character.label} class.
-              <br /><br />
-              Features will include:
-              <br />• Custom background themes
-              <br />• Friend connections
-              <br />• Photo galleries
-              <br />• Music players
-              <br />• Class-specific content
-              <br />• Achievement badges
-            </p>
-          </div>
+          <MySpaceProfile clique={character.clique} />
         </DraggableResizeableWindow>
       ),
     });

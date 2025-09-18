@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const grid = document.querySelector('.grid')
-  const doodler = document.createElement('div')
+  let doodler = null  // Initialize as null, will be created in createDoodler()
   let isGameOver = false
   let speed = 3
   let basePlatformCount = 6  // Start with more platforms for easier beginning
@@ -17,24 +17,32 @@ document.addEventListener('DOMContentLoaded', () => {
   let isJumping = true
   let isGoingLeft = false
   let isGoingRight = false
+  let lastDirection = 'right'  // Track last direction for sprite selection
   let leftTimerId
   let rightTimerId
   let backgroundScrollTimer
   
   // Background scrolling variables
-  let backgroundPosition = 0
+  let backgroundPosition = -2400  // Start lower in the light area
   let lastDoodlerPosition = startPoint
-  const backgroundHeight = 1200  // Reduced height for better gameplay loop (20-30 points)
+  const backgroundHeight = 3000  // Keep tall height for full image
   
   // Function to create continuous slow background scroll
   function startBackgroundScroll() {
     backgroundScrollTimer = setInterval(() => {
-      // Continuous slow upward scroll (0.5px every 50ms = slower movement)
-      backgroundPosition -= 0.5
+      // Stop background scrolling when score reaches 500 (you've "maxed out")
+      if (score >= 500) {
+        return; // Don't scroll background anymore
+      }
       
-      // Reset background position when it scrolls beyond the image height
-      if (backgroundPosition <= -backgroundHeight) {
-        backgroundPosition = 0
+      // Continuous slow upward scroll (move toward 0 from negative value)
+      backgroundPosition += 0.5
+      
+      // Stop at the top instead of resetting - stay at 0 when reached
+      if (backgroundPosition >= 0) {
+        backgroundPosition = 0; // Stay at the top, don't reset
+        clearInterval(backgroundScrollTimer); // Stop the scrolling timer
+        return;
       }
       
       grid.style.backgroundPosition = `0px ${backgroundPosition}px`
@@ -43,17 +51,22 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Function to update background position for smooth infinite scroll
   function updateBackground() {
+    // Stop background scrolling when score reaches 500 or when already at top
+    if (score >= 500 || backgroundPosition >= 0) {
+      return;
+    }
+    
     // Calculate how much the doodler has moved up
     const doodlerMovement = doodlerBottomSpace - lastDoodlerPosition
     
     // Add extra movement when doodler is jumping up (parallax effect)
     if (doodlerMovement > 0 && doodlerBottomSpace > 200) {
-      // Additional scrolling based on doodler movement (on top of continuous scroll)
-      backgroundPosition -= doodlerMovement * 0.3
+      // Additional scrolling based on doodler movement (move toward 0)
+      backgroundPosition += doodlerMovement * 0.3
       
-      // Reset background position when it scrolls beyond the image height
-      if (backgroundPosition <= -backgroundHeight) {
-        backgroundPosition = 0
+      // Stop at the top instead of resetting
+      if (backgroundPosition >= 0) {
+        backgroundPosition = 0; // Stay at the top
       }
       
       grid.style.backgroundPosition = `0px ${backgroundPosition}px`
@@ -122,16 +135,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Dynamic platform count based on score
   function getPlatformCount() {
-    if (score < 100) {
-      return 6;  // Easy start with 6 platforms
-    } else if (score < 200) {
-      return 5;  // Reduce to 5 platforms after 100 points
-    } else if (score < 300) {
-      return 4;  // Reduce to 4 platforms after 200 points
-    } else if (score < 500) {
-      return 3;  // Reduce to 3 platforms after 300 points
+    if (score < 25) {
+      return 5;  // Start with 5 platforms (reduced from 6)
+    } else if (score < 75) {
+      return 4;  // Reduce to 4 platforms after 25 points
+    } else if (score < 150) {
+      return 3;  // Reduce to 3 platforms after 75 points  
+    } else if (score < 250) {
+      return 2;  // Reduce to 2 platforms after 150 points
     } else {
-      return 2;  // Minimum 2 platforms for extreme difficulty
+      return 1;  // Extreme difficulty - only 1 platform after 250!
     }
   }
 
@@ -236,41 +249,73 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function createDoodler() {
-    grid.appendChild(doodler)
-    doodler.classList.add('doodler')
+    console.log('🔧 createDoodler() called');
+    
+    // First, remove any existing doodlers from the grid
+    const existingDoodlers = grid.querySelectorAll('.doodler');
+    console.log('🗑️ Found', existingDoodlers.length, 'existing doodlers to remove');
+    existingDoodlers.forEach(existingDoodler => {
+      console.log('Removing existing doodler');
+      existingDoodler.remove();
+    });
+    
+    // Create a fresh doodler element
+    const newDoodler = document.createElement('div');
+    newDoodler.classList.add('doodler');
     
     // Position doodler in center of screen with down sprite
-    doodler.style.left = doodlerLeftSpace + 'px'
-    doodler.style.bottom = doodlerBottomSpace + 'px'
+    newDoodler.style.left = doodlerLeftSpace + 'px';
+    newDoodler.style.bottom = doodlerBottomSpace + 'px';
+    newDoodler.style.width = '75px';  // Reduced from 87px
+    newDoodler.style.height = '73px';  // Reduced from 85px
+    newDoodler.style.position = 'absolute';
+    newDoodler.style.backgroundImage = 'url("flunko-down.png")';
+    newDoodler.style.backgroundSize = 'contain';
+    // newDoodler.style.backgroundColor = 'red';  // Temporarily use solid color instead of image
+    // newDoodler.style.border = '2px solid black';
     
-    // Set initial sprite to down (falling/ready to drop)
-    setDoodlerDownSprite()
+    // Add to grid and update global reference
+    grid.appendChild(newDoodler);
     
-    // Create score display
-    const scoreDisplay = document.createElement('div')
-    scoreDisplay.id = 'scoreDisplay'
-    scoreDisplay.style.cssText = `
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 20px;
-      font-weight: bold;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-      z-index: 100;
-    `
-    scoreDisplay.textContent = 'Score: 0'
-    grid.appendChild(scoreDisplay)
+    // Update the global doodler reference
+    doodler = newDoodler;
+    
+    // Create or update score display
+    let scoreDisplay = document.getElementById('scoreDisplay');
+    if (!scoreDisplay) {
+      scoreDisplay = document.createElement('div');
+      scoreDisplay.id = 'scoreDisplay';
+      scoreDisplay.style.cssText = `
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: white;
+        font-family: Arial, sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        z-index: 100;
+      `;
+      grid.appendChild(scoreDisplay);
+    }
+    scoreDisplay.textContent = 'Score: 0';
   }
 
   // Functions to change doodler sprite based on movement direction
   function setDoodlerUpSprite() {
-    doodler.style.backgroundImage = "url('doodler-up.png')";
+    if (lastDirection === 'left') {
+      doodler.style.backgroundImage = "url('flunko-up-L.png')";
+    } else {
+      doodler.style.backgroundImage = "url('flunko-up.png')";
+    }
   }
 
   function setDoodlerDownSprite() {
-    doodler.style.backgroundImage = "url('doodler-down.png')";
+    if (lastDirection === 'left') {
+      doodler.style.backgroundImage = "url('flunko-down-L.png')";
+    } else {
+      doodler.style.backgroundImage = "url('flunko-down.png')";
+    }
   }
 
   function setDoodlerDefaultSprite() {
@@ -339,6 +384,7 @@ function fall() {
     if (isGoingLeft) return;
     
     isGoingLeft = true
+    lastDirection = 'left'  // Update direction for sprite selection
     leftTimerId = setInterval(function () {
         if (doodlerLeftSpace >= 0) {
           doodlerLeftSpace -= 5
@@ -362,6 +408,7 @@ function fall() {
     if (isGoingRight) return;
     
     isGoingRight = true
+    lastDirection = 'right'  // Update direction for sprite selection
     rightTimerId = setInterval(function () {
       //changed to 313 to fit doodle image
       if (doodlerLeftSpace <= 313) {
@@ -488,8 +535,19 @@ function fall() {
     clearInterval(downTimerId)
     clearInterval(leftTimerId)
     clearInterval(rightTimerId)
+    clearInterval(backgroundScrollTimer)
     
-    // Clear the grid but keep the doodler
+    // Remove ALL doodler elements from the grid
+    const allDoodlers = grid.querySelectorAll('.doodler');
+    allDoodlers.forEach(doodlerElement => {
+      console.log('Removing doodler element');
+      doodlerElement.remove();
+    });
+    
+    // Set doodler reference to null
+    doodler = null;
+    
+    // Clear all platforms but keep track of what we're removing
     while (grid.firstChild) {
       console.log('remove')
       grid.removeChild(grid.firstChild)
@@ -589,16 +647,25 @@ function fall() {
   }
 
   function createGameOverDoodler() {
+    // Make sure there are no existing doodlers before creating game over doodler
+    const existingDoodlers = grid.querySelectorAll('.doodler');
+    existingDoodlers.forEach(existing => {
+      console.log('Removing existing doodler before game over doodler');
+      existing.remove();
+    });
+    
     const gameOverDoodler = document.createElement('div');
     gameOverDoodler.classList.add('doodler');
+    gameOverDoodler.classList.add('game-over-doodler'); // Add special class
     gameOverDoodler.style.cssText = `
       position: absolute;
       bottom: 45px;
       left: 50%;
       transform: translateX(-50%);
-      width: 87px;
-      height: 85px;
-      background-image: url('doodler-guy.png');
+      width: 75px;
+      height: 73px;
+      background-image: url('flunko-down.png');
+      background-size: contain;
       z-index: 1000;
     `;
     grid.appendChild(gameOverDoodler);
@@ -618,11 +685,12 @@ function fall() {
     isJumping = true;
     isGoingLeft = false;
     isGoingRight = false;
+    lastDirection = 'right';  // Reset to right-facing
     
     // Reset background scrolling
-    backgroundPosition = 0;
+    backgroundPosition = -2400;  // Start lower in light area
     lastDoodlerPosition = startPoint;
-    grid.style.backgroundPosition = '0px 0px';
+    grid.style.backgroundPosition = '0px -2400px';
     
     // Clear all intervals including background scroll
     clearInterval(upTimerId);
@@ -643,6 +711,13 @@ function fall() {
 
   function start() {
     if (!isGameOver) {
+      // Clear any existing intervals first to prevent duplicates
+      clearInterval(upTimerId);
+      clearInterval(downTimerId);
+      clearInterval(leftTimerId);
+      clearInterval(rightTimerId);
+      clearInterval(backgroundScrollTimer);
+      
       createPlatforms()
       createDoodler()
       setInterval(movePlatforms,30)
@@ -650,8 +725,8 @@ function fall() {
       // Start continuous background scrolling
       startBackgroundScroll()
       
-      // Start falling naturally (no initial jump) - ready for building placement
-      fall()  // Begin falling from center position
+      // Start with an initial jump instead of falling
+      jump() // Give character initial upward momentum
       
       // Desktop controls - use passive: false to allow preventDefault
       document.addEventListener('keydown', control, { passive: false })
@@ -671,9 +746,16 @@ function fall() {
     } 
   }
   
-  // Auto-start the game but allow external control
-  start()
+  // Don't auto-start - let it be triggered manually or on first load
+  // start()
   
   // Also allow manual start command from parent
-  window.startFlunkJump = start;
+  window.startFlunkJump = function() {
+    console.log('🎮 Manual start triggered from parent window');
+    // Force restart the game
+    restartGame();
+  };
+
+  // Start the game on first load
+  start();
 })

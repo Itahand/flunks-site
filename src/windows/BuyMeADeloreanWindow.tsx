@@ -269,7 +269,7 @@ const BuyMeADeloreanWindow: React.FC = () => {
   return (
     <Container>
       <Header>
-        <Title>🚗 Buy Me a DeLorean</Title>
+        <Title>🚗 DeLorean Fund</Title>
         <Subtitle>Time Travel Fund Tracker</Subtitle>
       </Header>
 

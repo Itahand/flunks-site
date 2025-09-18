@@ -1,16 +1,19 @@
 .grid {
   width: 400px;
   height: 600px;
-  background-image: url('background.png');
+  background-image: url('background.png?v=2');
+  background-repeat: repeat-y;
+  background-size: 400px auto;
   position: relative;
   font-size: 100px;
   text-align: center;
 }
 
 .doodler {
-  width: 87px;
-  height: 85px;
+  width: 75px;
+  height: 73px;
   background-image: url('doodler-guy.png');
+  background-size: contain;
   position: absolute;
 }
 

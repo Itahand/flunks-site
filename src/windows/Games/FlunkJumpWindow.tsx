@@ -157,6 +157,24 @@ const FlunkJumpWindow = () => {
   const startGame = () => {
     setGameStarted(true);
     console.log('🦘 Flunk Jump game started - removing overlay!');
+    
+    // Also trigger the game start in the iframe (in case it didn't auto-start)
+    setTimeout(() => {
+      const iframe = document.querySelector('iframe[title="Flunk Jump Game"]') as HTMLIFrameElement;
+      if (iframe && iframe.contentWindow) {
+        try {
+          // Focus the iframe so keyboard controls work immediately
+          iframe.focus();
+          console.log('🎯 Focused iframe for keyboard controls');
+          
+          // Try to call the game's start function
+          (iframe.contentWindow as any).startFlunkJump?.();
+          console.log('🎮 Called game start function');
+        } catch (e) {
+          console.log('Could not access iframe content:', e);
+        }
+      }
+    }, 100);
   };
 
   return (
@@ -176,6 +194,7 @@ const FlunkJumpWindow = () => {
         <GameIframe 
           src="/Games/Flunk Jump/index.html"
           title="Flunk Jump Game"
+          tabIndex={0}
         />
       </GameFrame>
     </GameContainer>

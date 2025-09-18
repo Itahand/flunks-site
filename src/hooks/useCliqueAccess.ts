@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { getWalletStakeInfo } from 'web3/script-get-wallet-stake-info';
 import { ObjectDetails } from 'contexts/StakingContext';
+import { isFeatureEnabled } from '../utils/buildMode';
 
 export type CliqueType = 'GEEK' | 'JOCK' | 'PREP' | 'FREAK';
 
@@ -31,6 +32,21 @@ export const useCliqueAccess = (): UseCliqueAccessReturn => {
   const walletAddress = primaryWallet?.address;
 
   const checkCliqueAccess = async () => {
+    // Development bypass: Grant access to all cliques in build mode
+    const walletBypassEnabled = isFeatureEnabled('enableWalletBypass');
+    
+    if (walletBypassEnabled) {
+      console.log('🔧 DEV BYPASS: Granting access to all cliques for MyPlace testing');
+      setCliqueAccess({
+        GEEK: true,
+        JOCK: true,
+        PREP: true,
+        FREAK: true,
+      });
+      setLoading(false);
+      return;
+    }
+
     if (!walletAddress) {
       setCliqueAccess({});
       return;

@@ -379,7 +379,7 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
     key: WINDOW_IDS.FOOTBALL_FIELD_MAIN,
   },
   [WINDOW_IDS.BUY_ME_A_DELOREAN]: {
-    appName: "Buy me a DeLorean",
+    appName: "DeLorean Fund",
     appIcon: "/images/icons/delorean.png",
     key: WINDOW_IDS.BUY_ME_A_DELOREAN,
   },

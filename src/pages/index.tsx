@@ -568,11 +568,11 @@ const windowsMemod = useMemo(() => (
           }}
         />
 
-        {/* 20. Buy me a DeLorean - Build Mode Only */}
+        {/* 20. DeLorean Fund - Build Mode Only */}
         {isFeatureEnabled('showDeloreanTracker') && (
           <ConditionalAppIcon
             appId="buy-me-a-delorean"
-            title="Buy me a DeLorean"
+            title="DeLorean Fund"
             icon="/images/icons/delorean.png"
             onDoubleClick={() => openWindow({
               key: WINDOW_IDS.BUY_ME_A_DELOREAN,
@@ -580,7 +580,7 @@ const windowsMemod = useMemo(() => (
                 <DraggableResizeableWindow
                   windowsId={WINDOW_IDS.BUY_ME_A_DELOREAN}
                   onClose={() => closeWindow(WINDOW_IDS.BUY_ME_A_DELOREAN)}
-                  headerTitle="Buy me a DeLorean - Time Travel Fund Tracker"
+                  headerTitle="DeLorean Fund - Time Travel Fund Tracker"
                   initialWidth="800px"
                   initialHeight="600px"
                   headerIcon="/images/icons/delorean.png"

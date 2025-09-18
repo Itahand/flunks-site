@@ -102,7 +102,7 @@ export const APP_PERMISSIONS: AppPermission[] = [
   {
     id: 'myplace',
     title: 'MyPlace',
-    requiredLevel: ['ADMIN'],
+    requiredLevel: ['ADMIN', 'BETA', 'COMMUNITY'],
     description: 'Social networking features',
     buildModeFeature: 'showMyPlace'
   },
