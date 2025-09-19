@@ -97,11 +97,11 @@ const FlunkJumpWindow = () => {
   const [gameStarted, setGameStarted] = useState(false);
 
   useEffect(() => {
-    // Score submission handler for Flunk Jump
+    // Score submission handler for Flunky Uppy
     const handler = (event: MessageEvent) => {
-      if (event.data?.type === 'FLUNK_JUMP_SCORE') {
+      if (event.data?.type === 'FLUNKY_UPPY_SCORE') {
         const score = event.data.score;
-        console.log('🦘 Flunk Jump score received:', score);
+        console.log('🦘 Flunky Uppy score received:', score);
         
         fcl.currentUser().snapshot().then((user: any) => {
           console.log('👤 User authentication check:', { 
@@ -116,11 +116,11 @@ const FlunkJumpWindow = () => {
             return;
           }
           
-          console.log('📮 Submitting Flunk Jump score to database:', { wallet: wallet.substring(0, 10) + '...', score });
+          console.log('📮 Submitting Flunky Uppy score to database:', { wallet: wallet.substring(0, 10) + '...', score });
           
-          // TODO: Create API endpoint for Flunk Jump scores
+          // TODO: Create API endpoint for Flunky Uppy scores
           // For now, we'll just log it
-          console.log('🚧 Flunk Jump scoring system - Coming Soon!');
+          console.log('🚧 Flunky Uppy scoring system - Coming Soon!');
           
           /*
           fetch('/api/flunkjump-score', {
@@ -129,7 +129,7 @@ const FlunkJumpWindow = () => {
             body: JSON.stringify({ wallet, score }),
           })
           .then(response => {
-            console.log('📊 Flunk Jump score submission response status:', response.status);
+            console.log('📊 Flunky Uppy score submission response status:', response.status);
             if (!response.ok) {
               return response.text().then(text => {
                 throw new Error(`Score API Error ${response.status}: ${text}`);
@@ -138,10 +138,10 @@ const FlunkJumpWindow = () => {
             return response.json();
           })
           .then(data => {
-            console.log('✅ Flunk Jump score submitted successfully to leaderboard:', data);
+            console.log('✅ Flunky Uppy score submitted successfully to leaderboard:', data);
           })
           .catch(error => {
-            console.error('❌ Flunk Jump score submission failed:', error);
+            console.error('❌ Flunky Uppy score submission failed:', error);
           });
           */
         }).catch(authError => {
@@ -156,11 +156,11 @@ const FlunkJumpWindow = () => {
 
   const startGame = () => {
     setGameStarted(true);
-    console.log('🦘 Flunk Jump game started - removing overlay!');
+    console.log('🦘 Flunky Uppy game started - removing overlay!');
     
     // Also trigger the game start in the iframe (in case it didn't auto-start)
     setTimeout(() => {
-      const iframe = document.querySelector('iframe[title="Flunk Jump Game"]') as HTMLIFrameElement;
+      const iframe = document.querySelector('iframe[title="Flunky Uppy Game"]') as HTMLIFrameElement;
       if (iframe && iframe.contentWindow) {
         try {
           // Focus the iframe so keyboard controls work immediately
@@ -181,7 +181,7 @@ const FlunkJumpWindow = () => {
     <GameContainer>
       {!gameStarted && (
         <StartScreen onClick={startGame}>
-          <StartTitle>FLUNK JUMP</StartTitle>
+          <StartTitle>FLUNKY UPPY</StartTitle>
           <StartButton>CLICK TO START</StartButton>
           <Instructions>
             Use ARROW KEYS to move<br />
@@ -192,8 +192,8 @@ const FlunkJumpWindow = () => {
       
       <GameFrame>
         <GameIframe 
-          src="/Games/Flunk Jump/index.html"
-          title="Flunk Jump Game"
+          src="/Games/Flunky Uppy/index.html"
+          title="Flunky Uppy Game"
           tabIndex={0}
         />
       </GameFrame>

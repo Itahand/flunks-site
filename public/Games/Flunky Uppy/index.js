@@ -524,7 +524,7 @@ function fall() {
     // Send score to parent window for leaderboard submission
     if (window.parent && score > 0) {
       window.parent.postMessage({
-        type: 'FLUNK_JUMP_SCORE',
+        type: 'FLUNKY_UPPY_SCORE',
         score: score
       }, '*');
       console.log('Score sent to parent:', score);
@@ -742,7 +742,7 @@ function fall() {
         window.addEventListener('deviceorientation', handleOrientation)
       }
       
-      console.log('🦘 Flunk Jump game started! Use arrow keys or touch/tilt to play.');
+      console.log('🦘 Flunky Uppy game started! Use arrow keys or touch/tilt to play.');
     } 
   }
   
