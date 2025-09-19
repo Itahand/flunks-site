@@ -32,14 +32,18 @@ const StartScreen = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background-image: url('/Games/Flunky Uppy/start-screens/start-screen.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   z-index: 10;
   cursor: pointer;
   transition: opacity 0.3s ease;
+  padding-bottom: 40px;
 `;
 
 const StartTitle = styled.h1`
@@ -57,25 +61,29 @@ const StartTitle = styled.h1`
 `;
 
 const StartButton = styled.div`
-  background: linear-gradient(135deg, #ff4757 0%, #c44569 100%);
-  border: 3px solid #fff;
-  border-radius: 15px;
-  padding: 20px 40px;
+  background: rgba(255, 71, 87, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 15px 30px;
   color: white;
   font-family: 'Orbitron', monospace;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
   box-shadow: 
-    0 8px 16px rgba(0,0,0,0.3),
-    inset 0 2px 4px rgba(255,255,255,0.2);
-  transition: all 0.2s ease;
+    0 6px 20px rgba(0,0,0,0.4),
+    inset 0 1px 2px rgba(255,255,255,0.2);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
   
   &:hover {
+    background: rgba(255, 71, 87, 0.95);
     transform: translateY(-2px);
     box-shadow: 
-      0 12px 24px rgba(0,0,0,0.4),
-      inset 0 2px 4px rgba(255,255,255,0.3);
+      0 8px 25px rgba(0,0,0,0.5),
+      inset 0 1px 2px rgba(255,255,255,0.3);
   }
   
   &:active {
@@ -93,8 +101,35 @@ const Instructions = styled.div`
   line-height: 1.5;
 `;
 
+const SfxButton = styled.div<{ isOn: boolean }>`
+  background: ${props => props.isOn ? 'rgba(0, 255, 0, 0.7)' : 'rgba(255, 0, 0, 0.7)'};
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: white;
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  margin-top: 15px;
+  cursor: pointer;
+  text-transform: uppercase;
+  
+  &:hover {
+    background: ${props => props.isOn ? 'rgba(0, 255, 0, 0.9)' : 'rgba(255, 0, 0, 0.9)'};
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0px);
+  }
+`;
+
 const FlunkJumpWindow = () => {
   const [gameStarted, setGameStarted] = useState(false);
+  const [sfxEnabled, setSfxEnabled] = useState(true);
 
   useEffect(() => {
     // Score submission handler for Flunky Uppy
@@ -118,12 +153,8 @@ const FlunkJumpWindow = () => {
           
           console.log('📮 Submitting Flunky Uppy score to database:', { wallet: wallet.substring(0, 10) + '...', score });
           
-          // TODO: Create API endpoint for Flunky Uppy scores
-          // For now, we'll just log it
-          console.log('🚧 Flunky Uppy scoring system - Coming Soon!');
-          
-          /*
-          fetch('/api/flunkjump-score', {
+          // Submit score to Flunky Uppy API endpoint
+          fetch('/api/flunky-uppy-score', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ wallet, score }),
@@ -143,7 +174,6 @@ const FlunkJumpWindow = () => {
           .catch(error => {
             console.error('❌ Flunky Uppy score submission failed:', error);
           });
-          */
         }).catch(authError => {
           console.error('❌ Flow authentication error:', authError);
         });
@@ -177,16 +207,35 @@ const FlunkJumpWindow = () => {
     }, 100);
   };
 
+  const toggleSfx = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the start game function
+    setSfxEnabled(!sfxEnabled);
+    console.log('🔊 SFX toggled:', !sfxEnabled ? 'ON' : 'OFF');
+    
+    // Send SFX setting to the game iframe
+    setTimeout(() => {
+      const iframe = document.querySelector('iframe[title="Flunky Uppy Game"]') as HTMLIFrameElement;
+      if (iframe && iframe.contentWindow) {
+        try {
+          iframe.contentWindow.postMessage({ 
+            type: 'SFX_TOGGLE', 
+            enabled: !sfxEnabled 
+          }, '*');
+        } catch (e) {
+          console.log('Could not send SFX setting to game:', e);
+        }
+      }
+    }, 100);
+  };
+
   return (
     <GameContainer>
       {!gameStarted && (
         <StartScreen onClick={startGame}>
-          <StartTitle>FLUNKY UPPY</StartTitle>
           <StartButton>CLICK TO START</StartButton>
-          <Instructions>
-            Use ARROW KEYS to move<br />
-            MOBILE: Tilt device or tap sides
-          </Instructions>
+          <SfxButton isOn={sfxEnabled} onClick={toggleSfx}>
+            SFX: {sfxEnabled ? 'ON' : 'OFF'}
+          </SfxButton>
         </StartScreen>
       )}
       

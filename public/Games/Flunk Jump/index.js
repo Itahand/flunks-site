@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let doodler = null  // Initialize as null, will be created in createDoodler()
   let isGameOver = false
   let speed = 3
-  let basePlatformCount = 6  // Start with generous amount of platforms for learning
+  let basePlatformCount = 6  // Start with more platforms for easier beginning
   let platformCount = basePlatformCount
   let platforms = []
   let score = 0
@@ -136,17 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Dynamic platform count based on score
   function getPlatformCount() {
     if (score < 25) {
-      return 6;  // Start with 6 platforms for easier beginning
+      return 5;  // Start with 5 platforms (reduced from 6)
     } else if (score < 75) {
-      return 5;  // Reduce to 5 platforms after 25 points
-    } else if (score < 125) {
-      return 4;  // Reduce to 4 platforms after 75 points
-    } else if (score < 175) {
-      return 3;  // Reduce to 3 platforms after 125 points
-    } else if (score < 225) {
-      return 2;  // Reduce to 2 platforms after 175 points
+      return 4;  // Reduce to 4 platforms after 25 points
+    } else if (score < 150) {
+      return 3;  // Reduce to 3 platforms after 75 points  
+    } else if (score < 250) {
+      return 2;  // Reduce to 2 platforms after 150 points
     } else {
-      return 1;  // Only 1 platform after 225 points - extreme difficulty
+      return 1;  // Extreme difficulty - only 1 platform after 250!
     }
   }
 
@@ -211,11 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function movePlatforms() {
-    // Stop all platform movement and scoring if game is over
-    if (isGameOver) {
-      return;
-    }
-    
     if (doodlerBottomSpace > 200) {
         // Update background position for scrolling effect
         updateBackground()
@@ -330,22 +323,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 function fall() {
-  // Stop falling if game is over
-  if (isGameOver) {
-    clearInterval(downTimerId)
-    return
-  }
-  
   isJumping = false
   setDoodlerDownSprite()  // Set falling sprite
     clearInterval(upTimerId)
     downTimerId = setInterval(function () {
-      // Check if game is over before continuing
-      if (isGameOver) {
-        clearInterval(downTimerId)
-        return
-      }
-      
       doodlerBottomSpace -= 5
       doodler.style.bottom = doodlerBottomSpace + 'px'
       if (doodlerBottomSpace <= 0) {
@@ -371,22 +352,10 @@ function fall() {
 }
 
   function jump(jumpHeight = 200) {  // Default to 200 if no height specified
-    // Stop jumping if game is over
-    if (isGameOver) {
-      clearInterval(upTimerId)
-      return
-    }
-    
     clearInterval(downTimerId)
     isJumping = true
     setDoodlerUpSprite()  // Set jumping sprite
     upTimerId = setInterval(function () {
-      // Check if game is over before continuing
-      if (isGameOver) {
-        clearInterval(upTimerId)
-        return
-      }
-      
       console.log(startPoint)
       console.log('1', doodlerBottomSpace)
       doodlerBottomSpace += 20
@@ -394,15 +363,6 @@ function fall() {
       
       // Update background during jump
       updateBackground()
-      
-      // Check if doodler went WAY too high (game over condition)
-      // Only trigger game over if doodler goes extremely high (indicates infinite jump bug)
-      if (doodlerBottomSpace >= 1500) {
-        console.log('Doodler went way too high - Game Over')
-        clearInterval(upTimerId)
-        gameOver()
-        return
-      }
       
       console.log('2',doodlerBottomSpace)
       console.log('s',startPoint)

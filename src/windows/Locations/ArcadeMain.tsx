@@ -399,7 +399,7 @@ const ArcadeMain = () => {
                     headerTitle="Flunky Uppy"
                     initialWidth="420px"
                     initialHeight="720px"
-                    headerIcon="/images/icons/flunkjump.png"
+                    headerIcon="/images/icons/flunky-uppy-icon.png"
                   >
                     <FlunkJumpWindow />
                   </DraggableResizeableWindow>
