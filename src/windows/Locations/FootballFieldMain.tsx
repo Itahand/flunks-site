@@ -2,12 +2,19 @@ import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "contexts/AuthContext";
 import { awardGum } from "utils/gumAPI";
 import { trackFridayNightLightsClick, checkFridayNightLightsClicked } from "../../utils/fridayNightLightsTracking";
+import { checkRepeatOffenderEligibility, formatTimeRemaining } from "../../utils/repeatOffenderTracking";
 import { getFontStyle } from "utils/fontConfig";
 
 const FootballFieldMain = () => {
   const { walletAddress, user } = useAuth();
   const [buttonClickLoading, setButtonClickLoading] = useState(false);
   const [hasClaimedGum, setHasClaimedGum] = useState(false);
+  const [repeatOffenderLoading, setRepeatOffenderLoading] = useState(false);
+  const [repeatOffenderEligibility, setRepeatOffenderEligibility] = useState<{
+    canClaim: boolean;
+    timeRemaining?: number;
+    lastClaimTime?: string;
+  }>({ canClaim: false });
 
   // Get font styling for JOCK clique (football field is jock territory)
   const fontStyle = getFontStyle('JOCK');
@@ -35,6 +42,12 @@ const FootballFieldMain = () => {
         try {
           const hasClicked = await checkFridayNightLightsClicked(walletAddress);
           setHasClaimedGum(hasClicked);
+          
+          // If they've claimed Friday Night Lights, check repeat offender eligibility
+          if (hasClicked) {
+            const eligibility = await checkRepeatOffenderEligibility(walletAddress);
+            setRepeatOffenderEligibility(eligibility);
+          }
         } catch (error) {
           console.error("Failed to check GUM claim status:", error);
         }
@@ -49,6 +62,40 @@ const FootballFieldMain = () => {
       fridayNightLightsAudio.pause();
     };
   }, [fridayNightLightsAudio, walletAddress]);
+
+  const handleRepeatOffenderClick = async () => {
+    if (!walletAddress || !user) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    if (repeatOffenderLoading || !repeatOffenderEligibility.canClaim) return;
+
+    setRepeatOffenderLoading(true);
+    try {
+      const response = await fetch('/api/claim-repeat-offender', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        alert(`🏈 REPEAT OFFENDER! You earned ${result.gumAwarded} GUM! The legend continues!`);
+        // Refresh eligibility status
+        const eligibility = await checkRepeatOffenderEligibility(walletAddress);
+        setRepeatOffenderEligibility(eligibility);
+      } else {
+        alert(`❌ ${result.error || 'Failed to claim Repeat Offender reward. Please try again.'}`);
+      }
+    } catch (error) {
+      console.error("Failed to process Repeat Offender claim:", error);
+      alert("Something went wrong with Repeat Offender claim. Try again!");
+    } finally {
+      setRepeatOffenderLoading(false);
+    }
+  };
 
   const handleFridayNightLightsClick = async () => {
     if (!walletAddress || !user) {
@@ -67,6 +114,11 @@ const FootballFieldMain = () => {
         // Award 50 GUM for clicking Friday Night Lights
         await awardGum(walletAddress, "friday_night_lights", { amount: 50, description: "Friday Night Lights click" });
         setHasClaimedGum(true);
+        
+        // Check repeat offender eligibility now that they've claimed Friday Night Lights
+        const eligibility = await checkRepeatOffenderEligibility(walletAddress);
+        setRepeatOffenderEligibility(eligibility);
+        
         alert("🏈 FRIDAY NIGHT LIGHTS! You earned 50 GUM! The crowd roars with excitement!");
       } else {
         setHasClaimedGum(true);
@@ -123,6 +175,35 @@ const FootballFieldMain = () => {
           }
         </button>
 
+        {/* Repeat Offender Button - Only shows if Friday Night Lights has been claimed */}
+        {hasClaimedGum && (
+          <button
+            onClick={handleRepeatOffenderClick}
+            disabled={repeatOffenderLoading || !repeatOffenderEligibility.canClaim}
+            className={`mb-6 px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300 shadow-2xl border-2 
+              ${repeatOffenderLoading 
+                ? 'bg-gray-600 text-gray-300 cursor-not-allowed border-gray-500' 
+                : !repeatOffenderEligibility.canClaim
+                ? 'bg-red-700 text-red-300 cursor-not-allowed border-red-600'
+                : 'bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white border-red-400 hover:scale-110 hover:shadow-red-500/50'
+              }`}
+            style={{
+              ...fontStyle,
+              fontSize: '20px', // Slightly smaller than Friday Night Lights
+              fontWeight: 'bold',
+            }}
+          >
+            {repeatOffenderLoading 
+              ? '⏳ Loading...' 
+              : !repeatOffenderEligibility.canClaim && repeatOffenderEligibility.timeRemaining
+              ? `🚫 Wait ${formatTimeRemaining(repeatOffenderEligibility.timeRemaining)}`
+              : repeatOffenderEligibility.canClaim
+              ? '🔄 REPEAT OFFENDER (+50 GUM)'
+              : '🔄 REPEAT OFFENDER'
+            }
+          </button>
+        )}
+
         {/* Small Town Football Blurb */}
         <div className="bg-black bg-opacity-70 backdrop-blur-sm rounded-lg p-6 border border-gray-600 shadow-xl">
           <p 
@@ -133,11 +214,7 @@ const FootballFieldMain = () => {
               lineHeight: '1.6',
             }}
           >
-            "In small towns across America, Friday nights meant everything. 
-            The whole community would gather under those bright lights, 
-            where heroes were made and dreams were born. 
-            The roar of the crowd, the smell of popcorn, 
-            and the hope that this might be the night that changes everything."
+            "Now, we go out there and we half-ass it because we're scared, all we're left with is an excuse. We're always gonna wonder. But, we go out there and we give it absolutely everything... that's heroic. Let's be heroes!"
           </p>
         </div>
       </div>
