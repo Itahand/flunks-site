@@ -22,6 +22,62 @@ document.addEventListener('DOMContentLoaded', () => {
   let rightTimerId
   let backgroundScrollTimer
   
+  // Audio system variables
+  let isSfxEnabled = true  // SFX toggle state
+  let startSound = null
+  let gameMusic = null
+  let dieSound = null
+  
+  // Initialize audio elements after DOM is loaded
+  function initializeAudio() {
+    startSound = document.getElementById('startSound')
+    gameMusic = document.getElementById('gameMusic')
+    dieSound = document.getElementById('dieSound')
+    
+    // Set volume levels
+    if (startSound) startSound.volume = 0.7
+    if (gameMusic) gameMusic.volume = 0.4  // Background music should be quieter
+    if (dieSound) dieSound.volume = 0.8
+  }
+  
+  // Audio management functions
+  function playStartSound() {
+    if (isSfxEnabled && startSound) {
+      startSound.currentTime = 0  // Reset to beginning
+      startSound.play().catch(e => console.log('Start sound play failed:', e))
+    }
+  }
+  
+  function playGameMusic() {
+    if (isSfxEnabled && gameMusic) {
+      gameMusic.currentTime = 0  // Reset to beginning
+      gameMusic.play().catch(e => console.log('Game music play failed:', e))
+    }
+  }
+  
+  function stopGameMusic() {
+    if (gameMusic) {
+      gameMusic.pause()
+      gameMusic.currentTime = 0
+    }
+  }
+  
+  function playDieSound() {
+    if (isSfxEnabled && dieSound) {
+      dieSound.currentTime = 0  // Reset to beginning
+      dieSound.play().catch(e => console.log('Die sound play failed:', e))
+    }
+  }
+  
+  function toggleSfx() {
+    isSfxEnabled = !isSfxEnabled
+    if (!isSfxEnabled) {
+      // Stop all currently playing audio
+      stopGameMusic()
+    }
+    return isSfxEnabled
+  }
+  
   // Background scrolling variables
   let backgroundPosition = -2400  // Start lower in the light area
   let lastDoodlerPosition = startPoint
@@ -561,6 +617,10 @@ function fall() {
     isGameOver = true
     console.log('Game Over! Final Score:', score)
     
+    // Stop background music and play die sound
+    stopGameMusic()
+    playDieSound()
+    
     // Send score to parent window for leaderboard submission
     if (window.parent && score > 0) {
       window.parent.postMessage({
@@ -619,8 +679,9 @@ function fall() {
     `;
     grid.appendChild(gameOverDiv);
     
-    // Create restart platform at the bottom
+    // Create restart platform and leaderboard button at the bottom
     createRestartPlatform();
+    createLeaderboardButton();
     
     // Position doodler on the restart platform
     createGameOverDoodler();
@@ -634,7 +695,7 @@ function fall() {
       position: absolute;
       bottom: 20px;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(30px);
       width: 120px;
       height: 20px;
       background: linear-gradient(135deg, #ffd700, #ffed4e);
@@ -662,17 +723,17 @@ function fall() {
         @keyframes restartPlatformPulse {
           0% {
             box-shadow: 0 4px 15px rgba(255, 215, 0, 0.6);
-            transform: translateX(-50%) scale(1);
+            transform: translateX(30px) scale(1);
           }
           100% {
             box-shadow: 0 6px 20px rgba(255, 215, 0, 0.9);
-            transform: translateX(-50%) scale(1.05);
+            transform: translateX(30px) scale(1.05);
           }
         }
         
         #restartPlatform:hover {
           background: linear-gradient(135deg, #ffed4e, #ffd700);
-          transform: translateX(-50%) scale(1.1) !important;
+          transform: translateX(30px) scale(1.1) !important;
           box-shadow: 0 8px 25px rgba(255, 215, 0, 1);
         }
       `;
@@ -684,6 +745,60 @@ function fall() {
     
     grid.appendChild(restartPlatform);
     return restartPlatform;
+  }
+
+  function createLeaderboardButton() {
+    const leaderboardButton = document.createElement('div');
+    leaderboardButton.id = 'leaderboardButton';
+    leaderboardButton.style.cssText = `
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-130px);
+      width: 100px;
+      height: 20px;
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      border: 3px solid #2E7D32;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.6);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      font-size: 10px;
+      font-weight: bold;
+      color: white;
+      transition: all 0.3s ease;
+    `;
+    leaderboardButton.textContent = '🏆 SCORES';
+    
+    // Add hover effect
+    leaderboardButton.addEventListener('mouseenter', () => {
+      leaderboardButton.style.background = 'linear-gradient(135deg, #45a049, #4CAF50)';
+      leaderboardButton.style.transform = 'translateX(-130px) scale(1.1)';
+      leaderboardButton.style.boxShadow = '0 8px 25px rgba(76, 175, 80, 1)';
+    });
+    
+    leaderboardButton.addEventListener('mouseleave', () => {
+      leaderboardButton.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+      leaderboardButton.style.transform = 'translateX(-130px) scale(1)';
+      leaderboardButton.style.boxShadow = '0 4px 15px rgba(76, 175, 80, 0.6)';
+    });
+    
+    // Add click event listener to open leaderboard
+    leaderboardButton.addEventListener('click', () => {
+      // Send message to parent window to open leaderboard
+      if (window.parent) {
+        window.parent.postMessage({
+          type: 'FLUNKY_UPPY_OPEN_LEADERBOARD'
+        }, '*');
+      }
+    });
+    
+    grid.appendChild(leaderboardButton);
+    return leaderboardButton;
   }
 
   function createGameOverDoodler() {
@@ -714,6 +829,10 @@ function fall() {
 
   function restartGame() {
     console.log('🔄 Restarting game via platform click...');
+    
+    // Play start sound and background music for restart
+    playStartSound()
+    playGameMusic()
     
     // Reset all game variables
     isGameOver = false;
@@ -751,6 +870,11 @@ function fall() {
 
   function start() {
     if (!isGameOver) {
+      // Initialize audio on first start
+      if (!startSound) {
+        initializeAudio()
+      }
+      
       // Clear any existing intervals first to prevent duplicates
       clearInterval(upTimerId);
       clearInterval(downTimerId);
@@ -798,4 +922,31 @@ function fall() {
 
   // Start the game on first load
   start();
+  
+  // Listen for SFX toggle messages from parent window
+  window.addEventListener('message', (event) => {
+    if (event.data.type === 'SFX_TOGGLE') {
+      const wasEnabled = isSfxEnabled;
+      isSfxEnabled = event.data.enabled;
+      console.log('🔊 SFX setting received:', isSfxEnabled ? 'ON' : 'OFF');
+      
+      // If SFX was disabled, stop current music
+      if (wasEnabled && !isSfxEnabled) {
+        stopGameMusic();
+      }
+      // If SFX was enabled and game is running, start music
+      else if (!wasEnabled && isSfxEnabled && !isGameOver) {
+        playGameMusic();
+      }
+    }
+    
+    // Handle start game with audio message
+    if (event.data.type === 'START_GAME_WITH_AUDIO') {
+      console.log('🎵 Starting game with audio from parent window');
+      
+      // Play start sound and background music
+      playStartSound();
+      playGameMusic();
+    }
+  });
 })

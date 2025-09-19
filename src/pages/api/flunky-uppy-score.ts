@@ -39,6 +39,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     insertData.metadata.username = username;
   }
 
+  // Add username if provided
+  if (username) {
+    insertData.metadata.username = username;
+  }
+
   const { data, error } = await supabase
     .from('flunky_uppy_scores')
     .insert([insertData])

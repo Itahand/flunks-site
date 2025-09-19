@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import * as fcl from '@onflow/fcl';
 import styled from 'styled-components';
+import { useWindowsContext } from 'contexts/WindowsContext';
+import { WINDOW_IDS } from 'fixed';
+import DraggableResizeableWindow from 'components/DraggableResizeableWindow';
+import FlunkyUppyLeaderboardWindow from './FlunkyUppyLeaderboardWindow';
 
 const GameContainer = styled.div`
   width: 100%;
@@ -127,9 +131,55 @@ const SfxButton = styled.div<{ isOn: boolean }>`
   }
 `;
 
+const LeaderboardButton = styled.div`
+  background: rgba(255, 215, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: white;
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  margin-top: 15px;
+  cursor: pointer;
+  text-transform: uppercase;
+  
+  &:hover {
+    background: rgba(255, 215, 0, 0.9);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0px);
+  }
+`;
+
 const FlunkJumpWindow = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [sfxEnabled, setSfxEnabled] = useState(true);
+  const { openWindow, closeWindow } = useWindowsContext();
+
+  const openLeaderboard = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the start game
+    openWindow({
+      key: WINDOW_IDS.FLUNKY_UPPY_LEADERBOARD,
+      window: (
+        <DraggableResizeableWindow
+          windowsId={WINDOW_IDS.FLUNKY_UPPY_LEADERBOARD}
+          onClose={() => closeWindow(WINDOW_IDS.FLUNKY_UPPY_LEADERBOARD)}
+          headerTitle="Flunky Uppy Leaderboard"
+          initialWidth="500px"
+          initialHeight="600px"
+          headerIcon="/images/icons/flunky-uppy-icon.png"
+        >
+          <FlunkyUppyLeaderboardWindow />
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
 
   useEffect(() => {
     // Score submission handler for Flunky Uppy
@@ -153,11 +203,14 @@ const FlunkJumpWindow = () => {
           
           console.log('📮 Submitting Flunky Uppy score to database:', { wallet: wallet.substring(0, 10) + '...', score });
           
+          // Generate username from wallet address
+          const username = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+          
           // Submit score to Flunky Uppy API endpoint
           fetch('/api/flunky-uppy-score', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ wallet, score }),
+            body: JSON.stringify({ wallet, score, username }),
           })
           .then(response => {
             console.log('📊 Flunky Uppy score submission response status:', response.status);
@@ -178,6 +231,12 @@ const FlunkJumpWindow = () => {
           console.error('❌ Flow authentication error:', authError);
         });
       }
+      
+      // Handle leaderboard opening request from game
+      if (event.data?.type === 'FLUNKY_UPPY_OPEN_LEADERBOARD') {
+        console.log('🏆 Opening Flunky Uppy leaderboard from game');
+        openLeaderboard({ stopPropagation: () => {} } as React.MouseEvent);
+      }
     };
 
     window.addEventListener('message', handler);
@@ -197,7 +256,13 @@ const FlunkJumpWindow = () => {
           iframe.focus();
           console.log('🎯 Focused iframe for keyboard controls');
           
-          // Try to call the game's start function
+          // Send message to start audio and game
+          iframe.contentWindow.postMessage({
+            type: 'START_GAME_WITH_AUDIO'
+          }, '*');
+          console.log('🎵 Sent start game with audio message');
+          
+          // Try to call the game's start function (fallback)
           (iframe.contentWindow as any).startFlunkJump?.();
           console.log('🎮 Called game start function');
         } catch (e) {
@@ -236,6 +301,9 @@ const FlunkJumpWindow = () => {
           <SfxButton isOn={sfxEnabled} onClick={toggleSfx}>
             SFX: {sfxEnabled ? 'ON' : 'OFF'}
           </SfxButton>
+          <LeaderboardButton onClick={openLeaderboard}>
+            🏆 LEADERBOARD
+          </LeaderboardButton>
         </StartScreen>
       )}
       

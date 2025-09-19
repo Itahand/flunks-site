@@ -72,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       wallet: scoreEntry.wallet,
       score: scoreEntry.score,
       timestamp: scoreEntry.timestamp,
-      username: profile?.username || scoreEntry.metadata?.username || null,
+      username: profile?.username || scoreEntry.metadata?.username || `${scoreEntry.wallet.slice(0, 6)}...${scoreEntry.wallet.slice(-4)}`,
       profile_icon: profile?.profile_icon || '🦘',
       formatted_date: new Date(scoreEntry.timestamp).toLocaleDateString('en-US', {
         month: 'short',
