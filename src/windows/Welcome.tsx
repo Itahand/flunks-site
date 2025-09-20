@@ -29,7 +29,7 @@ const Welcome: React.FC = () => {
   const icon = "/images/icons/bulletin-board-icon.png";
   const tips = [
     <p>
-      [1/6] Semester Zero is starting soon! Check the school calendar for
+      [1/6] Semester Zero has started! Check the school calendar for
       important dates and events. 
     </p>,
     <p>

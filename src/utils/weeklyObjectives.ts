@@ -230,6 +230,14 @@ export const getChapter3ObjectivesStatus = async (walletAddress: string): Promis
       type: 'picture_day_voting',
       completed: votedInPictureDay,
       reward: 50
+    },
+    {
+      id: 'overachiever_chapter3',
+      title: 'The Overachiever',
+      description: '???? ???? ????',
+      type: 'custom',
+      completed: false,
+      reward: 100
     }
   ];
 

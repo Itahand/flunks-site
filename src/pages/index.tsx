@@ -580,7 +580,7 @@ const windowsMemod = useMemo(() => (
                 <DraggableResizeableWindow
                   windowsId={WINDOW_IDS.BUY_ME_A_DELOREAN}
                   onClose={() => closeWindow(WINDOW_IDS.BUY_ME_A_DELOREAN)}
-                  headerTitle="DeLorean Fund - Time Travel Fund Tracker"
+                  headerTitle="DeLorean Fund - Time Travel Tracker"
                   initialWidth="800px"
                   initialHeight="600px"
                   headerIcon="/images/icons/delorean.png"

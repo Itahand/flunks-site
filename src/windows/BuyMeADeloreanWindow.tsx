@@ -5,10 +5,52 @@ import styled from 'styled-components';
 const Container = styled.div`
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   color: white;
-  padding: 20px;
   height: 100%;
   overflow-y: auto;
   font-family: 'Courier New', monospace;
+  position: relative;
+`;
+
+const LoadingScreen = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/images/backgrounds/gif.gif') center center;
+  background-size: cover;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LoadingText = styled.div`
+  background: rgba(0, 0, 0, 0.8);
+  color: #00ffff;
+  padding: 20px 40px;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+  border: 2px solid #00ffff;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+`;
+
+const StaticDeloreanImage = styled.div`
+  width: 100%;
+  height: 400px;
+  background: url('/images/backgrounds/gif.gif') center center;
+  background-size: cover;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  border: 3px solid #00ffff;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+`;
+
+const ContentSection = styled.div`
+  padding: 20px;
 `;
 
 const Header = styled.div`
@@ -167,6 +209,55 @@ const TransactionItem = styled.div`
   }
 `;
 
+const DonationSection = styled.div`
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(76, 205, 196, 0.2));
+  border: 2px solid #00ffff;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 25px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+`;
+
+const DonationTitle = styled.h2`
+  color: #00ffff;
+  margin: 0 0 15px 0;
+  font-size: 1.5rem;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+`;
+
+const WalletAddressDisplay = styled.div`
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+  position: relative;
+`;
+
+const CopyButton = styled.button`
+  background: #4ecdc4;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #45b7aa;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 const LoadingSpinner = styled.div`
   border: 3px solid rgba(0, 255, 255, 0.3);
   border-top: 3px solid #00ffff;
@@ -207,12 +298,31 @@ interface WalletData {
 }
 
 const BuyMeADeloreanWindow: React.FC = () => {
-  const [walletAddress, setWalletAddress] = useState('');
+  // Skeremy's Flow wallet address for DeLorean Fund donations
+  const SKEREMY_WALLET = '0xe327216d843357f1';
+  const [walletAddress, setWalletAddress] = useState(SKEREMY_WALLET);
   const [targetGoal, setTargetGoal] = useState(88000); // 88k FLOW for the DeLorean!
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [autoRefresh, setAutoRefresh] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
+
+  // Loading screen timer
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 2000); // 2 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Auto-refresh on component mount to show current balance immediately
+  useEffect(() => {
+    if (SKEREMY_WALLET) {
+      handleTrackWallet(true); // Silent initial load
+    }
+  }, []);
 
   // Auto-refresh functionality
   useEffect(() => {
@@ -263,64 +373,82 @@ const BuyMeADeloreanWindow: React.FC = () => {
     }
   };
 
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // Could add a toast notification here
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   const progressPercentage = walletData ? (walletData.balance / targetGoal) * 100 : 0;
   const canAffordDelorean = walletData && walletData.balance >= targetGoal;
 
+  // Show loading screen for 2 seconds
+  if (showLoading) {
+    return (
+      <LoadingScreen>
+        <LoadingText>
+          🚗 Initializing Time Travel Protocols... ⚡️
+        </LoadingText>
+      </LoadingScreen>
+    );
+  }
+
   return (
     <Container>
-      <Header>
-        <Title>🚗 DeLorean Fund</Title>
-        <Subtitle>Time Travel Fund Tracker</Subtitle>
-      </Header>
-
-      <WalletSection>
-        <Label>Flow Wallet Address:</Label>
-        <Input
-          type="text"
-          value={walletAddress}
-          onChange={(e) => setWalletAddress(e.target.value)}
-          placeholder="Enter wallet address (e.g., 0x1234567890abcdef...)"
-          disabled={loading}
-        />
+      <ContentSection>
+        <StaticDeloreanImage />
         
-        <Label>Target Goal (FLOW):</Label>
-        <Input
-          type="number"
-          value={targetGoal}
-          onChange={(e) => setTargetGoal(Number(e.target.value))}
-          placeholder="88000"
-          disabled={loading}
-        />
+        <Header>
+          <Title>🚗 DeLorean Fund</Title>
+          <Subtitle>Help Skeremy Build a Time Machine!</Subtitle>
+        </Header>
 
-        <Button onClick={() => handleTrackWallet()} disabled={loading || !walletAddress.trim()}>
-          {loading ? 'Tracking...' : 'Track Wallet'}
-        </Button>
+        <DonationSection>
+          <DonationTitle>💰 Donate Flow Tokens</DonationTitle>
+          <p style={{ margin: '0 0 15px 0', color: '#ccc' }}>
+            Send FLOW tokens to help fund the DeLorean fund for Skeremy. Some people ask to buy them a coffee, he's taking it to another level. He's put countless free hours into rebuilding this website and trying to bring Flunks back to the main stage.
+          </p>
+          <WalletAddressDisplay>
+            <div style={{ fontSize: '0.9rem', color: '#00ffff', marginBottom: '8px' }}>
+              Skeremy's Flow Wallet:
+            </div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+              {SKEREMY_WALLET}
+            </div>
+            <CopyButton onClick={() => copyToClipboard(SKEREMY_WALLET)}>
+              📋 Copy Address
+            </CopyButton>
+          </WalletAddressDisplay>
+          <p style={{ margin: '15px 0 0 0', fontSize: '0.9rem', color: '#888' }}>
+            When the goal is completed, he will livestream telling his wife that her car no longer can be parked in the garage. That alone is worth the donation as he may have to sleep in the DeLorean after he gets kicked out of his house! ⚡️
+          </p>
+        </DonationSection>
+
+        {loading && <LoadingSpinner />}
         
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+
         {walletData && (
-          <div style={{ marginTop: '15px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <Button onClick={() => handleTrackWallet()} disabled={loading}>
-              🔄 Refresh
-            </Button>
-            
-            <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px' }}>
-              <input
-                type="checkbox"
-                checked={autoRefresh}
-                onChange={(e) => setAutoRefresh(e.target.checked)}
-              />
-              Auto-refresh (30s)
-            </label>
-          </div>
-        )}
-      </WalletSection>
+          <>
+            <div style={{ marginTop: '15px', display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+              <Button onClick={() => handleTrackWallet()} disabled={loading}>
+                🔄 Refresh Balance
+              </Button>
+              
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px' }}>
+                <input
+                  type="checkbox"
+                  checked={autoRefresh}
+                  onChange={(e) => setAutoRefresh(e.target.checked)}
+                />
+                Auto-refresh (30s)
+              </label>
+            </div>
 
-      {loading && <LoadingSpinner />}
-      
-      {error && <ErrorMessage>{error}</ErrorMessage>}
-
-      {walletData && (
-        <>
-          <StatsGrid>
+            <StatsGrid>
             <StatCard>
               <StatValue>{walletData.balance.toFixed(2)}</StatValue>
               <StatLabel>Current Balance (FLOW)</StatLabel>
@@ -356,7 +484,7 @@ const BuyMeADeloreanWindow: React.FC = () => {
                 </span>
               ) : (
                 <>
-                  {(targetGoal - walletData.balance).toFixed(2)} FLOW remaining until we can afford the flux capacitor!
+                  {(targetGoal - walletData.balance).toFixed(2)} FLOW remaining until we can afford the flunks capacitor!
                 </>
               )}
             </p>
@@ -390,6 +518,7 @@ const BuyMeADeloreanWindow: React.FC = () => {
           </div>
         </>
       )}
+      </ContentSection>
     </Container>
   );
 };
