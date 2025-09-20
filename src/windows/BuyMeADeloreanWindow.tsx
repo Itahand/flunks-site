@@ -183,9 +183,11 @@ const ProgressFill = styled.div<{ percentage: number }>`
   transition: width 0.5s ease;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-right: 10px;
   color: white;
   font-weight: bold;
+  font-size: 0.9rem;
 `;
 
 const TransactionList = styled.div`
@@ -307,15 +309,37 @@ const BuyMeADeloreanWindow: React.FC = () => {
   const [error, setError] = useState('');
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
   // Loading screen timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoading(false);
+      
+      // Start Back to the Future theme after loading screen
+      const deloreanAudio = new Audio('/sounds/bttf.mp3');
+      deloreanAudio.volume = 0.4; // 40% volume - not too loud
+      deloreanAudio.loop = true; // Loop the epic theme
+      
+      deloreanAudio.play().catch(err => {
+        console.log('🎵 Audio autoplay blocked by browser - user interaction needed');
+      });
+      
+      setAudio(deloreanAudio);
     }, 2000); // 2 seconds
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Cleanup audio when component unmounts
+  useEffect(() => {
+    return () => {
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
+  }, [audio]);
 
   // Auto-refresh on component mount to show current balance immediately
   useEffect(() => {
