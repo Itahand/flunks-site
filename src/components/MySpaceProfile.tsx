@@ -102,10 +102,10 @@ const ProfilePictureSection = styled.div`
   align-items: center;
 `;
 
-const ProfilePicture = styled.div<{ bgColor: string }>`
+const ProfilePicture = styled.div<{ bgColor: string; hasImage?: boolean }>`
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, ${props => props.bgColor}, ${props => props.bgColor}aa);
+  background: ${props => props.hasImage ? 'transparent' : `linear-gradient(135deg, ${props.bgColor}, ${props.bgColor}aa)`};
   border: 3px solid #666;
   border-radius: 8px;
   display: flex;
@@ -117,6 +117,13 @@ const ProfilePicture = styled.div<{ bgColor: string }>`
   font-family: 'Impact', sans-serif;
   margin-bottom: 8px;
   box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  overflow: hidden;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 const UserDetailsSection = styled.div`
@@ -229,6 +236,9 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
     ));
   };
 
+  // Check if profile image exists
+  const profileImagePath = `/images/profiles/cliques/${clique}/profile.png`;
+  
   return (
     <ProfileContainer bgColor={profile.backgroundColor} pattern={profile.backgroundPattern}>
       <ProfileHeader>
@@ -239,8 +249,24 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
         <MainContent>
           <UserInfo>
             <ProfilePictureSection>
-              <ProfilePicture bgColor={profile.backgroundColor}>
-                {profile.name.charAt(0)}
+              <ProfilePicture bgColor={profile.backgroundColor} hasImage={true}>
+                <img 
+                  src={profileImagePath} 
+                  alt={profile.name}
+                  onError={(e) => {
+                    // Fallback to text if image fails to load
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) {
+                      parent.style.background = `linear-gradient(135deg, ${profile.backgroundColor}, ${profile.backgroundColor}aa)`;
+                      parent.innerHTML = profile.name.charAt(0);
+                      parent.style.fontSize = '36px';
+                      parent.style.color = 'white';
+                      parent.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+                      parent.style.fontFamily = 'Impact, sans-serif';
+                    }
+                  }}
+                />
               </ProfilePicture>
               <div style={{ 
                 fontSize: '8px', 

@@ -35,9 +35,9 @@ export const BACKGROUND_PATTERNS = {
 };
 
 export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
-  'the-populars': {
+  'the-preps': {
     name: "Madison Elite",
-    clique: "the-populars",
+    clique: "the-preps",
     backgroundColor: "#ff69b4",
     backgroundPattern: "glitter",
     mood: "Fabulous ✨",
@@ -65,9 +65,9 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
     profileSong: "Britney Spears - ...Baby One More Time"
   },
 
-  'the-outcasts': {
+  'the-freaks': {
     name: "Raven Shadowmere",
-    clique: "the-outcasts",
+    clique: "the-freaks",
     backgroundColor: "#2c1810",
     backgroundPattern: "stars",
     mood: "Eternal darkness consumes my soul 🖤",
@@ -152,6 +152,6 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
       { name: "Leonard", status: "Code reviewer 💻" },
       { name: "Prof. Chen", status: "Mentor 👨‍🏫" }
     ],
-    profileSong: "Weird Al Yankovic - White and Nerdy"
+    profileSong: "The Offspring - Pretty Fly (For a White Guy)"
   }
 };
