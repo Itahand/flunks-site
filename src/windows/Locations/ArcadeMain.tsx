@@ -411,6 +411,83 @@ const ArcadeMain = () => {
             🦘 FLUNKY UPPY
           </button>
         )}
+
+        {/* Coming Soon Section */}
+        <button
+          onClick={() => {
+            openWindow({
+              key: "arcade-coming-soon",
+              window: (
+                <div
+                  style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 'min(800px, 95vw)',
+                    height: 'min(600px, 90vh)',
+                    backgroundColor: '#000000',
+                    border: '4px solid #FFFFFF',
+                    borderRadius: '12px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.8)',
+                    zIndex: 1000,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {/* Close Button */}
+                  <button
+                    onClick={() => closeWindow("arcade-coming-soon")}
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
+                      backgroundColor: '#FF0000',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '30px',
+                      height: '30px',
+                      cursor: 'pointer',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      zIndex: 1001
+                    }}
+                  >
+                    ✕
+                  </button>
+                  
+                  {/* Coming Soon Image */}
+                  <img 
+                    src="/images/coming-soon.png"
+                    alt="Coming Soon"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain'
+                    }}
+                    onError={(e) => {
+                      // Fallback if image doesn't exist
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = `
+                          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: white; font-size: 48px; font-family: 'Press Start 2P', monospace;">
+                            🚧 COMING SOON 🚧
+                          </div>
+                        `;
+                      }
+                    }}
+                  />
+                </div>
+              ),
+            });
+          }}
+          className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded hover:from-yellow-400 hover:to-orange-400 transition-all duration-200 hover:scale-105 min-w-[120px] text-center font-bold border-2 border-yellow-300 shadow-lg animate-pulse"
+        >
+          🚧 COMING SOON
+        </button>
         </div>
       </div>
     </div>
