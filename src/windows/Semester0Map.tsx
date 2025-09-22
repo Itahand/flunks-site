@@ -336,10 +336,10 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
 
   // Intro cutscene trigger
   useEffect(() => {
-    // Enable cutscenes for testing (removed build mode restriction)
-    // if (!isFeatureEnabled('showCutscenes')) {
-    //   return;
-    // }
+    // Only show cutscenes in build mode
+    if (!isFeatureEnabled('showCutscenes')) {
+      return;
+    }
     
     // Check if user has seen the intro before (localStorage)
     const hasSeenIntroStored = localStorage.getItem('flunks-season-zero-intro-seen');
