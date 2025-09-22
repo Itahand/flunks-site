@@ -1153,11 +1153,33 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               image: '/images/cutscenes/main.png',
               lines: [
                 'The sky seems like it was a different color back then. Maybe it was brighter… or maybe I just had younger eyes.',
-                'The town, however, wasn\'t. It was the same. Same brick buildings, same cracked sidewalks, same old high school sitting on that hill like a castle.',
-                'It\'s been that way since they founded Arcadia over a hundred years ago.',
-                'Folks come and go, dreams flare up and fade out, but this place… this place don\'t change.'
+                'The town, however, wasn\'t. It was the same. Same brick buildings, same cracked sidewalks, same old high school sitting on that hill like a castle.'
               ],
               music: '/music/main-song.mp3'
+            },
+            {
+              id: 'intro-1',
+              image: '/images/cutscenes/1.png',
+              lines: [
+                'It\'s been that way since they founded Arcadia over a hundred years ago.',
+                'Folks come and go, dreams flare up and fade out, but this place… this place don\'t change.'
+              ]
+            },
+            {
+              id: 'intro-2',
+              image: '/images/cutscenes/2.png',
+              lines: [
+                'Every corner holds a memory, every street tells a story.',
+                'Some stories are written in yearbooks, others in spray paint on abandoned walls.'
+              ]
+            },
+            {
+              id: 'intro-3',
+              image: '/images/cutscenes/3.png',
+              lines: [
+                'This is where it all began.',
+                'Welcome to Arcadia. Welcome to your story.'
+              ]
             }
           ]}
           onComplete={handleIntroCutsceneComplete}
