@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import CutscenePlayer from './CutscenePlayer';
+import DraggableResizeableWindow from './DraggableResizeableWindow';
 import { WINDOW_IDS } from '../fixed';
 
 interface Chapter {
@@ -118,37 +119,49 @@ const sampleChapters: Chapter[] = [
     unlocked: true,
     thumbnail: '/images/cutscenes/main.png',
     scenes: [
+      // Scene 1: Welcome to Arcadia Sign (main.png)
       {
-        id: 'intro-main',
+        id: 'welcome-sign',
         image: '/images/cutscenes/main.png',
         lines: [
-          'The sky seems like it was a different color back then. Maybe it was brighter… or maybe I just had younger eyes.',
-          'The town, however, wasn\'t. It was the same. Same brick buildings, same cracked sidewalks, same old high school sitting on that hill like a castle.'
+          'Welcome to Arcadia, Lancaster County. Population: 15,847.',
+          'Est. 1854. The same wooden sign that\'s greeted visitors for decades.',
+          'Some say this place never changes. Others say that\'s exactly the problem.',
+          'But tonight... tonight feels different.'
         ],
         music: '/music/child.mp3'
       },
+      // Scene 2: Town Street View (1.png)
       {
-        id: 'intro-1',
+        id: 'town-street',
         image: '/images/cutscenes/1.png',
         lines: [
-          'It\'s been that way since they founded Arcadia over a hundred years ago.',
-          'Folks come and go, dreams flare up and fade out, but this place… this place don\'t change.'
+          'Main Street stretches out like a time capsule.',
+          'The same brick buildings, the same faded shop signs.',
+          'Miller\'s Hardware. Betty\'s Diner. The old movie theater that never quite reopened.',
+          'Everything exactly where it was when we were kids.'
         ]
       },
+      // Scene 3: High School on the Hill (2.png)
       {
-        id: 'intro-2',
+        id: 'school-hill',
         image: '/images/cutscenes/2.png',
         lines: [
-          'Every corner holds a memory, every street tells a story.',
-          'Some stories are written in yearbooks, others in spray paint on abandoned walls.'
+          'And there it is. Arcadia High School, sitting on that hill like a castle.',
+          'Four years of our lives happened behind those walls.',
+          'Friendships. Heartbreaks. Dreams that seemed so big back then.',
+          'Tonight\'s homecoming. The night everything comes full circle.'
         ]
       },
+      // Scene 4: Memory Lane (3.png) 
       {
-        id: 'intro-3',
+        id: 'memories',
         image: '/images/cutscenes/3.png',
         lines: [
-          'This is where it all began.',
-          'Welcome to Arcadia. Welcome to your story.'
+          'We used to think we\'d conquer the world after graduation.',
+          'Some of us left. Some of us stayed. Some of us came back.',
+          'But tonight, we\'re all seventeen again.',
+          'Welcome home, Flunks. Let\'s see what stories we write tonight.'
         ]
       }
     ]
@@ -177,11 +190,53 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
 
   if (playingCutscene && selectedChapter) {
     return (
-      <CutscenePlayer
-        scenes={selectedChapter.scenes}
-        onComplete={handleCutsceneComplete}
-        onClose={handleCutsceneClose}
-      />
+      <div style={{
+        background: 'linear-gradient(135deg, #2a1810 0%, #1a1008 100%)',
+        height: '100%',
+        overflow: 'hidden',
+        fontFamily: 'Courier New, monospace',
+        padding: '20px',
+        position: 'relative'
+      }}>
+        {/* Chapter selection in background */}
+        <ChapterGrid style={{ opacity: 0.3, pointerEvents: 'none' }}>
+          {sampleChapters.map((chapter, index) => (
+            <ChapterCard
+              key={chapter.id}
+              unlocked={chapter.unlocked}
+            >
+              <ChapterNumber>{index + 1}</ChapterNumber>
+              <ChapterThumbnail bgImage={chapter.thumbnail} />
+              <ChapterTitle>{chapter.title}</ChapterTitle>
+              <ChapterSubtitle>{chapter.subtitle}</ChapterSubtitle>
+            </ChapterCard>
+          ))}
+        </ChapterGrid>
+        
+        {/* Cutscene in draggable window */}
+        <DraggableResizeableWindow
+          windowsId={`cutscene-${selectedChapter.id}`}
+          onClose={handleCutsceneClose}
+          initialWidth="1200px"
+          initialHeight="700px"
+          resizable={true}
+          headerTitle={selectedChapter.title}
+          headerIcon="🎬"
+          style={{ 
+            zIndex: 1000,
+            position: 'absolute',
+            top: '20px',
+            left: '50px'
+          }}
+        >
+          <CutscenePlayer
+            scenes={selectedChapter.scenes}
+            onComplete={handleCutsceneComplete}
+            onClose={handleCutsceneClose}
+            windowed={true}
+          />
+        </DraggableResizeableWindow>
+      </div>
     );
   }
 

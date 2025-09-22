@@ -33,15 +33,16 @@ interface CutscenePlayerProps {
   onClose?: () => void;
   autoStart?: boolean;
   vcrEffects?: VCREffectsConfig;
+  windowed?: boolean; // New prop to support windowed mode
 }
 
-const CutsceneContainer = styled.div`
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
+const CutsceneContainer = styled.div<{ windowed?: boolean }>`
+  position: ${props => props.windowed ? 'relative' : 'fixed'};
+  inset: ${props => props.windowed ? 'auto' : '0'};
+  width: ${props => props.windowed ? '100%' : '100vw'};
+  height: ${props => props.windowed ? '100%' : '100vh'};
   background: #000;
-  z-index: 9999;
+  z-index: ${props => props.windowed ? 'auto' : '9999'};
   overflow: hidden;
   font-family: 'Courier New', monospace;
 `;
@@ -54,6 +55,7 @@ const SceneImage = styled.img<{ visible: boolean }>`
   object-fit: cover;
   opacity: ${props => props.visible ? 1 : 0};
   transition: opacity 1200ms ease-in-out;
+  z-index: 0; /* Ensure images are behind effects */
 `;
 
 const LetterboxTop = styled.div`
@@ -83,8 +85,8 @@ const VCREffects = styled.div<{ config: VCREffectsConfig }>`
         0deg,
         transparent 0px,
         transparent 1px,
-        rgba(255, 255, 255, ${props => props.config.scanLinesOpacity * 0.01}) 2px,
-        rgba(255, 255, 255, ${props => props.config.scanLinesOpacity * 0.01}) 3px,
+        rgba(255, 255, 255, ${props => props.config.scanLinesOpacity * 0.02}) 2px,
+        rgba(255, 255, 255, ${props => props.config.scanLinesOpacity * 0.02}) 3px,
         transparent 4px
       );
     animation: scanlines ${props => props.config.scanLinesSpeed * 0.1}s linear infinite;
@@ -96,8 +98,11 @@ const VCREffects = styled.div<{ config: VCREffectsConfig }>`
     inset: 0;
     background: 
       radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.1) 100%),
-      repeating-conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,${props => props.config.noiseOpacity * 0.0001}) 1deg, transparent 2deg);
-    opacity: ${props => props.config.noiseOpacity * 0.01};
+      repeating-conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,${props => props.config.noiseOpacity * 0.0002}) 1deg, transparent 2deg);
+    opacity: ${props => props.config.noiseOpacity * 0.02};
+    animation: noise ${props => props.config.noiseSpeed * 0.1}s steps(8, end) infinite;
+    display: ${props => props.config.noiseEnabled ? 'block' : 'none'};
+  }
     animation: noise ${props => props.config.noiseSpeed * 0.1}s steps(8, end) infinite;
     display: ${props => props.config.noiseEnabled ? 'block' : 'none'};
   }
@@ -126,17 +131,17 @@ const ChromaticEffect = styled.div<{ config: VCREffectsConfig }>`
     position: absolute;
     inset: 0;
     background: linear-gradient(90deg, 
-      rgba(255, 0, 0, ${props => props.config.chromaticIntensity * 0.005}) 0%, 
+      rgba(255, 0, 0, ${props => props.config.chromaticIntensity * 0.01}) 0%, 
       transparent 33%,
-      rgba(0, 255, 0, ${props => props.config.chromaticIntensity * 0.005}) 66%,
-      rgba(0, 0, 255, ${props => props.config.chromaticIntensity * 0.005}) 100%
+      rgba(0, 255, 0, ${props => props.config.chromaticIntensity * 0.01}) 66%,
+      rgba(0, 0, 255, ${props => props.config.chromaticIntensity * 0.01}) 100%
     );
     animation: chromatic ${props => props.config.chromaticSpeed * 0.1}s ease-in-out infinite alternate;
   }
   
   @keyframes chromatic {
-    0% { transform: translateX(-${props => props.config.chromaticIntensity * 0.5}px); }
-    100% { transform: translateX(${props => props.config.chromaticIntensity * 0.5}px); }
+    0% { transform: translateX(-${props => props.config.chromaticIntensity * 1}px); }
+    100% { transform: translateX(${props => props.config.chromaticIntensity * 1}px); }
   }
 `;
 
@@ -147,15 +152,15 @@ const VHSStatic = styled.div<{ config: VCREffectsConfig }>`
   z-index: 2;
   display: ${props => props.config.staticEnabled ? 'block' : 'none'};
   background: 
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='${props => props.config.staticOpacity * 0.01}'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='${props => props.config.staticOpacity * 0.02}'/%3E%3C/svg%3E");
   animation: staticShift ${props => props.config.staticMovement * 0.1}s steps(1, end) infinite;
   
   @keyframes staticShift {
     0% { transform: translate(0px, 0px); }
-    25% { transform: translate(-${props => props.config.staticMovement}px, ${props => props.config.staticMovement}px); }
-    50% { transform: translate(${props => props.config.staticMovement}px, -${props => props.config.staticMovement}px); }
-    75% { transform: translate(-${props => props.config.staticMovement}px, -${props => props.config.staticMovement}px); }
-    100% { transform: translate(${props => props.config.staticMovement}px, ${props => props.config.staticMovement}px); }
+    25% { transform: translate(-${props => props.config.staticMovement * 2}px, ${props => props.config.staticMovement * 2}px); }
+    50% { transform: translate(${props => props.config.staticMovement * 2}px, -${props => props.config.staticMovement * 2}px); }
+    75% { transform: translate(-${props => props.config.staticMovement * 2}px, -${props => props.config.staticMovement * 2}px); }
+    100% { transform: translate(${props => props.config.staticMovement * 2}px, ${props => props.config.staticMovement * 2}px); }
   }
 `;
 
@@ -209,9 +214,13 @@ const TextContent = styled.p`
 `;
 
 const Controls = styled.div`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  z-index: 15; /* Above all effects and text box */
 `;
 
 const ControlButton = styled.button`
@@ -263,25 +272,26 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
   onComplete,
   onClose,
   autoStart = true,
-  vcrEffects
+  vcrEffects,
+  windowed = false
 }) => {
-  // Default VCR effects config
+  // Default VCR effects config - set to "heavy" for dramatic retro feel
   const defaultEffects: VCREffectsConfig = {
     scanLinesEnabled: true,
-    scanLinesOpacity: 3,
-    scanLinesSpeed: 1,
+    scanLinesOpacity: 8, // Heavy scan lines
+    scanLinesSpeed: 2,
     noiseEnabled: true,
-    noiseOpacity: 40,
-    noiseSpeed: 2,
+    noiseOpacity: 60, // Heavy noise/grain
+    noiseSpeed: 3,
     chromaticEnabled: true,
-    chromaticIntensity: 2,
-    chromaticSpeed: 30,
+    chromaticIntensity: 4, // Heavy chromatic aberration
+    chromaticSpeed: 25,
     staticEnabled: true,
-    staticOpacity: 3,
-    staticMovement: 1,
+    staticOpacity: 6, // Heavy static
+    staticMovement: 3,
     vintageEnabled: true,
-    vintageWarmth: 4,
-    vintageVignette: 8,
+    vintageWarmth: 8, // Heavy vintage warmth
+    vintageVignette: 12, // Heavy vignette
   };
   
   const effectsConfig = vcrEffects || defaultEffects;
@@ -434,58 +444,67 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
   const currentSceneData = scenes[currentScene];
 
   return (
-    <CutsceneContainer>
-      {/* Background Images */}
-      <SceneImage
-        id="sceneA"
-        src={showingA ? currentSceneData?.image || '' : scenes[Math.max(0, currentScene - 1)]?.image || ''}
-        alt=""
-        visible={showingA}
-      />
-      <SceneImage
-        id="sceneB"
-        src={!showingA ? currentSceneData?.image || '' : scenes[Math.min(scenes.length - 1, currentScene + 1)]?.image || ''}
-        alt=""
-        visible={!showingA}
-      />
+    <CutsceneContainer windowed={windowed}>
+      {/* Background layer with effects - separate from text */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 0
+      }}>
+        {/* Background Images */}
+        <SceneImage
+          id="sceneA"
+          src={showingA ? currentSceneData?.image || '' : scenes[Math.max(0, currentScene - 1)]?.image || ''}
+          alt=""
+          visible={showingA}
+        />
+        <SceneImage
+          id="sceneB"
+          src={!showingA ? currentSceneData?.image || '' : scenes[Math.min(scenes.length - 1, currentScene + 1)]?.image || ''}
+          alt=""
+          visible={!showingA}
+        />
 
-      {/* VCR and Retro Effects */}
-      <VintageFilter config={effectsConfig} />
-      <VHSStatic config={effectsConfig} />
-      <VCREffects config={effectsConfig} />
-      <ChromaticEffect config={effectsConfig} />
+        {/* VCR and Retro Effects - ONLY on background images */}
+        <VintageFilter config={effectsConfig} />
+        <VHSStatic config={effectsConfig} />
+        <VCREffects config={effectsConfig} />
+        <ChromaticEffect config={effectsConfig} />
+      </div>
 
-      {/* Letterbox bars */}
-      <LetterboxTop />
-      <LetterboxBottom />
+      {/* UI Layer - completely separate from effects */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 100,
+        pointerEvents: 'none'
+      }}>
+        {/* Letterbox bars - only show in fullscreen mode */}
+        {!windowed && <LetterboxTop />}
+        {!windowed && <LetterboxBottom />}
 
-      {/* Close button */}
-      {onClose && (
-        <CloseButton onClick={onClose} aria-label="Close cutscene">
-          ✕
-        </CloseButton>
-      )}
+        {/* Text box - adjust positioning for windowed mode */}
+        <TextBox role="dialog" aria-live="polite" aria-atomic="true" style={{
+          position: 'absolute',
+          bottom: windowed ? '60px' : '10vh',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: windowed ? 'calc(100% - 40px)' : 'min(900px, 92vw)',
+          pointerEvents: 'auto'
+        }}>
+          <TextContent>{displayText}</TextContent>
+        </TextBox>
 
-      {/* Text box */}
-      <TextBox role="dialog" aria-live="polite" aria-atomic="true">
-        <TextContent>{displayText}</TextContent>
-        <Controls>
+        {/* Controls positioned in bottom right */}
+        <Controls style={{ pointerEvents: 'auto' }}>
           <ControlButton onClick={next} aria-label="Next line (Enter)">
             Next ▶
-          </ControlButton>
-          <ControlButton onClick={skip} aria-label="Skip typing (Space)">
-            Skip ⏭
           </ControlButton>
           <ControlButton onClick={toggleMute} aria-label="Toggle music (M)">
             {muted ? 'Unmute 🔊' : 'Mute 🔇'}
           </ControlButton>
-          {onClose && (
-            <ControlButton onClick={onClose} aria-label="Close (Esc)">
-              Close ✕
-            </ControlButton>
-          )}
         </Controls>
-      </TextBox>
+      </div>
 
       {/* Background music */}
       <audio ref={bgmRef} loop muted={muted} />

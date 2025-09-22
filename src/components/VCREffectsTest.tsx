@@ -44,12 +44,14 @@ const CutsceneArea = styled.div`
 
 const ControlArea = styled.div`
   flex: 1;
-  min-width: 400px;
-  max-width: 500px;
+  min-width: 350px;
+  max-width: 450px;
   border-left: 2px solid #808080;
   background: #c0c0c0;
   overflow-y: auto;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 `;
 
 const TestInfo = styled.div`
@@ -58,30 +60,31 @@ const TestInfo = styled.div`
   left: 10px;
   color: #fff;
   font-family: 'Courier New', monospace;
-  font-size: 12px;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 8px;
+  font-size: 11px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 8px;
   border-radius: 4px;
   z-index: 100;
+  max-width: 250px;
 `;
 
 const VCREffectsTest: React.FC<VCREffectsTestProps> = ({ onClose }) => {
   const [effectsConfig, setEffectsConfig] = useState<VCREffectsConfig>({
     scanLinesEnabled: true,
-    scanLinesOpacity: 3,
-    scanLinesSpeed: 1,
+    scanLinesOpacity: 8, // Heavy scan lines
+    scanLinesSpeed: 2,
     noiseEnabled: true,
-    noiseOpacity: 40,
-    noiseSpeed: 2,
+    noiseOpacity: 60, // Heavy noise/grain
+    noiseSpeed: 3,
     chromaticEnabled: true,
-    chromaticIntensity: 2,
-    chromaticSpeed: 30,
+    chromaticIntensity: 4, // Heavy chromatic aberration
+    chromaticSpeed: 25,
     staticEnabled: true,
-    staticOpacity: 3,
-    staticMovement: 1,
+    staticOpacity: 6, // Heavy static
+    staticMovement: 3,
     vintageEnabled: true,
-    vintageWarmth: 4,
-    vintageVignette: 8,
+    vintageWarmth: 8, // Heavy vintage warmth
+    vintageVignette: 12, // Heavy vignette
   });
 
   // Sample test scenes
@@ -131,6 +134,7 @@ const VCREffectsTest: React.FC<VCREffectsTestProps> = ({ onClose }) => {
           vcrEffects={effectsConfig}
           onClose={() => {}} // Don't close cutscene, just let it loop
           autoStart={true}
+          windowed={true}
         />
       </CutsceneArea>
       <ControlArea>
