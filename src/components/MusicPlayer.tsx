@@ -6,6 +6,7 @@ interface MusicPlayerProps {
   artist: string;
   songFile: string;
   themeColor: string;
+  autoplay?: boolean;
 }
 
 const PlayerContainer = styled.div<{ themeColor: string }>`
@@ -93,11 +94,11 @@ const VolumeSlider = styled.input`
   height: 4px;
 `;
 
-const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, themeColor }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, themeColor, autoplay = false }) => {
+  const [isPlaying, setIsPlaying] = useState(autoplay);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.7);
+  const [volume, setVolume] = useState(autoplay ? 0.4 : 0.7);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -111,12 +112,36 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', () => setIsPlaying(false));
 
+    // Autoplay if enabled
+    if (autoplay) {
+      const playAudio = async () => {
+        try {
+          // Try to resume audio context if it's suspended (helps with autoplay policies)
+          if (typeof window !== 'undefined' && 'AudioContext' in window) {
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            if (audioContext.state === 'suspended') {
+              await audioContext.resume();
+            }
+          }
+          
+          await audio.play();
+          setIsPlaying(true);
+        } catch (error) {
+          console.log('Autoplay failed, user interaction required:', error);
+          setIsPlaying(false);
+        }
+      };
+      
+      // Small delay to ensure audio is loaded
+      setTimeout(playAudio, 100);
+    }
+
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', () => setIsPlaying(false));
     };
-  }, []);
+  }, [autoplay]);
 
   const handlePlayPause = () => {
     const audio = audioRef.current;

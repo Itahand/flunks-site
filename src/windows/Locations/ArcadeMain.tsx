@@ -424,8 +424,8 @@ const ArcadeMain = () => {
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    width: 'min(800px, 95vw)',
-                    height: 'min(600px, 90vh)',
+                    maxWidth: '95vw',
+                    maxHeight: '90vh',
                     backgroundColor: '#000000',
                     border: '4px solid #FFFFFF',
                     borderRadius: '12px',
@@ -433,7 +433,8 @@ const ArcadeMain = () => {
                     zIndex: 1000,
                     display: 'flex',
                     flexDirection: 'column',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    padding: '20px'
                   }}
                 >
                   {/* Close Button */}
@@ -463,9 +464,13 @@ const ArcadeMain = () => {
                     src="/images/coming-soon.png"
                     alt="Coming Soon"
                     style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain'
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      width: 'auto',
+                      height: 'auto',
+                      objectFit: 'contain',
+                      display: 'block',
+                      margin: '0 auto'
                     }}
                     onError={(e) => {
                       // Fallback if image doesn't exist

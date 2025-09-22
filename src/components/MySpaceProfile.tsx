@@ -102,9 +102,9 @@ const ProfilePictureSection = styled.div`
   align-items: center;
 `;
 
-const ProfilePicture = styled.div<{ bgColor: string; hasImage?: boolean }>`
-  width: 100px;
-  height: 100px;
+const ProfilePicture = styled.div<{ bgColor: string; hasImage?: boolean; clique?: string }>`
+  width: ${props => props.clique === 'the-nerds' ? '80px' : '100px'};
+  height: ${props => props.clique === 'the-nerds' ? '80px' : '100px'};
   background: ${props => props.hasImage ? 'transparent' : `linear-gradient(135deg, ${props.bgColor}, ${props.bgColor}aa)`};
   border: 3px solid #666;
   border-radius: 8px;
@@ -188,6 +188,54 @@ const FriendAvatar = styled.div`
   color: #333;
 `;
 
+const CommentsSection = styled.div`
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px inset #cccccc;
+  padding: 15px;
+  margin-top: 15px;
+  color: #000000;
+`;
+
+const CommentHeader = styled.div`
+  background: linear-gradient(to bottom, #2c5aa0, #1a4480);
+  color: white;
+  padding: 6px 10px;
+  margin: -15px -15px 15px -15px;
+  font-weight: bold;
+  font-size: 12px;
+  border-bottom: 1px solid #2c5aa0;
+  text-align: center;
+`;
+
+const Comment = styled.div`
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  font-size: 10px;
+  line-height: 1.4;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const CommentAuthor = styled.span`
+  font-weight: bold;
+  color: #2c5aa0;
+  font-size: 11px;
+`;
+
+const CommentTime = styled.span`
+  color: #666;
+  font-size: 9px;
+  margin-left: 10px;
+`;
+
+const CommentText = styled.div`
+  margin-top: 5px;
+  color: #333;
+`;
+
 const InterestsList = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -236,8 +284,62 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
     ));
   };
 
+  // Generate random 90s comments from top friends
+  const generateComments = () => {
+    const comments90s = [
+      "OMG did you see what happened at the mall today?? DRAMA! 🛍️",
+      "Dude, that new CD is SO fetch! We need to burn a copy! 💿",
+      "Can't wait for the dance! Are you wearing your new JNCO jeans? 👖",
+      "Did you tape that episode of Friends last night? Ross is such a loser! 📺",
+      "Your hair looks AMAZING! What gel are you using? The spikes are perfect! 💇‍♂️",
+      "NOOO WAY! Tell me you didn't actually go to Blockbuster without me! 📼",
+      "That test was BRUTAL. Mrs. Johnson is seriously trying to ruin our lives! 📚",
+      "Are you going to the football game Friday? Brad is totally checking you out! 🏈",
+      "I can't believe you got the new Tamagotchi! Mine keeps dying 😭 🐣",
+      "Did you hear? Sarah and Mike are totally going out now! SO CUTE! 💕",
+      "Your MySpace layout is SICK! How did you get the glitter background? ✨",
+      "Mom won't let me go to the mall again. She's being such a total buzzkill! 🙄",
+      "I'm SO over this algebra homework. When am I ever going to use this?? 📐",
+      "That new Britney song is EVERYTHING! I've listened to it like 50 times! 🎵",
+      "Can you believe summer is almost over? Senior year is going to be INSANE! 🎓",
+      "Your profile pic is adorable! You look like a total movie star! 📸",
+      "Are we still on for the movies Saturday? I heard Titanic is amazing! 🚢",
+      "I'm totally going to fail PE if I have to run another mile! 🏃‍♀️",
+      "Did you see what she wore to school today? Fashion police need to arrest her! 👮‍♀️",
+      "Can't believe we have to wait until college to get out of this boring town! 🌍"
+    ];
+
+    const timeStamps = [
+      "2 hours ago",
+      "Yesterday at 3:47 PM",
+      "Monday at 11:23 AM",
+      "3 days ago",
+      "Last Friday at 8:15 PM",
+      "4 days ago"
+    ];
+
+    const selectedComments = [];
+    const topFriends = profile.topFriends.slice(0, 6); // Use top 6 friends
+    
+    for (let i = 0; i < 3; i++) {
+      const randomComment = comments90s[Math.floor(Math.random() * comments90s.length)];
+      const randomFriend = topFriends[Math.floor(Math.random() * topFriends.length)];
+      const randomTime = timeStamps[Math.floor(Math.random() * timeStamps.length)];
+      
+      selectedComments.push({
+        author: randomFriend.name,
+        text: randomComment,
+        time: randomTime
+      });
+    }
+    
+    return selectedComments;
+  };
+
+  const comments = generateComments();
+
   // Check if profile image exists
-  const profileImagePath = `/images/profiles/cliques/${clique}/profile.png`;
+  const profileImagePath = `/images/myplace/${clique}/profile.png`;
   
   return (
     <ProfileContainer bgColor={profile.backgroundColor} pattern={profile.backgroundPattern}>
@@ -249,7 +351,7 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
         <MainContent>
           <UserInfo>
             <ProfilePictureSection>
-              <ProfilePicture bgColor={profile.backgroundColor} hasImage={true}>
+              <ProfilePicture bgColor={profile.backgroundColor} hasImage={true} clique={profile.clique}>
                 <img 
                   src={profileImagePath} 
                   alt={profile.name}
@@ -399,6 +501,7 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
               artist={profile.profileSong?.split(' - ')[0] || "Unknown Artist"}
               songFile={`/music/${profile.clique}.mp3`}
               themeColor={profile.backgroundColor}
+              autoplay={true}
             />
           </Section>
 
@@ -407,11 +510,25 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
             <div style={{ fontSize: '9px', color: '#000' }}>
               <div>📧 Email: {profile.name.toLowerCase()}@hotmail.com</div>
               <div>💬 AIM: {profile.name}AIM</div>
-              <div>📱 Pager: 555-{Math.floor(Math.random() * 9000) + 1000}</div>
-              <div>🌐 Website: www.geocities.com/~{profile.name.toLowerCase()}</div>
             </div>
           </Section>
         </Sidebar>
+
+        {/* Comments Section - spans full width */}
+        <CommentsSection>
+          <CommentHeader>
+            💬 Friend Comments ({comments.length})
+          </CommentHeader>
+          {comments.map((comment, index) => (
+            <Comment key={index}>
+              <div>
+                <CommentAuthor>{comment.author}</CommentAuthor>
+                <CommentTime>{comment.time}</CommentTime>
+              </div>
+              <CommentText>{comment.text}</CommentText>
+            </Comment>
+          ))}
+        </CommentsSection>
       </ProfileContent>
     </ProfileContainer>
   );
