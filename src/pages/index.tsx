@@ -38,6 +38,7 @@ import BuyMeADeloreanWindow from "windows/BuyMeADeloreanWindow";
 import AccessLevelStatus from "components/AccessLevelStatus";
 import ConditionalAppIcon from "components/ConditionalAppIcon";
 import StoryManual from "components/StoryManual";
+import VCREffectsTest from "components/VCREffectsTest";
 import { getUserAccessLevel } from "utils/appPermissions";
 import { isFeatureEnabled } from "utils/buildMode";
 import { BACKGROUND_CONFIG } from "config/backgroundConfig";
@@ -387,6 +388,29 @@ const windowsMemod = useMemo(() => (
                 headerIcon="/images/icons/open-book.png"
               >
                 <StoryManual onClose={() => closeWindow(WINDOW_IDS.STORY_MANUAL)} />
+              </DraggableResizeableWindow>
+            ),
+          })}
+        />
+
+        {/* 5b. VCR Effects Test - Development Tool */}
+        <ConditionalAppIcon
+          appId="vcr-test"
+          title="VCR Effects Test"
+          icon="🎛️"
+          onDoubleClick={() => openWindow({
+            key: WINDOW_IDS.VCR_EFFECTS_TEST,
+            window: (
+              <DraggableResizeableWindow
+                windowsId={WINDOW_IDS.VCR_EFFECTS_TEST}
+                onClose={() => closeWindow(WINDOW_IDS.VCR_EFFECTS_TEST)}
+                initialWidth="1200px"
+                initialHeight="800px"
+                resizable={true}
+                headerTitle="VCR Effects Test Lab"
+                headerIcon="🎛️"
+              >
+                <VCREffectsTest onClose={() => closeWindow(WINDOW_IDS.VCR_EFFECTS_TEST)} />
               </DraggableResizeableWindow>
             ),
           })}

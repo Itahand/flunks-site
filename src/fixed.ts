@@ -58,6 +58,7 @@ export const WINDOW_IDS = {
   BULLETIN_BOARD: "bulletin-board",
   YEARBOOK: "yearbook",
   STORY_MANUAL: "story-manual",
+  VCR_EFFECTS_TEST: "vcr-effects-test",
   
   // New location main windows
   JOCKS_HOUSE_MAIN: "jocks_house_main",

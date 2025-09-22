@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import CutscenePlayer from './CutscenePlayer';
+import { WINDOW_IDS } from '../fixed';
 
 interface Chapter {
   id: string;
@@ -19,73 +20,6 @@ interface Chapter {
 interface StoryManualProps {
   onClose: () => void;
 }
-
-const ManualContainer = styled.div`
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, #2a1810 0%, #1a1008 100%);
-  z-index: 1000;
-  overflow: hidden;
-  font-family: 'Courier New', monospace;
-`;
-
-const ManualBook = styled.div`
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(245, 162, 211, 0.1) 0%, transparent 50%),
-    linear-gradient(45deg, transparent 40%, rgba(245, 162, 211, 0.05) 50%, transparent 60%);
-  background-size: 200px 200px, 100px 100px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-`;
-
-const ManualHeader = styled.div`
-  background: linear-gradient(90deg, #1a1008 0%, #2a1810 50%, #1a1008 100%);
-  border-bottom: 3px solid #f5a2d3;
-  padding: 20px;
-  text-align: center;
-  position: relative;
-`;
-
-const ManualTitle = styled.h1`
-  color: #f5a2d3;
-  font-size: clamp(24px, 4vw, 36px);
-  margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  letter-spacing: 2px;
-  font-weight: bold;
-`;
-
-const ManualSubtitle = styled.p`
-  color: #ffffff;
-  font-size: clamp(14px, 2vw, 18px);
-  margin: 8px 0 0 0;
-  opacity: 0.8;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  color: #f5a2d3;
-  border: 2px solid #f5a2d3;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background: rgba(245, 162, 211, 0.2);
-  }
-`;
 
 const ChapterGrid = styled.div`
   flex: 1;
@@ -178,57 +112,46 @@ const PlayIcon = styled.div`
 // Sample chapter data - this would come from your game state/progress
 const sampleChapters: Chapter[] = [
   {
-    id: 'chapter-1',
-    title: 'Welcome to Flunks High',
-    subtitle: 'The beginning of everything. New student orientation and first impressions.',
+    id: 'homecoming',
+    title: 'Homecoming',
+    subtitle: 'The sky seems like it was a different color back then. Maybe it was brighter… or maybe I just had younger eyes.',
     unlocked: true,
-    thumbnail: '/images/cutscenes/chapter1-thumb.jpg',
+    thumbnail: '/images/cutscenes/main.png',
     scenes: [
       {
-        id: 'scene-1-1',
-        image: '/images/cutscenes/school-entrance.jpg',
+        id: 'intro-main',
+        image: '/images/cutscenes/main.png',
         lines: [
-          'Welcome to Flunks High School, where dreams come to... well, let\'s see.',
-          'The morning sun casts long shadows across the parking lot.',
-          'Another year begins, but this one feels different somehow.'
+          'The sky seems like it was a different color back then. Maybe it was brighter… or maybe I just had younger eyes.',
+          'The town, however, wasn\'t. It was the same. Same brick buildings, same cracked sidewalks, same old high school sitting on that hill like a castle.'
         ],
-        music: '/sounds/ambient-school.mp3'
+        music: '/music/child.mp3'
       },
       {
-        id: 'scene-1-2',
-        image: '/images/cutscenes/hallway-first-day.jpg',
+        id: 'intro-1',
+        image: '/images/cutscenes/1.png',
         lines: [
-          'The halls buzz with nervous energy and fresh possibilities.',
-          'Lockers slam shut like tiny thunder, echoing through the corridors.',
-          'Every face tells a story waiting to unfold.'
+          'It\'s been that way since they founded Arcadia over a hundred years ago.',
+          'Folks come and go, dreams flare up and fade out, but this place… this place don\'t change.'
         ]
-      }
-    ]
-  },
-  {
-    id: 'chapter-2',
-    title: 'The Cliques Form',
-    subtitle: 'Social hierarchies emerge as students find their tribes.',
-    unlocked: true,
-    thumbnail: '/images/cutscenes/chapter2-thumb.jpg',
-    scenes: [
+      },
       {
-        id: 'scene-2-1',
-        image: '/images/cutscenes/cafeteria-drama.jpg',
+        id: 'intro-2',
+        image: '/images/cutscenes/2.png',
         lines: [
-          'The cafeteria becomes a battlefield of social politics.',
-          'Each table represents a different world, a different set of rules.',
-          'Where you sit defines who you are... or does it?'
+          'Every corner holds a memory, every street tells a story.',
+          'Some stories are written in yearbooks, others in spray paint on abandoned walls.'
+        ]
+      },
+      {
+        id: 'intro-3',
+        image: '/images/cutscenes/3.png',
+        lines: [
+          'This is where it all began.',
+          'Welcome to Arcadia. Welcome to your story.'
         ]
       }
     ]
-  },
-  {
-    id: 'chapter-3',
-    title: 'Season Zero Begins',
-    subtitle: 'The mysterious Season Zero is announced, changing everything.',
-    unlocked: false,
-    scenes: []
   }
 ];
 
@@ -263,25 +186,20 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
   }
 
   return (
-    <ManualContainer>
-      <ManualBook>
-        <ManualHeader>
-          <CloseButton onClick={onClose} aria-label="Close manual">
-            ✕
-          </CloseButton>
-          <ManualTitle>📖 THE STORY SO FAR</ManualTitle>
-          <ManualSubtitle>Flunks High Chronicles - Interactive Manual</ManualSubtitle>
-        </ManualHeader>
-
-        <ChapterGrid>
+    <div style={{
+      background: 'linear-gradient(135deg, #2a1810 0%, #1a1008 100%)',
+      height: '100%',
+      overflow: 'hidden',
+      fontFamily: 'Courier New, monospace',
+      padding: '20px'
+    }}>
+      <ChapterGrid>
           {sampleChapters.map((chapter, index) => (
             <ChapterCard
               key={chapter.id}
               unlocked={chapter.unlocked}
               onClick={() => handleChapterClick(chapter)}
             >
-              <ChapterNumber>Ch. {index + 1}</ChapterNumber>
-              
               <ChapterThumbnail bgImage={chapter.thumbnail}>
                 {chapter.unlocked ? (
                   <PlayIcon>▶️</PlayIcon>
@@ -297,9 +215,8 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
             </ChapterCard>
           ))}
         </ChapterGrid>
-      </ManualBook>
-    </ManualContainer>
-  );
-};
+      </div>
+    );
+  };
 
 export default StoryManual;

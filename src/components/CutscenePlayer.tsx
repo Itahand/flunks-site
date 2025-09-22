@@ -9,11 +9,30 @@ interface CutsceneScene {
   duration?: number; // Optional auto-advance timer
 }
 
+interface VCREffectsConfig {
+  scanLinesEnabled: boolean;
+  scanLinesOpacity: number;
+  scanLinesSpeed: number;
+  noiseEnabled: boolean;
+  noiseOpacity: number;
+  noiseSpeed: number;
+  chromaticEnabled: boolean;
+  chromaticIntensity: number;
+  chromaticSpeed: number;
+  staticEnabled: boolean;
+  staticOpacity: number;
+  staticMovement: number;
+  vintageEnabled: boolean;
+  vintageWarmth: number;
+  vintageVignette: number;
+}
+
 interface CutscenePlayerProps {
   scenes: CutsceneScene[];
   onComplete?: () => void;
   onClose?: () => void;
   autoStart?: boolean;
+  vcrEffects?: VCREffectsConfig;
 }
 
 const CutsceneContainer = styled.div`
@@ -48,6 +67,112 @@ const LetterboxTop = styled.div`
   z-index: 5;
 `;
 
+const VCREffects = styled.div<{ config: VCREffectsConfig }>`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  display: ${props => props.config.scanLinesEnabled ? 'block' : 'none'};
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 1px,
+        rgba(255, 255, 255, ${props => props.config.scanLinesOpacity * 0.01}) 2px,
+        rgba(255, 255, 255, ${props => props.config.scanLinesOpacity * 0.01}) 3px,
+        transparent 4px
+      );
+    animation: scanlines ${props => props.config.scanLinesSpeed * 0.1}s linear infinite;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.1) 100%),
+      repeating-conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,${props => props.config.noiseOpacity * 0.0001}) 1deg, transparent 2deg);
+    opacity: ${props => props.config.noiseOpacity * 0.01};
+    animation: noise ${props => props.config.noiseSpeed * 0.1}s steps(8, end) infinite;
+    display: ${props => props.config.noiseEnabled ? 'block' : 'none'};
+  }
+  
+  @keyframes scanlines {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(4px); }
+  }
+  
+  @keyframes noise {
+    0%, 100% { opacity: ${props => (props.config.noiseOpacity - 20) * 0.01}; }
+    50% { opacity: ${props => props.config.noiseOpacity * 0.01}; }
+  }
+`;
+
+const ChromaticEffect = styled.div<{ config: VCREffectsConfig }>`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  mix-blend-mode: screen;
+  display: ${props => props.config.chromaticEnabled ? 'block' : 'none'};
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, 
+      rgba(255, 0, 0, ${props => props.config.chromaticIntensity * 0.005}) 0%, 
+      transparent 33%,
+      rgba(0, 255, 0, ${props => props.config.chromaticIntensity * 0.005}) 66%,
+      rgba(0, 0, 255, ${props => props.config.chromaticIntensity * 0.005}) 100%
+    );
+    animation: chromatic ${props => props.config.chromaticSpeed * 0.1}s ease-in-out infinite alternate;
+  }
+  
+  @keyframes chromatic {
+    0% { transform: translateX(-${props => props.config.chromaticIntensity * 0.5}px); }
+    100% { transform: translateX(${props => props.config.chromaticIntensity * 0.5}px); }
+  }
+`;
+
+const VHSStatic = styled.div<{ config: VCREffectsConfig }>`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  display: ${props => props.config.staticEnabled ? 'block' : 'none'};
+  background: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='${props => props.config.staticOpacity * 0.01}'/%3E%3C/svg%3E");
+  animation: staticShift ${props => props.config.staticMovement * 0.1}s steps(1, end) infinite;
+  
+  @keyframes staticShift {
+    0% { transform: translate(0px, 0px); }
+    25% { transform: translate(-${props => props.config.staticMovement}px, ${props => props.config.staticMovement}px); }
+    50% { transform: translate(${props => props.config.staticMovement}px, -${props => props.config.staticMovement}px); }
+    75% { transform: translate(-${props => props.config.staticMovement}px, -${props => props.config.staticMovement}px); }
+    100% { transform: translate(${props => props.config.staticMovement}px, ${props => props.config.staticMovement}px); }
+  }
+`;
+
+const VintageFilter = styled.div<{ config: VCREffectsConfig }>`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  display: ${props => props.config.vintageEnabled ? 'block' : 'none'};
+  background: 
+    radial-gradient(circle at 50% 50%, 
+      rgba(255, 215, 175, ${props => props.config.vintageWarmth * 0.01}) 0%, 
+      rgba(139, 69, 19, ${props => props.config.vintageVignette * 0.01}) 100%
+    );
+  mix-blend-mode: overlay;
+`;
+
 const LetterboxBottom = styled.div`
   position: absolute;
   bottom: 0;
@@ -67,11 +192,11 @@ const TextBox = styled.div`
   width: min(900px, 92vw);
   padding: 16px 20px;
   background: rgba(10, 10, 14, 0.85);
-  border: 2px solid #f5a2d3;
+  border: 5px solid #f5a2d3;
   color: #fff;
   border-radius: 8px;
   z-index: 10;
-  box-shadow: 0 0 0 4px rgba(245, 162, 211, 0.15);
+  box-shadow: 0 0 0 8px rgba(245, 162, 211, 0.25);
 `;
 
 const TextContent = styled.p`
@@ -137,8 +262,29 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
   scenes,
   onComplete,
   onClose,
-  autoStart = true
+  autoStart = true,
+  vcrEffects
 }) => {
+  // Default VCR effects config
+  const defaultEffects: VCREffectsConfig = {
+    scanLinesEnabled: true,
+    scanLinesOpacity: 3,
+    scanLinesSpeed: 1,
+    noiseEnabled: true,
+    noiseOpacity: 40,
+    noiseSpeed: 2,
+    chromaticEnabled: true,
+    chromaticIntensity: 2,
+    chromaticSpeed: 30,
+    staticEnabled: true,
+    staticOpacity: 3,
+    staticMovement: 1,
+    vintageEnabled: true,
+    vintageWarmth: 4,
+    vintageVignette: 8,
+  };
+  
+  const effectsConfig = vcrEffects || defaultEffects;
   const [currentScene, setCurrentScene] = useState(0);
   const [currentLine, setCurrentLine] = useState(0);
   const [displayText, setDisplayText] = useState('');
@@ -151,7 +297,7 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const typeText = useCallback(async (text: string, speed = 24) => {
+  const typeText = useCallback(async (text: string, speed = 50) => {
     setIsTyping(true);
     typeControllerRef.current = { cancel: false };
     setDisplayText('');
@@ -159,8 +305,7 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
     for (let i = 0; i < text.length; i++) {
       if (typeControllerRef.current.cancel) break;
       setDisplayText(text.substring(0, i + 1));
-      const jitter = Math.random() * 20 - 10;
-      await sleep(Math.max(5, speed + jitter));
+      await sleep(speed);
     }
     
     if (!typeControllerRef.current.cancel) {
@@ -303,6 +448,12 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
         alt=""
         visible={!showingA}
       />
+
+      {/* VCR and Retro Effects */}
+      <VintageFilter config={effectsConfig} />
+      <VHSStatic config={effectsConfig} />
+      <VCREffects config={effectsConfig} />
+      <ChromaticEffect config={effectsConfig} />
 
       {/* Letterbox bars */}
       <LetterboxTop />
