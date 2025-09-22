@@ -30,6 +30,8 @@ interface VCREffectsTestProps {
 const TestContainer = styled.div`
   display: flex;
   height: 100%;
+  width: 100%;
+  min-height: 600px;
   font-family: 'MS Sans Serif', sans-serif;
 `;
 
@@ -43,8 +45,11 @@ const CutsceneArea = styled.div`
 const ControlArea = styled.div`
   flex: 1;
   min-width: 400px;
+  max-width: 500px;
   border-left: 2px solid #808080;
   background: #c0c0c0;
+  overflow-y: auto;
+  flex-shrink: 0;
 `;
 
 const TestInfo = styled.div`
@@ -129,6 +134,15 @@ const VCREffectsTest: React.FC<VCREffectsTestProps> = ({ onClose }) => {
         />
       </CutsceneArea>
       <ControlArea>
+        <div style={{
+          padding: '16px',
+          color: '#000',
+          fontSize: '14px',
+          fontFamily: 'MS Sans Serif, sans-serif'
+        }}>
+          <h2 style={{ margin: '0 0 16px 0', color: '#000080' }}>🎛️ VCR Effects Controls</h2>
+          <p style={{ marginBottom: '16px' }}>Use these controls to adjust retro effects in real-time:</p>
+        </div>
         <VCREffectsControlPanel
           onClose={onClose}
           onEffectsChange={handleEffectsChange}

@@ -404,8 +404,8 @@ const windowsMemod = useMemo(() => (
               <DraggableResizeableWindow
                 windowsId={WINDOW_IDS.VCR_EFFECTS_TEST}
                 onClose={() => closeWindow(WINDOW_IDS.VCR_EFFECTS_TEST)}
-                initialWidth="1200px"
-                initialHeight="800px"
+                initialWidth="1400px"
+                initialHeight="900px"
                 resizable={true}
                 headerTitle="VCR Effects Test Lab"
                 headerIcon="🎛️"
