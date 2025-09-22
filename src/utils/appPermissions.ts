@@ -148,6 +148,24 @@ export const APP_PERMISSIONS: AppPermission[] = [
     buildModeFeature: 'showPictureDay'
   },
   
+  // Story Manual - Build Mode Only
+  {
+    id: 'story-manual',
+    title: 'The Story So Far',
+    requiredLevel: ['ADMIN'],
+    description: 'Interactive story chapters and cutscenes',
+    buildModeFeature: 'showStoryManual'
+  },
+  
+  // VCR Effects Test - Build Mode Only (Development Tool)
+  {
+    id: 'vcr-test',
+    title: 'VCR Effects Test',
+    requiredLevel: ['ADMIN'],
+    description: 'Development tool for testing VCR effects',
+    buildModeFeature: 'showVCREffectsTest'
+  },
+  
   // Retro Text Demo (showcase new clique colors)
   {
     id: 'retro-text-demo',
