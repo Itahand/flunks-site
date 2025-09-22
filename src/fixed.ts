@@ -57,6 +57,7 @@ export const WINDOW_IDS = {
   ICON_ANIMATION: "icon-animation",
   BULLETIN_BOARD: "bulletin-board",
   YEARBOOK: "yearbook",
+  STORY_MANUAL: "story-manual",
   
   // New location main windows
   JOCKS_HOUSE_MAIN: "jocks_house_main",

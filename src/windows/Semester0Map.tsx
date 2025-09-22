@@ -23,6 +23,7 @@ import SecretTreehouseMain from "windows/Locations/SecretTreehouseMain";
 import HighSchoolMain from "windows/Locations/HighSchoolMain";
 import ParadiseMotelMain from "windows/Locations/ParadiseMotelMain";
 import DraggableResizeableWindow from 'components/DraggableResizeableWindow';
+import CutscenePlayer from 'components/CutscenePlayer';
 import { WINDOW_IDS } from "fixed";
 import { Button } from 'react95';
 import SemesterZeroCSSLoader from "components/SemesterZeroCSSLoader";
@@ -43,6 +44,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
   const [hovered, setHovered] = useState<string | null>(null);
   const [enhancedHover, setEnhancedHover] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [showIntroCutscene, setShowIntroCutscene] = useState(false);
+  const [hasSeenIntro, setHasSeenIntro] = useState(false);
   // Room overlay state for full-screen room backgrounds
   const [activeRoom, setActiveRoom] = useState<{
     location: string;
@@ -330,6 +333,37 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
   }, []);
 
   const togglePause = () => setIsPaused(prev => !prev);
+
+  // Intro cutscene trigger
+  useEffect(() => {
+    // Enable cutscenes for testing (removed build mode restriction)
+    // if (!isFeatureEnabled('showCutscenes')) {
+    //   return;
+    // }
+    
+    // Check if user has seen the intro before (localStorage)
+    const hasSeenIntroStored = localStorage.getItem('flunks-season-zero-intro-seen');
+    if (!hasSeenIntroStored) {
+      // Show intro cutscene on first visit
+      setTimeout(() => {
+        setShowIntroCutscene(true);
+      }, 1000); // Small delay after map loads
+    } else {
+      setHasSeenIntro(true);
+    }
+  }, []);
+
+  const handleIntroCutsceneComplete = () => {
+    setShowIntroCutscene(false);
+    setHasSeenIntro(true);
+    localStorage.setItem('flunks-season-zero-intro-seen', 'true');
+  };
+
+  const handleIntroCutsceneClose = () => {
+    setShowIntroCutscene(false);
+    setHasSeenIntro(true);
+    localStorage.setItem('flunks-season-zero-intro-seen', 'true');
+  };
 
   useEffect(() => {
     // Track mobile once on mount
@@ -1109,6 +1143,28 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
           </div>
         </div>
       </div>
+
+      {/* Intro Cutscene */}
+      {showIntroCutscene && (
+        <CutscenePlayer
+          scenes={[
+            {
+              id: 'intro-main',
+              image: '/images/cutscenes/main.png',
+              lines: [
+                'The sky seems like it was a different color back then. Maybe it was brighter… or maybe I just had younger eyes.',
+                'The town, however, wasn\'t. It was the same. Same brick buildings, same cracked sidewalks, same old high school sitting on that hill like a castle.',
+                'It\'s been that way since they founded Arcadia over a hundred years ago.',
+                'Folks come and go, dreams flare up and fade out, but this place… this place don\'t change.'
+              ],
+              music: '/music/main-song.mp3'
+            }
+          ]}
+          onComplete={handleIntroCutsceneComplete}
+          onClose={handleIntroCutsceneClose}
+          autoStart={true}
+        />
+      )}
     </div>
   );
 };

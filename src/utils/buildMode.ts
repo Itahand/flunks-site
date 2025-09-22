@@ -25,6 +25,7 @@ export interface BuildModeConfig {
   showReportCard: boolean;
   showPictureDay: boolean;
   showDeloreanTracker: boolean;
+  showCutscenes: boolean;
   
   // Special Announcements
   flappyFlunkWeekend: boolean;
@@ -68,6 +69,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showReportCard: false,
     showPictureDay: false,
     showDeloreanTracker: true,
+    showCutscenes: false,
     
     // Special Announcements - visible on public site
     flappyFlunkWeekend: true,
@@ -109,6 +111,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showReportCard: true,
     showPictureDay: true,
     showDeloreanTracker: true,
+    showCutscenes: true,
     
     // Special Announcements - visible in build mode
     flappyFlunkWeekend: true,
