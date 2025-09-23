@@ -188,7 +188,7 @@ const FriendCard = styled.div<{ isClickable?: boolean }>`
   `}
 `;
 
-const FriendAvatar = styled.div`
+const FriendAvatar = styled.div<{ hasImage?: boolean }>`
   width: 40px;
   height: 40px;
   background: linear-gradient(45deg, #ccc, #999);
@@ -199,6 +199,15 @@ const FriendAvatar = styled.div`
   justify-content: center;
   font-size: 8px;
   color: #333;
+  overflow: hidden;
+  border-radius: 2px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+  }
 `;
 
 const CommentsSection = styled.div`
@@ -356,17 +365,23 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
 
     const selectedComments = [];
     const topFriends = profile.topFriends.slice(0, 6); // Use top 6 friends
+    const availableComments = [...comments90s]; // Copy array so we can remove used comments
+    const availableTimes = [...timeStamps]; // Copy array so we can remove used times
     
     for (let i = 0; i < 3; i++) {
-      const randomComment = comments90s[Math.floor(Math.random() * comments90s.length)];
-      const randomFriend = topFriends[Math.floor(Math.random() * topFriends.length)];
-      const randomTime = timeStamps[Math.floor(Math.random() * timeStamps.length)];
+      const commentIndex = Math.floor(Math.random() * availableComments.length);
+      const friendIndex = Math.floor(Math.random() * topFriends.length);
+      const timeIndex = Math.floor(Math.random() * availableTimes.length);
       
       selectedComments.push({
-        author: randomFriend.name,
-        text: randomComment,
-        time: randomTime
+        author: topFriends[friendIndex].name,
+        text: availableComments[commentIndex],
+        time: availableTimes[timeIndex]
       });
+      
+      // Remove used comment and time to prevent duplicates
+      availableComments.splice(commentIndex, 1);
+      availableTimes.splice(timeIndex, 1);
     }
     
     return selectedComments;
@@ -397,7 +412,7 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
-                    objectPosition: profile.clique === 'flunko' ? 'center 20%' : 'center',
+                    objectPosition: profile.clique === 'flunko' ? 'center 10%' : 'center',
                     transform: 'scale(1)',
                     transformOrigin: 'center center'
                   }}
@@ -503,8 +518,19 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
                   onClick={() => friend.name === 'Flunko' ? handleFriendClick(friend.name) : undefined}
                   title={friend.name === 'Flunko' ? 'Click to visit Flunko\'s profile!' : undefined}
                 >
-                  <FriendAvatar>
-                    {friend.name.charAt(0)}
+                  <FriendAvatar hasImage={friend.name === 'Flunko'}>
+                    {friend.name === 'Flunko' ? (
+                      <img 
+                        src="/images/myplace/myspace-flunko.png" 
+                        alt="Flunko"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.parentElement!.textContent = 'F';
+                        }}
+                      />
+                    ) : (
+                      friend.name.charAt(0)
+                    )}
                   </FriendAvatar>
                   <div style={{ fontWeight: 'bold', fontSize: '8px' }}>
                     {friend.name}

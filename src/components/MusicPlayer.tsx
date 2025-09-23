@@ -143,6 +143,18 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
     };
   }, [autoplay]);
 
+  // Cleanup effect to stop audio when component unmounts
+  useEffect(() => {
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        setIsPlaying(false);
+      }
+    };
+  }, []);
+
   const handlePlayPause = () => {
     const audio = audioRef.current;
     if (!audio) return;

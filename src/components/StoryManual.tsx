@@ -126,53 +126,54 @@ const sampleChapters: Chapter[] = [
   {
     id: 'homecoming',
     title: 'The Story So Far',
-    subtitle: 'The sky seems like it was a different color back then. Maybe it was brighter… or maybe I just had younger eyes.',
+    subtitle: 'The sky looked different back then. Maybe it was brighter… or maybe I just had younger eyes.',
     unlocked: true,
     thumbnail: '/images/cutscenes/main.png',
     scenes: [
-      // Scene 1: Welcome to Arcadia Sign (main.png)
+      // Scene 1: Opening (main.png) - First sentence only
       {
-        id: 'welcome-sign',
+        id: 'opening',
         image: '/images/cutscenes/main.png',
         lines: [
-          'Welcome to Arcadia, Lancaster County. Population: 15,847.',
-          'Est. 1854. The same wooden sign that\'s greeted visitors for decades.',
-          'Some say this place never changes. Others say that\'s exactly the problem.',
-          'But tonight... tonight feels different.'
+          'The sky looked different back then. Maybe it was brighter… or maybe I just had younger eyes.'
         ],
         music: '/music/child.mp3'
       },
-      // Scene 2: Town Street View (1.png)
+      // Scene 2: The Town (1.png) - From "The town, however" to "folks come and go"
       {
-        id: 'town-street',
+        id: 'the-town',
         image: '/images/cutscenes/1.png',
         lines: [
-          'Main Street stretches out like a time capsule.',
-          'The same brick buildings, the same faded shop signs.',
-          'Miller\'s Hardware. Betty\'s Diner. The old movie theater that never quite reopened.',
-          'Everything exactly where it was when we were kids.'
+          'The town, however, wasn\'t. It was the same. Same brick buildings, same cracked sidewalks, same old high school sitting on that hill like a castle.',
+          'It\'s been that way since they founded Arcadia over a hundred years ago.',
+          'Folks come and go, dreams flare up and fade out, but this place… this place don\'t change.'
         ]
       },
-      // Scene 3: High School on the Hill (2.png)
+      // Scene 3: Changes Over Time (2.png) - Storefront signs and cassette players
       {
-        id: 'school-hill',
+        id: 'changes',
         image: '/images/cutscenes/2.png',
         lines: [
-          'And there it is. Arcadia High School, sitting on that hill like a castle.',
-          'Four years of our lives happened behind those walls.',
-          'Friendships. Heartbreaks. Dreams that seemed so big back then.',
-          'Tonight\'s homecoming. The night everything comes full circle.'
+          'I\'ve seen the storefront signs switch names, the kids swap out their cassette players for CD players, then for whatever came next.'
         ]
       },
-      // Scene 4: Memory Lane (3.png) 
+      // Scene 4: Friday Night Lights (3.png) - From Friday nights to "I call it Arcadia"
       {
-        id: 'memories',
+        id: 'friday-nights',
         image: '/images/cutscenes/3.png',
         lines: [
-          'We used to think we\'d conquer the world after graduation.',
-          'Some of us left. Some of us stayed. Some of us came back.',
-          'But tonight, we\'re all seventeen again.',
-          'Welcome home, Flunks. Let\'s see what stories we write tonight.'
+          'I\'ve seen Friday night lights burn for generations of ballplayers, and I\'ve seen the same creek flood every spring like clockwork.',
+          'Some call it boring. I call it Arcadia.'
+        ]
+      },
+      // Scene 5: History Repeats (4.png) - Final part about history repeating
+      {
+        id: 'history-repeats',
+        image: '/images/cutscenes/4.png',
+        lines: [
+          'And if you stick around long enough, you\'ll notice… history has a way of repeating itself here.',
+          'Sometimes in small ways. Sometimes in ways that\'ll shake the whole town.',
+          'And that\'s the thing about Arcadia—no matter how much the sky changes, the ground beneath your feet will remind you: this place remembers everything.'
         ]
       }
     ]

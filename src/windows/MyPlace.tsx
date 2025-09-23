@@ -79,6 +79,15 @@ const HeaderText = styled.h1`
   margin: 0;
   animation: flashingText 1.5s ease-in-out infinite alternate;
   position: relative;
+  white-space: nowrap;
+  
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
+  
+  @media (max-width: 600px) {
+    font-size: 24px;
+  }
   
   @keyframes flashingText {
     0% {
@@ -102,7 +111,7 @@ const HeaderText = styled.h1`
   }
 
   &::before {
-    content: 'SELECT YOUR CLASS';
+    content: 'SELECT YOUR PROFILE';
     position: absolute;
     top: 2px;
     left: 2px;
@@ -247,14 +256,14 @@ const LockOverlay = styled.div`
 
 const WalletStatus = styled.div`
   position: absolute;
-  top: 40px;
-  right: 40px;
+  top: 20px;
+  right: 20px;
   background: rgba(0, 0, 0, 0.8);
   border: 2px solid #00ffff;
   border-radius: 8px;
-  padding: 20px 30px;
+  padding: 10px 15px;
   font-family: 'Press Start 2P', monospace;
-  font-size: 20px;
+  font-size: 12px;
   color: #00ffff;
   z-index: 3;
   
@@ -262,9 +271,9 @@ const WalletStatus = styled.div`
     position: relative;
     top: auto;
     right: auto;
-    margin-bottom: 40px;
-    font-size: 16px;
-    padding: 15px 20px;
+    margin-bottom: 20px;
+    font-size: 10px;
+    padding: 8px 12px;
   }
 `;
 
@@ -420,9 +429,9 @@ const MovingStar = styled.div<{ delay: number; size: number; duration: number; s
 
 const characterSlots = [
   { clique: "the-nerds", imageId: "images/myplace/myplace-geek", label: "Geek", color: "#059669" },
-  { clique: "the-populars", imageId: "images/myplace/myspace-prep", label: "Prep", color: "#ff69b4" },
+  { clique: "the-preps", imageId: "images/myplace/myspace-prep", label: "Prep", color: "#ff69b4" },
   { clique: "the-jocks", imageId: "images/myplace/myplace-jock", label: "Jock", color: "#1e3a8a" },
-  { clique: "the-outcasts", imageId: "images/myplace/myplace-freak", label: "Freak", color: "#2c1810" },
+  { clique: "the-freaks", imageId: "images/myplace/myplace-freak", label: "Freak", color: "#2c1810" },
 ];
 
 const MyPlace = () => {
@@ -513,9 +522,9 @@ const MyPlace = () => {
     // Map our clique names to CliqueType
     const cliqueMap: Record<string, CliqueType> = {
       'the-nerds': 'GEEK',
-      'the-populars': 'PREP', 
+      'the-preps': 'PREP', 
       'the-jocks': 'JOCK',
-      'the-outcasts': 'FREAK',
+      'the-freaks': 'FREAK',
       'the-artists': 'GEEK', // Map to GEEK for now
       'the-rebels': 'FREAK', // Map to FREAK for now
     };
@@ -574,7 +583,7 @@ const MyPlace = () => {
         onClose={() => closeWindow(WINDOW_IDS.MYPLACE)}
         initialWidth="100%"
         initialHeight="100%"
-        headerTitle="MyPlace - Select Your Class"
+        headerTitle="MyPlace - Select Your Profile"
         headerIcon="/images/icons/myplace.png"
         resizable={false}
       >
@@ -589,13 +598,11 @@ const MyPlace = () => {
           <ScanLine />
           
           <WalletStatus>
-            FlunkOS.EXE
-            <br />
             Wallet: {user ? "Connected" : "Not connected"}
           </WalletStatus>
           
           <Header>
-            <HeaderText>SELECT YOUR CLASS</HeaderText>
+            <HeaderText>SELECT YOUR PROFILE</HeaderText>
           </Header>
           
           <CharacterGrid>

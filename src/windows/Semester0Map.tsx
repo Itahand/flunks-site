@@ -1152,7 +1152,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               id: 'intro-main',
               image: '/images/cutscenes/main.png',
               lines: [
-                'The sky seems like it was a different color back then. Maybe it was brighter… or maybe I just had younger eyes.',
+                'The sky looked different back then. Maybe it was brighter… or maybe I just had younger eyes.',
                 'The town, however, wasn\'t. It was the same. Same brick buildings, same cracked sidewalks, same old high school sitting on that hill like a castle.'
               ],
               music: '/music/child.mp3'

@@ -36,33 +36,33 @@ export const BACKGROUND_PATTERNS = {
 
 export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
   'the-preps': {
-    name: "Madison Elite",
+    name: "",
     clique: "the-preps",
-    backgroundColor: "#ff69b4",
+    backgroundColor: "#1e3a8a",
     backgroundPattern: "glitter",
-    mood: "Fabulous ✨",
-    location: "The Top of the Social Ladder",
-    age: "Forever Young",
-    lastLogin: "2 minutes ago",
-    profileViews: 15742,
-    aboutMe: "OMG hey everyone! I'm Madison and I'm like, totally the queen bee of this school! I love shopping at the mall, getting my nails done, and being absolutely PERFECT in every way! If you're not popular, don't even bother messaging me unless you have something I want! XOXO 💋",
-    favoriteQuote: "I'm not mean, I'm just better than you! 💅",
-    interests: ["Shopping", "Fashion", "Gossip", "Being Popular", "Pink Everything", "Starbucks", "Drama", "Social Status"],
-    music: ["Britney Spears", "Christina Aguilera", "Destiny's Child", "Backstreet Boys", "NSYNC", "Mariah Carey"],
-    movies: ["Mean Girls", "Clueless", "Legally Blonde", "She's All That", "10 Things I Hate About You", "Cruel Intentions"],
-    books: ["Fashion magazines", "Gossip Girl", "The Princess Diaries", "Does Vogue count?"],
-    heroes: ["Regina George", "Elle Woods", "Cher Horowitz", "Miranda Priestly"],
-    likes: ["Being the center of attention", "Designer clothes", "Hot pink", "Compliments", "Parties", "Being envied", "Shopping sprees", "Prom queen crowns"],
-    dislikes: ["Cheap clothes", "Being ignored", "Not being invited", "Unflattering photos", "Having to be nice to losers", "Bad hair days", "Generic brands"],
+    mood: "Living my best life 🏌️‍♂️",
+    location: "The Country Club / Tennis Courts",
+    age: "17 (trust fund kid since birth)",
+    lastLogin: "Between polo practice and yacht club",
+    profileViews: 23847,
+    aboutMe: "Greetings, fellow members of high society! I'm fortunate enough to be the heir to my parents' fortune and the most distinguished gentleman in this town. When I'm not dominating at polo or perfecting my tennis serve at the country club, I'm setting trends that lesser mortals will follow next season. My 24-karat gold braces aren't just dental work - they're a statement! I was influencing people before 'influencer' was even a word, darling. If you're not on the social register, we probably shouldn't associate. TTYL! ��✨",
+    favoriteQuote: "Money talks, but wealth whispers... and I'm practically silent.",
+    interests: ["Polo", "Tennis", "Golf", "Yacht racing", "Country club events", "Stock market", "Fine dining", "Social networking", "Trend setting"],
+    music: ["Boyz II Men", "TLC", "Alanis Morissette", "Celine Dion", "Whitney Houston", "Mariah Carey", "Ace of Base", "All-4-One"],
+    movies: ["Titanic", "My Best Friend's Wedding", "The Full Monty", "Good Will Hunting", "As Good as It Gets", "Jerry Maguire", "Scream", "The English Patient"],
+    books: ["The Art of the Deal", "Forbes Magazine", "Town & Country", "GQ", "Vanity Fair", "The Great Gatsby", "Investment guides"],
+    heroes: ["Gordon Gekko", "Jay Gatsby", "Donald Trump", "Ralph Lauren", "Tommy Hilfiger"],
+    likes: ["24k gold accessories", "Designer everything", "Country club memberships", "Trust fund statements", "Being photographed", "Exclusive events", "Name dropping", "Premium everything"],
+    dislikes: ["Public transportation", "Generic brands", "Waiting in lines", "People who don't know my family", "Anything less than first class", "Scholarship kids", "Off-brand anything"],
     topFriends: [
-      { name: "Jessica", status: "Shopping buddy 🛍️" },
-      { name: "Ashley", status: "Gossip partner 👯" },
-      { name: "Brittany", status: "Fashion advisor 💄" },
-      { name: "Tyler", status: "Arm candy 💪" },
-      { name: "Chad", status: "Backup boyfriend 😘" },
-      { name: "Tiffany", status: "Competition 😤" }
+      { name: "Muffy", status: "Debutante ball date 💃" },
+      { name: "Flunko", status: "Cool gaming buddy �" },
+      { name: "Buffy", status: "Tennis partner 🎾" },
+      { name: "Skip", status: "Yacht club buddy ⛵" },
+      { name: "Tiffany", status: "Shopping consultant 💎" },
+      { name: "Thurston", status: "Investment advisor 💰" }
     ],
-    profileSong: "Britney Spears - ...Baby One More Time"
+    profileSong: "Boyz II Men - I'll Make Love to You"
   },
 
   'the-freaks': {
