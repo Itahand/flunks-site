@@ -423,7 +423,6 @@ const characterSlots = [
   { clique: "the-populars", imageId: "images/myplace/myspace-prep", label: "Prep", color: "#ff69b4" },
   { clique: "the-jocks", imageId: "images/myplace/myplace-jock", label: "Jock", color: "#1e3a8a" },
   { clique: "the-outcasts", imageId: "images/myplace/myplace-freak", label: "Freak", color: "#2c1810" },
-  { clique: "flunko", imageId: "images/myplace/myspace-flunko", label: "Flunko", color: "#DC143C" },
 ];
 
 const MyPlace = () => {
@@ -517,7 +516,6 @@ const MyPlace = () => {
       'the-populars': 'PREP', 
       'the-jocks': 'JOCK',
       'the-outcasts': 'FREAK',
-      'flunko': 'FLUNKO',
       'the-artists': 'GEEK', // Map to GEEK for now
       'the-rebels': 'FREAK', // Map to FREAK for now
     };

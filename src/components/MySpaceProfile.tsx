@@ -2,6 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import { CLIQUE_PROFILES, BACKGROUND_PATTERNS, CliqueProfile, Friend } from '../data/cliqueProfiles';
 import MusicPlayer from './MusicPlayer';
+import { useWindowsContext } from '../contexts/WindowsContext';
+import DraggableResizeableWindow from './DraggableResizeableWindow';
+import { WINDOW_IDS } from '../fixed';
 
 interface MySpaceProfileProps {
   clique: string;
@@ -166,13 +169,23 @@ const FriendsList = styled.div`
   margin-top: 8px;
 `;
 
-const FriendCard = styled.div`
+const FriendCard = styled.div<{ isClickable?: boolean }>`
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid #ccc;
   padding: 5px;
   text-align: center;
   font-size: 9px;
   color: #000;
+  cursor: ${props => props.isClickable ? 'pointer' : 'default'};
+  transition: all 0.2s ease;
+
+  ${props => props.isClickable && `
+    &:hover {
+      background: rgba(245, 162, 211, 0.8);
+      border-color: #f5a2d3;
+      transform: scale(1.05);
+    }
+  `}
 `;
 
 const FriendAvatar = styled.div`
@@ -272,10 +285,33 @@ const BlinkingText = styled.span`
 
 const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
   const profile = CLIQUE_PROFILES[clique];
+  const { openWindow } = useWindowsContext();
   
   if (!profile) {
     return <div>Profile not found</div>;
   }
+
+  const handleFriendClick = (friendName: string) => {
+    if (friendName === 'Flunko') {
+      // Open Flunko's MySpace profile in a new window
+      openWindow({
+        key: `${WINDOW_IDS.MYPLACE}_flunko`,
+        window: (
+          <DraggableResizeableWindow
+            windowsId={`${WINDOW_IDS.MYPLACE}_flunko`}
+            onClose={() => {}} // Will be handled by the window system
+            initialWidth="100%"
+            initialHeight="100%"
+            resizable={false}
+            headerTitle="Flunko's MyPlace Profile"
+            headerIcon="/images/icons/open-book.png"
+          >
+            <MySpaceProfile clique="flunko" />
+          </DraggableResizeableWindow>
+        ),
+      });
+    }
+  };
 
   const formatList = (items: string[], maxDisplay: number = 6) => {
     const displayItems = items.slice(0, maxDisplay);
@@ -461,7 +497,12 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
             <SectionHeader bgColor="#ff6600">Top 6 Friends</SectionHeader>
             <FriendsList>
               {profile.topFriends.map((friend: Friend, index: number) => (
-                <FriendCard key={index}>
+                <FriendCard 
+                  key={index}
+                  isClickable={friend.name === 'Flunko'}
+                  onClick={() => friend.name === 'Flunko' ? handleFriendClick(friend.name) : undefined}
+                  title={friend.name === 'Flunko' ? 'Click to visit Flunko\'s profile!' : undefined}
+                >
                   <FriendAvatar>
                     {friend.name.charAt(0)}
                   </FriendAvatar>
