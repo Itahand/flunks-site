@@ -45,6 +45,11 @@ const CutsceneContainer = styled.div<{ windowed?: boolean }>`
   z-index: ${props => props.windowed ? 'auto' : '9999'};
   overflow: hidden;
   font-family: 'Courier New', monospace;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const SceneImage = styled.img<{ visible: boolean }>`
@@ -67,6 +72,10 @@ const LetterboxTop = styled.div`
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(2px);
   z-index: 5;
+
+  @media (max-width: 768px) {
+    height: 6vh;
+  }
 `;
 
 const VCREffects = styled.div<{ config: VCREffectsConfig }>`
@@ -187,6 +196,10 @@ const LetterboxBottom = styled.div`
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(2px);
   z-index: 5;
+
+  @media (max-width: 768px) {
+    height: 6vh;
+  }
 `;
 
 const TextBox = styled.div`
@@ -202,6 +215,14 @@ const TextBox = styled.div`
   border-radius: 8px;
   z-index: 10;
   box-shadow: 0 0 0 8px rgba(245, 162, 211, 0.25);
+
+  @media (max-width: 768px) {
+    width: min(95vw, 400px);
+    padding: 12px 16px;
+    bottom: 8vh;
+    border-width: 3px;
+    font-size: 14px;
+  }
 `;
 
 const TextContent = styled.p`
@@ -211,6 +232,13 @@ const TextContent = styled.p`
   margin: 0 0 12px 0;
   font-size: clamp(16px, 2.4vw, 22px);
   white-space: pre-wrap;
+
+  @media (max-width: 768px) {
+    font-size: clamp(14px, 3.5vw, 18px);
+    min-height: 3em;
+    line-height: 1.4;
+    margin: 0 0 8px 0;
+  }
 `;
 
 const Controls = styled.div`
@@ -221,6 +249,12 @@ const Controls = styled.div`
   gap: 8px;
   flex-wrap: wrap;
   z-index: 15; /* Above all effects and text box */
+
+  @media (max-width: 768px) {
+    bottom: 15px;
+    right: 15px;
+    gap: 6px;
+  }
 `;
 
 const ControlButton = styled.button`
@@ -233,6 +267,11 @@ const ControlButton = styled.button`
   font-family: inherit;
   font-size: 14px;
   transition: border-color 0.2s ease;
+
+  @media (max-width: 768px) {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
 
   &:hover {
     border-color: #f5a2d3;

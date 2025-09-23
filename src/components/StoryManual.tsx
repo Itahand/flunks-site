@@ -31,6 +31,12 @@ const ChapterGrid = styled.div`
   gap: 20px;
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 10px;
+    gap: 15px;
+  }
 `;
 
 const ChapterCard = styled.div<{ unlocked: boolean }>`
@@ -45,6 +51,11 @@ const ChapterCard = styled.div<{ unlocked: boolean }>`
   transition: all 0.3s ease;
   position: relative;
   opacity: ${props => props.unlocked ? 1 : 0.6};
+
+  @media (max-width: 768px) {
+    padding: 15px;
+    min-height: 120px;
+  }
 
   &:hover {
     ${props => props.unlocked && `
@@ -217,16 +228,18 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
         <DraggableResizeableWindow
           windowsId={`cutscene-${selectedChapter.id}`}
           onClose={handleCutsceneClose}
-          initialWidth="1200px"
-          initialHeight="700px"
-          resizable={true}
+          initialWidth={window.innerWidth <= 768 ? "100%" : "1200px"}
+          initialHeight={window.innerWidth <= 768 ? "100%" : "700px"}
+          resizable={window.innerWidth > 768}
           headerTitle={selectedChapter.title}
           headerIcon="🎬"
           style={{ 
             zIndex: 1000,
             position: 'absolute',
-            top: '20px',
-            left: '50px'
+            top: window.innerWidth <= 768 ? '0px' : '20px',
+            left: window.innerWidth <= 768 ? '0px' : '50px',
+            width: window.innerWidth <= 768 ? '100%' : 'auto',
+            height: window.innerWidth <= 768 ? '100%' : 'auto'
           }}
         >
           <CutscenePlayer

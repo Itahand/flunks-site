@@ -339,7 +339,9 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
   const comments = generateComments();
 
   // Check if profile image exists
-  const profileImagePath = `/images/myplace/${clique}/profile.png`;
+  const profileImagePath = clique === 'flunko' 
+    ? `/images/myplace/myspace-flunko.png`
+    : `/images/myplace/${clique}/profile.png`;
   
   return (
     <ProfileContainer bgColor={profile.backgroundColor} pattern={profile.backgroundPattern}>
@@ -355,6 +357,14 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
                 <img 
                   src={profileImagePath} 
                   alt={profile.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: profile.clique === 'flunko' ? 'center 20%' : 'center',
+                    transform: 'scale(1)',
+                    transformOrigin: 'center center'
+                  }}
                   onError={(e) => {
                     // Fallback to text if image fails to load
                     e.currentTarget.style.display = 'none';
@@ -503,14 +513,6 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
               themeColor={profile.backgroundColor}
               autoplay={true}
             />
-          </Section>
-
-          <Section bgColor="rgba(221, 160, 221, 0.9)">
-            <SectionHeader bgColor="#8A2BE2">Contact Info</SectionHeader>
-            <div style={{ fontSize: '9px', color: '#000' }}>
-              <div>📧 Email: {profile.name.toLowerCase()}@hotmail.com</div>
-              <div>💬 AIM: {profile.name}AIM</div>
-            </div>
           </Section>
         </Sidebar>
 

@@ -4,7 +4,7 @@ import { getWalletStakeInfo } from 'web3/script-get-wallet-stake-info';
 import { ObjectDetails } from 'contexts/StakingContext';
 import { isFeatureEnabled } from '../utils/buildMode';
 
-export type CliqueType = 'GEEK' | 'JOCK' | 'PREP' | 'FREAK';
+export type CliqueType = 'GEEK' | 'JOCK' | 'PREP' | 'FREAK' | 'FLUNKO';
 
 interface CliqueAccess {
   [key: string]: boolean;
@@ -71,6 +71,7 @@ export const useCliqueAccess = (): UseCliqueAccessReturn => {
         JOCK: false,
         PREP: false,
         FREAK: false,
+        FLUNKO: true, // Always grant access to Flunko
       };
 
       // Check each NFT for clique traits
@@ -105,6 +106,9 @@ export const useCliqueAccess = (): UseCliqueAccessReturn => {
                 case 'OUTCAST':
                 case 'OUTCASTS':
                   access.FREAK = true;
+                  break;
+                case 'FLUNKO':
+                  access.FLUNKO = true;
                   break;
               }
             }

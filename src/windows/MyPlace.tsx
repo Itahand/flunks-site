@@ -15,84 +15,186 @@ const Container = styled.div`
   justify-content: center;
   width: 100%;
   height: 100%;
-  padding: 20px;
-  background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #16213e 100%);
+  padding: 40px;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #16213e 100%);
+  background-size: 400px 400px, 300px 300px, 200px 200px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%;
   position: relative;
   overflow: hidden;
+  animation: backgroundPulse 4s ease-in-out infinite alternate;
+
+  @keyframes backgroundPulse {
+    0% {
+      background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%;
+    }
+    100% {
+      background-position: 10% 10%, 90% 90%, 60% 40%, 0% 0%;
+    }
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.1) 49%, rgba(0, 255, 255, 0.1) 51%, transparent 52%),
+      linear-gradient(-45deg, transparent 48%, rgba(255, 0, 255, 0.1) 49%, rgba(255, 0, 255, 0.1) 51%, transparent 52%);
+    background-size: 60px 60px, 60px 60px;
+    animation: gridMove 8s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes gridMove {
+    0% { background-position: 0 0, 0 0; }
+    100% { background-position: 60px 60px, -60px 60px; }
+  }
 `;
 
 const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 60px;
+  position: relative;
+  z-index: 2;
 `;
 
 const HeaderText = styled.h1`
   font-family: 'Press Start 2P', monospace;
   color: #00ffff;
-  font-size: 24px;
+  font-size: 48px;
   text-align: center;
   text-shadow: 
     0 0 10px #00ffff,
     0 0 20px #00ffff,
-    0 0 30px #00ffff;
+    0 0 30px #00ffff,
+    0 0 40px #00ffff;
   margin: 0;
+  animation: flashingText 1.5s ease-in-out infinite alternate;
+  position: relative;
+  
+  @keyframes flashingText {
+    0% {
+      color: #00ffff;
+      text-shadow: 
+        0 0 10px #00ffff,
+        0 0 20px #00ffff,
+        0 0 30px #00ffff,
+        0 0 40px #00ffff;
+      transform: scale(1);
+    }
+    100% {
+      color: #ff00ff;
+      text-shadow: 
+        0 0 10px #ff00ff,
+        0 0 20px #ff00ff,
+        0 0 30px #ff00ff,
+        0 0 40px #ff00ff;
+      transform: scale(1.05);
+    }
+  }
+
+  &::before {
+    content: 'SELECT YOUR CLASS';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    color: rgba(255, 255, 255, 0.1);
+    z-index: -1;
+  }
   
   @media (max-width: 768px) {
-    font-size: 16px;
+    font-size: 24px;
   }
 `;
 
 const CharacterGrid = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 40px;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   width: 100%;
-  max-width: 800px;
+  max-width: 1600px;
+  z-index: 2;
+  position: relative;
   
   @media (max-width: 768px) {
-    gap: 10px;
+    gap: 20px;
   }
 `;
 
 const CharacterSlot = styled.div<{ locked: boolean }>`
   position: relative;
-  width: 150px;
-  height: 320px;
-  border: 3px solid ${props => props.locked ? '#444' : '#00ffff'};
-  border-radius: 12px;
+  width: 300px;
+  height: 640px;
+  border: 6px solid ${props => props.locked ? '#444' : '#00ffff'};
+  border-radius: 24px;
   cursor: ${props => props.locked ? 'not-allowed' : 'pointer'};
   transition: all 0.3s ease;
   background: ${props => props.locked 
     ? 'linear-gradient(135deg, #1a1a1a, #333)' 
-    : 'linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 255, 255, 0.05))'
+    : 'linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 255, 255, 0.05))'
   };
   filter: ${props => props.locked ? 'grayscale(100%)' : 'none'};
   opacity: ${props => props.locked ? 0.5 : 1};
   overflow: hidden;
+  box-shadow: ${props => props.locked 
+    ? '0 4px 20px rgba(0, 0, 0, 0.5)' 
+    : '0 8px 40px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.1)'
+  };
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff);
+    border-radius: 26px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
   
   &:hover {
     ${props => !props.locked && `
       border-color: #ff00ff;
       box-shadow: 
-        0 0 20px rgba(0, 255, 255, 0.5),
-        inset 0 0 20px rgba(0, 255, 255, 0.1);
-      transform: translateY(-5px) scale(1.05);
+        0 0 40px rgba(255, 0, 255, 0.6),
+        0 0 80px rgba(0, 255, 255, 0.4),
+        inset 0 0 40px rgba(255, 0, 255, 0.1);
+      transform: translateY(-10px) scale(1.08);
+      
+      &::before {
+        opacity: 0.7;
+        animation: borderPulse 1s ease-in-out infinite alternate;
+      }
     `}
+  }
+
+  @keyframes borderPulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.02); }
   }
   
   &:active {
     ${props => !props.locked && `
-      transform: translateY(-2px) scale(1.02);
+      transform: translateY(-5px) scale(1.05);
     `}
   }
   
   @media (max-width: 768px) {
-    width: 120px;
-    height: 260px;
+    width: 240px;
+    height: 520px;
   }
 `;
 
@@ -117,13 +219,14 @@ const CharacterLabel = styled.div<{ locked: boolean }>`
   align-items: center;
   justify-content: center;
   font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
+  font-size: 20px;
   color: ${props => props.locked ? '#888' : '#000'};
   font-weight: bold;
   text-transform: uppercase;
+  text-shadow: ${props => props.locked ? 'none' : '2px 2px 4px rgba(0, 0, 0, 0.8)'};
   
   @media (max-width: 768px) {
-    font-size: 8px;
+    font-size: 14px;
   }
 `;
 
@@ -144,22 +247,174 @@ const LockOverlay = styled.div`
 
 const WalletStatus = styled.div`
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 40px;
+  right: 40px;
   background: rgba(0, 0, 0, 0.8);
   border: 2px solid #00ffff;
   border-radius: 8px;
-  padding: 10px 15px;
+  padding: 20px 30px;
   font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
+  font-size: 20px;
   color: #00ffff;
+  z-index: 3;
   
   @media (max-width: 768px) {
     position: relative;
     top: auto;
     right: auto;
-    margin-bottom: 20px;
-    font-size: 8px;
+    margin-bottom: 40px;
+    font-size: 16px;
+    padding: 15px 20px;
+  }
+`;
+
+const ParticleField = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+`;
+
+const Particle = styled.div<{ delay: number; size: number; duration: number }>`
+  position: absolute;
+  width: ${props => props.size}px;
+  height: ${props => props.size}px;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  border-radius: 50%;
+  animation: floatUp ${props => props.duration}s infinite linear;
+  animation-delay: ${props => props.delay}s;
+  opacity: 0.6;
+  
+  @keyframes floatUp {
+    0% {
+      transform: translateY(100vh) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.6;
+    }
+    90% {
+      opacity: 0.6;
+    }
+    100% {
+      transform: translateY(-100px) rotate(360deg);
+      opacity: 0;
+    }
+  }
+`;
+
+const ScanLine = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ffff, transparent);
+  animation: scanDown 3s ease-in-out infinite;
+  z-index: 4;
+  
+  @keyframes scanDown {
+    0% {
+      top: 0%;
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
+  }
+`;
+
+const StarField = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+`;
+
+const Star = styled.div<{ delay: number; size: number; duration: number; x: number; y: number }>`
+  position: absolute;
+  width: ${props => props.size}px;
+  height: ${props => props.size}px;
+  background: #fff;
+  border-radius: 50%;
+  left: ${props => props.x}%;
+  top: ${props => props.y}%;
+  animation: twinkle ${props => props.duration}s ease-in-out infinite;
+  animation-delay: ${props => props.delay}s;
+  box-shadow: 0 0 ${props => props.size * 2}px rgba(255, 255, 255, 0.8);
+  
+  @keyframes twinkle {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.5);
+    }
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: ${props => props.size * 4}px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transform: translate(-50%, -50%);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    height: ${props => props.size * 4}px;
+    background: linear-gradient(0deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transform: translate(-50%, -50%);
+  }
+`;
+
+const MovingStar = styled.div<{ delay: number; size: number; duration: number; startY: number }>`
+  position: absolute;
+  width: ${props => props.size}px;
+  height: ${props => props.size}px;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  border-radius: 50%;
+  top: ${props => props.startY}%;
+  left: -10px;
+  animation: moveAcrossScreen ${props => props.duration}s linear infinite;
+  animation-delay: ${props => props.delay}s;
+  box-shadow: 0 0 ${props => props.size * 3}px rgba(0, 255, 255, 0.6);
+  
+  @keyframes moveAcrossScreen {
+    0% {
+      left: -10px;
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      left: calc(100% + 10px);
+      opacity: 0;
+    }
   }
 `;
 
@@ -168,12 +423,92 @@ const characterSlots = [
   { clique: "the-populars", imageId: "images/myplace/myspace-prep", label: "Prep", color: "#ff69b4" },
   { clique: "the-jocks", imageId: "images/myplace/myplace-jock", label: "Jock", color: "#1e3a8a" },
   { clique: "the-outcasts", imageId: "images/myplace/myplace-freak", label: "Freak", color: "#2c1810" },
+  { clique: "flunko", imageId: "images/myplace/myspace-flunko", label: "Flunko", color: "#DC143C" },
 ];
 
 const MyPlace = () => {
   const { closeWindow, openWindow } = useWindowsContext();
   const { user } = useDynamicContext();
   const { hasAccess } = useCliqueAccess();
+
+  // Generate retro sound effects
+  const playRetroSound = (type: 'hover' | 'select') => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    if (type === 'hover') {
+      // Quick ascending beep
+      oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.1);
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    } else {
+      // Selection sound - three ascending tones
+      oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+      oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+      oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    }
+  };
+
+  // Generate particles for retro effect
+  const generateParticles = () => {
+    const particles = [];
+    for (let i = 0; i < 25; i++) {
+      particles.push(
+        <Particle
+          key={i}
+          delay={Math.random() * 10}
+          size={Math.random() * 4 + 1}
+          duration={Math.random() * 8 + 12}
+          style={{
+            left: `${Math.random() * 100}%`,
+          }}
+        />
+      );
+    }
+    return particles;
+  };
+
+  // Generate twinkling stars
+  const generateStars = () => {
+    const stars = [];
+    // Static twinkling stars
+    for (let i = 0; i < 50; i++) {
+      stars.push(
+        <Star
+          key={`static-${i}`}
+          delay={Math.random() * 3}
+          size={Math.random() * 2 + 1}
+          duration={Math.random() * 3 + 2}
+          x={Math.random() * 100}
+          y={Math.random() * 100}
+        />
+      );
+    }
+    // Moving stars across screen
+    for (let i = 0; i < 15; i++) {
+      stars.push(
+        <MovingStar
+          key={`moving-${i}`}
+          delay={Math.random() * 8}
+          size={Math.random() * 3 + 2}
+          duration={Math.random() * 6 + 8}
+          startY={Math.random() * 100}
+        />
+      );
+    }
+    return stars;
+  };
 
   const userHasTrait = (clique: string) => {
     // Map our clique names to CliqueType
@@ -182,6 +517,7 @@ const MyPlace = () => {
       'the-populars': 'PREP', 
       'the-jocks': 'JOCK',
       'the-outcasts': 'FREAK',
+      'flunko': 'FLUNKO',
       'the-artists': 'GEEK', // Map to GEEK for now
       'the-rebels': 'FREAK', // Map to FREAK for now
     };
@@ -194,11 +530,28 @@ const MyPlace = () => {
     const locked = !userHasTrait(character.clique);
     
     if (locked) {
-      // Show a message about needing to connect wallet or own an NFT from this clique
+      // Play error sound for locked characters
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Error sound - descending tone
+      oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(150, audioContext.currentTime + 0.3);
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
       return;
     }
 
-    // Open MySpace-style profile page (we'll create these next)
+    // Play selection sound
+    playRetroSound('select');
+
+    // Open MySpace-style profile page
     openWindow({
       key: `${character.clique}_profile`,
       window: (
@@ -228,6 +581,15 @@ const MyPlace = () => {
         resizable={false}
       >
         <Container>
+          {/* Retro Effects */}
+          <StarField>
+            {generateStars()}
+          </StarField>
+          <ParticleField>
+            {generateParticles()}
+          </ParticleField>
+          <ScanLine />
+          
           <WalletStatus>
             FlunkOS.EXE
             <br />
@@ -246,6 +608,7 @@ const MyPlace = () => {
                   key={character.clique}
                   locked={locked}
                   onClick={() => handleCharacterClick(character)}
+                  onMouseEnter={() => !locked && playRetroSound('hover')}
                   title={locked ? `Requires ${character.label} NFT` : `Enter ${character.label} profile`}
                 >
                   <CharacterImage>
