@@ -47,6 +47,7 @@ import { getTimeBasedDesktopBackground } from "utils/timeBasedDesktopBackground"
 import RPGProfileForm from "components/UserProfile/RPGProfileForm";
 import { useUserProfile } from "contexts/UserProfileContext";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import LoadingScreenPreview from "windows/LoadingScreenPreview";
 
 import { GumAdminPanel } from "components/GumAdminPanel";
 import { TimeConfigAdmin } from "components/DayNightHouse";
@@ -636,6 +637,19 @@ const windowsMemod = useMemo(() => (
                   <BuyMeADeloreanWindow />
                 </DraggableResizeableWindow>
               )
+            })}
+          />
+        )}
+
+        {/* 21. Loading Screen Preview - Build Mode Only */}
+        {isFeatureEnabled('showLoadingScreenPreview') && (
+          <ConditionalAppIcon
+            appId="loading-screen-preview"
+            title="Loading Screens"
+            icon="/images/icons/myplace.png"
+            onDoubleClick={() => openWindow({
+              key: WINDOW_IDS.LOADING_PREVIEW,
+              window: <LoadingScreenPreview />
             })}
           />
         )}

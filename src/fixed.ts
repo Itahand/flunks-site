@@ -16,6 +16,7 @@ export const WINDOW_IDS = {
   FLUNK_E_MART: "flunk-e-mart",
   FLUNKS_HUB: "onlyflunks",
   MYPLACE: "myplace",
+  LOADING_PREVIEW: "loading_preview",
   FREAK: "freak",
   SEMESTER_0: "semester0Map",
   RADIO_PLAYER: "radio_player_window",

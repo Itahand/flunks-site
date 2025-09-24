@@ -25,6 +25,7 @@ export interface BuildModeConfig {
   showReportCard: boolean;
   showPictureDay: boolean;
   showDeloreanTracker: boolean;
+  showLoadingScreenPreview: boolean;
   showCutscenes: boolean;
   showStoryManual: boolean;
   showVCREffectsTest: boolean;
@@ -71,6 +72,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showReportCard: false,
     showPictureDay: false,
     showDeloreanTracker: true,
+    showLoadingScreenPreview: false,
     showCutscenes: false,
     showStoryManual: false,
     showVCREffectsTest: false,
@@ -115,6 +117,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showReportCard: true,
     showPictureDay: true,
     showDeloreanTracker: true,
+    showLoadingScreenPreview: true,
     showCutscenes: true,
     showStoryManual: true,
     showVCREffectsTest: true,
