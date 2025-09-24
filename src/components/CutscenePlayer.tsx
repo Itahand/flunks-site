@@ -385,6 +385,16 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
       return;
     }
 
+    // Try to enable audio on user interaction (helps with mobile)
+    if (bgmRef.current && !muted && bgmRef.current.src && bgmRef.current.paused) {
+      const playPromise = bgmRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Audio play failed, but don't interrupt the user experience
+        });
+      }
+    }
+
     const scene = scenes[currentScene];
     if (!scene) return;
 
@@ -406,7 +416,7 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
     setTimeout(() => {
       onComplete?.();
     }, 2000);
-  }, [isTyping, scenes, currentScene, currentLine, stopTypingAndFill, onComplete]);
+  }, [isTyping, scenes, currentScene, currentLine, stopTypingAndFill, onComplete, muted]);
 
   const skip = useCallback(() => {
     if (isTyping) {
@@ -421,6 +431,15 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
       const newMuted = !prev;
       if (bgmRef.current) {
         bgmRef.current.muted = newMuted;
+        // Try to play audio when unmuting (helps with mobile)
+        if (!newMuted && bgmRef.current.src) {
+          const playPromise = bgmRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.catch((error) => {
+              console.warn('Audio play failed after unmuting:', error);
+            });
+          }
+        }
       }
       return newMuted;
     });
@@ -447,10 +466,16 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
     // Handle music
     if (scene.music && bgmRef.current) {
       bgmRef.current.src = scene.music;
+      // For mobile, set up audio but don't auto-play unless user has interacted
       if (!muted) {
-        bgmRef.current.play().catch(() => {
-          // Handle autoplay restrictions
-        });
+        const playPromise = bgmRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.warn('Audio autoplay was prevented:', error);
+            // Audio autoplay was prevented, but don't show error to user
+            // The mute/unmute button will work once user interacts
+          });
+        }
       }
     }
 
@@ -525,17 +550,25 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
         {/* Text box - adjust positioning for windowed mode */}
         <TextBox role="dialog" aria-live="polite" aria-atomic="true" style={{
           position: 'absolute',
-          bottom: windowed ? '60px' : '10vh',
+          bottom: windowed ? '80px' : '10vh',
           left: '50%',
           transform: 'translateX(-50%)',
           width: windowed ? 'calc(100% - 40px)' : 'min(900px, 92vw)',
-          pointerEvents: 'auto'
+          maxWidth: windowed ? '800px' : 'min(900px, 92vw)',
+          pointerEvents: 'auto',
+          zIndex: 20
         }}>
           <TextContent>{displayText}</TextContent>
         </TextBox>
 
-        {/* Controls positioned in bottom right */}
-        <Controls style={{ pointerEvents: 'auto' }}>
+        {/* Controls positioned in bottom right - ensure visible in both modes */}
+        <Controls style={{ 
+          pointerEvents: 'auto',
+          bottom: windowed ? '20px' : '20px',
+          right: windowed ? '20px' : '20px',
+          zIndex: 25,
+          position: windowed ? 'absolute' : 'fixed'
+        }}>
           <ControlButton onClick={next} aria-label="Next line (Enter)">
             Next ▶
           </ControlButton>
