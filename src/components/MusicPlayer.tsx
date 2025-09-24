@@ -7,6 +7,7 @@ interface MusicPlayerProps {
   songFile: string;
   themeColor: string;
   autoplay?: boolean;
+  startTime?: number; // Start time in seconds
 }
 
 const PlayerContainer = styled.div<{ themeColor: string }>`
@@ -94,9 +95,9 @@ const VolumeSlider = styled.input`
   height: 4px;
 `;
 
-const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, themeColor, autoplay = false }) => {
+const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, themeColor, autoplay = false, startTime = 0 }) => {
   const [isPlaying, setIsPlaying] = useState(autoplay);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime, setCurrentTime] = useState(startTime);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(autoplay ? 0.4 : 0.7);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -124,6 +125,12 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
             }
           }
           
+          // Set start time before playing
+          if (startTime > 0) {
+            audio.currentTime = startTime;
+            setCurrentTime(startTime);
+          }
+          
           await audio.play();
           setIsPlaying(true);
         } catch (error) {
@@ -134,6 +141,20 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
       
       // Small delay to ensure audio is loaded
       setTimeout(playAudio, 100);
+    } else if (startTime > 0) {
+      // Set start time even if not autoplaying
+      const setInitialTime = () => {
+        if (audio.readyState >= 1) { // HAVE_METADATA
+          audio.currentTime = startTime;
+          setCurrentTime(startTime);
+        } else {
+          audio.addEventListener('loadedmetadata', () => {
+            audio.currentTime = startTime;
+            setCurrentTime(startTime);
+          }, { once: true });
+        }
+      };
+      setTimeout(setInitialTime, 100);
     }
 
     return () => {
@@ -141,7 +162,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', () => setIsPlaying(false));
     };
-  }, [autoplay]);
+  }, [autoplay, startTime]);
 
   // Cleanup effect to stop audio when component unmounts
   useEffect(() => {

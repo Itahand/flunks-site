@@ -466,6 +466,8 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
     ? `/images/myplace/myspace-flunko.png`
     : clique === 'the-jocks'
     ? `/images/myplace/${clique}/jock-profile.png`
+    : clique === 'the-freaks'
+    ? `/images/myplace/${clique}/freak-profile.png`
     : `/images/myplace/${clique}/profile.png`;
   
   return (
@@ -653,6 +655,7 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
               songFile={profile.clique === 'flunko' ? `/music/Flunko.mp3` : `/music/${profile.clique}.mp3`}
               themeColor={profile.backgroundColor}
               autoplay={true}
+              startTime={profile.clique === 'the-jocks' ? 10 : 0}
             />
           </Section>
         </Sidebar>
