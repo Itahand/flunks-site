@@ -7,6 +7,7 @@ import { useAuth } from "contexts/AuthContext";
 import { awardGum } from "utils/gumAPI";
 import { trackCafeteriaButtonClick } from "utils/cafeteriaButtonTracking";
 import FootballerGumClaimButton from "components/FootballerGumClaimButton";
+import HomecomingDanceButton from "components/HomecomingDanceButton";
 
 const HighSchoolMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -266,11 +267,66 @@ const HighSchoolMain = () => {
         {/* Gymnasium */}
         <button
           onClick={() =>
-            openRoom(
-              WINDOW_IDS.HIGH_SCHOOL_GYMNASIUM,
-              "Gymnasium",
-              "The basketball hoops are bent at strange angles. Echoes of old cheers seem to bounce off the walls."
-            )
+            openWindow({
+              key: WINDOW_IDS.HIGH_SCHOOL_GYMNASIUM,
+              window: (
+                <DraggableResizeableWindow
+                  windowsId={WINDOW_IDS.HIGH_SCHOOL_GYMNASIUM}
+                  headerTitle="Gymnasium"
+                  onClose={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_GYMNASIUM)}
+                  initialWidth="70vw"
+                  initialHeight="70vh"
+                  resizable={true}
+                >
+                  <div className="relative w-full h-full bg-[#2d1810] text-white overflow-hidden">
+                    {/* Gymnasium Background Image */}
+                    <img
+                      src="/images/locations/gymnasium.png"
+                      alt="Gymnasium Interior"
+                      className="absolute inset-0 w-full h-full object-cover z-0"
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/backdrops/BLANK.png";
+                      }}
+                    />
+                    
+                    {/* Content Overlay */}
+                    <div className="absolute inset-0 bg-black bg-opacity-40 z-10 flex flex-col">
+                      {/* Header Section */}
+                      <div className="p-6 text-center">
+                        <h1 className="text-3xl font-bold mb-2">🏀 Gymnasium</h1>
+                        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                          The basketball hoops are bent at strange angles. Echoes of old cheers seem to bounce off the walls. 
+                          On Saturday nights, this place transforms into a magical dance floor for homecoming.
+                        </p>
+                      </div>
+
+                      {/* Main Content Area */}
+                      <div className="flex-1 flex items-center justify-center p-6">
+                        <div className="bg-black bg-opacity-80 p-8 rounded-xl max-w-md text-center border border-orange-600">
+                          <div className="text-6xl mb-4">🕺</div>
+                          <h2 className="text-2xl font-bold mb-4 text-orange-400">Homecoming Dance</h2>
+                          
+                          <p className="text-gray-300 mb-6 leading-relaxed">
+                            Every Saturday night, the gymnasium transforms into a magical dance floor! 
+                            Join the homecoming dance and earn <span className="text-orange-400 font-bold">50 GUM</span> 
+                            for your Chapter 4 Slacker objective. This is a one-time reward.
+                          </p>
+                          
+                          <HomecomingDanceButton />
+                        </div>
+                      </div>
+
+                      {/* Bottom Section - Additional Content */}
+                      <div className="p-6 text-center">
+                        <p className="text-sm text-gray-400">
+                          🎵 Dance the night away and find clues about Flunko's whereabouts...
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </DraggableResizeableWindow>
+              ),
+            })
           }
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
         >

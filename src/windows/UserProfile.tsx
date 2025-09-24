@@ -10,7 +10,7 @@ import { GumDisplay } from '../components/GumDisplay';
 import { useGum } from '../contexts/GumContext';
 import { getActiveSpecialEvents, canParticipateInEvent, claimSpecialEvent, type SpecialEvent } from '../services/specialEventsService';
 import { canClaimDailyLogin, claimDailyLogin } from '../services/dailyLoginService';
-import { getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, ChapterObjective } from '../utils/weeklyObjectives';
+import { getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, getChapter4ObjectivesStatus, ChapterObjective } from '../utils/weeklyObjectives';
 
 const UserProfile: React.FC = () => {
   const { closeWindow } = useWindowsContext();
@@ -30,6 +30,8 @@ const UserProfile: React.FC = () => {
   const [chapter2Loading, setChapter2Loading] = useState(false);
   const [chapter3Objectives, setChapter3Objectives] = useState<ChapterObjective[]>([]);
   const [chapter3Loading, setChapter3Loading] = useState(false);
+  const [chapter4Objectives, setChapter4Objectives] = useState<ChapterObjective[]>([]);
+  const [chapter4Loading, setChapter4Loading] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -83,6 +85,20 @@ const UserProfile: React.FC = () => {
     }
   };
 
+  const loadChapter4Objectives = async () => {
+    if (!primaryWallet?.address) return;
+    setChapter4Loading(true);
+    try {
+      const objectiveStatus = await getChapter4ObjectivesStatus(primaryWallet!.address);
+      setChapter4Objectives(objectiveStatus.completedObjectives);
+      console.log('📋 Chapter 4 objectives loaded:', objectiveStatus.completedObjectives);
+    } catch (error) {
+      console.error('❌ Failed to load Chapter 4 objectives:', error);
+    } finally {
+      setChapter4Loading(false);
+    }
+  };
+
   // Check daily login status and load special events
   useEffect(() => {
     if (!primaryWallet?.address) return;
@@ -107,6 +123,7 @@ const UserProfile: React.FC = () => {
       loadSpecialEvents();
       loadChapter2Objectives();
       loadChapter3Objectives();
+      loadChapter4Objectives();
     }, 30000); // Check every 30 seconds
     
     return () => clearInterval(interval);
@@ -120,6 +137,7 @@ const UserProfile: React.FC = () => {
     if (primaryWallet) {
       loadChapter2Objectives(); // Also refresh objectives
       loadChapter3Objectives(); // Also refresh Chapter 3 objectives
+      loadChapter4Objectives(); // Also refresh Chapter 4 objectives
     }
   };
 
@@ -1080,6 +1098,166 @@ const UserProfile: React.FC = () => {
                     📸 Head to Picture Day to vote for your favorite flunks in each clique yearbook photo!
                   </p>
                 </div>
+              </div>
+            </div>
+            
+            {/* Section 5 - Chapter 4: Homecoming Dance */}
+            <div style={{
+              height: '120vh',
+              minHeight: '600px',
+              background: `linear-gradient(135deg, rgba(255, 165, 0, 0.9) 0%, rgba(255, 140, 0, 0.95) 50%, rgba(255, 99, 71, 1) 100%)`,
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              padding: '20px',
+              borderRadius: '8px',
+              marginBottom: '10px',
+              border: '3px solid #FFA500',
+              boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3)',
+              gap: '20px'
+            }}>
+              {/* Chapter 4 Title */}
+              <div style={{
+                background: 'rgba(0,0,0,0.9)',
+                color: '#FFD700',
+                padding: '20px',
+                borderRadius: '8px',
+                textAlign: 'center',
+                border: '2px solid #FFA500',
+                width: '100%',
+                maxWidth: '500px'
+              }}>
+                <h2 style={{ margin: '0 0 10px 0', fontSize: '28px' }}>🕺 Chapter 4: Homecoming Dance</h2>
+                <p style={{ margin: '0', fontSize: '16px', color: '#DDD' }}>Dance the night away and find clues!</p>
+              </div>
+
+              {/* Objectives List */}
+              <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                {chapter4Loading ? (
+                  <div style={{
+                    background: 'rgba(0,0,0,0.8)',
+                    color: '#FFD700',
+                    padding: '20px',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    border: '2px solid #FFA500'
+                  }}>
+                    <p style={{ margin: '0', fontSize: '16px' }}>🔄 Loading objectives...</p>
+                  </div>
+                ) : chapter4Objectives.length > 0 ? (
+                  chapter4Objectives.map((objective) => (
+                    <div key={objective.id} style={{
+                      background: objective.completed ? 'rgba(34, 139, 34, 0.9)' : 'rgba(0,0,0,0.8)',
+                      color: objective.completed ? '#90EE90' : '#FFD700',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      border: objective.completed ? '2px solid #32CD32' : '2px solid #FFA500',
+                      position: 'relative'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                          <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 'bold' }}>
+                            {objective.completed ? '✅' : '⏳'} {objective.title}
+                          </h3>
+                          <p style={{ margin: '0 0 8px 0', fontSize: '14px', opacity: 0.9 }}>
+                            {objective.description}
+                          </p>
+                          {objective.reward && (
+                            <p style={{ 
+                              margin: '0', 
+                              fontSize: '12px', 
+                              color: objective.completed ? '#90EE90' : '#FFD700',
+                              fontWeight: 'bold'
+                            }}>
+                              🎁 Reward: {objective.reward} GUM
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {objective.completed && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          background: '#32CD32',
+                          color: '#000',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '12px',
+                          fontWeight: 'bold'
+                        }}>
+                          COMPLETE
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div style={{
+                    background: 'rgba(0,0,0,0.8)',
+                    color: '#FFD700',
+                    padding: '20px',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    border: '2px solid #FFA500'
+                  }}>
+                    <p style={{ margin: '0', fontSize: '16px' }}>📋 No objectives available</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Progress Summary */}
+              {chapter4Objectives.length > 0 && (
+                <div style={{
+                  background: 'rgba(0,0,0,0.8)',
+                  color: '#FFD700',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  border: '2px solid #FFA500',
+                  width: '100%',
+                  maxWidth: '300px'
+                }}>
+                  <p style={{ margin: '0', fontSize: '16px', fontWeight: 'bold' }}>
+                    📊 Progress: {chapter4Objectives.filter(obj => obj.completed).length}/{chapter4Objectives.length}
+                  </p>
+                  <div style={{
+                    background: 'rgba(255,255,255,0.2)',
+                    borderRadius: '10px',
+                    height: '8px',
+                    marginTop: '8px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      background: '#FFA500',
+                      height: '100%',
+                      width: `${(chapter4Objectives.filter(obj => obj.completed).length / chapter4Objectives.length) * 100}%`,
+                      borderRadius: '10px',
+                      transition: 'width 0.3s ease'
+                    }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Hint for homecoming dance */}
+              <div style={{
+                background: 'rgba(255, 165, 0, 0.8)',
+                color: '#000',
+                padding: '15px',
+                borderRadius: '8px',
+                textAlign: 'center',
+                border: '2px solid #FFA500',
+                width: '100%',
+                maxWidth: '400px'
+              }}>
+                <p style={{ margin: '0', fontSize: '14px', fontStyle: 'italic', fontWeight: 'bold' }}>
+                  🕺 Visit the gymnasium in the high school on Saturdays for the one-time homecoming dance!
+                </p>
+                <p style={{ margin: '8px 0 0 0', fontSize: '12px', opacity: 0.8 }}>
+                  💡 Navigate to the high school from the map and enter the gymnasium to find the dance floor.
+                </p>
               </div>
             </div>
             

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { getObjectivesStatus, getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, type ChapterObjective, type ObjectiveStatus, calculateObjectiveProgress } from '../utils/weeklyObjectives';
+import { getObjectivesStatus, getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, getChapter4ObjectivesStatus, type ChapterObjective, type ObjectiveStatus, calculateObjectiveProgress } from '../utils/weeklyObjectives';
 
 interface WeeklyObjectivesProps {
   currentWeek?: number;
@@ -12,12 +12,14 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
   const [objectivesStatus, setObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [chapter2ObjectivesStatus, setChapter2ObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [chapter3ObjectivesStatus, setChapter3ObjectivesStatus] = useState<ObjectiveStatus | null>(null);
+  const [chapter4ObjectivesStatus, setChapter4ObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastWallet, setLastWallet] = useState<string | null>(null);
-  const [currentWeek, setCurrentWeek] = useState<1 | 2 | 3>(3); // Default to Chapter 3 - Picture Day
+  const [currentWeek, setCurrentWeek] = useState<1 | 2 | 3 | 4>(4); // Default to Chapter 4 - Homecoming Dance
 
   // Get current objectives data based on selected week
-  const currentObjectivesData = currentWeek === 3 ? chapter3ObjectivesStatus : 
+  const currentObjectivesData = currentWeek === 4 ? chapter4ObjectivesStatus :
+                              currentWeek === 3 ? chapter3ObjectivesStatus : 
                               currentWeek === 2 ? chapter2ObjectivesStatus : 
                               objectivesStatus;
 
@@ -32,16 +34,18 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         console.log('🔄 Force refreshing objectives for wallet:', primaryWallet.address.slice(0, 10) + '...');
       }
       
-      // Load Chapter 1, Chapter 2, and Chapter 3 objectives
-      const [status, chapter2Status, chapter3Status] = await Promise.all([
+      // Load Chapter 1, Chapter 2, Chapter 3, and Chapter 4 objectives
+      const [status, chapter2Status, chapter3Status, chapter4Status] = await Promise.all([
         getObjectivesStatus(primaryWallet.address),
         getChapter2ObjectivesStatus(primaryWallet.address),
-        getChapter3ObjectivesStatus(primaryWallet.address)
+        getChapter3ObjectivesStatus(primaryWallet.address),
+        getChapter4ObjectivesStatus(primaryWallet.address)
       ]);
       
       setObjectivesStatus(status);
       setChapter2ObjectivesStatus(chapter2Status);
       setChapter3ObjectivesStatus(chapter3Status);
+      setChapter4ObjectivesStatus(chapter4Status);
       
     } catch (error) {
       console.error('❌ Failed to load objectives:', error);
@@ -49,6 +53,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
       setObjectivesStatus(null);
       setChapter2ObjectivesStatus(null);
       setChapter3ObjectivesStatus(null);
+      setChapter4ObjectivesStatus(null);
     } finally {
       setLoading(false);
     }
@@ -60,6 +65,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
       setObjectivesStatus(null);
       setChapter2ObjectivesStatus(null);
       setChapter3ObjectivesStatus(null);
+      setChapter4ObjectivesStatus(null);
       setLastWallet(primaryWallet?.address || null);
     }
     
@@ -67,6 +73,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
     setObjectivesStatus(null);
     setChapter2ObjectivesStatus(null);
     setChapter3ObjectivesStatus(null);
+    setChapter4ObjectivesStatus(null);
     loadObjectives();
     
     // Much longer refresh interval to reduce server load and UI disruption
@@ -227,6 +234,24 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               }}
             >
               Chapter 3
+            </button>
+            <button
+              onClick={() => setCurrentWeek(4)}
+              style={{
+                background: currentWeek === 4 ? 'rgba(255, 165, 0, 0.5)' : 'transparent',
+                border: currentWeek === 4 ? '1px solid #ffa500' : '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '4px',
+                color: currentWeek === 4 ? '#fff' : '#ccc',
+                padding: '8px 14px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                minWidth: '80px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Chapter 4
             </button>
           </div>
           

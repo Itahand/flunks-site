@@ -37,6 +37,10 @@ const TERMINAL_COMMANDS = {
   'clear': {
     response: '__CLEAR__', // Special response to indicate clear action
     type: 'SYSTEM'
+  },
+  'paradise motel': {
+    response: "🏨 Paradise Motel... Yes, that's where our search begins! The neon sign flickers in the digital night, casting pink and blue shadows. This is indeed the first place we'll look for Flunko. You've unlocked a clue! 🔍✨",
+    type: 'CODE'
   }
 };
 

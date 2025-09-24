@@ -187,6 +187,24 @@ const FlunksTerminal = ({ onClose }: { onClose: () => void }) => {
       });
     }
 
+    // Special logging for Paradise Motel command (non-blocking for better UX)
+    if (input.toLowerCase().trim() === 'paradise motel' && validCommand) {
+      // Fire and forget - don't await this to avoid UI delay
+      fetch('/api/paradise-motel-tracking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          walletAddress: user?.verifiedCredentials?.[0]?.address || null,
+          username: profile?.username || null
+        })
+      }).catch(error => {
+        console.error('Failed to track Paradise Motel command:', error);
+        // Don't show error to user, just log it
+      });
+    }
+
     if (validCommand && successSound) {
       successSound.currentTime = 0;
       successSound.play();

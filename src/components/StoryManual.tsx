@@ -179,47 +179,47 @@ const sampleChapters: Chapter[] = [
         image: '/images/cutscenes/5.png',
         lines: [
           'And if you stick around long enough, you\'ll notice… history has a way of repeating itself here... Sometimes in small ways. Sometimes in ways that\'ll shake the whole town.',
-          'And that\'s the thing about Arcadia—no matter how much the sky changes, no matter what logo or name is on the hardware store, this place never changes.'
+          'And that\'s the thing about Arcadia—no matter how much the sky changes, no matter what logo or name is on the motel, this place never changes.'
         ]
       },
-      // Scene 7: TBD (6.png)
+      // Scene 7: The Faces Change (6.png)
       {
-        id: 'scene-7',
+        id: 'faces-change',
         image: '/images/cutscenes/6.png',
         lines: [
-          'There\'s...'
+          'There faces change but the roles stay the same. There\'s the prep. He\'s polished, perfect smile, and carries himself like the whole town is watching — because in a way, they are. People like him have been here forever: the ones who were born with a head start and play the part like it\'s their birthright.'
         ]
       },
-      // Scene 8: TBD (7.png)
+      // Scene 8: The Geek (7.png)
       {
-        id: 'scene-8',
+        id: 'the-geek',
         image: '/images/cutscenes/7.png',
         lines: [
-          '[Scene 8 dialogue to be added]'
+          'The Geek? Always on the edge of something bigger, a little too smart for the room, a little too weird for everyone else. You can trade the glasses for a hoodie or the textbook for a keyboard, but the role never leaves. There\'s always a geek.'
         ]
       },
-      // Scene 9: TBD (8.png)
+      // Scene 9: The Freak (8.png)
       {
-        id: 'scene-9',
+        id: 'the-freak',
         image: '/images/cutscenes/8.png',
         lines: [
-          '[Scene 9 dialogue to be added]'
+          'The Freak? The one who won\'t — or can\'t — fit inside the lines. They get whispered about in hallways, judged for every choice of music, clothes, or silence. They burn bright, but always just far enough away to make people nervous.'
         ]
       },
-      // Scene 10: TBD (9.png)
+      // Scene 10: The Jock (9.png)
       {
-        id: 'scene-10',
+        id: 'the-jock',
         image: '/images/cutscenes/9.png',
         lines: [
-          '[Scene 10 dialogue to be added]'
+          'And the Jock? Muscles, sweat, and Friday nights under the lights. Doesn\'t matter if he\'s lifting trophies or just trying to escape the weight of expectation — he\'s still the one everyone expects to carry the school\'s pride on his back.'
         ]
       },
-      // Scene 11: Final (final.png)
+      // Scene 11: Final Message (final.png)
       {
         id: 'final-scene',
         image: '/images/cutscenes/final.png',
         lines: [
-          '[Final scene dialogue to be added]'
+          'High school is a weird time filled with weird people — and that\'s what makes it unforgettable. Everyone carries their own quirks, flaws, and hidden talents. The truth is, you never know when those unique skills will end up mattering most. What might set you apart today could be the very thing that saves the day tomorrow.'
         ]
       }
     ]

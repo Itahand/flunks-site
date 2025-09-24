@@ -190,7 +190,7 @@ const BulletinBoard: React.FC = () => {
               </BulletinItem>
               
               <BulletinItem>
-                It's <PrizeText>homecoming week</PrizeText>! Everybody get ready for the big dance on <TerminalText>Saturday</TerminalText> in the high school gym!
+                Can you help us find the owner of the <AstronautText>Astro 1/1 NFT</AstronautText>? This rare collectible belongs to someone in our community! Check the <TerminalText>astronaut poster</TerminalText> for clues.
               </BulletinItem>
               
               <BulletinItem>

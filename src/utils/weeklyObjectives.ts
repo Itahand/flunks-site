@@ -266,7 +266,7 @@ export const getChapter3ObjectivesStatus = async (walletAddress: string): Promis
     {
       id: 'overachiever_chapter3',
       title: 'The Overachiever',
-      description: 'Find Flunko\'s pic! Discover Flunko in any clique\'s top 6 friends',
+      description: 'Find Flunko\'s pic!',
       type: 'custom',
       completed: completedOverachiever,
       reward: 100
@@ -289,4 +289,107 @@ export const calculateObjectiveProgress = (objectives: ChapterObjective[]): numb
   if (objectives.length === 0) return 0;
   const completed = objectives.filter(obj => obj.completed).length;
   return Math.round((completed / objectives.length) * 100);
+};
+
+// Check if user attended homecoming dance (Saturday 24-hour window)
+export const checkHomecomingDanceAttendance = async (walletAddress: string): Promise<boolean> => {
+  if (!hasValidSupabaseConfig || !supabase) {
+    console.warn('Supabase not configured, cannot check homecoming dance attendance');
+    return false;
+  }
+
+  try {
+    console.log('🕺 Checking homecoming dance attendance for wallet:', walletAddress);
+    
+    // Check if user claimed homecoming dance reward (one time ever)
+    const { data, error } = await supabase
+      .from('user_gum_transactions')
+      .select('*')
+      .eq('wallet_address', walletAddress)
+      .eq('source', 'chapter4_homecoming_dance')
+      .limit(1);
+
+    if (error) {
+      console.error('Error checking homecoming dance attendance:', error);
+      return false;
+    }
+
+    const hasAttended = data && data.length > 0;
+    console.log('✅ Homecoming dance attended:', hasAttended);
+    return hasAttended;
+  } catch (err) {
+    console.error('Failed to check homecoming dance attendance:', err);
+    return false;
+  }
+};
+
+// Check if user entered the paradise motel terminal code
+export const checkParadiseMotelCode = async (walletAddress: string): Promise<boolean> => {
+  if (!hasValidSupabaseConfig || !supabase) {
+    console.warn('Supabase not configured, cannot check paradise motel code');
+    return false;
+  }
+
+  try {
+    console.log('🏨 Checking paradise motel code for wallet:', walletAddress);
+    
+    // Check if user entered the paradise motel terminal code
+    const { data, error } = await supabase
+      .from('user_gum_transactions')
+      .select('*')
+      .eq('wallet_address', walletAddress)
+      .eq('source', 'chapter4_paradise_motel_code')
+      .limit(1);
+
+    if (error) {
+      console.error('Error checking paradise motel code:', error);
+      return false;
+    }
+
+    const hasEnteredCode = data && data.length > 0;
+    console.log('✅ Paradise motel code entered:', hasEnteredCode);
+    return hasEnteredCode;
+  } catch (err) {
+    console.error('Failed to check paradise motel code:', err);
+    return false;
+  }
+};
+
+// Get Chapter 4 objectives status for a user
+export const getChapter4ObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
+  console.log('🎯 getChapter4ObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
+  
+  const attendedHomecoming = await checkHomecomingDanceAttendance(walletAddress);
+  const enteredParadiseCode = await checkParadiseMotelCode(walletAddress);
+
+  console.log('📊 Chapter 4 Objectives status:', { attendedHomecoming, enteredParadiseCode });
+
+  const completedObjectives: ChapterObjective[] = [
+    {
+      id: 'slacker_chapter4',
+      title: 'The Slacker',
+      description: 'Attend the homecoming dance on Saturday (one-time only)',
+      type: 'custom',
+      completed: attendedHomecoming,
+      reward: 50
+    },
+    {
+      id: 'overachiever_chapter4',
+      title: 'The Overachiever',
+      description: 'Enter the terminal code for the first place we\'ll search for Flunko',
+      type: 'custom',
+      completed: enteredParadiseCode,
+      reward: 100
+    }
+  ];
+
+  const progress = calculateObjectiveProgress(completedObjectives);
+  console.log('🎯 Chapter 4 Final progress calculated:', progress + '%');
+  
+  return {
+    fridayNightLightsClicked: false, // Not relevant for Chapter 4
+    crackedCode: false, // Not relevant for Chapter 4
+    votedInPictureDay: false, // Not relevant for Chapter 4
+    completedObjectives
+  };
 };
