@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { CLIQUE_PROFILES, BACKGROUND_PATTERNS, CliqueProfile, Friend } from '../data/cliqueProfiles';
 import MusicPlayer from './MusicPlayer';
 import { useWindowsContext } from '../contexts/WindowsContext';
 import DraggableResizeableWindow from './DraggableResizeableWindow';
 import { WINDOW_IDS } from '../fixed';
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { awardGum } from '../utils/gumAPI';
+import AchievementNotification from './AchievementNotification';
 
 interface MySpaceProfileProps {
   clique: string;
@@ -149,6 +152,12 @@ const UserStats = styled.div`
   gap: 5px;
   margin: 0;
   font-size: 10px;
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 3px;
+    font-size: 9px;
+  }
 `;
 
 const StatItem = styled.div`
@@ -167,6 +176,16 @@ const FriendsList = styled.div`
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin-top: 8px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
 `;
 
 const FriendCard = styled.div<{ isClickable?: boolean }>`
@@ -178,6 +197,9 @@ const FriendCard = styled.div<{ isClickable?: boolean }>`
   color: #000;
   cursor: ${props => props.isClickable ? 'pointer' : 'default'};
   transition: all 0.2s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0; // Allow shrinking below content size
 
   ${props => props.isClickable && `
     &:hover {
@@ -186,6 +208,16 @@ const FriendCard = styled.div<{ isClickable?: boolean }>`
       transform: scale(1.05);
     }
   `}
+  
+  @media (max-width: 768px) {
+    padding: 4px;
+    font-size: 8px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 3px;
+    font-size: 7px;
+  }
 `;
 
 const FriendAvatar = styled.div<{ hasImage?: boolean }>`
@@ -295,13 +327,32 @@ const BlinkingText = styled.span`
 const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
   const profile = CLIQUE_PROFILES[clique];
   const { openWindow } = useWindowsContext();
+  const { primaryWallet } = useDynamicContext();
+  const [showAchievement, setShowAchievement] = useState(false);
   
   if (!profile) {
     return <div>Profile not found</div>;
   }
 
-  const handleFriendClick = (friendName: string) => {
+  const handleFriendClick = async (friendName: string) => {
     if (friendName === 'Flunko') {
+      // Check for Chapter 3 Overachiever achievement
+      if (primaryWallet?.address && clique !== 'flunko') {
+        try {
+          const result = await awardGum(primaryWallet.address, 'chapter3_overachiever', {
+            clicked_from_clique: clique,
+            achievement: 'Chapter 3 Overachiever'
+          });
+          
+          if (result.success && result.earned > 0) {
+            // Show achievement notification
+            setShowAchievement(true);
+          }
+        } catch (error) {
+          console.error('Error awarding Chapter 3 Overachiever:', error);
+        }
+      }
+
       // Open Flunko's MySpace profile in a new window
       openWindow({
         key: `${WINDOW_IDS.MYPLACE}_flunko`,
@@ -331,6 +382,27 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
 
   // Generate random 90s comments from top friends
   const generateComments = () => {
+    // Special comments for Flunko
+    if (clique === 'flunko') {
+      return [
+        {
+          author: "Casey",
+          text: "paradise motel after the hoco dance this weekend?",
+          time: "2 hours ago"
+        },
+        {
+          author: "Drew",
+          text: "Dude, that guitar solo last night was INSANE! 🎸",
+          time: "Yesterday at 7:23 PM"
+        },
+        {
+          author: "Alex",
+          text: "Movie night at my place Friday? Got the new releases! 🎬",
+          time: "3 days ago"
+        }
+      ];
+    }
+
     const comments90s = [
       "OMG did you see what happened at the mall today?? DRAMA! 🛍️",
       "Dude, that new CD is SO fetch! We need to burn a copy! 💿",
@@ -392,6 +464,8 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
   // Check if profile image exists
   const profileImagePath = clique === 'flunko' 
     ? `/images/myplace/myspace-flunko.png`
+    : clique === 'the-jocks'
+    ? `/images/myplace/${clique}/jock-profile.png`
     : `/images/myplace/${clique}/profile.png`;
   
   return (
@@ -576,7 +650,7 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
             <MusicPlayer
               songTitle={profile.profileSong?.split(' - ')[1] || profile.profileSong || "No song"}
               artist={profile.profileSong?.split(' - ')[0] || "Unknown Artist"}
-              songFile={`/music/${profile.clique}.mp3`}
+              songFile={profile.clique === 'flunko' ? `/music/Flunko.mp3` : `/music/${profile.clique}.mp3`}
               themeColor={profile.backgroundColor}
               autoplay={true}
             />
@@ -599,6 +673,15 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
           ))}
         </CommentsSection>
       </ProfileContent>
+      
+      {/* Achievement Notification */}
+      <AchievementNotification
+        show={showAchievement}
+        title="Achievement Unlocked!"
+        description="Chapter 3 Overachiever Complete - You found Flunko in the top 6!"
+        gumAmount={100}
+        onComplete={() => setShowAchievement(false)}
+      />
     </ProfileContainer>
   );
 };

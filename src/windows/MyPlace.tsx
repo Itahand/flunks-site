@@ -24,8 +24,15 @@ const Container = styled.div`
   background-size: 400px 400px, 300px 300px, 200px 200px, 100% 100%;
   background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   animation: backgroundPulse 4s ease-in-out infinite alternate;
+  
+  @media (max-width: 768px) {
+    padding: 20px 10px;
+    min-height: 100vh;
+    justify-content: flex-start;
+  }
 
   @keyframes backgroundPulse {
     0% {
@@ -64,6 +71,11 @@ const Header = styled.div`
   margin-bottom: 60px;
   position: relative;
   z-index: 2;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 40px;
+    margin-top: 20px;
+  }
 `;
 
 const HeaderText = styled.h1`
@@ -137,6 +149,9 @@ const CharacterGrid = styled.div`
   
   @media (max-width: 768px) {
     gap: 20px;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
   }
 `;
 
@@ -202,8 +217,9 @@ const CharacterSlot = styled.div<{ locked: boolean }>`
   }
   
   @media (max-width: 768px) {
-    width: 240px;
-    height: 520px;
+    width: calc(100vw - 40px);
+    max-width: 280px;
+    height: 450px;
   }
 `;
 

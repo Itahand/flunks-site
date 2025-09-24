@@ -186,16 +186,15 @@ const BulletinBoard: React.FC = () => {
             <BulletinTitle>📋 COMMUNITY CHALLENGES</BulletinTitle>
             <BulletinList>
               <BulletinItem>
-                Go into the <TerminalText>Picture Day app</TerminalText> and vote for which flunk should represent the cli              </BulletinItem>
-              
-              <BulletinItem>
-                First person to have the <AstronautText>Astronaut holder</AstronautText> reach out to Flunks 
-                AND give your username as who told you to reach out wins a <PrizeText>FLOW prize</PrizeText>!
+                It's <PrizeText>homecoming week</PrizeText>! Everybody get ready for the big dance on <TerminalText>Saturday</TerminalText> in the high school gym!
               </BulletinItem>
               
               <BulletinItem>
-                Use AI to create an image of your favorite flunk as a kid taking a picture during photo day at school 
-                and share on <TerminalText>X</TerminalText> (tag <AstronautText>@flunks_nft</AstronautText>) and inside the <TerminalText>discord</TerminalText>!
+                It's <PrizeText>homecoming week</PrizeText>! Everybody get ready for the big dance on <TerminalText>Saturday</TerminalText> in the high school gym!
+              </BulletinItem>
+              
+              <BulletinItem>
+                There's soon to be a way to unlock the chapter 3 <AstronautText>"Picture Day"</AstronautText> ... Good luck finding it <TerminalText>;)</TerminalText>
               </BulletinItem>
             </BulletinList>
           </BulletinContent>

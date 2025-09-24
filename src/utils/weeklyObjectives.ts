@@ -214,13 +214,45 @@ export const getChapter2ObjectivesStatus = async (walletAddress: string): Promis
   };
 };
 
+// Check if user has completed Chapter 3 Overachiever (clicked Flunko)
+export const checkChapter3Overachiever = async (walletAddress: string): Promise<boolean> => {
+  if (!hasValidSupabaseConfig || !supabase) {
+    console.warn('Supabase not configured, cannot check Chapter 3 Overachiever');
+    return false;
+  }
+
+  try {
+    console.log('🔍 Checking Chapter 3 Overachiever for wallet:', walletAddress);
+    
+    const { data, error } = await supabase
+      .from('user_gum_transactions')
+      .select('*')
+      .eq('wallet_address', walletAddress)
+      .eq('source', 'chapter3_overachiever')
+      .limit(1);
+
+    if (error) {
+      console.error('Error checking Chapter 3 Overachiever:', error);
+      return false;
+    }
+
+    const hasCompleted = data && data.length > 0;
+    console.log('✅ Chapter 3 Overachiever completed:', hasCompleted);
+    return hasCompleted;
+  } catch (err) {
+    console.error('Failed to check Chapter 3 Overachiever:', err);
+    return false;
+  }
+};
+
 // Get Chapter 3 objectives status for a user
 export const getChapter3ObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
   console.log('🎯 getChapter3ObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
   
   const votedInPictureDay = await checkPictureDayVoting(walletAddress);
+  const completedOverachiever = await checkChapter3Overachiever(walletAddress);
 
-  console.log('📊 Chapter 3 Objectives status:', { votedInPictureDay });
+  console.log('📊 Chapter 3 Objectives status:', { votedInPictureDay, completedOverachiever });
 
   const completedObjectives: ChapterObjective[] = [
     {
@@ -234,9 +266,9 @@ export const getChapter3ObjectivesStatus = async (walletAddress: string): Promis
     {
       id: 'overachiever_chapter3',
       title: 'The Overachiever',
-      description: '???? ???? ????',
+      description: 'Find Flunko\'s pic! Discover Flunko in any clique\'s top 6 friends',
       type: 'custom',
-      completed: false,
+      completed: completedOverachiever,
       reward: 100
     }
   ];

@@ -48,7 +48,7 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
     aboutMe: "Greetings, fellow members of high society! I'm fortunate enough to be the heir to my parents' fortune and the most distinguished gentleman in this town. When I'm not dominating at polo or perfecting my tennis serve at the country club, I'm setting trends that lesser mortals will follow next season. My 24-karat gold braces aren't just dental work - they're a statement! I was influencing people before 'influencer' was even a word, darling. If you're not on the social register, we probably shouldn't associate. TTYL! ��✨",
     favoriteQuote: "Money talks, but wealth whispers... and I'm practically silent.",
     interests: ["Polo", "Tennis", "Golf", "Yacht racing", "Country club events", "Stock market", "Fine dining", "Social networking", "Trend setting"],
-    music: ["Boyz II Men", "TLC", "Alanis Morissette", "Celine Dion", "Whitney Houston", "Mariah Carey", "Ace of Base", "All-4-One"],
+    music: ["Seal", "TLC", "Alanis Morissette", "Celine Dion", "Whitney Houston", "Mariah Carey", "Ace of Base", "All-4-One"],
     movies: ["Titanic", "My Best Friend's Wedding", "The Full Monty", "Good Will Hunting", "As Good as It Gets", "Jerry Maguire", "Scream", "The English Patient"],
     books: ["The Art of the Deal", "Forbes Magazine", "Town & Country", "GQ", "Vanity Fair", "The Great Gatsby", "Investment guides"],
     heroes: ["Gordon Gekko", "Jay Gatsby", "Donald Trump", "Ralph Lauren", "Tommy Hilfiger"],
@@ -62,11 +62,11 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
       { name: "Tiffany", status: "Shopping consultant 💎" },
       { name: "Thurston", status: "Investment advisor 💰" }
     ],
-    profileSong: "Boyz II Men - I'll Make Love to You"
+    profileSong: "Seal - Kiss from a Rose"
   },
 
   'the-freaks': {
-    name: "Raven Shadowmere",
+    name: "",
     clique: "the-freaks",
     backgroundColor: "#2c1810",
     backgroundPattern: "stars",
@@ -75,7 +75,7 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
     age: "Immortal (but actually 16)",
     lastLogin: "3:33 AM (the witching hour)",
     profileViews: 666,
-    aboutMe: "Greetings, mortals. I am Raven, a creature of the night who dwells in the shadows of this mundane existence. While you sheep follow your petty social constructs, I commune with the darkness that flows through all things. My poetry speaks to the tortured souls who understand TRUE pain. Do not message me unless you can comprehend the beautiful agony of existence. 🦇",
+    aboutMe: "Hey there. I'm just someone who doesn't really fit into the typical high school scene. While everyone else follows the crowd, I prefer to do my own thing. I'm into art, poetry, and expressing myself in ways that most people don't understand. No one understands me and I march to the beat of my own drum. If you're looking for someone who thinks outside the box, maybe we'll get along. 🎨",
     favoriteQuote: "The light blinds those who refuse to see the beauty in darkness.",
     interests: ["Gothic poetry", "Black magic", "Cemetery walks", "Dark art", "Existential dread", "Vampires", "The occult", "Tim Burton films"],
     music: ["Marilyn Manson", "The Cure", "Nine Inch Nails", "Type O Negative", "Bauhaus", "Siouxsie and the Banshees"],
@@ -88,15 +88,15 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
       { name: "Damon", status: "Fellow lost soul 💀" },
       { name: "Luna", status: "Witch sister 🌙" },
       { name: "Vlad", status: "Darkness incarnate 🦇" },
-      { name: "Sorrow", status: "Pain twin 😢" },
+      { name: "Flunko", status: "Gaming rebel 🎮" },
       { name: "Thorn", status: "Poetry critic ✍️" },
       { name: "Shade", status: "Shadow companion 👻" }
     ],
-    profileSong: "The Cure - Disintegration"
+    profileSong: "Rage Against the Machine - Guerrilla Radio"
   },
 
   'the-jocks': {
-    name: "Brad Champion",
+    name: "",
     clique: "the-jocks",
     backgroundColor: "#1e3a8a",
     backgroundPattern: "checkers",
@@ -105,7 +105,7 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
     age: "18 and in my PRIME!",
     lastLogin: "Right after practice",
     profileViews: 8934,
-    aboutMe: "YO WHAT'S UP EVERYONE! I'm Brad and I'm the CAPTAIN of the football team and basically the strongest guy in school! I live for SPORTS, working out, and WINNING at everything I do! Hit me up if you want to talk about gains, protein shakes, or how awesome I am at every sport ever invented! GO TEAM! 🏈",
+    aboutMe: "YO WHAT'S UP EVERYONE! I'm the CAPTAIN of the football team and basically the strongest guy in school! I live for SPORTS, working out, and WINNING at everything I do! Hit me up if you want to talk about gains, protein shakes, or how awesome I am at every sport ever invented! GO TEAM! 🏈",
     favoriteQuote: "Winners never quit, and quitters never win! NO PAIN, NO GAIN!",
     interests: ["Football", "Basketball", "Wrestling", "Working out", "Protein shakes", "Winning", "Being the best", "Team spirit"],
     music: ["Eminem", "DMX", "Limp Bizkit", "Rage Against the Machine", "Linkin Park", "Drowning Pool"],
@@ -120,9 +120,9 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
       { name: "Danny", status: "Running back 🏃" },
       { name: "Kyle", status: "Wrestling partner 🤼" },
       { name: "Jake", status: "Gym spotter 🏋️" },
-      { name: "Coach", status: "The GOAT 👑" }
+      { name: "Flunko", status: "Gaming buddy 🎮" }
     ],
-    profileSong: "Eminem - Till I Collapse"
+    profileSong: "Dr. Dre - Still D.R.E."
   },
 
   'the-nerds': {
@@ -182,6 +182,6 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
       { name: "Sam", status: "Chill companion 😎" },
       { name: "Taylor", status: "Fellow slacker 🏄‍♂️" }
     ],
-    profileSong: "Stone Temple Pilots - Interstate Love Song"
+    profileSong: "Blink-182 - All the Small Things"
   }
 };

@@ -130,7 +130,7 @@ const sampleChapters: Chapter[] = [
     unlocked: true,
     thumbnail: '/images/cutscenes/main.png',
     scenes: [
-      // Scene 1: Opening (main.png) - First sentence only
+      // Scene 1: Opening (main.png)
       {
         id: 'opening',
         image: '/images/cutscenes/main.png',
@@ -139,41 +139,87 @@ const sampleChapters: Chapter[] = [
         ],
         music: '/music/child.mp3'
       },
-      // Scene 2: The Town (1.png) - From "The town, however" to "folks come and go"
+      // Scene 2: The Town Description (1.png)
       {
-        id: 'the-town',
+        id: 'town-description',
         image: '/images/cutscenes/1.png',
         lines: [
-          'The town, however, wasn\'t. It was the same. Same brick buildings, same cracked sidewalks, same old high school sitting on that hill like a castle.',
+          'The town, however, wasn\'t. It was the same. Same brick buildings, same cracked sidewalks, same old high school sitting on that hill like a castle.'
+        ]
+      },
+      // Scene 3: Arcadia's History (2.png)
+      {
+        id: 'arcadia-history',
+        image: '/images/cutscenes/2.png',
+        lines: [
           'It\'s been that way since they founded Arcadia over a hundred years ago.',
           'Folks come and go, dreams flare up and fade out, but this place… this place don\'t change.'
         ]
       },
-      // Scene 3: Changes Over Time (2.png) - Storefront signs and cassette players
+      // Scene 4: Changing Times (3.png)
       {
-        id: 'changes',
-        image: '/images/cutscenes/2.png',
+        id: 'changing-times',
+        image: '/images/cutscenes/3.png',
         lines: [
-          'I\'ve seen the storefront signs switch names, the kids swap out their cassette players for CD players, then for whatever came next.'
+          'I\'ve seen storefront signs switch names, the kids swap out their playgrounds for video games and CD\'s...'
         ]
       },
-      // Scene 4: Friday Night Lights (3.png) - From Friday nights to "I call it Arcadia"
+      // Scene 5: Friday Night Lights (4.png)
       {
         id: 'friday-nights',
-        image: '/images/cutscenes/3.png',
+        image: '/images/cutscenes/4.png',
         lines: [
           'I\'ve seen Friday night lights burn for generations of ballplayers, and I\'ve seen the same creek flood every spring like clockwork.',
           'Some call it boring. I call it Arcadia.'
         ]
       },
-      // Scene 5: History Repeats (4.png) - Final part about history repeating
+      // Scene 6: History Repeats (5.png)
       {
         id: 'history-repeats',
-        image: '/images/cutscenes/4.png',
+        image: '/images/cutscenes/5.png',
         lines: [
-          'And if you stick around long enough, you\'ll notice… history has a way of repeating itself here.',
-          'Sometimes in small ways. Sometimes in ways that\'ll shake the whole town.',
-          'And that\'s the thing about Arcadia—no matter how much the sky changes, the ground beneath your feet will remind you: this place remembers everything.'
+          'And if you stick around long enough, you\'ll notice… history has a way of repeating itself here... Sometimes in small ways. Sometimes in ways that\'ll shake the whole town.',
+          'And that\'s the thing about Arcadia—no matter how much the sky changes, no matter what logo or name is on the hardware store, this place never changes.'
+        ]
+      },
+      // Scene 7: TBD (6.png)
+      {
+        id: 'scene-7',
+        image: '/images/cutscenes/6.png',
+        lines: [
+          'There\'s...'
+        ]
+      },
+      // Scene 8: TBD (7.png)
+      {
+        id: 'scene-8',
+        image: '/images/cutscenes/7.png',
+        lines: [
+          '[Scene 8 dialogue to be added]'
+        ]
+      },
+      // Scene 9: TBD (8.png)
+      {
+        id: 'scene-9',
+        image: '/images/cutscenes/8.png',
+        lines: [
+          '[Scene 9 dialogue to be added]'
+        ]
+      },
+      // Scene 10: TBD (9.png)
+      {
+        id: 'scene-10',
+        image: '/images/cutscenes/9.png',
+        lines: [
+          '[Scene 10 dialogue to be added]'
+        ]
+      },
+      // Scene 11: Final (final.png)
+      {
+        id: 'final-scene',
+        image: '/images/cutscenes/final.png',
+        lines: [
+          '[Final scene dialogue to be added]'
         ]
       }
     ]
