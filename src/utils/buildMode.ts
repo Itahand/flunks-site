@@ -74,7 +74,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showDeloreanTracker: true,
     showLoadingScreenPreview: false,
     showCutscenes: false,
-    showStoryManual: false,
+    showStoryManual: true,
     showVCREffectsTest: false,
     
     // Special Announcements - visible on public site

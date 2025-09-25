@@ -148,11 +148,11 @@ export const APP_PERMISSIONS: AppPermission[] = [
     buildModeFeature: 'showPictureDay'
   },
   
-  // Story Manual - Build Mode Only
+  // Story Manual - Available to all users
   {
     id: 'story-manual',
     title: 'The Story So Far',
-    requiredLevel: ['ADMIN'],
+    requiredLevel: ['COMMUNITY', 'BETA', 'ADMIN'],
     description: 'Interactive story chapters and cutscenes',
     buildModeFeature: 'showStoryManual'
   },

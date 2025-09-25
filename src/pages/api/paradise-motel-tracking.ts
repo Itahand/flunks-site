@@ -1,11 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../../lib/supabase';
+import { awardGum } from '../../utils/gumAPI';
+import { trackParadiseMotelEntry } from '../../utils/paradiseMotelTracking';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 interface ParadiseMotelTrackingRequest {
   walletAddress: string;
@@ -34,6 +30,15 @@ export default async function handler(
   try {
     const { walletAddress, username }: ParadiseMotelTrackingRequest = req.body;
 
+    // Check if Supabase is configured
+    if (!supabase) {
+      console.error('❌ Supabase not configured');
+      return res.status(500).json({
+        success: false,
+        message: 'Database not available'
+      });
+    }
+
     // Validate required fields
     if (!walletAddress) {
       return res.status(400).json({
@@ -51,7 +56,7 @@ export default async function handler(
 
     // Check if user has already entered this code
     const { data: existingEntry, error: checkError } = await supabase
-      .from('user_gum_transactions')
+      .from('gum_transactions')
       .select('*')
       .eq('wallet_address', walletAddress)
       .eq('source', 'chapter4_paradise_motel_code')
@@ -75,41 +80,43 @@ export default async function handler(
       });
     }
 
-    // Award GUM for entering the paradise motel code
-    const gumAmount = 100; // Chapter 4 Overachiever reward
-    const { data: gumData, error: gumError } = await supabase
-      .from('user_gum_transactions')
-      .insert([
-        {
-          wallet_address: walletAddress,
-          username: username || null,
-          amount: gumAmount,
-          source: 'chapter4_paradise_motel_code',
-          description: 'Chapter 4 Overachiever - Paradise Motel terminal code',
-          user_agent: userAgent,
-          ip_address: ipAddress
-        }
-      ])
-      .select('*');
+    // Track the entry for objectives (like Friday Night Lights)
+    console.log('🏨 Tracking Paradise Motel entry for objectives...');
+    const tracked = await trackParadiseMotelEntry(walletAddress);
 
-    if (gumError) {
-      console.error('❌ Error awarding GUM for paradise motel code:', gumError);
+    // Award GUM for entering the paradise motel code
+    console.log('🏨 Attempting to award Paradise Motel GUM...');
+    const gumResult = await awardGum(
+      walletAddress, 
+      'chapter4_paradise_motel_code',
+      {
+        user_agent: userAgent,
+        ip_address: ipAddress,
+        username: username || null,
+        description: 'Chapter 4 Overachiever - Paradise Motel terminal code'
+      }
+    );
+
+    console.log('🏨 Paradise Motel GUM result:', gumResult);
+
+    if (!gumResult.success) {
+      console.error('❌ Error awarding GUM for paradise motel code:', gumResult.error);
       return res.status(500).json({
         success: false,
-        message: 'Failed to award GUM'
+        message: 'Failed to award GUM: ' + (gumResult.error || 'Unknown error')
       });
     }
 
     console.log('✅ Paradise Motel code GUM awarded:', {
       walletAddress: walletAddress.slice(0, 10) + '...',
       username,
-      amount: gumAmount
+      amount: gumResult.earned
     });
 
     return res.status(200).json({
       success: true,
-      message: `Paradise Motel code entered successfully! Awarded ${gumAmount} GUM for Chapter 4 Overachiever!`,
-      gumAwarded: gumAmount,
+      message: `Paradise Motel code entered successfully! Awarded ${gumResult.earned} GUM for Chapter 4 Overachiever!`,
+      gumAwarded: gumResult.earned,
       alreadyCompleted: false
     });
 

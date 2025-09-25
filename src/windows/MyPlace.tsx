@@ -6,6 +6,7 @@ import TiltedGridLoader from "components/TiltedGridLoader";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { useCliqueAccess, CliqueType } from "hooks/useCliqueAccess";
 import MySpaceProfile from "../components/MySpaceProfile";
+import { useMusicContext } from "../contexts/MusicContext";
 import Image from "next/image";
 
 const Container = styled.div`
@@ -451,9 +452,10 @@ const characterSlots = [
 ];
 
 const MyPlace = () => {
-  const { closeWindow, openWindow } = useWindowsContext();
+  const { closeWindow, openWindow, windowApps, windows } = useWindowsContext();
   const { user } = useDynamicContext();
   const { hasAccess } = useCliqueAccess();
+  const { stopAllMusic } = useMusicContext();
 
   // Generate retro sound effects
   const playRetroSound = (type: 'hover' | 'select') => {
@@ -574,22 +576,35 @@ const MyPlace = () => {
     // Play selection sound
     playRetroSound('select');
 
-    // Open MySpace-style profile page
-    openWindow({
-      key: `${character.clique}_profile`,
-      window: (
-        <DraggableResizeableWindow
-          windowsId={`${character.clique}_profile`}
-          headerTitle={`${character.label}'s MyPlace Profile`}
-          onClose={() => closeWindow(`${character.clique}_profile`)}
-          initialWidth="90%"
-          initialHeight="90%"
-          resizable={true}
-        >
-          <MySpaceProfile clique={character.clique} />
-        </DraggableResizeableWindow>
-      ),
+    // Close all existing profile windows and stop current music
+    const existingProfileKeys = Object.keys(windows).filter(key => key.endsWith('_profile'));
+    existingProfileKeys.forEach(key => {
+      console.log(`Closing existing profile: ${key}`);
+      closeWindow(key);
     });
+    
+    // Stop any currently playing music
+    stopAllMusic();
+    
+    // Small delay to ensure previous profile is closed and music stopped
+    setTimeout(() => {
+      // Open new MySpace-style profile page
+      openWindow({
+        key: `${character.clique}_profile`,
+        window: (
+          <DraggableResizeableWindow
+            windowsId={`${character.clique}_profile`}
+            headerTitle={`${character.label}'s MyPlace Profile`}
+            onClose={() => closeWindow(`${character.clique}_profile`)}
+            initialWidth="90%"
+            initialHeight="90%"
+            resizable={true}
+          >
+            <MySpaceProfile clique={character.clique} />
+          </DraggableResizeableWindow>
+        ),
+      });
+    }, 100);
   };
 
   return (

@@ -7,7 +7,14 @@ import DraggableResizeableWindow from './DraggableResizeableWindow';
 import { WINDOW_IDS } from '../fixed';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { awardGum } from '../utils/gumAPI';
+import { trackFlunkoClick } from '../utils/flunkoClickTracking';
 import AchievementNotification from './AchievementNotification';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+import { useMusicContext } from '../contexts/MusicContext';
 
 interface MySpaceProfileProps {
   clique: string;
@@ -333,8 +340,9 @@ const BlinkingText = styled.span`
 
 const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
   const profile = CLIQUE_PROFILES[clique];
-  const { openWindow } = useWindowsContext();
+  const { openWindow, closeWindow, windows } = useWindowsContext();
   const { primaryWallet } = useDynamicContext();
+  const { stopAllMusic } = useMusicContext();
   const [showAchievement, setShowAchievement] = useState(false);
   
   if (!profile) {
@@ -354,25 +362,49 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
     const targetClique = cliqueMap[friendName];
     
     if (targetClique) {
-      // Award achievement for clicking from different clique
-      if (primaryWallet?.address && clique !== targetClique) {
+      // Award achievement for clicking Flunko from any clique profile
+      if (primaryWallet?.address && friendName === 'Flunko') {
         try {
+          console.log('🎯 Attempting Chapter 3 Overachiever...');
+          
+          // Track the click for objectives (like Friday Night Lights)
+          const tracked = await trackFlunkoClick(primaryWallet.address, clique);
+          
+          // Award GUM as well  
           const result = await awardGum(primaryWallet.address, 'chapter3_overachiever', {
             clicked_from_clique: clique,
             target_clique: targetClique,
-            achievement: 'Chapter 3 Overachiever'
+            achievement: 'Chapter 3 Overachiever - Clicked Flunko from clique profile'
           });
           
           if (result.success && result.earned > 0) {
             setShowAchievement(true);
+            console.log('🏆 Chapter 3 Overachiever achieved! Earned:', result.earned, 'GUM');
+          } else if (tracked) {
+            console.log('🎯 Flunko click tracked for objectives (GUM result:', result, ')');
+          } else {
+            console.log('Chapter 3 attempt result:', result);
           }
         } catch (error) {
           console.error('Error awarding Chapter 3 Overachiever:', error);
         }
       }
 
+      // Close all existing profile windows and stop current music
+      const existingProfileKeys = Object.keys(windows).filter(key => 
+        key.endsWith('_profile') || key.includes('MYPLACE_')
+      );
+      existingProfileKeys.forEach(key => {
+        console.log(`Closing existing profile: ${key}`);
+        closeWindow(key);
+      });
+      
+      // Stop any currently playing music
+      stopAllMusic();
+
+      // Immediate opening - no delay needed for music stopping
       // Open the target clique's MySpace profile in a new window
-      const windowKey = `${WINDOW_IDS.MYPLACE}_${targetClique}`;
+      const windowKey = `${targetClique}_profile`;
       const profileName = friendName === 'Flunko' ? 'Flunko' : friendName.replace('My ', '');
       
       openWindow({
@@ -380,10 +412,13 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
         window: (
           <DraggableResizeableWindow
             windowsId={windowKey}
-            onClose={() => {}}
-            initialWidth="100%"
-            initialHeight="100%"
-            resizable={false}
+            onClose={() => {
+              console.log(`🚪 Quick closing profile: ${windowKey}`);
+              closeWindow(windowKey);
+            }}
+            initialWidth="90%"
+            initialHeight="90%"
+            resizable={true}
             headerTitle={`${profileName}'s MyPlace Profile`}
             headerIcon="/images/icons/open-book.png"
           >
@@ -610,6 +645,7 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
             <FriendsList>
               {profile.topFriends.map((friend: Friend, index: number) => {
                 const isClickableFriend = ['Flunko', 'My Geek', 'My Jock', 'My Prep', 'My Freak'].includes(friend.name);
+                const hasProfileImage = ['Flunko', 'My Geek', 'My Jock', 'My Prep', 'My Freak', 'The Rug Dr', 'Snugglebug', 'Muffy', 'Tinker', 'Skip', 'Tiffany', 'Thurston'].includes(friend.name);
                 const getProfileImage = (name: string) => {
                   const imageMap: Record<string, string> = {
                     'Flunko': '/images/myplace/myspace-flunko.png',
@@ -618,7 +654,13 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
                     'My Prep': '/images/profiles/cliques/the-preps/profile.png',
                     'My Freak': '/images/profiles/cliques/the-freaks/profile.png',
                     'The Rug Dr': '/images/profiles/the-rug-dr.png',
-                    'Snugglebug': '/images/profiles/snugglebug.png'
+                    'Snugglebug': '/images/profiles/snugglebug.png',
+                    // Preps friends - uploaded to the-preps folder
+                    'Muffy': '/images/myplace/the-preps/muffy.png',
+                    'Tinker': '/images/myplace/the-preps/tinker.png', 
+                    'Skip': '/images/myplace/the-preps/skip.png',
+                    'Tiffany': '/images/myplace/the-preps/tiffany.png',
+                    'Thurston': '/images/myplace/the-preps/thurston.png'
                   };
                   return imageMap[name];
                 };
@@ -630,8 +672,8 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
                     onClick={() => isClickableFriend ? handleFriendClick(friend.name) : undefined}
                     title={isClickableFriend ? `Click to visit ${friend.name}'s profile!` : undefined}
                   >
-                    <FriendAvatar hasImage={isClickableFriend}>
-                      {isClickableFriend ? (
+                    <FriendAvatar hasImage={hasProfileImage}>
+                      {hasProfileImage ? (
                         <img 
                           src={getProfileImage(friend.name)} 
                           alt={friend.name}

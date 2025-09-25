@@ -49,6 +49,8 @@ const CutsceneContainer = styled.div<{ windowed?: boolean }>`
   @media (max-width: 768px) {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 `;
 
@@ -61,6 +63,14 @@ const SceneImage = styled.img<{ visible: boolean }>`
   opacity: ${props => props.visible ? 1 : 0};
   transition: opacity 1200ms ease-in-out;
   z-index: 0; /* Ensure images are behind effects */
+
+  @media (max-width: 768px) {
+    position: relative;
+    flex: 1;
+    height: auto;
+    min-height: 60vh; /* Take up most of the screen but leave room for text */
+    object-fit: contain; /* Show full image instead of cropping */
+  }
 `;
 
 const LetterboxTop = styled.div`
@@ -217,11 +227,17 @@ const TextBox = styled.div`
   box-shadow: 0 0 0 8px rgba(245, 162, 211, 0.25);
 
   @media (max-width: 768px) {
-    width: min(95vw, 400px);
+    position: relative; /* Change to relative positioning for mobile */
+    left: auto;
+    transform: none;
+    bottom: auto;
+    width: calc(100% - 20px);
+    max-width: 95vw;
+    margin: 10px auto 20px auto;
     padding: 12px 16px;
-    bottom: 8vh;
     border-width: 3px;
     font-size: 14px;
+    flex-shrink: 0; /* Don't shrink in flex container */
   }
 `;
 
@@ -506,77 +522,142 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
   if (scenes.length === 0) return null;
 
   const currentSceneData = scenes[currentScene];
+  
+  // Detect mobile for conditional layout
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
   return (
     <CutsceneContainer windowed={windowed}>
-      {/* Background layer with effects - separate from text */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 0
-      }}>
-        {/* Background Images */}
-        <SceneImage
-          id="sceneA"
-          src={showingA ? currentSceneData?.image || '' : scenes[Math.max(0, currentScene - 1)]?.image || ''}
-          alt=""
-          visible={showingA}
-        />
-        <SceneImage
-          id="sceneB"
-          src={!showingA ? currentSceneData?.image || '' : scenes[Math.min(scenes.length - 1, currentScene + 1)]?.image || ''}
-          alt=""
-          visible={!showingA}
-        />
+      {!isMobile ? (
+        // Desktop Layout - Original overlay approach
+        <>
+          {/* Background layer with effects - separate from text */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 0
+          }}>
+            {/* Background Images */}
+            <SceneImage
+              id="sceneA"
+              src={showingA ? currentSceneData?.image || '' : scenes[Math.max(0, currentScene - 1)]?.image || ''}
+              alt=""
+              visible={showingA}
+            />
+            <SceneImage
+              id="sceneB"
+              src={!showingA ? currentSceneData?.image || '' : scenes[Math.min(scenes.length - 1, currentScene + 1)]?.image || ''}
+              alt=""
+              visible={!showingA}
+            />
 
-        {/* VCR and Retro Effects - ONLY on background images */}
-        <VintageFilter config={effectsConfig} />
-        <VHSStatic config={effectsConfig} />
-        <VCREffects config={effectsConfig} />
-        <ChromaticEffect config={effectsConfig} />
-      </div>
+            {/* VCR and Retro Effects - ONLY on background images */}
+            <VintageFilter config={effectsConfig} />
+            <VHSStatic config={effectsConfig} />
+            <VCREffects config={effectsConfig} />
+            <ChromaticEffect config={effectsConfig} />
+          </div>
 
-      {/* UI Layer - completely separate from effects */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 100,
-        pointerEvents: 'none'
-      }}>
-        {/* Letterbox bars - only show in fullscreen mode */}
-        {!windowed && <LetterboxTop />}
-        {!windowed && <LetterboxBottom />}
+          {/* UI Layer - completely separate from effects */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 100,
+            pointerEvents: 'none'
+          }}>
+            {/* Letterbox bars - only show in fullscreen mode */}
+            {!windowed && <LetterboxTop />}
+            {!windowed && <LetterboxBottom />}
 
-        {/* Text box - adjust positioning for windowed mode */}
-        <TextBox role="dialog" aria-live="polite" aria-atomic="true" style={{
-          position: 'absolute',
-          bottom: windowed ? '80px' : '10vh',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: windowed ? 'calc(100% - 40px)' : 'min(900px, 92vw)',
-          maxWidth: windowed ? '800px' : 'min(900px, 92vw)',
-          pointerEvents: 'auto',
-          zIndex: 20
-        }}>
-          <TextContent>{displayText}</TextContent>
-        </TextBox>
+            {/* Text box - adjust positioning for windowed mode */}
+            <TextBox role="dialog" aria-live="polite" aria-atomic="true" style={{
+              position: 'absolute',
+              bottom: windowed ? '80px' : '10vh',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: windowed ? 'calc(100% - 40px)' : 'min(900px, 92vw)',
+              maxWidth: windowed ? '800px' : 'min(900px, 92vw)',
+              pointerEvents: 'auto',
+              zIndex: 20
+            }}>
+              <TextContent>{displayText}</TextContent>
+            </TextBox>
 
-        {/* Controls positioned in bottom right - ensure visible in both modes */}
-        <Controls style={{ 
-          pointerEvents: 'auto',
-          bottom: windowed ? '20px' : '20px',
-          right: windowed ? '20px' : '20px',
-          zIndex: 25,
-          position: windowed ? 'absolute' : 'fixed'
-        }}>
-          <ControlButton onClick={next} aria-label="Next line (Enter)">
-            Next ▶
-          </ControlButton>
-          <ControlButton onClick={toggleMute} aria-label="Toggle music (M)">
-            {muted ? 'Unmute 🔊' : 'Mute 🔇'}
-          </ControlButton>
-        </Controls>
-      </div>
+            {/* Controls positioned in bottom right - ensure visible in both modes */}
+            <Controls style={{ 
+              pointerEvents: 'auto',
+              bottom: windowed ? '20px' : '20px',
+              right: windowed ? '20px' : '20px',
+              zIndex: 25,
+              position: windowed ? 'absolute' : 'fixed'
+            }}>
+              <ControlButton onClick={next} aria-label="Next line (Enter)">
+                Next ▶
+              </ControlButton>
+              <ControlButton onClick={toggleMute} aria-label="Toggle music (M)">
+                {muted ? 'Unmute 🔊' : 'Mute 🔇'}
+              </ControlButton>
+            </Controls>
+          </div>
+        </>
+      ) : (
+        // Mobile Layout - Stack image and text vertically
+        <>
+          {/* Image container for mobile */}
+          <div style={{ 
+            position: 'relative', 
+            flex: 1, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            minHeight: '60vh'
+          }}>
+            <SceneImage
+              id="sceneA"
+              src={showingA ? currentSceneData?.image || '' : scenes[Math.max(0, currentScene - 1)]?.image || ''}
+              alt=""
+              visible={showingA}
+            />
+            <SceneImage
+              id="sceneB"
+              src={!showingA ? currentSceneData?.image || '' : scenes[Math.min(scenes.length - 1, currentScene + 1)]?.image || ''}
+              alt=""
+              visible={!showingA}
+            />
+            
+            {/* VCR and Retro Effects for mobile */}
+            <VintageFilter config={effectsConfig} />
+            <VHSStatic config={effectsConfig} />
+            <VCREffects config={effectsConfig} />
+            <ChromaticEffect config={effectsConfig} />
+          </div>
+
+          {/* Text and controls section for mobile */}
+          <div style={{ 
+            flexShrink: 0, 
+            display: 'flex', 
+            flexDirection: 'column',
+            padding: '0 10px 10px 10px'
+          }}>
+            <TextBox role="dialog" aria-live="polite" aria-atomic="true">
+              <TextContent>{displayText}</TextContent>
+            </TextBox>
+            
+            <Controls style={{ 
+              position: 'relative',
+              alignSelf: 'center',
+              marginTop: '10px'
+            }}>
+              <ControlButton onClick={next} aria-label="Next line (Enter)">
+                Next ▶
+              </ControlButton>
+              <ControlButton onClick={toggleMute} aria-label="Toggle music (M)">
+                {muted ? 'Unmute 🔊' : 'Mute 🔇'}
+              </ControlButton>
+            </Controls>
+          </div>
+        </>
+      )}
 
       {/* Background music */}
       <audio ref={bgmRef} loop muted={muted} />

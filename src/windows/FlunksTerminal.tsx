@@ -8,6 +8,7 @@ import { trackTerminalActivity, generateSessionId, COMMAND_TYPES } from 'utils/a
 
 const errorSound = typeof Audio !== "undefined" ? new Audio('/sounds/incorrect.mp3') : null;
 const successSound = typeof Audio !== "undefined" ? new Audio('/sounds/correct.mp3') : null;
+const paradiseMotelSound = typeof Audio !== "undefined" ? new Audio('/sounds/paradise-motel.mp3') : null;
 
 const FlunksTerminal = ({ onClose }: { onClose: () => void }) => {
   const { user } = useDynamicContext();
@@ -189,6 +190,12 @@ const FlunksTerminal = ({ onClose }: { onClose: () => void }) => {
 
     // Special logging for Paradise Motel command (non-blocking for better UX)
     if (input.toLowerCase().trim() === 'paradise motel' && validCommand) {
+      // Play special Paradise Motel sound
+      if (paradiseMotelSound) {
+        paradiseMotelSound.currentTime = 0;
+        paradiseMotelSound.play().catch(e => console.log('Could not play paradise motel sound:', e));
+      }
+      
       // Fire and forget - don't await this to avoid UI delay
       fetch('/api/paradise-motel-tracking', {
         method: 'POST',
@@ -205,7 +212,8 @@ const FlunksTerminal = ({ onClose }: { onClose: () => void }) => {
       });
     }
 
-    if (validCommand && successSound) {
+    // Play regular success sound for other valid commands (but not paradise motel)
+    if (validCommand && successSound && input.toLowerCase().trim() !== 'paradise motel') {
       successSound.currentTime = 0;
       successSound.play();
     }

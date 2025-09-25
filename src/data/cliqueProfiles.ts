@@ -56,9 +56,9 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
     likes: ["24k gold accessories", "Designer everything", "Country club memberships", "Trust fund statements", "Being photographed", "Exclusive events", "Name dropping", "Premium everything"],
     dislikes: ["Public transportation", "Generic brands", "Waiting in lines", "People who don't know my family", "Anything less than first class", "Scholarship kids", "Off-brand anything"],
     topFriends: [
-      { name: "Muffy", status: "Debutante ball date 💃" },
-      { name: "Flunko", status: "Cool gaming buddy �" },
-      { name: "Buffy", status: "Tennis partner 🎾" },
+      { name: "Muffy", status: "Best bud �" },
+      { name: "Flunko", status: "Cool gaming buddy 🎮" },
+      { name: "Tinker", status: "Artsy fartsy �" },
       { name: "Skip", status: "Yacht club buddy ⛵" },
       { name: "Tiffany", status: "Shopping consultant 💎" },
       { name: "Thurston", status: "Investment advisor 💰" }

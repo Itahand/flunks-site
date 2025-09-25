@@ -18,6 +18,30 @@ CREATE TABLE IF NOT EXISTS valid_terminal_codes (
 CREATE INDEX IF NOT EXISTS idx_valid_terminal_codes_code ON valid_terminal_codes(code);
 CREATE INDEX IF NOT EXISTS idx_valid_terminal_codes_active ON valid_terminal_codes(active);
 
+-- Insert the GUM source for Paradise Motel (required for awardGum function to work)
+INSERT INTO gum_sources (
+  source_name,
+  base_reward,
+  cooldown_minutes,
+  daily_limit,
+  description,
+  is_active
+)
+VALUES (
+  'chapter4_paradise_motel_code',
+  100,
+  525600, -- 1 year in minutes (365 * 24 * 60 = 525600)
+  NULL, -- No daily limit needed since cooldown prevents duplicates
+  'Chapter 4 Overachiever - Paradise Motel terminal code discovery (ONE-TIME ONLY)',
+  true
+)
+ON CONFLICT (source_name) DO UPDATE SET
+  base_reward = EXCLUDED.base_reward,
+  cooldown_minutes = EXCLUDED.cooldown_minutes,
+  daily_limit = EXCLUDED.daily_limit,
+  description = EXCLUDED.description,
+  is_active = EXCLUDED.is_active;
+
 -- Insert the paradise motel code
 INSERT INTO valid_terminal_codes (
   code, 

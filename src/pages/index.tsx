@@ -375,7 +375,7 @@ const windowsMemod = useMemo(() => (
         <ConditionalAppIcon
           appId="story-manual"
           title="Story Mode"
-          icon="/images/icons/open-book.png"
+          icon="/images/icons/story-mode.png"
           onDoubleClick={() => openWindow({
             key: WINDOW_IDS.STORY_MANUAL,
             window: (
@@ -386,7 +386,7 @@ const windowsMemod = useMemo(() => (
                 initialHeight="100%"
                 resizable={false}
                 headerTitle="Story Mode"
-                headerIcon="/images/icons/open-book.png"
+                headerIcon="/images/icons/story-mode.png"
               >
                 <StoryManual onClose={() => closeWindow(WINDOW_IDS.STORY_MANUAL)} />
               </DraggableResizeableWindow>

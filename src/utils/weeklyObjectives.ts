@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { checkFridayNightLightsClicked } from './fridayNightLightsTracking';
 import { checkCafeteriaButtonClicked } from './cafeteriaButtonTracking';
+import { checkFlunkoClicked } from './flunkoClickTracking';
+import { checkParadiseMotelEntered } from './paradiseMotelTracking';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -215,35 +217,10 @@ export const getChapter2ObjectivesStatus = async (walletAddress: string): Promis
 };
 
 // Check if user has completed Chapter 3 Overachiever (clicked Flunko)
-export const checkChapter3Overachiever = async (walletAddress: string): Promise<boolean> => {
-  if (!hasValidSupabaseConfig || !supabase) {
-    console.warn('Supabase not configured, cannot check Chapter 3 Overachiever');
-    return false;
-  }
-
-  try {
-    console.log('🔍 Checking Chapter 3 Overachiever for wallet:', walletAddress);
-    
-    const { data, error } = await supabase
-      .from('user_gum_transactions')
-      .select('*')
-      .eq('wallet_address', walletAddress)
-      .eq('source', 'chapter3_overachiever')
-      .limit(1);
-
-    if (error) {
-      console.error('Error checking Chapter 3 Overachiever:', error);
-      return false;
-    }
-
-    const hasCompleted = data && data.length > 0;
-    console.log('✅ Chapter 3 Overachiever completed:', hasCompleted);
-    return hasCompleted;
-  } catch (err) {
-    console.error('Failed to check Chapter 3 Overachiever:', err);
-    return false;
-  }
-};
+export async function checkChapter3Overachiever(walletAddress: string): Promise<boolean> {
+  // Use the simple tracking approach like Friday Night Lights
+  return await checkFlunkoClicked(walletAddress);
+}
 
 // Get Chapter 3 objectives status for a user
 export const getChapter3ObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
@@ -303,7 +280,7 @@ export const checkHomecomingDanceAttendance = async (walletAddress: string): Pro
     
     // Check if user claimed homecoming dance reward (one time ever)
     const { data, error } = await supabase
-      .from('user_gum_transactions')
+      .from('gum_transactions')
       .select('*')
       .eq('wallet_address', walletAddress)
       .eq('source', 'chapter4_homecoming_dance')
@@ -324,36 +301,10 @@ export const checkHomecomingDanceAttendance = async (walletAddress: string): Pro
 };
 
 // Check if user entered the paradise motel terminal code
-export const checkParadiseMotelCode = async (walletAddress: string): Promise<boolean> => {
-  if (!hasValidSupabaseConfig || !supabase) {
-    console.warn('Supabase not configured, cannot check paradise motel code');
-    return false;
-  }
-
-  try {
-    console.log('🏨 Checking paradise motel code for wallet:', walletAddress);
-    
-    // Check if user entered the paradise motel terminal code
-    const { data, error } = await supabase
-      .from('user_gum_transactions')
-      .select('*')
-      .eq('wallet_address', walletAddress)
-      .eq('source', 'chapter4_paradise_motel_code')
-      .limit(1);
-
-    if (error) {
-      console.error('Error checking paradise motel code:', error);
-      return false;
-    }
-
-    const hasEnteredCode = data && data.length > 0;
-    console.log('✅ Paradise motel code entered:', hasEnteredCode);
-    return hasEnteredCode;
-  } catch (err) {
-    console.error('Failed to check paradise motel code:', err);
-    return false;
-  }
-};
+export async function checkParadiseMotelCode(walletAddress: string): Promise<boolean> {
+  // Use the simple tracking approach like Friday Night Lights
+  return await checkParadiseMotelEntered(walletAddress);
+}
 
 // Get Chapter 4 objectives status for a user
 export const getChapter4ObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
