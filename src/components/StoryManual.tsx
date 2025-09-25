@@ -247,57 +247,73 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
   };
 
   if (playingCutscene && selectedChapter) {
-    return (
-      <div style={{
-        background: 'linear-gradient(135deg, #2a1810 0%, #1a1008 100%)',
-        height: '100%',
-        overflow: 'hidden',
-        fontFamily: 'Courier New, monospace',
-        padding: '20px',
-        position: 'relative'
-      }}>
-        {/* Chapter selection in background */}
-        <ChapterGrid style={{ opacity: 0.3, pointerEvents: 'none' }}>
-          {sampleChapters.map((chapter, index) => (
-            <ChapterCard
-              key={chapter.id}
-              unlocked={chapter.unlocked}
-            >
-              <ChapterNumber>{index + 1}</ChapterNumber>
-              <ChapterThumbnail bgImage={chapter.thumbnail} />
-              <ChapterTitle>{chapter.title}</ChapterTitle>
-              <ChapterSubtitle>{chapter.subtitle}</ChapterSubtitle>
-            </ChapterCard>
-          ))}
-        </ChapterGrid>
-        
-        {/* Cutscene in draggable window */}
-        <DraggableResizeableWindow
-          windowsId={`cutscene-${selectedChapter.id}`}
-          onClose={handleCutsceneClose}
-          initialWidth={window.innerWidth <= 768 ? "100%" : "1200px"}
-          initialHeight={window.innerWidth <= 768 ? "100%" : "700px"}
-          resizable={window.innerWidth > 768}
-          headerTitle={selectedChapter.title}
-          headerIcon="🎬"
-          style={{ 
-            zIndex: 1000,
-            position: 'absolute',
-            top: window.innerWidth <= 768 ? '0px' : '20px',
-            left: window.innerWidth <= 768 ? '0px' : '50px',
-            width: window.innerWidth <= 768 ? '100%' : 'auto',
-            height: window.innerWidth <= 768 ? '100%' : 'auto'
-          }}
-        >
-          <CutscenePlayer
-            scenes={selectedChapter.scenes}
-            onComplete={handleCutsceneComplete}
+    // Check if we're on mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+      // Mobile: Use windowed mode with DraggableResizeableWindow
+      return (
+        <div style={{
+          background: 'linear-gradient(135deg, #2a1810 0%, #1a1008 100%)',
+          height: '100%',
+          overflow: 'hidden',
+          fontFamily: 'Courier New, monospace',
+          padding: '20px',
+          position: 'relative'
+        }}>
+          {/* Chapter selection in background */}
+          <ChapterGrid style={{ opacity: 0.3, pointerEvents: 'none' }}>
+            {sampleChapters.map((chapter, index) => (
+              <ChapterCard
+                key={chapter.id}
+                unlocked={chapter.unlocked}
+              >
+                <ChapterNumber>{index + 1}</ChapterNumber>
+                <ChapterThumbnail bgImage={chapter.thumbnail} />
+                <ChapterTitle>{chapter.title}</ChapterTitle>
+                <ChapterSubtitle>{chapter.subtitle}</ChapterSubtitle>
+              </ChapterCard>
+            ))}
+          </ChapterGrid>
+          
+          {/* Cutscene in draggable window for mobile */}
+          <DraggableResizeableWindow
+            windowsId={`cutscene-${selectedChapter.id}`}
             onClose={handleCutsceneClose}
-            windowed={true}
-          />
-        </DraggableResizeableWindow>
-      </div>
-    );
+            initialWidth="100%"
+            initialHeight="100%"
+            resizable={false}
+            headerTitle={selectedChapter.title}
+            headerIcon="🎬"
+            style={{ 
+              zIndex: 1000,
+              position: 'absolute',
+              top: '0px',
+              left: '0px',
+              width: '100%',
+              height: '100%'
+            }}
+          >
+            <CutscenePlayer
+              scenes={selectedChapter.scenes}
+              onComplete={handleCutsceneComplete}
+              onClose={handleCutsceneClose}
+              windowed={true}
+            />
+          </DraggableResizeableWindow>
+        </div>
+      );
+    } else {
+      // Desktop: Use fullscreen mode
+      return (
+        <CutscenePlayer
+          scenes={selectedChapter.scenes}
+          onComplete={handleCutsceneComplete}
+          onClose={handleCutsceneClose}
+          windowed={false}
+        />
+      );
+    }
   }
 
   return (

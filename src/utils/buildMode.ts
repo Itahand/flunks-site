@@ -57,7 +57,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     // Core apps that should be visible to public/beta users
     showSemesterZero: true,
     showMemeManager: false,
-    showMyPlace: false,
+    showMyPlace: true,
     showFlappyFlunk: true,
     showFlunkyUppy: false,
     showGameManual: true,

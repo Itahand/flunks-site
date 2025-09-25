@@ -645,13 +645,13 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
             <FriendsList>
               {profile.topFriends.map((friend: Friend, index: number) => {
                 const isClickableFriend = ['Flunko', 'My Geek', 'My Jock', 'My Prep', 'My Freak'].includes(friend.name);
-                const hasProfileImage = ['Flunko', 'My Geek', 'My Jock', 'My Prep', 'My Freak', 'The Rug Dr', 'Snugglebug', 'Muffy', 'Tinker', 'Skip', 'Tiffany', 'Thurston'].includes(friend.name);
+                const hasProfileImage = ['Flunko', 'My Geek', 'My Jock', 'My Prep', 'My Freak', 'The Rug Dr', 'Snugglebug', 'Muffy', 'Tinker', 'Skip', 'Tiffany', 'Thurston', 'Eugene', 'Leonard', 'Diane', 'Shelley'].includes(friend.name);
                 const getProfileImage = (name: string) => {
                   const imageMap: Record<string, string> = {
                     'Flunko': '/images/myplace/myspace-flunko.png',
                     'My Geek': '/images/profiles/cliques/the-nerds/profile.png',
                     'My Jock': '/images/profiles/cliques/the-jocks/profile.png', 
-                    'My Prep': '/images/profiles/cliques/the-preps/profile.png',
+                    'My Prep': '/images/myplace/myspace-prep.png',
                     'My Freak': '/images/profiles/cliques/the-freaks/profile.png',
                     'The Rug Dr': '/images/profiles/the-rug-dr.png',
                     'Snugglebug': '/images/profiles/snugglebug.png',
@@ -660,7 +660,12 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
                     'Tinker': '/images/myplace/the-preps/tinker.png', 
                     'Skip': '/images/myplace/the-preps/skip.png',
                     'Tiffany': '/images/myplace/the-preps/tiffany.png',
-                    'Thurston': '/images/myplace/the-preps/thurston.png'
+                    'Thurston': '/images/myplace/the-preps/thurston.png',
+                    // Nerds friends - uploaded to the-nerds folder
+                    'Eugene': '/images/myplace/the-nerds/eugene.png',
+                    'Leonard': '/images/myplace/the-nerds/leonard.png',
+                    'Diane': '/images/myplace/the-nerds/diane.png',
+                    'Shelley': '/images/myplace/the-nerds/shelly.png'
                   };
                   return imageMap[name];
                 };

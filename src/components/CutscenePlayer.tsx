@@ -41,6 +41,7 @@ const CutsceneContainer = styled.div<{ windowed?: boolean }>`
   inset: ${props => props.windowed ? 'auto' : '0'};
   width: ${props => props.windowed ? '100%' : '100vw'};
   height: ${props => props.windowed ? '100%' : '100vh'};
+  min-height: ${props => props.windowed ? '400px' : 'auto'}; /* Ensure minimum height in windowed mode */
   background: #000;
   z-index: ${props => props.windowed ? 'auto' : '9999'};
   overflow: hidden;
@@ -348,8 +349,14 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
   // Simple image error handler
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const img = e.currentTarget;
-    console.warn('Story Mode scene image failed to load:', img.src);
+    console.warn('🚨 Story Mode scene image failed to load:', img.src);
     img.src = '/images/backdrops/BLANK.png';
+  }, []);
+
+  // Image load success handler
+  const handleImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const img = e.currentTarget;
+    console.log('✅ Story Mode scene image loaded successfully:', img.src);
   }, []);
 
   // Preload images for smoother experience
@@ -547,6 +554,16 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
   if (scenes.length === 0) return null;
 
   const currentSceneData = scenes[currentScene];
+  
+  // Debug logging
+  console.log('🎬 Story Mode Debug:', {
+    scenesLength: scenes.length,
+    currentScene,
+    currentSceneData,
+    showingA,
+    windowed,
+    displayText
+  });
 
   return (
     <CutsceneContainer windowed={windowed}>
@@ -554,6 +571,8 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
       <div style={{
         position: 'absolute',
         inset: 0,
+        width: '100%',
+        height: '100%',
         zIndex: 0
       }}>
         {/* Background Images */}
@@ -563,6 +582,7 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
           alt=""
           visible={showingA}
           onError={handleImageError}
+          onLoad={handleImageLoad}
         />
         <SceneImage
           id="sceneB"
@@ -570,6 +590,7 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
           alt=""
           visible={!showingA}
           onError={handleImageError}
+          onLoad={handleImageLoad}
         />
 
         {/* VCR and Retro Effects - ONLY on background images */}
@@ -583,6 +604,8 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
       <div style={{
         position: 'absolute',
         inset: 0,
+        width: '100%',
+        height: '100%',
         zIndex: 100,
         pointerEvents: 'none'
       }}>

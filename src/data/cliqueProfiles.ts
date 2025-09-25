@@ -147,11 +147,11 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
     dislikes: ["Sports worship", "Anti-intellectualism", "Grammatical errors", "Illogical arguments", "Social hierarchies", "PE class", "Group projects with slackers"],
     topFriends: [
       { name: "Eugene", status: "Lab partner 🧪" },
-      { name: "Shelley", status: "Study group leader 📖" },
-      { name: "Flunko", status: "Chess rival ♟️" },
+      { name: "Leonard", status: "Code reviewer �" },
       { name: "Diane", status: "Debate partner 🗣️" },
-      { name: "Leonard", status: "Code reviewer 💻" },
-      { name: "Prof. Chen", status: "Mentor 👨‍🏫" }
+      { name: "Shelley", status: "Study group leader �" },
+      { name: "My Prep", status: "Tutor student �" },
+      { name: "Flunko", status: "Chess rival ♟️" }
     ],
     profileSong: "The Offspring - Pretty Fly (For a White Guy)"
   },
