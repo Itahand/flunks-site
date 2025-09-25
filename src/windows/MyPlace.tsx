@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
-import AppLoader from "components/AppLoader";
+import TiltedGridLoader from "components/TiltedGridLoader";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { useCliqueAccess, CliqueType } from "hooks/useCliqueAccess";
 import MySpaceProfile from "../components/MySpaceProfile";
@@ -593,7 +593,7 @@ const MyPlace = () => {
   };
 
   return (
-    <AppLoader bgImage="/images/loading/bootup.webp">
+    <TiltedGridLoader>
       <DraggableResizeableWindow
         windowsId={WINDOW_IDS.MYPLACE}
         onClose={() => closeWindow(WINDOW_IDS.MYPLACE)}
@@ -602,6 +602,10 @@ const MyPlace = () => {
         headerTitle="MyPlace - Select Your Profile"
         headerIcon="/images/icons/myplace.png"
         resizable={false}
+        style={{
+          transform: 'perspective(800px) rotateX(2deg)',
+          transition: 'transform 0.3s ease-out'
+        }}
       >
         <Container>
           {/* Retro Effects */}
@@ -654,7 +658,7 @@ const MyPlace = () => {
           </CharacterGrid>
         </Container>
       </DraggableResizeableWindow>
-    </AppLoader>
+    </TiltedGridLoader>
   );
 };
 

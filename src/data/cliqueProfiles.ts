@@ -176,12 +176,12 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
     likes: ["Arcade high scores", "Guitar solos", "Cult movies", "Chill vibes", "Good friends", "Late night gaming", "90s culture"],
     dislikes: ["Drama", "Uptight people", "Mainstream conformity", "Early mornings", "Authority figures", "Stress", "Fake people"],
     topFriends: [
+      { name: "My Geek", status: "Chess rival ♟️" },
+      { name: "My Jock", status: "Workout partner 💪" },
+      { name: "My Prep", status: "Country club buddy �️‍♂️" },
+      { name: "My Freak", status: "Alternative music mate 🎸" },
       { name: "Casey", status: "Gaming buddy 🎮" },
-      { name: "Drew", status: "Guitar jamming partner 🎸" },
-      { name: "Alex", status: "Movie night regular 🎬" },
-      { name: "Jordan", status: "Arcade rival 👾" },
-      { name: "Sam", status: "Chill companion 😎" },
-      { name: "Taylor", status: "Fellow slacker 🏄‍♂️" }
+      { name: "Drew", status: "Guitar jamming partner �" }
     ],
     profileSong: "Blink-182 - All the Small Things"
   }

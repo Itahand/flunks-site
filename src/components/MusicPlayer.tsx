@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { useMusicContext } from '../contexts/MusicContext';
 
 interface MusicPlayerProps {
   songTitle: string;
@@ -96,11 +97,17 @@ const VolumeSlider = styled.input`
 `;
 
 const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, themeColor, autoplay = false, startTime = 0 }) => {
-  const [isPlaying, setIsPlaying] = useState(autoplay);
+  const { playMusic, stopAllMusic, currentAudio, currentMusicPlayerId } = useMusicContext();
   const [currentTime, setCurrentTime] = useState(startTime);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(autoplay ? 0.4 : 0.7);
   const audioRef = useRef<HTMLAudioElement>(null);
+  
+  // Generate unique ID for this player instance
+  const playerId = useMemo(() => `player_${songFile}_${Math.random()}`, [songFile]);
+  
+  // Determine if this player is currently active
+  const isPlaying = currentAudio === audioRef.current && currentMusicPlayerId === playerId;
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -108,10 +115,11 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
+    const onEnded = () => stopAllMusic();
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
-    audio.addEventListener('ended', () => setIsPlaying(false));
+    audio.addEventListener('ended', onEnded);
 
     // Autoplay if enabled
     if (autoplay) {
@@ -132,10 +140,9 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
           }
           
           await audio.play();
-          setIsPlaying(true);
+          playMusic(audio, playerId);
         } catch (error) {
           console.log('Autoplay failed, user interaction required:', error);
-          setIsPlaying(false);
         }
       };
       
@@ -160,44 +167,38 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
-      audio.removeEventListener('ended', () => setIsPlaying(false));
+      audio.removeEventListener('ended', onEnded);
     };
-  }, [autoplay, startTime]);
+  }, [autoplay, startTime, playerId, playMusic, stopAllMusic]);
 
   // Cleanup effect to stop audio when component unmounts
   useEffect(() => {
     return () => {
       const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        setIsPlaying(false);
+      if (audio && currentAudio === audio) {
+        stopAllMusic();
       }
     };
-  }, []);
+  }, [currentAudio, stopAllMusic]);
 
   const handlePlayPause = () => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (isPlaying) {
-      audio.pause();
+      stopAllMusic();
     } else {
-      audio.play().catch(() => {
+      audio.play().then(() => {
+        playMusic(audio, playerId);
+      }).catch(() => {
         // Audio play failed - probably no audio file, just simulate
         console.log('Audio play failed, simulating...');
       });
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handleStop = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    
-    audio.pause();
-    audio.currentTime = 0;
-    setIsPlaying(false);
+    stopAllMusic();
     setCurrentTime(0);
   };
 

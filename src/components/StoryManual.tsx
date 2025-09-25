@@ -125,7 +125,7 @@ const PlayIcon = styled.div`
 const sampleChapters: Chapter[] = [
   {
     id: 'homecoming',
-    title: 'The Story So Far',
+    title: 'The Story So Far 📖',
     subtitle: 'The sky looked different back then. Maybe it was brighter… or maybe I just had younger eyes.',
     unlocked: true,
     thumbnail: '/images/cutscenes/main.png',

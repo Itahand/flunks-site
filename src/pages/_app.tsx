@@ -28,6 +28,7 @@ import { AudioProvider } from "contexts/AudioContext";
 import { RadioProvider } from "contexts/RadioContext";
 import { GumProvider } from "contexts/GumContext";
 import { AuthProvider } from "contexts/AuthContext";
+import { MusicProvider } from "contexts/MusicContext";
 import { GumDisplay } from "components/GumDisplay";
 import UserProfilePrompt from "components/UserProfile/UserProfilePrompt";
 import AutoWalletAccessGrant from "components/AutoWalletAccessGrant";
@@ -117,8 +118,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       <ThemeWrapper>
         <AudioProvider>
           <RadioProvider>
-            <WindowsProvider>
-              <ClaimBackpackProvider>
+            <MusicProvider>
+              <WindowsProvider>
+                <ClaimBackpackProvider>
                 <ErrorBoundary fallback={
                   <div style={{
                     padding: '40px',
@@ -204,7 +206,8 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                 </ErrorBoundary>
               </ClaimBackpackProvider>
             </WindowsProvider>
-          </RadioProvider>
+          </MusicProvider>
+        </RadioProvider>
         </AudioProvider>
       </ThemeWrapper>
     </>

@@ -72,18 +72,16 @@ const RPGContainer = styled.div<{ $backgroundPattern: string }>`
   @media (max-width: 768px) {
     min-height: 100vh;
     max-height: none;
-    padding: 15px;
+    padding: 10px;
     /* Fix mobile viewport and scrolling */
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
+    height: auto;
+    position: relative;
     /* Enable smooth scrolling on mobile */
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    /* Contain to parent window */
+    width: 100%;
+    box-sizing: border-box;
   }
   
   @media (max-width: 480px) {
@@ -117,14 +115,14 @@ const DialogueBox = styled(Frame)`
     margin: 15px auto;
     padding: 12px;
     font-size: 16px;
-    max-width: 90%;
+    max-width: calc(100% - 20px);
   }
   
   @media (max-width: 480px) {
     margin: 10px auto;
     padding: 10px;
     font-size: 14px;
-    max-width: 95%;
+    max-width: calc(100% - 10px);
   }
 `;
 

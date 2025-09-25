@@ -15,7 +15,8 @@ interface MySpaceProfileProps {
 
 const ProfileContainer = styled.div<{ bgColor: string; pattern: string }>`
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  max-height: 100%;
   overflow-y: auto;
   background: ${props => props.bgColor};
   background-image: url("${props => BACKGROUND_PATTERNS[props.pattern as keyof typeof BACKGROUND_PATTERNS] || ''}");
@@ -36,6 +37,12 @@ const ProfileContainer = styled.div<{ bgColor: string; pattern: string }>`
   &::-webkit-scrollbar-thumb {
     background: linear-gradient(to bottom, #666, #333);
     border: 1px solid #999;
+  }
+  
+  /* Ensure scrolling works on mobile */
+  @media (max-width: 768px) {
+    -webkit-overflow-scrolling: touch;
+    height: calc(100vh - 60px); /* Account for window header */
   }
 `;
 
