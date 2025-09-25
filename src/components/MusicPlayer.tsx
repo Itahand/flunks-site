@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useMusicContext } from '../contexts/MusicContext';
+import { audioContextService } from '../services/audioContextService';
 
 interface MusicPlayerProps {
   songTitle: string;
@@ -97,17 +98,15 @@ const VolumeSlider = styled.input`
 `;
 
 const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, themeColor, autoplay = false, startTime = 0 }) => {
-  const { playMusic, stopAllMusic, currentAudio, currentMusicPlayerId } = useMusicContext();
+  const { stopAllMusic, playMusic, currentAudio } = useMusicContext();
   const [currentTime, setCurrentTime] = useState(startTime);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(autoplay ? 0.4 : 0.7);
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   
   // Generate unique ID for this player instance
   const playerId = useMemo(() => `player_${songFile}_${Math.random()}`, [songFile]);
-  
-  // Determine if this player is currently active
-  const isPlaying = currentAudio === audioRef.current && currentMusicPlayerId === playerId;
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -115,22 +114,26 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
-    const onEnded = () => stopAllMusic();
+    const onEnded = () => {
+      setIsPlaying(false);
+      stopAllMusic();
+    };
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', onEnded);
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPause);
 
     // Autoplay if enabled
     if (autoplay) {
       const playAudio = async () => {
         try {
-          // Try to resume audio context if it's suspended (helps with autoplay policies)
+          // Try to resume shared audio context (helps with autoplay policies)
           if (typeof window !== 'undefined' && 'AudioContext' in window) {
-            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-            if (audioContext.state === 'suspended') {
-              await audioContext.resume();
-            }
+            await audioContextService.getAudioContext();
           }
           
           // Set start time before playing
@@ -143,6 +146,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
           playMusic(audio, playerId);
         } catch (error) {
           console.log('Autoplay failed, user interaction required:', error);
+          // Don't set isPlaying to true if autoplay failed
         }
       };
       
@@ -168,6 +172,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', onEnded);
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPause);
     };
   }, [autoplay, startTime, playerId, playMusic, stopAllMusic]);
 
@@ -175,31 +181,56 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songTitle, artist, songFile, 
   useEffect(() => {
     return () => {
       const audio = audioRef.current;
-      if (audio && currentAudio === audio) {
-        stopAllMusic();
+      if (audio) {
+        audio.pause();
+        setIsPlaying(false);
       }
     };
-  }, [currentAudio, stopAllMusic]);
+  }, []);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (isPlaying) {
-      stopAllMusic();
+      // Currently playing, so pause
+      try {
+        audio.pause();
+        setIsPlaying(false);
+      } catch (error) {
+        console.log('Error pausing audio:', error);
+        setIsPlaying(false);
+      }
     } else {
-      audio.play().then(() => {
+      // Not playing, so play
+      try {
+        if (currentAudio && currentAudio !== audio) {
+          // Different player is active - stop it first
+          stopAllMusic();
+        }
+        
+        // Ensure audio context is ready before playing
+        await audioContextService.getAudioContext();
+        
+        await audio.play();
+        setIsPlaying(true);
         playMusic(audio, playerId);
-      }).catch(() => {
-        // Audio play failed - probably no audio file, just simulate
-        console.log('Audio play failed, simulating...');
-      });
+      } catch (error) {
+        console.log('Audio play failed:', error);
+        setIsPlaying(false);
+      }
     }
   };
 
   const handleStop = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      setCurrentTime(0);
+      setIsPlaying(false);
+    }
     stopAllMusic();
-    setCurrentTime(0);
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -7,7 +7,8 @@ export interface CliqueProfile {
   name: string;
   clique: string;
   backgroundColor: string;
-  backgroundPattern: string;
+  backgroundPattern: stri      { name: "The Rug Dr", status: "Clubhouse legend 🏠" },
+      { name: "Snugglebug", status: "Sweetest friend 🦋" };
   mood: string;
   location: string;
   age: string;
@@ -166,7 +167,7 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
     age: "17 (but wise beyond my years)",
     lastLogin: "Currently online (always)",
     profileViews: 2847,
-    aboutMe: "What's up everyone! I'm just a chill dude who loves the finer things in life - video games, good movies, and appreciating beautiful women. I spend most of my time at the arcade perfecting my Street Fighter combos or jamming on my guitar. When I'm not gaming, you can find me just chillin' in my secret clubhouse in the woods with my buddies - it's our own little paradise away from all the drama! Life's too short to stress about the small stuff, so I just go with the flow and enjoy the ride. Looking for fellow cool cats who appreciate the art of relaxation and good times! 🎮🎸🏠",
+    aboutMe: "What's up everyone! I'm just a chill dude who loves the finer things in life - video games, good movies, and appreciating beautiful women. I spend most of my time at the arcade perfecting my Street Fighter combos or jamming on my guitar. Life's too short to stress about the small stuff, so I just go with the flow and enjoy the ride. Looking for fellow cool cats who appreciate the art of relaxation and good times! 🎮🎸",
     favoriteQuote: "The dude abides, man.",
     interests: ["Video games", "Guitar playing", "Arcade culture", "Movie marathons", "Chill music", "Photography", "Skateboarding", "Comic books"],
     music: ["Nirvana", "Stone Temple Pilots", "Soundgarden", "Pearl Jam", "Red Hot Chili Peppers", "Sublime", "Bush", "Alice in Chains"],
@@ -180,8 +181,8 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
       { name: "My Jock", status: "Workout partner 💪" },
       { name: "My Prep", status: "Country club buddy �️‍♂️" },
       { name: "My Freak", status: "Alternative music mate 🎸" },
-      { name: "The Rug Dr", status: "Clubhouse legend �" },
-      { name: "Snugglebug", status: "Sweetest friend 🦋" }
+      { name: "Casey", status: "Gaming buddy 🎮" },
+      { name: "Drew", status: "Guitar jamming partner �" }
     ],
     profileSong: "Blink-182 - All the Small Things"
   }

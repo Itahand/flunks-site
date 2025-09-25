@@ -342,17 +342,28 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
   }
 
   const handleFriendClick = async (friendName: string) => {
-    if (friendName === 'Flunko') {
-      // Check for Chapter 3 Overachiever achievement
-      if (primaryWallet?.address && clique !== 'flunko') {
+    // Map clique friend names to clique identifiers
+    const cliqueMap: Record<string, string> = {
+      'Flunko': 'flunko',
+      'My Geek': 'the-nerds',
+      'My Jock': 'the-jocks', 
+      'My Prep': 'the-preps',
+      'My Freak': 'the-freaks'
+    };
+
+    const targetClique = cliqueMap[friendName];
+    
+    if (targetClique) {
+      // Award achievement for clicking from different clique
+      if (primaryWallet?.address && clique !== targetClique) {
         try {
           const result = await awardGum(primaryWallet.address, 'chapter3_overachiever', {
             clicked_from_clique: clique,
+            target_clique: targetClique,
             achievement: 'Chapter 3 Overachiever'
           });
           
           if (result.success && result.earned > 0) {
-            // Show achievement notification
             setShowAchievement(true);
           }
         } catch (error) {
@@ -360,20 +371,23 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
         }
       }
 
-      // Open Flunko's MySpace profile in a new window
+      // Open the target clique's MySpace profile in a new window
+      const windowKey = `${WINDOW_IDS.MYPLACE}_${targetClique}`;
+      const profileName = friendName === 'Flunko' ? 'Flunko' : friendName.replace('My ', '');
+      
       openWindow({
-        key: `${WINDOW_IDS.MYPLACE}_flunko`,
+        key: windowKey,
         window: (
           <DraggableResizeableWindow
-            windowsId={`${WINDOW_IDS.MYPLACE}_flunko`}
-            onClose={() => {}} // Will be handled by the window system
+            windowsId={windowKey}
+            onClose={() => {}}
             initialWidth="100%"
             initialHeight="100%"
             resizable={false}
-            headerTitle="Flunko's MyPlace Profile"
+            headerTitle={`${profileName}'s MyPlace Profile`}
             headerIcon="/images/icons/open-book.png"
           >
-            <MySpaceProfile clique="flunko" />
+            <MySpaceProfile clique={targetClique} />
           </DraggableResizeableWindow>
         ),
       });
@@ -594,35 +608,51 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
           <Section>
             <SectionHeader bgColor="#ff6600">Top 6 Friends</SectionHeader>
             <FriendsList>
-              {profile.topFriends.map((friend: Friend, index: number) => (
-                <FriendCard 
-                  key={index}
-                  isClickable={friend.name === 'Flunko'}
-                  onClick={() => friend.name === 'Flunko' ? handleFriendClick(friend.name) : undefined}
-                  title={friend.name === 'Flunko' ? 'Click to visit Flunko\'s profile!' : undefined}
-                >
-                  <FriendAvatar hasImage={friend.name === 'Flunko'}>
-                    {friend.name === 'Flunko' ? (
-                      <img 
-                        src="/images/myplace/myspace-flunko.png" 
-                        alt="Flunko"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement!.textContent = 'F';
-                        }}
-                      />
-                    ) : (
-                      friend.name.charAt(0)
-                    )}
-                  </FriendAvatar>
-                  <div style={{ fontWeight: 'bold', fontSize: '8px' }}>
-                    {friend.name}
-                  </div>
-                  <div style={{ fontSize: '7px', color: '#666', marginTop: '2px' }}>
-                    {friend.status}
-                  </div>
-                </FriendCard>
-              ))}
+              {profile.topFriends.map((friend: Friend, index: number) => {
+                const isClickableFriend = ['Flunko', 'My Geek', 'My Jock', 'My Prep', 'My Freak'].includes(friend.name);
+                const getProfileImage = (name: string) => {
+                  const imageMap: Record<string, string> = {
+                    'Flunko': '/images/myplace/myspace-flunko.png',
+                    'My Geek': '/images/profiles/cliques/the-nerds/profile.png',
+                    'My Jock': '/images/profiles/cliques/the-jocks/profile.png', 
+                    'My Prep': '/images/profiles/cliques/the-preps/profile.png',
+                    'My Freak': '/images/profiles/cliques/the-freaks/profile.png',
+                    'The Rug Dr': '/images/profiles/the-rug-dr.png',
+                    'Snugglebug': '/images/profiles/snugglebug.png'
+                  };
+                  return imageMap[name];
+                };
+                
+                return (
+                  <FriendCard 
+                    key={index}
+                    isClickable={isClickableFriend}
+                    onClick={() => isClickableFriend ? handleFriendClick(friend.name) : undefined}
+                    title={isClickableFriend ? `Click to visit ${friend.name}'s profile!` : undefined}
+                  >
+                    <FriendAvatar hasImage={isClickableFriend}>
+                      {isClickableFriend ? (
+                        <img 
+                          src={getProfileImage(friend.name)} 
+                          alt={friend.name}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement!.textContent = friend.name.charAt(0);
+                          }}
+                        />
+                      ) : (
+                        friend.name.charAt(0)
+                      )}
+                    </FriendAvatar>
+                    <div style={{ fontWeight: 'bold', fontSize: '8px' }}>
+                      {friend.name}
+                    </div>
+                    <div style={{ fontSize: '7px', color: '#666', marginTop: '2px' }}>
+                      {friend.status}
+                    </div>
+                  </FriendCard>
+                );
+              })}
             </FriendsList>
           </Section>
 

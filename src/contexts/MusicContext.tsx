@@ -4,8 +4,11 @@ interface MusicContextType {
   currentAudio: HTMLAudioElement | null;
   currentMusicPlayerId: string | null;
   playMusic: (audio: HTMLAudioElement, playerId: string) => void;
+  pauseMusic: () => void;
+  resumeMusic: () => void;
   stopAllMusic: () => void;
   isPlaying: boolean;
+  isCurrentPlayer: (audio: HTMLAudioElement | null, playerId: string) => boolean;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -28,6 +31,14 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setIsPlaying(true);
   };
 
+  const pauseMusic = () => {
+    setIsPlaying(false);
+  };
+
+  const resumeMusic = () => {
+    setIsPlaying(true);
+  };
+
   const stopAllMusic = () => {
     if (currentAudio) {
       currentAudio.pause();
@@ -38,14 +49,21 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setIsPlaying(false);
   };
 
+  const isCurrentPlayer = (audio: HTMLAudioElement | null, playerId: string) => {
+    return currentAudio === audio && currentMusicPlayerId === playerId;
+  };
+
   return (
     <MusicContext.Provider
       value={{
         currentAudio,
         currentMusicPlayerId,
         playMusic,
+        pauseMusic,
+        resumeMusic,
         stopAllMusic,
         isPlaying,
+        isCurrentPlayer,
       }}
     >
       {children}

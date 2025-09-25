@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ProgressBar } from "react95";
 import styled, { keyframes } from "styled-components";
+import { audioContextService } from '../services/audioContextService';
 
 interface Props {
   children?: React.ReactNode;
@@ -35,10 +36,14 @@ const starTwinkle = keyframes`
 // Styled Components
 const LoaderContainer = styled.div`
   display: grid;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
   grid-template-columns: 1fr;
   grid-template-rows: 11fr 1fr;
+  z-index: 9999;
 `;
 
 const TiltedSynthContainer = styled.div`
@@ -158,6 +163,45 @@ const TiltedGridLoader: React.FC<Props> = ({ children }) => {
   };
 
   useEffect(() => {
+    // Play synthwave loading sound
+    const playLoadingSound = async () => {
+      if (typeof window === 'undefined') return;
+      
+      try {
+        const audioContext = await audioContextService.getAudioContext();
+        
+        const playSequence = (frequencies: number[], durations: number[]) => {
+          let startTime = audioContext.currentTime;
+          
+          frequencies.forEach((freq, i) => {
+            if (freq > 0) {
+              const oscillator = audioContext.createOscillator();
+              const gainNode = audioContext.createGain();
+              
+              oscillator.connect(gainNode);
+              gainNode.connect(audioContext.destination);
+              
+              oscillator.frequency.setValueAtTime(freq, startTime);
+              gainNode.gain.setValueAtTime(0.1, startTime);
+              gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + durations[i]);
+              
+              oscillator.start(startTime);
+              oscillator.stop(startTime + durations[i]);
+            }
+            startTime += durations[i];
+          });
+        };
+        
+        // Tilted synthwave sound pattern
+        playSequence([140, 100, 180, 120, 200], [0.5, 0.4, 0.6, 0.5, 0.8]);
+      } catch (error) {
+        console.log('Audio context failed:', error);
+      }
+    };
+    
+    // Play sound after short delay
+    setTimeout(playLoadingSound, 100);
+
     const timer = setInterval(() => {
       setPercent((previousPercent) => {
         if (previousPercent === 100) {
