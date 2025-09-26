@@ -21,7 +21,7 @@ const FootballFieldMain = () => {
 
   // Create audio instance for Friday Night Lights - set to loop
   const fridayNightLightsAudio = useMemo(() => {
-    const audio = new Audio("/sounds/friday-night-lights.mp3");
+    const audio = new Audio("/sounds/homecoming.mp3");
     audio.loop = true;
     audio.volume = 0.6; // Set volume to 60%
     return audio;
@@ -148,32 +148,35 @@ const FootballFieldMain = () => {
       {/* Dark Overlay to dim the background */}
       <div className="absolute inset-0 bg-black bg-opacity-30 z-5"></div>
 
-      {/* Story Mode Text Box - Centered in upper area */}
-      <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 max-w-4xl px-4">
+      {/* Story Mode Text Box - Centered in upper area with mobile responsiveness */}
+      <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 w-full px-4 sm:px-6 max-w-4xl">
         <div 
-          className="bg-black border-4 text-white p-6 rounded-none shadow-xl"
+          className="bg-black border-4 text-white p-4 sm:p-6 rounded-none shadow-xl mx-auto"
           style={{
             borderColor: '#f5a2d3',
             background: 'rgba(10, 10, 14, 0.85)',
-            fontSize: '18px',
+            fontSize: '16px',
             lineHeight: '1.4',
-            maxWidth: '900px',
-            margin: '0 auto'
+            maxWidth: '900px'
           }}
         >
-          <p style={{ margin: 0, fontStyle: 'italic' }}>
+          <p style={{ 
+            margin: 0, 
+            fontStyle: 'italic',
+            fontSize: 'clamp(14px, 3vw, 18px)' // Responsive font size
+          }}>
             All day the halls had carried a strange hush, as if the walls themselves were waiting for something to happen. By the time the bleachers filled and the lights hummed to life, the strangeness hadn't lifted—it had deepened. The crowd cheered, the band played, but the night's rhythm was wrong, like a song played just out of tune. This wasn't homecoming. This was the beginning of something else—something slipping quietly away, even as no one noticed.
           </p>
         </div>
       </div>
 
-      {/* Bottom Buttons Container - Smaller and positioned at bottom center */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center gap-3">
-        {/* Friday Night Lights Button - Smaller size */}
+      {/* Bottom Buttons Container - Mobile responsive positioning */}
+      <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center gap-2 sm:gap-3 w-full px-4">
+        {/* Friday Night Lights Button - Mobile responsive sizing */}
         <button
           onClick={handleFridayNightLightsClick}
           disabled={buttonClickLoading || hasClaimedGum}
-          className={`px-6 py-3 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg border-2 
+          className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg transition-all duration-300 shadow-lg border-2 w-full max-w-xs
             ${buttonClickLoading 
               ? 'bg-gray-600 text-gray-300 cursor-not-allowed border-gray-500' 
               : hasClaimedGum
@@ -182,7 +185,7 @@ const FootballFieldMain = () => {
             }`}
           style={{
             ...fontStyle,
-            fontSize: '18px',
+            fontSize: 'clamp(16px, 4vw, 18px)', // Responsive font size
             fontWeight: 'bold',
           }}
         >
@@ -194,12 +197,12 @@ const FootballFieldMain = () => {
           }
         </button>
 
-        {/* Repeat Offender Button - Only shows if Friday Night Lights has been claimed, smaller size */}
+        {/* Repeat Offender Button - Mobile responsive sizing */}
         {hasClaimedGum && (
           <button
             onClick={handleRepeatOffenderClick}
             disabled={repeatOffenderLoading || !repeatOffenderEligibility.canClaim}
-            className={`px-6 py-3 rounded-lg font-bold text-base transition-all duration-300 shadow-lg border-2 
+            className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 shadow-lg border-2 w-full max-w-xs
               ${repeatOffenderLoading 
                 ? 'bg-gray-600 text-gray-300 cursor-not-allowed border-gray-500' 
                 : !repeatOffenderEligibility.canClaim
@@ -208,7 +211,7 @@ const FootballFieldMain = () => {
               }`}
             style={{
               ...fontStyle,
-              fontSize: '16px',
+              fontSize: 'clamp(14px, 3.5vw, 16px)', // Responsive font size
               fontWeight: 'bold',
             }}
           >
