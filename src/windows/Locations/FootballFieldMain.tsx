@@ -134,11 +134,11 @@ const FootballFieldMain = () => {
 
   return (
     <div className="relative w-full h-full">
-      {/* Background Image */}
+      {/* Background Image - Zoomed out to fit better */}
       <img
         src="/images/backdrops/football-field.png"
         alt="Football Field Background"
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        className="absolute inset-0 w-full h-full object-contain z-0"
         onError={(e) => {
           // Fallback to blank background if image fails to load
           e.currentTarget.src = "/images/backdrops/BLANK.png";
@@ -146,24 +146,43 @@ const FootballFieldMain = () => {
       />
       
       {/* Dark Overlay to dim the background */}
-      <div className="absolute inset-0 bg-black bg-opacity-60 z-5"></div>
+      <div className="absolute inset-0 bg-black bg-opacity-30 z-5"></div>
 
-      {/* Central Content Container */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 text-center max-w-2xl px-4">
-        {/* Friday Night Lights Button - Enhanced prominence */}
+      {/* Story Mode Text Box - Centered in upper area */}
+      <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 max-w-4xl px-4">
+        <div 
+          className="bg-black border-4 text-white p-6 rounded-none shadow-xl"
+          style={{
+            borderColor: '#f5a2d3',
+            background: 'rgba(10, 10, 14, 0.85)',
+            fontSize: '18px',
+            lineHeight: '1.4',
+            maxWidth: '900px',
+            margin: '0 auto'
+          }}
+        >
+          <p style={{ margin: 0, fontStyle: 'italic' }}>
+            All day the halls had carried a strange hush, as if the walls themselves were waiting for something to happen. By the time the bleachers filled and the lights hummed to life, the strangeness hadn't lifted—it had deepened. The crowd cheered, the band played, but the night's rhythm was wrong, like a song played just out of tune. This wasn't homecoming. This was the beginning of something else—something slipping quietly away, even as no one noticed.
+          </p>
+        </div>
+      </div>
+
+      {/* Bottom Buttons Container - Smaller and positioned at bottom center */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center gap-3">
+        {/* Friday Night Lights Button - Smaller size */}
         <button
           onClick={handleFridayNightLightsClick}
           disabled={buttonClickLoading || hasClaimedGum}
-          className={`mb-6 px-10 py-5 rounded-xl font-bold text-2xl transition-all duration-300 shadow-2xl border-2 
+          className={`px-6 py-3 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg border-2 
             ${buttonClickLoading 
               ? 'bg-gray-600 text-gray-300 cursor-not-allowed border-gray-500' 
               : hasClaimedGum
               ? 'bg-gray-700 text-gray-400 cursor-not-allowed border-gray-600'
-              : 'bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-white border-yellow-400 hover:scale-110 hover:shadow-yellow-500/50'
+              : 'bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-white border-yellow-400 hover:scale-105 hover:shadow-yellow-500/50'
             }`}
           style={{
             ...fontStyle,
-            fontSize: '24px', // Override for larger button text
+            fontSize: '18px',
             fontWeight: 'bold',
           }}
         >
@@ -175,21 +194,21 @@ const FootballFieldMain = () => {
           }
         </button>
 
-        {/* Repeat Offender Button - Only shows if Friday Night Lights has been claimed */}
+        {/* Repeat Offender Button - Only shows if Friday Night Lights has been claimed, smaller size */}
         {hasClaimedGum && (
           <button
             onClick={handleRepeatOffenderClick}
             disabled={repeatOffenderLoading || !repeatOffenderEligibility.canClaim}
-            className={`mb-6 px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300 shadow-2xl border-2 
+            className={`px-6 py-3 rounded-lg font-bold text-base transition-all duration-300 shadow-lg border-2 
               ${repeatOffenderLoading 
                 ? 'bg-gray-600 text-gray-300 cursor-not-allowed border-gray-500' 
                 : !repeatOffenderEligibility.canClaim
                 ? 'bg-red-700 text-red-300 cursor-not-allowed border-red-600'
-                : 'bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white border-red-400 hover:scale-110 hover:shadow-red-500/50'
+                : 'bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white border-red-400 hover:scale-105 hover:shadow-red-500/50'
               }`}
             style={{
               ...fontStyle,
-              fontSize: '20px', // Slightly smaller than Friday Night Lights
+              fontSize: '16px',
               fontWeight: 'bold',
             }}
           >
@@ -203,20 +222,6 @@ const FootballFieldMain = () => {
             }
           </button>
         )}
-
-        {/* Small Town Football Blurb */}
-        <div className="bg-black bg-opacity-70 backdrop-blur-sm rounded-lg p-6 border border-gray-600 shadow-xl">
-          <p 
-            className="text-white text-lg leading-relaxed italic font-medium"
-            style={{
-              ...fontStyle,
-              fontSize: '18px', // Specific size for main quote
-              lineHeight: '1.6',
-            }}
-          >
-            All day the halls had carried a strange hush, as if the walls themselves were waiting for something to happen. By the time the bleachers filled and the lights hummed to life, the strangeness hadn't lifted—it had deepened. The crowd cheered, the band played, but the night's rhythm was wrong, like a song played just out of tune. This wasn't homecoming. This was the beginning of something else—something slipping quietly away, even as no one noticed.
-          </p>
-        </div>
       </div>
     </div>
   );
