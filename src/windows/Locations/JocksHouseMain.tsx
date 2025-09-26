@@ -529,7 +529,7 @@ const JocksHouseMain = () => {
                   onClick={() => openTimeBasedAccessDemo()}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm min-h-[44px] flex items-center justify-center"
                 >
-                  � Jacket Pocket
+                  ⏰ Time
                 </button>
               </div>
             </div>
@@ -896,7 +896,7 @@ const JocksHouseMain = () => {
 
         {/* Time Info Display */}
         <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm z-20">
-          jacket pocket
+          time
         </div>
       </div>
 
