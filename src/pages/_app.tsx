@@ -33,7 +33,6 @@ import { GumDisplay } from "components/GumDisplay";
 import UserProfilePrompt from "components/UserProfile/UserProfilePrompt";
 import AutoWalletAccessGrant from "components/AutoWalletAccessGrant";
 import ErrorBoundary from "components/ErrorBoundary";
-import MobileDataLoadingPatch from "components/MobileDataLoadingPatch";
 // Removed all mobile wallet override components for clean Dynamic Labs behavior
 
 const ThemeWrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -196,7 +195,6 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                             <Analytics />
                             <AutoWalletAccessGrant />
                             <UserProfilePrompt autoShow={false} showToast={false} />
-                            <MobileDataLoadingPatch />
                             <DynamicUserProfile />
                           </GumProvider>
                       </AuthProvider>
