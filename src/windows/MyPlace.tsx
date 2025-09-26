@@ -30,7 +30,7 @@ const Container = styled.div`
   animation: backgroundPulse 4s ease-in-out infinite alternate;
   
   @media (max-width: 768px) {
-    padding: 20px 10px;
+    padding: 20px 10px 100px 10px; /* Add extra bottom padding for mobile */
     min-height: 100vh;
     justify-content: flex-start;
   }
@@ -95,11 +95,14 @@ const HeaderText = styled.h1`
   white-space: nowrap;
   
   @media (max-width: 768px) {
-    font-size: 32px;
+    font-size: 20px;
+    white-space: normal;
+    line-height: 1.3;
+    word-spacing: 100vw; /* Force each word to its own line */
   }
   
   @media (max-width: 600px) {
-    font-size: 24px;
+    font-size: 18px;
   }
   
   @keyframes flashingText {
