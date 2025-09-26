@@ -1253,7 +1253,7 @@ const UserProfile: React.FC = () => {
                 maxWidth: '400px'
               }}>
                 <p style={{ margin: '0', fontSize: '14px', fontStyle: 'italic', fontWeight: 'bold' }}>
-                  🕺 Visit the gymnasium in the high school on Saturdays for the one-time homecoming dance!
+                  🕺 Visit the gymnasium in the high school for the one-time homecoming dance!
                 </p>
                 <p style={{ margin: '8px 0 0 0', fontSize: '12px', opacity: 0.8 }}>
                   💡 Navigate to the high school from the map and enter the gymnasium to find the dance floor.

@@ -296,7 +296,7 @@ const HighSchoolMain = () => {
                         <h1 className="text-3xl font-bold mb-2">🏀 Gymnasium</h1>
                         <p className="text-lg text-gray-300 max-w-2xl mx-auto">
                           The basketball hoops are bent at strange angles. Echoes of old cheers seem to bounce off the walls. 
-                          On Saturday nights, this place transforms into a magical dance floor for homecoming.
+                          On one special night, this place transforms into a magical dance floor for homecoming.
                         </p>
                       </div>
 
@@ -307,7 +307,7 @@ const HighSchoolMain = () => {
                           <h2 className="text-2xl font-bold mb-4 text-orange-400">Homecoming Dance</h2>
                           
                           <p className="text-gray-300 mb-6 leading-relaxed">
-                            Every Saturday night, the gymnasium transforms into a magical dance floor! 
+                            On one special night only, the gymnasium transforms into a magical dance floor! 
                             Join the homecoming dance and earn <span className="text-orange-400 font-bold">50 GUM</span> 
                             for your Chapter 4 Slacker objective. This is a one-time reward.
                           </p>
