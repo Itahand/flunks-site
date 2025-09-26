@@ -214,7 +214,7 @@ const FootballFieldMain = () => {
               lineHeight: '1.6',
             }}
           >
-            "Now, we go out there and we half-ass it because we're scared, all we're left with is an excuse. We're always gonna wonder. But, we go out there and we give it absolutely everything... that's heroic. Let's be heroes!"
+            All day the halls had carried a strange hush, as if the walls themselves were waiting for something to happen. By the time the bleachers filled and the lights hummed to life, the strangeness hadn't lifted—it had deepened. The crowd cheered, the band played, but the night's rhythm was wrong, like a song played just out of tune. This wasn't homecoming. This was the beginning of something else—something slipping quietly away, even as no one noticed.
           </p>
         </div>
       </div>
