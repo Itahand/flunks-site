@@ -117,11 +117,11 @@ export const CLIQUE_PROFILES: Record<string, CliqueProfile> = {
     dislikes: ["Losing", "Weak effort", "Quitters", "Nerds who don't respect sports", "Injury timeouts", "Homework", "Anyone better than me"],
     topFriends: [
       { name: "Mike", status: "Workout buddy 💪" },
-      { name: "Steve", status: "Team co-captain 🏈" },
+      { name: "The Rug Dr", status: "Clubhouse legend �" },
       { name: "Danny", status: "Running back 🏃" },
-      { name: "Kyle", status: "Wrestling partner 🤼" },
-      { name: "Jake", status: "Gym spotter 🏋️" },
-      { name: "Flunko", status: "Gaming buddy 🎮" }
+      { name: "My Freak", status: "Alternative music mate 🎸" },
+      { name: "Thurston", status: "Investment advisor 💰" },
+      { name: "Muffy", status: "Best bud 😎" }
     ],
     profileSong: "Dr. Dre - Still D.R.E."
   },
