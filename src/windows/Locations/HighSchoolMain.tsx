@@ -8,6 +8,7 @@ import { awardGum } from "utils/gumAPI";
 import { trackCafeteriaButtonClick } from "utils/cafeteriaButtonTracking";
 import FootballerGumClaimButton from "components/FootballerGumClaimButton";
 import HomecomingDanceButton from "components/HomecomingDanceButton";
+import HomecomingTestButton from "components/HomecomingTestButton";
 import HomecomingStory from "../../components/HomecomingStory";
 
 const HighSchoolMain = () => {
@@ -295,7 +296,7 @@ const HighSchoolMain = () => {
                     <div className="absolute inset-0 bg-black bg-opacity-40 z-10 flex flex-col min-h-full">
                       {/* Header Section */}
                       <div className="p-4 md:p-6 text-center">
-                        <h1 className="text-2xl md:text-3xl font-bold mb-2">🏀 Gymnasium</h1>
+                        <h1 className="text-2xl md:text-3xl font-bold mb-2">🏀 Gymnasium v2.0</h1>
                         <p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto">
                           The basketball hoops are bent at strange angles. Echoes of old cheers seem to bounce off the walls. 
                           On one special night, this place transforms into a magical dance floor for homecoming.
@@ -315,12 +316,19 @@ const HighSchoolMain = () => {
                           </p>
                           
                           <div className="space-y-3">
-                            <HomecomingDanceButton />
+                            {/* Always show test button on vercel.app domains or build mode */}
+                            <div className="bg-yellow-600 text-black px-3 py-1 rounded-full text-xs font-bold text-center mb-2">
+                              🧪 BETA TEST MODE
+                            </div>
+                            <HomecomingTestButton bypassTimeCheck={true} />
                             
                             <button
                               onClick={() => {
                                 console.log('Story button clicked!');
+                                console.log('Current showHomecomingStory state:', showHomecomingStory);
                                 setShowHomecomingStory(true);
+                                console.log('Set showHomecomingStory to true');
+                                console.log('Window location:', typeof window !== 'undefined' ? window.location.href : 'server-side');
                               }}
                               className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white rounded-lg font-bold transition-all duration-300 hover:scale-105 text-sm touch-manipulation"
                             >
@@ -339,7 +347,51 @@ const HighSchoolMain = () => {
                       
                       {/* Homecoming Story Overlay */}
                       {showHomecomingStory && (
-                        <HomecomingStory onClose={() => setShowHomecomingStory(false)} />
+                        <>
+                          {console.log('🎭 Rendering HomecomingStory component, showHomecomingStory:', showHomecomingStory)}
+                          <div style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: 'rgba(255, 0, 0, 0.5)', // Bright red for debugging
+                            zIndex: 99999,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
+                            <div style={{
+                              background: 'white',
+                              padding: '20px',
+                              borderRadius: '8px',
+                              color: 'black',
+                              textAlign: 'center'
+                            }}>
+                              <h2>DEBUG: Story Modal</h2>
+                              <p>This is a test to see if modals work!</p>
+                              <button 
+                                onClick={() => {
+                                  console.log('🎭 Debug close clicked');
+                                  setShowHomecomingStory(false);
+                                }}
+                                style={{ 
+                                  background: 'red', 
+                                  color: 'white', 
+                                  padding: '10px 20px', 
+                                  border: 'none',
+                                  borderRadius: '4px'
+                                }}
+                              >
+                                Close Debug
+                              </button>
+                            </div>
+                          </div>
+                          <HomecomingStory onClose={() => {
+                            console.log('Story onClose called');
+                            setShowHomecomingStory(false);
+                          }} />
+                        </>
                       )}
                     </div>
                   </div>
