@@ -5,6 +5,7 @@ import { useTimeBasedImage } from "utils/timeBasedImages";
 import { useState } from "react";
 import FlappyFlunkWindow from "windows/Games/FlappyFlunkWindow";
 import FlunkJumpWindow from "windows/Games/FlunkJumpWindow";
+import FlunkyUppyArcadeWindow from "windows/Games/FlunkyUppyArcadeWindow";
 import MultiColorText from "components/MultiColorText";
 import { isFeatureEnabled } from "utils/buildMode";
 
@@ -318,7 +319,7 @@ const ArcadeMain = () => {
             openRoom(
               WINDOW_IDS.ARCADE_TOP_LEFT,
               "Front Area",
-              "NEON LIGHTS FLASH! Rows of vintage arcade cabinets line the walls like colorful soldiers! Street Fighter II, Pac-Man, and Galaga machines hum with electric energy! High score screens flicker with legendary names! The carpet is worn from decades of shuffling feet and victory dances!"
+              "By Saturday morning, the gym was ready for a night to remember. Streamers hung from the rafters, disco balls cast dancing lights across the polished floor, and everything was perfect for homecoming.\n\nBut by midday, the announcement came: the dance was off. No one gave a reason, just murmurs about a situation still unfolding. Nobody knew for sure what was happening — only that it wasn't good.\n\nThe lights stayed on, the decorations hung in silence, and the dance floor never saw a single step. The mystery of what happened that day still echoes through these empty halls."
             )
           }
           className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
@@ -412,86 +413,29 @@ const ArcadeMain = () => {
           </button>
         )}
 
-        {/* Coming Soon Section */}
+        {/* Flunky Uppy Arcade Machine */}
         <button
           onClick={() => {
             openWindow({
-              key: "arcade-coming-soon",
+              key: "flunky-uppy-arcade",
               window: (
-                <div
-                  style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    maxWidth: '95vw',
-                    maxHeight: '90vh',
-                    backgroundColor: '#000000',
-                    border: '4px solid #FFFFFF',
-                    borderRadius: '12px',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.8)',
-                    zIndex: 1000,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden',
-                    padding: '20px'
-                  }}
+                <DraggableResizeableWindow
+                  windowsId="flunky-uppy-arcade"
+                  headerTitle="🎮 FLUNKY UPPY ARCADE"
+                  onClose={() => closeWindow("flunky-uppy-arcade")}
+                  initialWidth="480px"
+                  initialHeight="640px"
+                  headerIcon="/images/icons/flunky-uppy-icon.png"
+                  resizable={true}
                 >
-                  {/* Close Button */}
-                  <button
-                    onClick={() => closeWindow("arcade-coming-soon")}
-                    style={{
-                      position: 'absolute',
-                      top: '10px',
-                      right: '10px',
-                      backgroundColor: '#FF0000',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '30px',
-                      height: '30px',
-                      cursor: 'pointer',
-                      fontSize: '16px',
-                      fontWeight: 'bold',
-                      zIndex: 1001
-                    }}
-                  >
-                    ✕
-                  </button>
-                  
-                  {/* Coming Soon Image */}
-                  <img 
-                    src="/images/coming-soon.png"
-                    alt="Coming Soon"
-                    style={{
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                      width: 'auto',
-                      height: 'auto',
-                      objectFit: 'contain',
-                      display: 'block',
-                      margin: '0 auto'
-                    }}
-                    onError={(e) => {
-                      // Fallback if image doesn't exist
-                      e.currentTarget.style.display = 'none';
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.innerHTML = `
-                          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: white; font-size: 48px; font-family: 'Press Start 2P', monospace;">
-                            🚧 COMING SOON 🚧
-                          </div>
-                        `;
-                      }
-                    }}
-                  />
-                </div>
+                  <FlunkyUppyArcadeWindow />
+                </DraggableResizeableWindow>
               ),
             });
           }}
           className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded hover:from-yellow-400 hover:to-orange-400 transition-all duration-200 hover:scale-105 min-w-[120px] text-center font-bold border-2 border-yellow-300 shadow-lg animate-pulse"
         >
-          🚧 COMING SOON
+          🎮 FLUNKY UPPY
         </button>
         </div>
       </div>
