@@ -48,7 +48,7 @@ import RPGProfileForm from "components/UserProfile/RPGProfileForm";
 import { useUserProfile } from "contexts/UserProfileContext";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import LoadingScreenPreview from "windows/LoadingScreenPreview";
-import ZoltarFortuneApp from "windows/ZoltarFortuneApp";
+import ZoltarFortuneWindow from "windows/ZoltarFortuneWindow";
 
 import { GumAdminPanel } from "components/GumAdminPanel";
 import { TimeConfigAdmin } from "components/DayNightHouse";
@@ -675,7 +675,7 @@ const windowsMemod = useMemo(() => (
           appId="zoltar-fortune"
           title="Zoltar Fortune"
           icon="/images/icons/zoltar-icon.png"
-          onDoubleClick={() => openWindow({ key: WINDOW_IDS.ZOLTAR_FORTUNE_APP, window: <ZoltarFortuneApp /> })}
+          onDoubleClick={() => openWindow({ key: WINDOW_IDS.ZOLTAR_FORTUNE_APP, window: <ZoltarFortuneWindow /> })}
         />
         </div>
       </div>
