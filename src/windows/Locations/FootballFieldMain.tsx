@@ -4,7 +4,6 @@ import { awardGum } from "utils/gumAPI";
 import { trackFridayNightLightsClick, checkFridayNightLightsClicked } from "../../utils/fridayNightLightsTracking";
 import { checkRepeatOffenderEligibility, formatTimeRemaining } from "../../utils/repeatOffenderTracking";
 import { getFontStyle } from "utils/fontConfig";
-import ZoltarMachine from "../../components/ZoltarMachine";
 
 const FootballFieldMain = () => {
   const { walletAddress, user } = useAuth();
@@ -44,7 +43,7 @@ const FootballFieldMain = () => {
   const fridayNightLightsAudio = useMemo(() => {
     if (typeof window === 'undefined') return null;
     
-    const audio = new Audio("/sounds/homecoming.mp3");
+    const audio = new Audio("/music/homecoming.mp3");
     audio.loop = true;
     audio.volume = 0.6; // Set volume to 60%
     
@@ -270,43 +269,6 @@ const FootballFieldMain = () => {
                 The night's rhythm was wrong, like a song played just out of tune. This wasn't homecoming.
               </p>
             </div>
-          </div>
-
-          {/* Desktop: Zoltar Machine on the left */}
-          <div className="absolute left-4 sm:left-8 top-1/2 transform -translate-y-1/2 z-10 hidden sm:block">
-            <ZoltarMachine 
-              style={{ 
-                transform: 'scale(0.8)',
-                transformOrigin: 'center'
-              }}
-            />
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(0,0,0,0.8)',
-              color: '#FFD700',
-              padding: '5px 12px',
-              borderRadius: '15px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              border: '1px solid #FFD700',
-              textAlign: 'center',
-              whiteSpace: 'nowrap'
-            }}>
-              🔮 Mystical Zoltar 🔮
-            </div>
-          </div>
-
-          {/* Mobile: Zoltar Machine smaller in top right */}
-          <div className="absolute right-2 top-20 z-10 block sm:hidden">
-            <ZoltarMachine 
-              style={{ 
-                transform: 'scale(0.5)',
-                transformOrigin: 'top right'
-              }}
-            />
           </div>
 
           {/* Bottom Buttons Container */}

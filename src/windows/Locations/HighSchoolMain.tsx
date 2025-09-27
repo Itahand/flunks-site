@@ -8,11 +8,13 @@ import { awardGum } from "utils/gumAPI";
 import { trackCafeteriaButtonClick } from "utils/cafeteriaButtonTracking";
 import FootballerGumClaimButton from "components/FootballerGumClaimButton";
 import HomecomingDanceButton from "components/HomecomingDanceButton";
+import HomecomingStory from "../../components/HomecomingStory";
 
 const HighSchoolMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   const { walletAddress, user } = useAuth();
   const [buttonClickLoading, setButtonClickLoading] = useState(false);
+  const [showHomecomingStory, setShowHomecomingStory] = useState(false);
 
   // Use time-based images with your uploaded day/night photos
   const dayImage = "/images/icons/school-day.png";
@@ -274,11 +276,11 @@ const HighSchoolMain = () => {
                   windowsId={WINDOW_IDS.HIGH_SCHOOL_GYMNASIUM}
                   headerTitle="Gymnasium"
                   onClose={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_GYMNASIUM)}
-                  initialWidth="70vw"
-                  initialHeight="70vh"
+                  initialWidth="85vw"
+                  initialHeight="85vh"
                   resizable={true}
                 >
-                  <div className="relative w-full h-full bg-[#2d1810] text-white overflow-hidden">
+                  <div className="relative w-full h-full bg-[#2d1810] text-white overflow-auto md:overflow-hidden">
                     {/* Gymnasium Background Image */}
                     <img
                       src="/images/locations/gymnasium.png"
@@ -290,38 +292,55 @@ const HighSchoolMain = () => {
                     />
                     
                     {/* Content Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-40 z-10 flex flex-col">
+                    <div className="absolute inset-0 bg-black bg-opacity-40 z-10 flex flex-col min-h-full">
                       {/* Header Section */}
-                      <div className="p-6 text-center">
-                        <h1 className="text-3xl font-bold mb-2">🏀 Gymnasium</h1>
-                        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                      <div className="p-4 md:p-6 text-center">
+                        <h1 className="text-2xl md:text-3xl font-bold mb-2">🏀 Gymnasium</h1>
+                        <p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto">
                           The basketball hoops are bent at strange angles. Echoes of old cheers seem to bounce off the walls. 
                           On one special night, this place transforms into a magical dance floor for homecoming.
                         </p>
                       </div>
 
                       {/* Main Content Area */}
-                      <div className="flex-1 flex items-center justify-center p-6">
-                        <div className="bg-black bg-opacity-80 p-8 rounded-xl max-w-md text-center border border-orange-600">
-                          <div className="text-6xl mb-4">🕺</div>
-                          <h2 className="text-2xl font-bold mb-4 text-orange-400">Homecoming Dance</h2>
+                      <div className="flex-1 flex items-center justify-center p-4 md:p-6">
+                        <div className="bg-black bg-opacity-80 p-6 md:p-8 rounded-xl max-w-md text-center border border-orange-600 w-full mx-4">
+                          <div className="text-5xl md:text-6xl mb-4">🕺</div>
+                          <h2 className="text-xl md:text-2xl font-bold mb-4 text-orange-400">Homecoming Dance</h2>
                           
-                          <p className="text-gray-300 mb-6 leading-relaxed">
+                          <p className="text-gray-300 mb-6 leading-relaxed text-sm md:text-base">
                             On one special night only, the gymnasium transforms into a magical dance floor! 
                             Join the homecoming dance and earn <span className="text-orange-400 font-bold">50 GUM</span> 
                             for your Chapter 4 Slacker objective. This is a one-time reward.
                           </p>
                           
-                          <HomecomingDanceButton />
+                          <div className="space-y-3">
+                            <HomecomingDanceButton />
+                            
+                            <button
+                              onClick={() => {
+                                console.log('Story button clicked!');
+                                setShowHomecomingStory(true);
+                              }}
+                              className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white rounded-lg font-bold transition-all duration-300 hover:scale-105 text-sm touch-manipulation"
+                            >
+                              📖 Read the Story
+                            </button>
+                          </div>
                         </div>
                       </div>
 
                       {/* Bottom Section - Additional Content */}
-                      <div className="p-6 text-center">
-                        <p className="text-sm text-gray-400">
+                      <div className="p-4 md:p-6 text-center">
+                        <p className="text-xs md:text-sm text-gray-400">
                           🎵 Dance the night away and find clues about Flunko's whereabouts...
                         </p>
                       </div>
+                      
+                      {/* Homecoming Story Overlay */}
+                      {showHomecomingStory && (
+                        <HomecomingStory onClose={() => setShowHomecomingStory(false)} />
+                      )}
                     </div>
                   </div>
                 </DraggableResizeableWindow>
