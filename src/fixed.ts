@@ -52,6 +52,7 @@ export const WINDOW_IDS = {
   CLIQUE_ACCESS: "clique_access",
   GAME_MANUAL: "game-manual",
   MEME_MANAGER: "meme-manager",
+  ZOLTAR_FORTUNE_APP: "zoltar-fortune-app",
   BROWSER: "browser",
   DEV_PREVIEW: "dev-preview",
   REPORT_CARD: "report-card",
@@ -356,6 +357,11 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
     appName: "Game Manual",
     appIcon: "/images/icons/game-manual-icon.png",
     key: WINDOW_IDS.GAME_MANUAL,
+  },
+  [WINDOW_IDS.ZOLTAR_FORTUNE_APP]: {
+    appName: "Mystical Zoltar",
+    appIcon: "/images/icons/crystal-ball.png",
+    key: WINDOW_IDS.ZOLTAR_FORTUNE_APP,
   },
   [WINDOW_IDS.MEME_MANAGER]: {
     appName: "Meme Manager",

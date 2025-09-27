@@ -184,6 +184,24 @@ export const APP_PERMISSIONS: AppPermission[] = [
     buildModeFeature: 'showIconAnimation'
   },
   
+  // Mystical Zoltar Fortune Machine - Build Mode Only
+  {
+    id: 'zoltar-fortune',
+    title: 'Mystical Zoltar',
+    requiredLevel: ['ADMIN', 'BETA', 'COMMUNITY'],
+    description: 'Fortune telling game machine - spend GUM for a chance to win big!',
+    buildModeFeature: 'showZoltarFortune'
+  },
+  
+  // External links - available to all
+  {
+    id: 'discord',
+    title: 'Icon Animation',
+    requiredLevel: ['ADMIN'],
+    description: 'Preview desktop icon animations',
+    buildModeFeature: 'showIconAnimation'
+  },
+  
   // External links - available to all
   {
     id: 'discord',

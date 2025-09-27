@@ -5,8 +5,10 @@ import {
   getUserGumStats, 
   getUserGumBalance, 
   awardGum,
+  spendGum,
   type GumStats, 
-  type GumAwardResult 
+  type GumAwardResult,
+  type GumSpendResult
 } from '../utils/gumAPI';
 import { autoClaimDailyLogin } from '../services/dailyLoginService';
 import { checkForSpecialEvents } from '../services/specialEventsService';
@@ -21,6 +23,7 @@ export interface GumContextType {
   refreshBalance: () => Promise<void>;
   refreshStats: () => Promise<void>;
   earnGum: (source: string, metadata?: any) => Promise<GumAwardResult>;
+  spendGum: (amount: number, source: string, metadata?: any) => Promise<GumSpendResult>;
   updateBalance: (newBalance: number) => void;
   
   // Helper functions
@@ -169,6 +172,53 @@ export const GumProvider: React.FC<GumProviderProps> = ({
     }
   }, [walletAddress, auth.isAuthenticated, refreshBalance]);
 
+  // Spend gum for purchases/games
+  const spendGumFn = useCallback(async (amount: number, source: string, metadata?: any): Promise<GumSpendResult> => {
+    if (!walletAddress || !auth.isAuthenticated) {
+      return {
+        success: false,
+        spent: 0,
+        error: 'No wallet connected'
+      };
+    }
+
+    try {
+      console.log('🍬 GumProvider: Spending gum:', amount, 'from source:', source, 'for wallet:', walletAddress);
+      const result = await spendGum(walletAddress, amount, source, metadata);
+      console.log('🍬 GumProvider: Spend result:', result);
+      
+      if (result.success && result.spent > 0) {
+        // Update local balance immediately for responsive UI
+        setBalance(prev => Math.max(0, prev - result.spent));
+        
+        // Dispatch event to update other UI components
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('gumBalanceUpdated', {
+            detail: { 
+              spent: result.spent,
+              walletAddress,
+              source
+            }
+          }));
+        }
+        
+        // Refresh full data in background
+        setTimeout(() => {
+          refreshBalance();
+        }, 100);
+      }
+      
+      return result;
+    } catch (err) {
+      console.error('🍬 GumProvider: Error spending gum:', err);
+      return {
+        success: false,
+        spent: 0,
+        error: 'Failed to spend gum'
+      };
+    }
+  }, [walletAddress, auth.isAuthenticated, refreshBalance]);
+
   // Update balance manually (for optimistic updates)
   const updateBalance = useCallback((newBalance: number) => {
     setBalance(newBalance);
@@ -255,6 +305,7 @@ export const GumProvider: React.FC<GumProviderProps> = ({
     refreshBalance,
     refreshStats,
     earnGum,
+    spendGum: spendGumFn,
     updateBalance,
     formatGumAmount,
     canAfford

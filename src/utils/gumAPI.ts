@@ -257,3 +257,49 @@ export async function getUserGumBalanceAPI(walletAddress: string): Promise<numbe
     return 0;
   }
 }
+
+export interface GumSpendResult {
+  success: boolean;
+  spent: number;
+  previous_balance?: number;
+  new_balance?: number;
+  source?: string;
+  error?: string;
+}
+
+/**
+ * Spend gum from user's balance for purchases/games
+ */
+export async function spendGum(
+  walletAddress: string,
+  amount: number,
+  source: string,
+  metadata?: any
+): Promise<GumSpendResult> {
+  try {
+    const { data, error } = await supabase.rpc('spend_gum', {
+      p_wallet_address: walletAddress,
+      p_amount: amount,
+      p_source: source,
+      p_metadata: metadata || null
+    });
+
+    if (error) {
+      console.error('Error spending gum:', error);
+      return {
+        success: false,
+        spent: 0,
+        error: error.message
+      };
+    }
+
+    return data as GumSpendResult;
+  } catch (error) {
+    console.error('Error in spendGum:', error);
+    return {
+      success: false,
+      spent: 0,
+      error: 'Failed to spend gum'
+    };
+  }
+}

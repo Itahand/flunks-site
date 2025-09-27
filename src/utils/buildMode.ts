@@ -1,6 +1,11 @@
 /**
  * Build Mode System
- * Controls feature visibility between public and build environments
+ * Controls feature visibility between public and     showCutscenes: false,
+    showStoryManual: true,
+    showVCREffectsTest: false,
+    showZoltarFortune: false,
+    
+    // Special Announcements - limited in public mode environments
  */
 
 export type BuildMode = 'public' | 'build';
@@ -29,6 +34,7 @@ export interface BuildModeConfig {
   showCutscenes: boolean;
   showStoryManual: boolean;
   showVCREffectsTest: boolean;
+  showZoltarFortune: boolean;
   
   // Special Announcements
   flappyFlunkWeekend: boolean;
@@ -121,6 +127,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showCutscenes: true,
     showStoryManual: true,
     showVCREffectsTest: true,
+    showZoltarFortune: true,
     
     // Special Announcements - visible in build mode
     flappyFlunkWeekend: true,
