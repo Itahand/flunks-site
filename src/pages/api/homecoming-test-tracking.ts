@@ -22,14 +22,14 @@ interface HomecomingTestTrackingResponse {
   testMode?: boolean;
 }
 
-// Check if current time is Saturday 12 PM to Sunday 12 PM (24-hour window)
+// Check if current time is Saturday 5 PM to Sunday 12 PM (19-hour window)
 function isHomecomingTime(): boolean {
   const now = new Date();
   const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
   const hour = now.getHours(); // 0-23
 
-  // Saturday from 12 PM onwards (12:00-23:59)
-  if (dayOfWeek === 6 && hour >= 12) {
+  // Saturday from 5 PM onwards (17:00-23:59)
+  if (dayOfWeek === 6 && hour >= 17) {
     return true;
   }
   
@@ -70,13 +70,20 @@ export default async function handler(
     isHomecomingTime: isHomecomingTime()
   });
 
+  // Get user agent and IP for analytics
+  const userAgent = req.headers['user-agent'] || 'Unknown';
+  const ipAddress = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || 
+                   req.headers['x-real-ip'] || 
+                   req.socket.remoteAddress || 
+                   'Unknown';
+
   try {
     // Check time window (bypass in test mode)
     if (!testMode && !isHomecomingTime()) {
       console.log('⏰ Outside homecoming time window');
       return res.status(400).json({
         success: false,
-        message: 'Homecoming dance is only available Saturday 12 PM to Sunday 12 PM',
+        message: 'Homecoming dance is only available Saturday 5 PM to Sunday 12 PM',
         outsideWindow: true,
         testMode
       });
@@ -132,22 +139,19 @@ export default async function handler(
 
     console.log('✅ Attendance recorded:', attendanceData);
 
-    // Award 50 GUM for attending the homecoming dance
+    // Award 50 GUM for attending the homecoming dance  
     const gumAmount = 50;
     const { data: gumData, error: gumError } = await supabase
-      .from('gum_transactions')
+      .from('user_gum_transactions')
       .insert([
         {
           wallet_address: walletAddress,
+          username: username || null,
           amount: gumAmount,
-          transaction_type: 'earn',
-          source: testMode ? 'homecoming_dance_test' : 'homecoming_dance',
-          description: testMode ? 'TEST: Homecoming Dance Attendance Reward' : 'Homecoming Dance Attendance Reward',
-          metadata: {
-            event: 'homecoming_dance_2024',
-            attendance_id: attendanceData.id,
-            test_mode: testMode || false
-          }
+          source: testMode ? 'chapter4_homecoming_dance_test' : 'chapter4_homecoming_dance',
+          description: testMode ? 'TEST: Chapter 4 Slacker - Homecoming Dance attendance' : 'Chapter 4 Slacker - Homecoming Dance attendance',
+          user_agent: userAgent,
+          ip_address: ipAddress
         }
       ])
       .select()
