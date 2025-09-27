@@ -38,7 +38,7 @@ const HomecomingDanceButton: React.FC = () => {
       setCheckingStatus(true);
       
       // Check if user has already attended homecoming dance
-      const response = await fetch(`/api/check-homecoming-attendance?walletAddress=${primaryWallet.address}`, {
+      const response = await fetch(`/api/check-homecoming-dance-attendance?walletAddress=${primaryWallet.address}`, {
         method: 'GET',
       });
 
@@ -75,7 +75,7 @@ const HomecomingDanceButton: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/homecoming-dance-tracking', {
+      const response = await fetch('/api/record-homecoming-dance-attendance', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

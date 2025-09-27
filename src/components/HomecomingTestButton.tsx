@@ -39,24 +39,22 @@ const HomecomingTestButton: React.FC<HomecomingTestButtonProps> = ({ bypassTimeC
     return false;
   };
 
-  // Check if user has already attended this week
   const checkAttendanceStatus = async () => {
     if (!primaryWallet?.address) return;
-
+    
+    setCheckingStatus(true);
     try {
-      setCheckingStatus(true);
+      console.log('🔍 Checking attendance status for:', primaryWallet.address.slice(0, 8) + '...');
       
       // Check if user has already attended homecoming dance
-      const response = await fetch(`/api/check-homecoming-attendance?walletAddress=${primaryWallet.address}`, {
+      const response = await fetch(`/api/check-homecoming-dance-attendance?walletAddress=${primaryWallet.address}`, {
         method: 'GET',
       });
 
       if (response.ok) {
         const data = await response.json();
         setHasAttended(data.hasAttended || false);
-        console.log('🔍 Attendance check result:', data);
-      } else {
-        console.error('❌ Failed to check attendance status');
+        console.log('📊 TEST - Attendance status:', data);
       }
     } catch (error) {
       console.error('❌ Error checking attendance status:', error);
@@ -86,27 +84,22 @@ const HomecomingTestButton: React.FC<HomecomingTestButtonProps> = ({ bypassTimeC
     }
 
     setIsLoading(true);
-    console.log('🎭 Starting homecoming dance attendance...');
+    console.log('🎭 TEST - Starting homecoming dance attendance...');
     
     try {
-      const requestBody = {
-        walletAddress: primaryWallet.address,
-        username: profile?.username,
-        testMode: bypassTimeCheck // Flag to indicate testing
-      };
-
-      console.log('📤 Sending request:', requestBody);
-
-      const response = await fetch('/api/homecoming-test-tracking', {
+      const response = await fetch('/api/record-homecoming-dance-attendance', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({
+          walletAddress: primaryWallet.address,
+          username: profile?.username || 'Test User',
+        }),
       });
 
       const data = await response.json();
-      console.log('📥 Response received:', data);
+      console.log('🎭 TEST - Response data:', data);
       
       if (data.success) {
         setHasAttended(true);
@@ -114,7 +107,7 @@ const HomecomingTestButton: React.FC<HomecomingTestButtonProps> = ({ bypassTimeC
         // Refresh GUM balance
         await refreshBalance();
         await refreshStats();
-        console.log('✅ GUM balance and stats refreshed');
+        console.log('✅ TEST - GUM balance and stats refreshed');
       } else {
         if (data.outsideWindow) {
           alert('The homecoming dance is only available Saturday 5 PM to Sunday 12 PM!');
@@ -124,55 +117,24 @@ const HomecomingTestButton: React.FC<HomecomingTestButtonProps> = ({ bypassTimeC
         } else {
           alert(`Failed to record attendance: ${data.message}`);
         }
-        console.error('❌ Failed:', data);
+        console.error('❌ TEST - Failed:', data);
       }
     } catch (error) {
-      console.error('❌ Error attending homecoming dance:', error);
+      console.error('❌ TEST - Error attending homecoming dance:', error);
       alert('Failed to record homecoming dance attendance. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const resetAttendance = async () => {
-    if (!primaryWallet?.address) return;
-    
-    const confirmReset = confirm('Reset your homecoming dance attendance? This will allow you to test again.');
-    if (!confirmReset) return;
-
-    try {
-      const response = await fetch('/api/reset-homecoming-attendance', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          walletAddress: primaryWallet.address
-        }),
-      });
-
-      if (response.ok) {
-        setHasAttended(false);
-        alert('✅ Homecoming dance attendance reset!');
-        console.log('✅ Attendance reset successfully');
-      } else {
-        alert('❌ Failed to reset attendance');
-      }
-    } catch (error) {
-      console.error('❌ Error resetting attendance:', error);
-      alert('❌ Error resetting attendance');
-    }
-  };
-
+  // Show loading state while checking attendance
   if (checkingStatus) {
     return (
-      <div className="space-y-2">
-        <button
-          disabled
-          className="w-full px-6 py-3 rounded-lg font-bold text-gray-400 bg-gray-600 cursor-not-allowed"
-        >
-          🔄 Checking status...
-        </button>
+      <div className="w-full px-6 py-3 rounded-lg bg-gray-700 text-gray-300 font-bold text-center">
+        <div className="flex items-center justify-center space-x-2">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+          <span>Checking attendance status...</span>
+        </div>
       </div>
     );
   }
@@ -193,36 +155,41 @@ const HomecomingTestButton: React.FC<HomecomingTestButtonProps> = ({ bypassTimeC
           isAvailable && !isLoading
             ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600 hover:scale-105 cursor-pointer'
             : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-        }`}
+        } shadow-lg text-center`}
       >
-        {isLoading ? '⏳ Recording attendance...' : buttonText}
+        {isLoading ? (
+          <div className="flex items-center justify-center space-x-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            <span>Recording attendance...</span>
+          </div>
+        ) : (
+          buttonText
+        )}
       </button>
-      
-      {/* Test Controls - Only show in development */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="flex gap-2">
-          <button
-            onClick={resetAttendance}
-            className="flex-1 px-4 py-2 rounded-lg font-bold bg-yellow-600 hover:bg-yellow-700 text-white text-sm transition-all duration-300"
-          >
-            🔄 Reset Test
-          </button>
-          <button
-            onClick={() => {
-              console.log('Current status:', {
-                hasAttended,
-                isHomecomingTime: isHomecomingTime(),
-                bypassTimeCheck,
-                walletAddress: primaryWallet?.address
-              });
-              alert('Check console for debug info');
-            }}
-            className="flex-1 px-4 py-2 rounded-lg font-bold bg-purple-600 hover:bg-purple-700 text-white text-sm transition-all duration-300"
-          >
-            🐛 Debug Info
-          </button>
+
+      {/* Test Mode Indicator */}
+      <div className="bg-yellow-900 bg-opacity-50 border border-yellow-500 rounded-lg p-2 text-center">
+        <div className="text-yellow-400 text-sm font-bold mb-1">
+          ⚠️ BETA TEST MODE
         </div>
-      )}
+        <div className="text-yellow-300 text-xs">
+          Time restrictions bypassed for testing purposes
+        </div>
+      </div>
+      
+      {/* Bypass Toggle Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={() => {
+            // Toggle bypass and check status again
+            console.log('🔄 TEST - Toggling time bypass and rechecking status');
+            checkAttendanceStatus();
+          }}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
+        >
+          🔄 Refresh Status
+        </button>
+      </div>
     </div>
   );
 };
