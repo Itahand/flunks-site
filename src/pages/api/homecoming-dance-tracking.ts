@@ -20,12 +20,23 @@ interface HomecomingDanceTrackingResponse {
   outsideWindow?: boolean;
 }
 
-// Check if current time is Saturday (24-hour window)
-function isSaturday(): boolean {
+// Check if current time is Saturday 12 PM to Sunday 12 PM (24-hour window)
+function isHomecomingTime(): boolean {
   const now = new Date();
-  // Get day of week (0 = Sunday, 6 = Saturday)
-  const dayOfWeek = now.getDay();
-  return dayOfWeek === 6; // Saturday
+  const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+  const hour = now.getHours(); // 0-23
+
+  // Saturday from 12 PM onwards (12:00-23:59)
+  if (dayOfWeek === 6 && hour >= 12) {
+    return true;
+  }
+  
+  // Sunday from midnight to 11:59 AM (00:00-11:59)
+  if (dayOfWeek === 0 && hour < 12) {
+    return true;
+  }
+  
+  return false;
 }
 
 export default async function handler(
@@ -51,11 +62,11 @@ export default async function handler(
       });
     }
 
-    // Check if it's currently Saturday
-    if (!isSaturday()) {
+    // Check if it's currently homecoming time (Saturday 12 PM to Sunday 12 PM)
+    if (!isHomecomingTime()) {
       return res.status(400).json({
         success: false,
-        message: 'Homecoming Dance attendance can only be recorded on Saturdays',
+        message: 'Homecoming Dance attendance can only be recorded Saturday 12 PM to Sunday 12 PM',
         outsideWindow: true
       });
     }

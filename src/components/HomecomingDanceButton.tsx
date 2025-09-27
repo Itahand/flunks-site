@@ -11,12 +11,23 @@ const HomecomingDanceButton: React.FC = () => {
   const [hasAttended, setHasAttended] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true);
 
-  // Check if it's currently Saturday
-  const isSaturday = (): boolean => {
+  // Check if it's currently Saturday 12 PM to Sunday 12 PM
+  const isHomecomingTime = (): boolean => {
     const now = new Date();
-    // Get day of week (0 = Sunday, 6 = Saturday)
-    const dayOfWeek = now.getDay();
-    return dayOfWeek === 6; // Saturday
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+    const hour = now.getHours(); // 0-23
+
+    // Saturday from 12 PM onwards (12:00-23:59)
+    if (dayOfWeek === 6 && hour >= 12) {
+      return true;
+    }
+    
+    // Sunday from midnight to 11:59 AM (00:00-11:59)
+    if (dayOfWeek === 0 && hour < 12) {
+      return true;
+    }
+    
+    return false;
   };
 
   // Check if user has already attended this week
@@ -52,8 +63,8 @@ const HomecomingDanceButton: React.FC = () => {
       return;
     }
 
-    if (!isSaturday()) {
-      alert('The homecoming dance is only available on Saturdays!');
+    if (!isHomecomingTime()) {
+      alert('The homecoming dance is only available Saturday 12 PM to Sunday 12 PM!');
       return;
     }
 
@@ -85,7 +96,7 @@ const HomecomingDanceButton: React.FC = () => {
         refreshStats();
       } else {
         if (data.outsideWindow) {
-          alert('The homecoming dance is only available on Saturdays!');
+          alert('The homecoming dance is only available Saturday 12 PM to Sunday 12 PM!');
         } else if (data.alreadyCompleted) {
           alert('You have already attended the homecoming dance!');
           setHasAttended(true);
@@ -112,12 +123,12 @@ const HomecomingDanceButton: React.FC = () => {
     );
   }
 
-  const isAvailable = isSaturday() && !hasAttended;
+  const isAvailable = isHomecomingTime() && !hasAttended;
   const buttonText = hasAttended 
     ? '✅ Already Attended'
-    : isSaturday() 
+    : isHomecomingTime() 
       ? '🕺 Attend Homecoming Dance (50 GUM)' 
-      : '📅 Only Available on Saturdays';
+      : '📅 Available Saturday 12 PM - Sunday 12 PM';
 
   return (
     <button
