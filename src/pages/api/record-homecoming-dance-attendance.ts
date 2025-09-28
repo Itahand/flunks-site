@@ -58,15 +58,7 @@ export default async function handler(
       });
     }
 
-    // Check if it's homecoming time
-    if (!isHomecomingTime()) {
-      console.log('⏰ Outside homecoming window');
-      return res.status(400).json({
-        success: false,
-        message: 'Homecoming dance is only available Saturday 5 PM to Sunday 12 PM',
-        outsideWindow: true
-      });
-    }
+    // Note: Removed time restriction - homecoming dance now available anytime
 
     console.log('🕺 Processing homecoming dance attendance:', {
       wallet: walletAddress.slice(0, 8) + '...' + walletAddress.slice(-6),
@@ -83,7 +75,7 @@ export default async function handler(
     // Check if user has already attended
     const { data: existingAttendance, error: checkError } = await supabase
       .from('homecoming_dance_attendance')
-      .select('id, attendance_timestamp')
+      .select('id, attendance_timestamp, gum_amount')
       .eq('wallet_address', walletAddress)
       .single();
 
@@ -97,10 +89,12 @@ export default async function handler(
     }
 
     if (existingAttendance) {
-      console.log('⚠️ User already attended homecoming dance:', walletAddress.slice(0, 8) + '...');
-      return res.status(409).json({
-        success: false,
-        message: 'You have already attended the homecoming dance!',
+      console.log('✅ User already attended homecoming dance:', walletAddress.slice(0, 8) + '...');
+      // Return success since they already earned their reward
+      return res.status(200).json({
+        success: true,
+        message: `Welcome back! You already earned ${existingAttendance.gum_amount || 50} GUM as a Chapter 4 Slacker!`,
+        gumAwarded: existingAttendance.gum_amount || 50,
         alreadyCompleted: true
       });
     }

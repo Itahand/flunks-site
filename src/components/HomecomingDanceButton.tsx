@@ -11,26 +11,7 @@ const HomecomingDanceButton: React.FC = () => {
   const [hasAttended, setHasAttended] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true);
 
-  // Check if it's currently Saturday 5 PM to Sunday 12 PM
-  const isHomecomingTime = (): boolean => {
-    const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
-    const hour = now.getHours(); // 0-23
-
-    // Saturday from 5 PM onwards (17:00-23:59)
-    if (dayOfWeek === 6 && hour >= 17) {
-      return true;
-    }
-    
-    // Sunday from midnight to 11:59 AM (00:00-11:59)
-    if (dayOfWeek === 0 && hour < 12) {
-      return true;
-    }
-    
-    return false;
-  };
-
-  // Check if user has already attended this week
+  // Check if user has already attended
   const checkAttendanceStatus = async () => {
     if (!primaryWallet?.address) return;
 
@@ -63,11 +44,6 @@ const HomecomingDanceButton: React.FC = () => {
       return;
     }
 
-    if (!isHomecomingTime()) {
-      alert('The homecoming dance is only available Saturday 5 PM to Sunday 12 PM!');
-      return;
-    }
-
     if (hasAttended) {
       alert('You have already attended the homecoming dance!');
       return;
@@ -95,9 +71,7 @@ const HomecomingDanceButton: React.FC = () => {
         refreshBalance();
         refreshStats();
       } else {
-        if (data.outsideWindow) {
-          alert('The homecoming dance is only available Saturday 5 PM to Sunday 12 PM!');
-        } else if (data.alreadyCompleted) {
+        if (data.alreadyCompleted) {
           alert('You have already attended the homecoming dance!');
           setHasAttended(true);
         } else {
@@ -123,12 +97,10 @@ const HomecomingDanceButton: React.FC = () => {
     );
   }
 
-  const isAvailable = isHomecomingTime() && !hasAttended;
+  const isAvailable = !hasAttended;
   const buttonText = hasAttended 
     ? '✅ Already Attended'
-    : isHomecomingTime() 
-      ? '🕺 Attend Homecoming Dance (50 GUM)' 
-      : '📅 Available Saturday 5 PM - Sunday 12 PM';
+    : '🕺 Attend Homecoming Dance (50 GUM)';
 
   return (
     <button
