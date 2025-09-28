@@ -270,32 +270,27 @@ export const calculateObjectiveProgress = (objectives: ChapterObjective[]): numb
 
 // Check if user attended homecoming dance (Saturday 24-hour window)
 export const checkHomecomingDanceAttendance = async (walletAddress: string): Promise<boolean> => {
-  if (!hasValidSupabaseConfig || !supabase) {
-    console.warn('⚠️ Supabase not configured, cannot check homecoming dance attendance');
-    return false;
-  }
-
   try {
-    console.log('🕺 [SIMPLE CHECK] Checking homecoming dance attendance for wallet:', walletAddress);
+    console.log('🕺 [SUPER SIMPLE] Checking homecoming dance via API for wallet:', walletAddress);
     
-    // Simple check: Just look in the homecoming_dance_attendance table - that's it!
-    const { data, error } = await supabase
-      .from('homecoming_dance_attendance')
-      .select('id')
-      .eq('wallet_address', walletAddress)
-      .limit(1);
-
-    if (error) {
-      console.error('❌ [SIMPLE CHECK] Error checking homecoming dance attendance:', error);
+    // Use the EXACT SAME API that the button uses to check attendance
+    const response = await fetch(`/api/check-homecoming-dance-attendance?walletAddress=${walletAddress}`);
+    
+    if (!response.ok) {
+      console.error('❌ [SUPER SIMPLE] API response not ok:', response.status);
       return false;
     }
-
-    const hasAttended = data && data.length > 0;
-    console.log('✅ [SIMPLE CHECK] Homecoming dance attended:', hasAttended);
+    
+    const data = await response.json();
+    console.log('📋 [SUPER SIMPLE] API response:', data);
+    
+    const hasAttended = data.success && data.hasAttended;
+    console.log('✅ [SUPER SIMPLE] Final result:', hasAttended);
+    
     return hasAttended;
 
   } catch (err) {
-    console.error('💥 [SIMPLE CHECK] Failed to check homecoming dance attendance:', err);
+    console.error('💥 [SUPER SIMPLE] API call failed:', err);
     return false;
   }
 };
