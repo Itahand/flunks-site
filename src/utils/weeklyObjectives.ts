@@ -271,12 +271,12 @@ export const calculateObjectiveProgress = (objectives: ChapterObjective[]): numb
 // Check if user attended homecoming dance (Saturday 24-hour window)
 export const checkHomecomingDanceAttendance = async (walletAddress: string): Promise<boolean> => {
   if (!hasValidSupabaseConfig || !supabase) {
-    console.warn('Supabase not configured, cannot check homecoming dance attendance');
+    console.warn('⚠️ Supabase not configured, cannot check homecoming dance attendance');
     return false;
   }
 
   try {
-    console.log('🕺 Checking homecoming dance attendance for wallet:', walletAddress);
+    console.log('🕺 [ACHIEVEMENT CHECK] Checking homecoming dance attendance for wallet:', walletAddress);
     
     // Check the dedicated homecoming_dance_attendance table first
     const { data: attendanceData, error: attendanceError } = await supabase
@@ -285,10 +285,18 @@ export const checkHomecomingDanceAttendance = async (walletAddress: string): Pro
       .eq('wallet_address', walletAddress)
       .limit(1);
 
+    console.log('📋 [ATTENDANCE TABLE] Query result:', { 
+      error: attendanceError, 
+      dataLength: attendanceData?.length,
+      data: attendanceData 
+    });
+
     if (!attendanceError && attendanceData && attendanceData.length > 0) {
-      console.log('✅ Homecoming dance attendance found in attendance table');
+      console.log('✅ [ACHIEVEMENT] Homecoming dance attendance found in attendance table - SHOULD BE LIT!');
       return true;
     }
+
+    console.log('⚠️ [ATTENDANCE TABLE] No attendance record found, checking GUM transactions...');
 
     // Fallback: Check if user claimed homecoming dance reward (one time ever)
     const { data, error } = await supabase
@@ -298,16 +306,22 @@ export const checkHomecomingDanceAttendance = async (walletAddress: string): Pro
       .eq('source', 'chapter4_homecoming_dance')
       .limit(1);
 
+    console.log('💰 [GUM TRANSACTIONS] Query result:', { 
+      error, 
+      dataLength: data?.length,
+      data 
+    });
+
     if (error) {
-      console.error('Error checking homecoming dance attendance:', error);
+      console.error('❌ [ACHIEVEMENT] Error checking homecoming dance attendance:', error);
       return false;
     }
 
     const hasAttended = data && data.length > 0;
-    console.log('✅ Homecoming dance attended via GUM transactions:', hasAttended);
+    console.log('🎯 [ACHIEVEMENT FINAL] Homecoming dance attended via GUM transactions:', hasAttended);
     return hasAttended;
   } catch (err) {
-    console.error('Failed to check homecoming dance attendance:', err);
+    console.error('💥 [ACHIEVEMENT ERROR] Failed to check homecoming dance attendance:', err);
     return false;
   }
 };
@@ -320,12 +334,16 @@ export async function checkParadiseMotelCode(walletAddress: string): Promise<boo
 
 // Get Chapter 4 objectives status for a user
 export const getChapter4ObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
-  console.log('🎯 getChapter4ObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
+  console.log('🎯 [CHAPTER4] getChapter4ObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
   
   const attendedHomecoming = await checkHomecomingDanceAttendance(walletAddress);
   const enteredParadiseCode = await checkParadiseMotelCode(walletAddress);
 
-  console.log('📊 Chapter 4 Objectives status:', { attendedHomecoming, enteredParadiseCode });
+  console.log('📊 [CHAPTER4] Objectives status:', { 
+    attendedHomecoming, 
+    enteredParadiseCode,
+    walletSlice: walletAddress?.slice(0,10) + '...'
+  });
 
   const completedObjectives: ChapterObjective[] = [
     {
