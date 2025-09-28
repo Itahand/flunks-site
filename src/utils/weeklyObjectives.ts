@@ -276,52 +276,26 @@ export const checkHomecomingDanceAttendance = async (walletAddress: string): Pro
   }
 
   try {
-    console.log('🕺 [ACHIEVEMENT CHECK] Checking homecoming dance attendance for wallet:', walletAddress);
+    console.log('🕺 [SIMPLE CHECK] Checking homecoming dance attendance for wallet:', walletAddress);
     
-    // Check the dedicated homecoming_dance_attendance table first
-    const { data: attendanceData, error: attendanceError } = await supabase
-      .from('homecoming_dance_attendance')
-      .select('*')
-      .eq('wallet_address', walletAddress)
-      .limit(1);
-
-    console.log('📋 [ATTENDANCE TABLE] Query result:', { 
-      error: attendanceError, 
-      dataLength: attendanceData?.length,
-      data: attendanceData 
-    });
-
-    if (!attendanceError && attendanceData && attendanceData.length > 0) {
-      console.log('✅ [ACHIEVEMENT] Homecoming dance attendance found in attendance table - SHOULD BE LIT!');
-      return true;
-    }
-
-    console.log('⚠️ [ATTENDANCE TABLE] No attendance record found, checking GUM transactions...');
-
-    // Fallback: Check if user claimed homecoming dance reward (one time ever)
+    // Simple check: Just look in the homecoming_dance_attendance table - that's it!
     const { data, error } = await supabase
-      .from('gum_transactions')
-      .select('*')
+      .from('homecoming_dance_attendance')
+      .select('id')
       .eq('wallet_address', walletAddress)
-      .eq('source', 'chapter4_homecoming_dance')
       .limit(1);
-
-    console.log('💰 [GUM TRANSACTIONS] Query result:', { 
-      error, 
-      dataLength: data?.length,
-      data 
-    });
 
     if (error) {
-      console.error('❌ [ACHIEVEMENT] Error checking homecoming dance attendance:', error);
+      console.error('❌ [SIMPLE CHECK] Error checking homecoming dance attendance:', error);
       return false;
     }
 
     const hasAttended = data && data.length > 0;
-    console.log('🎯 [ACHIEVEMENT FINAL] Homecoming dance attended via GUM transactions:', hasAttended);
+    console.log('✅ [SIMPLE CHECK] Homecoming dance attended:', hasAttended);
     return hasAttended;
+
   } catch (err) {
-    console.error('💥 [ACHIEVEMENT ERROR] Failed to check homecoming dance attendance:', err);
+    console.error('💥 [SIMPLE CHECK] Failed to check homecoming dance attendance:', err);
     return false;
   }
 };
