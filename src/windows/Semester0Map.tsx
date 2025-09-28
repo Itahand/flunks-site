@@ -907,6 +907,66 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               >
               </DynamicHouseIcon>
             )}
+            
+            {/* Paradise Motel - Build Mode Only */}
+            {buildMode === 'build' && (
+              <DynamicHouseIcon
+                houseId="paradise-motel"
+                className={`${styles["nav-icon"]} ${styles['paradise-motel-nav']}`}
+                onClick={() => {
+                  // On mobile, if this is the second tap, proceed with opening
+                  if (isMobile && touchedLocation === 'paradise-motel') {
+                    setTouchedLocation(null);
+                    setHovered(null);
+                    handleLocationAccess('paradise-motel', () => 
+                      openWindow({
+                        key: WINDOW_IDS.PARADISE_MOTEL_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.PARADISE_MOTEL_MAIN}
+                            headerTitle="Paradise Motel"
+                            onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_MAIN)}
+                            initialWidth="70vw"
+                            initialHeight="70vh"
+                            resizable={true}
+                          >
+                            <ParadiseMotelMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      })
+                    );
+                  } else if (!isMobile) {
+                    // Desktop behavior - immediate open
+                    handleLocationAccess('paradise-motel', () => 
+                      openWindow({
+                        key: WINDOW_IDS.PARADISE_MOTEL_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.PARADISE_MOTEL_MAIN}
+                            headerTitle="Paradise Motel"
+                            onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_MAIN)}
+                            initialWidth="70vw"
+                            initialHeight="70vh"
+                            resizable={true}
+                          >
+                            <ParadiseMotelMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      })
+                    );
+                  }
+                }}
+                onMouseEnter={() => {
+                  setHovered('paradise-motel');
+                }}
+                onMouseLeave={() => {
+                  setHovered(null);
+                }}
+                onTouchStart={() => user && handleTouchEnter('paradise-motel')}
+                onTouchEnd={handleTouchLeave}
+              >
+              </DynamicHouseIcon>
+            )}
           </div>
         </div>
 

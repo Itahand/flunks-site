@@ -1396,6 +1396,10 @@
   background-image: url('/images/icons/rug-doctor-icon.png');
 }
 
+.paradise-motel-nav {
+  background-image: url('/images/icons/paradise-motel-icon.png');
+}
+
 /* Special hover effect for Football Field in navigation */
 .nav-icon.football-field-nav:hover {
   animation: heartbeat 2.4s ease-in-out infinite, activePulse 1.5s ease-in-out infinite;
