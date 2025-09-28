@@ -278,7 +278,19 @@ export const checkHomecomingDanceAttendance = async (walletAddress: string): Pro
   try {
     console.log('🕺 Checking homecoming dance attendance for wallet:', walletAddress);
     
-    // Check if user claimed homecoming dance reward (one time ever)
+    // Check the dedicated homecoming_dance_attendance table first
+    const { data: attendanceData, error: attendanceError } = await supabase
+      .from('homecoming_dance_attendance')
+      .select('*')
+      .eq('wallet_address', walletAddress)
+      .limit(1);
+
+    if (!attendanceError && attendanceData && attendanceData.length > 0) {
+      console.log('✅ Homecoming dance attendance found in attendance table');
+      return true;
+    }
+
+    // Fallback: Check if user claimed homecoming dance reward (one time ever)
     const { data, error } = await supabase
       .from('gum_transactions')
       .select('*')
@@ -292,7 +304,7 @@ export const checkHomecomingDanceAttendance = async (walletAddress: string): Pro
     }
 
     const hasAttended = data && data.length > 0;
-    console.log('✅ Homecoming dance attended:', hasAttended);
+    console.log('✅ Homecoming dance attended via GUM transactions:', hasAttended);
     return hasAttended;
   } catch (err) {
     console.error('Failed to check homecoming dance attendance:', err);

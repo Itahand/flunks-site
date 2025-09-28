@@ -82,7 +82,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showCutscenes: false,
     showStoryManual: true,
     showVCREffectsTest: false,
-    showZoltarFortune: true,
+    showZoltarFortune: false,
     
     // Special Announcements - visible on public site
     flappyFlunkWeekend: true,
