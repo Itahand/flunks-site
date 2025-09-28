@@ -192,10 +192,9 @@ export const APP_PERMISSIONS: AppPermission[] = [
     description: 'Fortune telling game machine - spend GUM for a chance to win big!',
     buildModeFeature: 'showZoltarFortune'
   },
-  
-  // External links - available to all
+  // Icon Animation - admin only feature  
   {
-    id: 'discord',
+    id: 'icon-animation',
     title: 'Icon Animation',
     requiredLevel: ['ADMIN'],
     description: 'Preview desktop icon animations',
