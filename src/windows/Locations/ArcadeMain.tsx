@@ -8,6 +8,7 @@ import FlunkJumpWindow from "windows/Games/FlunkJumpWindow";
 import FlunkyUppyArcadeWindow from "windows/Games/FlunkyUppyArcadeWindow";
 import MultiColorText from "components/MultiColorText";
 import { isFeatureEnabled } from "utils/buildMode";
+import ZoltarFortuneWindow from "windows/ZoltarFortuneWindow";
 
 const ArcadeMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -437,6 +438,29 @@ const ArcadeMain = () => {
         >
           🎮 FLUNKY UPPY
         </button>
+
+        {/* Mystical Zoltar Fortune Machine - Build Mode Only */}
+        {isFeatureEnabled('showZoltarFortune') && (
+          <button
+            onClick={() => {
+              openWindow({
+                key: WINDOW_IDS.ZOLTAR_FORTUNE_APP,
+                window: (
+                  <ZoltarFortuneWindow />
+                ),
+              });
+            }}
+            className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-800 text-white px-4 py-2 rounded hover:from-purple-500 hover:via-indigo-500 hover:to-purple-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center font-bold border-2 border-purple-300 shadow-lg relative overflow-hidden"
+            style={{
+              textShadow: '0 0 10px rgba(255,255,255,0.5)',
+              background: 'linear-gradient(45deg, #8B4513, #A0522D, #CD853F)',
+              border: '2px solid #FFD700',
+              boxShadow: '0 0 15px rgba(255,215,0,0.5), inset 0 0 10px rgba(255,255,255,0.2)'
+            }}
+          >
+            🔮 ZOLTAR
+          </button>
+        )}
         </div>
       </div>
     </div>
