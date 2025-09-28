@@ -8,7 +8,7 @@ import { awardGum } from "utils/gumAPI";
 import { trackCafeteriaButtonClick } from "utils/cafeteriaButtonTracking";
 import FootballerGumClaimButton from "components/FootballerGumClaimButton";
 import HomecomingDanceButton from "components/HomecomingDanceButton";
-import HomecomingTestButton from "components/HomecomingTestButton";
+// import HomecomingTestButton from "components/HomecomingTestButton";
 import HomecomingStory from "../../components/HomecomingStory";
 
 const HighSchoolMain = () => {
@@ -298,8 +298,8 @@ const HighSchoolMain = () => {
                       <div className="p-4 md:p-6 text-center">
                         <h1 className="text-2xl md:text-3xl font-bold mb-2">🏀 Gymnasium v2.0</h1>
                         <p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto">
-                          The basketball hoops are bent at strange angles. Echoes of old cheers seem to bounce off the walls. 
-                          On one special night, this place transforms into a magical dance floor for homecoming.
+                          The gymnasium stands eerily quiet. A faded banner hangs crookedly, announcing "HOMECOMING DANCE - CANCELLED DUE TO MYSTERIOUS CIRCUMSTANCES." 
+                          The dance floor that was meant to sparkle with memories now gathers dust, waiting for brave souls to uncover the truth.
                         </p>
                       </div>
 
@@ -317,23 +317,7 @@ const HighSchoolMain = () => {
                           
                           <div className="space-y-3">
                             {/* Always show test button on vercel.app domains or build mode */}
-                            <div className="bg-yellow-600 text-black px-3 py-1 rounded-full text-xs font-bold text-center mb-2">
-                              🧪 BETA TEST MODE
-                            </div>
-                            <HomecomingTestButton bypassTimeCheck={true} />
-                            
-                            <button
-                              onClick={() => {
-                                console.log('Story button clicked!');
-                                console.log('Current showHomecomingStory state:', showHomecomingStory);
-                                setShowHomecomingStory(true);
-                                console.log('Set showHomecomingStory to true');
-                                console.log('Window location:', typeof window !== 'undefined' ? window.location.href : 'server-side');
-                              }}
-                              className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white rounded-lg font-bold transition-all duration-300 hover:scale-105 text-sm touch-manipulation"
-                            >
-                              📖 Read the Story
-                            </button>
+                            <HomecomingDanceButton />
                           </div>
                         </div>
                       </div>

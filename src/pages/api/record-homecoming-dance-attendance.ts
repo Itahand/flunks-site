@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { awardGum } from '../../utils/gumAPI';
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -130,38 +131,35 @@ export default async function handler(
       });
     }
 
-    // Also update GUM balance (call existing GUM API)
-    try {
-      const gumResponse = await fetch(`${req.headers.origin}/api/award-gum`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          walletAddress,
-          amount: gumAmount,
-          source: 'chapter4_homecoming_dance',
-          description: 'Chapter 4 Slacker - Homecoming Dance attendance'
-        }),
-      });
-
-      if (!gumResponse.ok) {
-        console.warn('⚠️ GUM award failed but attendance recorded');
+    // Award GUM using the proper gumAPI utility
+    console.log('🕺 Attempting to award Homecoming Dance GUM...');
+    const gumResult = await awardGum(
+      walletAddress, 
+      'chapter4_homecoming_dance',
+      {
+        description: 'Chapter 4 Slacker - Homecoming Dance attendance',
+        username: username || null
       }
-    } catch (gumError) {
-      console.warn('⚠️ Failed to award GUM but attendance recorded:', gumError);
+    );
+
+    console.log('🕺 Homecoming Dance GUM result:', gumResult);
+
+    if (!gumResult.success) {
+      console.warn('⚠️ GUM award failed but attendance recorded:', gumResult.error);
     }
+
+    const actualGumAwarded = gumResult.success ? gumResult.earned : 0;
 
     console.log('✅ Homecoming dance attendance recorded successfully:', {
       id: insertData.id,
       wallet: walletAddress.slice(0, 8) + '...' + walletAddress.slice(-6),
-      gumAwarded: gumAmount
+      gumAwarded: actualGumAwarded
     });
 
     return res.status(200).json({
       success: true,
-      message: `Welcome to homecoming! You've earned ${gumAmount} GUM as a Chapter 4 Slacker!`,
-      gumAwarded: gumAmount
+      message: `Welcome to homecoming! You've earned ${actualGumAwarded} GUM as a Chapter 4 Slacker!`,
+      gumAwarded: actualGumAwarded
     });
 
   } catch (error: any) {
