@@ -3,6 +3,7 @@ import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
 import RetroTextBox from "components/RetroTextBox";
+import { useState, useEffect, useRef } from "react";
 
 const ParadiseMotelMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -11,6 +12,54 @@ const ParadiseMotelMain = () => {
   const dayImage = "/images/backgrounds/locations/paradise-motel/cover.webp";
   const nightImage = "/images/backgrounds/locations/paradise-motel/cover.webp"; // Same image for now
   const timeBasedInfo = useTimeBasedImage(dayImage, nightImage);
+
+  // Background music state
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
+
+  // Initialize background music when component mounts
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio('/music/paradisemotel.mp3');
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.3; // Set to 30% volume
+    }
+
+    const playMusic = async () => {
+      try {
+        if (audioRef.current && !isMuted) {
+          await audioRef.current.play();
+        }
+      } catch (error) {
+        console.log('Music autoplay blocked by browser');
+      }
+    };
+
+    playMusic();
+
+    // Cleanup function
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+
+  // Handle mute/unmute
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isMuted) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(console.log);
+      }
+    }
+  }, [isMuted]);
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
 
   const openRoom = (roomKey: string, title: string, content: string) => {
     openWindow({
@@ -179,6 +228,15 @@ const ParadiseMotelMain = () => {
         />
         {/* Overlay for better button visibility */}
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+        
+        {/* Music Mute Button */}
+        <button
+          onClick={toggleMute}
+          className="absolute top-4 left-4 bg-black bg-opacity-70 text-white p-2 rounded hover:bg-opacity-90 transition-all duration-200 z-20"
+          title={isMuted ? "Unmute music" : "Mute music"}
+        >
+          {isMuted ? "🔇" : "🎵"}
+        </button>
       </div>
 
       {/* Main Content - Desktop Layout */}

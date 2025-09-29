@@ -238,7 +238,8 @@ const sampleChapters: Chapter[] = [
         image: '/images/cutscenes/homecoming-1.png',
         lines: [
           'By Saturday morning, the gym was ready for a night to remember. Streamers hung from the rafters, disco balls cast dancing lights across the polished floor, and everything was perfect for homecoming.'
-        ]
+        ],
+        music: '/music/homecomingstory.mp3'
       },
       // Scene 2: The Announcement
       {

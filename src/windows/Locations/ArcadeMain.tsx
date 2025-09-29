@@ -2,7 +2,7 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import FlappyFlunkWindow from "windows/Games/FlappyFlunkWindow";
 import FlunkJumpWindow from "windows/Games/FlunkJumpWindow";
 import FlunkyUppyArcadeWindow from "windows/Games/FlunkyUppyArcadeWindow";
@@ -283,14 +283,373 @@ const ArcadeMain = () => {
     });
   };
 
+  // Arcade Lobby Component with background music and all activities
+  const ArcadeLobby = () => {
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [isMuted, setIsMuted] = useState(false);
+
+    // Initialize background music when lobby opens
+    useEffect(() => {
+      if (!audioRef.current) {
+        audioRef.current = new Audio('/music/arcade.mp3');
+        audioRef.current.loop = true;
+        audioRef.current.volume = 0.3;
+      }
+
+      const playMusic = async () => {
+        try {
+          if (audioRef.current && !isMuted) {
+            await audioRef.current.play();
+          }
+        } catch (error) {
+          console.log('Music autoplay blocked by browser');
+        }
+      };
+
+      playMusic();
+
+      return () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+      };
+    }, []);
+
+    useEffect(() => {
+      if (audioRef.current) {
+        if (isMuted) {
+          audioRef.current.pause();
+        } else {
+          audioRef.current.play().catch(console.log);
+        }
+      }
+    }, [isMuted]);
+
+    const toggleMute = () => {
+      setIsMuted(!isMuted);
+    };
+
+    return (
+      <div style={{
+        width: '100%',
+        height: '100%',
+        background: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('/images/arcade-lobby.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Music Control */}
+        <button
+          onClick={toggleMute}
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            background: 'rgba(0,0,0,0.7)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '50%',
+            width: '40px',
+            height: '40px',
+            cursor: 'pointer',
+            zIndex: 100,
+            fontSize: '18px'
+          }}
+        >
+          {isMuted ? "🔇" : "🎵"}
+        </button>
+
+        {/* Wizard's Arcade Title */}
+        <div style={{
+          textAlign: 'center',
+          padding: '20px',
+          background: 'linear-gradient(45deg, #FFD700, #FF69B4, #9370DB)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          fontSize: '32px',
+          fontWeight: 'bold',
+          fontFamily: "'Press Start 2P', monospace"
+        }}>
+          🧙‍♂️ WELCOME TO THE WIZARD'S ARCADE! 🧙‍♂️
+        </div>
+
+        {/* All Arcade Activities Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '15px',
+          padding: '20px',
+          maxHeight: 'calc(100% - 100px)',
+          overflowY: 'auto'
+        }}>
+          {/* Front Area */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.ARCADE_TOP_LEFT,
+                "Front Area",
+                "By Saturday morning, the gym was ready for a night to remember. Streamers hung from the rafters, disco balls cast dancing lights across the polished floor, and everything was perfect for homecoming.\n\nBut by midday, the announcement came: the dance was off. No one gave a reason, just murmurs about a situation still unfolding. Nobody knew for sure what was happening — only that it wasn\'t good.\n\nThe lights stayed on, the decorations hung in silence, and the dance floor never saw a single step. The mystery of what happened that day still echoes through these empty halls."
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #FF6B6B, #4ECDC4)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: '15px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontFamily: "'Press Start 2P', monospace"
+            }}
+          >
+            🎮 Front Area
+          </button>
+
+          {/* Prize Booth */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.ARCADE_TOP_RIGHT,
+                "Prize Booth",
+                "STUFFED ANIMALS EVERYWHERE! Giant teddy bears and rainbow unicorns hang from every hook! Claw machines filled with mysterious treasures! Spinning wheels of fortune! Tickets cascade like confetti from redemption games! The prize master watches with knowing eyes!"
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #FFD700, #FF69B4)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: '15px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontFamily: "'Press Start 2P', monospace"
+            }}
+          >
+            🎁 Prize Booth
+          </button>
+
+          {/* Snack Corner */}
+          <button
+            onClick={openSnackCorner}
+            style={{
+              background: 'linear-gradient(45deg, #96CEB4, #FFEAA7)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: '15px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontFamily: "'Press Start 2P', monospace"
+            }}
+          >
+            🍿 Snack Corner
+          </button>
+
+          {/* Back Room */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.ARCADE_BOTTOM_RIGHT,
+                "Back Room",
+                "FORBIDDEN ZONE! A mysterious door marked EMPLOYEES ONLY! What secrets lie beyond? Rumors speak of prototype games never released! The door handle is warm to the touch! Strange electronic sounds echo from within! Do you dare to discover what\'s hidden?"
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #8B008B, #4B0082)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: '15px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontFamily: "'Press Start 2P', monospace"
+            }}
+          >
+            🚪 Back Room
+          </button>
+          
+          {/* Flappy Flunk Game */}
+          <button
+            onClick={() =>
+              openWindow({
+                key: WINDOW_IDS.FLAPPY_FLUNK,
+                window: (
+                  <DraggableResizeableWindow
+                    windowsId={WINDOW_IDS.FLAPPY_FLUNK}
+                    onClose={() => closeWindow(WINDOW_IDS.FLAPPY_FLUNK)}
+                    headerTitle="Flappy Flunk"
+                    initialWidth="480px"
+                    initialHeight="640px"
+                    headerIcon="/images/icons/flappyflunk.png"
+                  >
+                    <FlappyFlunkWindow />
+                  </DraggableResizeableWindow>
+                ),
+              })
+            }
+            style={{
+              background: 'linear-gradient(45deg, #9370DB, #8A2BE2)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: '15px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontFamily: "'Press Start 2P', monospace"
+            }}
+          >
+            🐦 FLAPPY FLUNK
+          </button>
+          
+          {/* Flunky Uppy Game - Build Mode Only */}
+          {isFeatureEnabled('showFlunkyUppy') && (
+            <button
+              onClick={() =>
+                openWindow({
+                  key: WINDOW_IDS.FLUNKY_UPPY,
+                  window: (
+                    <DraggableResizeableWindow
+                      windowsId={WINDOW_IDS.FLUNKY_UPPY}
+                      onClose={() => closeWindow(WINDOW_IDS.FLUNKY_UPPY)}
+                      headerTitle="Flunky Uppy"
+                      initialWidth="420px"
+                      initialHeight="720px"
+                      headerIcon="/images/icons/flunky-uppy-icon.png?v=2"
+                    >
+                      <FlunkJumpWindow />
+                    </DraggableResizeableWindow>
+                  ),
+                })
+              }
+              style={{
+                background: 'linear-gradient(45deg, #FF4500, #FF6347)',
+                color: 'white',
+                border: '2px solid white',
+                borderRadius: '8px',
+                padding: '15px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                fontFamily: "'Press Start 2P', monospace"
+              }}
+            >
+              🦘 FLUNKY UPPY
+            </button>
+          )}
+
+          {/* Flunky Uppy Arcade Machine */}
+          <button
+            onClick={() => {
+              openWindow({
+                key: "flunky-uppy-arcade",
+                window: (
+                  <DraggableResizeableWindow
+                    windowsId="flunky-uppy-arcade"
+                    headerTitle="🎮 FLUNKY UPPY ARCADE"
+                    onClose={() => closeWindow("flunky-uppy-arcade")}
+                    initialWidth="480px"
+                    initialHeight="640px"
+                    headerIcon="/images/icons/flunky-uppy-icon.png"
+                    resizable={true}
+                  >
+                    <FlunkyUppyArcadeWindow />
+                  </DraggableResizeableWindow>
+                ),
+              });
+            }}
+            style={{
+              background: 'linear-gradient(45deg, #FFD700, #FFA500)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: '15px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontFamily: "'Press Start 2P', monospace",
+              animation: 'pulse 2s infinite'
+            }}
+          >
+            🎮 FLUNKY UPPY
+          </button>
+
+          {/* Mystical Zoltar Fortune Machine - Build Mode Only */}
+          {isFeatureEnabled('showZoltarFortune') && (
+            <button
+              onClick={() => {
+                openWindow({
+                  key: WINDOW_IDS.ZOLTAR_FORTUNE_APP,
+                  window: (
+                    <ZoltarFortuneWindow />
+                  ),
+                });
+              }}
+              style={{
+                background: 'linear-gradient(45deg, #8B4513, #CD853F)',
+                color: '#FFD700',
+                border: '2px solid #FFD700',
+                borderRadius: '8px',
+                padding: '15px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                fontFamily: "'Press Start 2P', monospace",
+                boxShadow: '0 0 15px rgba(255,215,0,0.5)'
+              }}
+            >
+              🔮 ZOLTAR
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Create lobby function 
+  const openLobby = () => {
+    openWindow({
+      key: WINDOW_IDS.ARCADE_LOBBY,
+      window: (
+        <DraggableResizeableWindow
+          windowsId={WINDOW_IDS.ARCADE_LOBBY}
+          onClose={() => closeWindow(WINDOW_IDS.ARCADE_LOBBY)}
+          headerTitle="🧙‍♂️ Wizard's Arcade Lobby"
+          headerIcon="/images/icons/arcade-day.png"
+          initialWidth="900px"
+          initialHeight="700px"
+          resizable={true}
+        >
+          <ArcadeLobby />
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
   return (
-    <div className="relative w-full h-full flex flex-col">
+    <div className="inline-block" style={{ lineHeight: 0 }}>
       {/* Image Section */}
-      <div className="relative flex-1">
+      <div className="relative inline-block" style={{ lineHeight: 0 }}>
         <img
           src={timeBasedInfo.currentImage}
           alt={`Arcade Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
-          className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-500"
+          className="block object-contain z-0 transition-opacity duration-500"
+          style={{ maxHeight: '400px', width: 'auto', display: 'block', margin: 0 }}
           onError={(e) => {
             e.currentTarget.src = "/images/backdrops/BLANK.png";
           }}
@@ -311,156 +670,66 @@ const ArcadeMain = () => {
         </div>
       </div>
 
-      {/* Room Buttons Section */}
-      <div className="bg-gray-800 p-4 border-t border-gray-600">
-        <div className="flex gap-4 flex-wrap justify-center max-w-4xl mx-auto">
-        {/* Front Area */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.ARCADE_TOP_LEFT,
-              "Front Area",
-              "By Saturday morning, the gym was ready for a night to remember. Streamers hung from the rafters, disco balls cast dancing lights across the polished floor, and everything was perfect for homecoming.\n\nBut by midday, the announcement came: the dance was off. No one gave a reason, just murmurs about a situation still unfolding. Nobody knew for sure what was happening — only that it wasn't good.\n\nThe lights stayed on, the decorations hung in silence, and the dance floor never saw a single step. The mystery of what happened that day still echoes through these empty halls."
-            )
-          }
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
-        >
-          🎮 Front Area
-        </button>
-
-        {/* Prize Booth */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.ARCADE_TOP_RIGHT,
-              "Prize Booth",
-              "STUFFED ANIMALS EVERYWHERE! Giant teddy bears and rainbow unicorns hang from every hook! Claw machines filled with mysterious treasures! Spinning wheels of fortune! Tickets cascade like confetti from redemption games! The prize master watches with knowing eyes!"
-            )
-          }
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
-        >
-          🎁 Prize Booth
-        </button>
-
-        {/* Snack Corner */}
-        <button
-          onClick={openSnackCorner}
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
-        >
-          🍿 Snack Corner
-        </button>
-
-        {/* Back Room */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.ARCADE_BOTTOM_RIGHT,
-              "Back Room",
-              "FORBIDDEN ZONE! A mysterious door marked EMPLOYEES ONLY! What secrets lie beyond? Rumors speak of prototype games never released! The door handle is warm to the touch! Strange electronic sounds echo from within! Do you dare to discover what's hidden?"
-            )
-          }
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
-        >
-          🚪 Back Room
-        </button>
-        
-        {/* Flappy Flunk Game */}
-        <button
-          onClick={() =>
-            openWindow({
-              key: WINDOW_IDS.FLAPPY_FLUNK,
-              window: (
-                <DraggableResizeableWindow
-                  windowsId={WINDOW_IDS.FLAPPY_FLUNK}
-                  onClose={() => closeWindow(WINDOW_IDS.FLAPPY_FLUNK)}
-                  headerTitle="Flappy Flunk"
-                  initialWidth="480px"
-                  initialHeight="640px"
-                  headerIcon="/images/icons/flappyflunk.png"
-                >
-                  <FlappyFlunkWindow />
-                </DraggableResizeableWindow>
-              ),
-            })
-          }
-          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-500 transition-all duration-200 hover:scale-105 min-w-[120px] text-center font-bold"
-        >
-          🐦 FLAPPY FLUNK
-        </button>
-        
-        {/* Flunky Uppy Game - Build Mode Only */}
-        {isFeatureEnabled('showFlunkyUppy') && (
+      {/* Single Enter Button */}
+      <div className="bg-gray-800 p-4">
+        <div className="flex justify-center">
           <button
-            onClick={() =>
-              openWindow({
-                key: WINDOW_IDS.FLUNKY_UPPY,
-                window: (
-                  <DraggableResizeableWindow
-                    windowsId={WINDOW_IDS.FLUNKY_UPPY}
-                    onClose={() => closeWindow(WINDOW_IDS.FLUNKY_UPPY)}
-                    headerTitle="Flunky Uppy"
-                    initialWidth="420px"
-                    initialHeight="720px"
-                    headerIcon="/images/icons/flunky-uppy-icon.png?v=2"
-                  >
-                    <FlunkJumpWindow />
-                  </DraggableResizeableWindow>
-                ),
-              })
-            }
-            className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-500 transition-all duration-200 hover:scale-105 min-w-[120px] text-center font-bold"
-          >
-            🦘 FLUNKY UPPY
-          </button>
-        )}
-
-        {/* Flunky Uppy Arcade Machine */}
-        <button
-          onClick={() => {
-            openWindow({
-              key: "flunky-uppy-arcade",
-              window: (
-                <DraggableResizeableWindow
-                  windowsId="flunky-uppy-arcade"
-                  headerTitle="🎮 FLUNKY UPPY ARCADE"
-                  onClose={() => closeWindow("flunky-uppy-arcade")}
-                  initialWidth="480px"
-                  initialHeight="640px"
-                  headerIcon="/images/icons/flunky-uppy-icon.png"
-                  resizable={true}
-                >
-                  <FlunkyUppyArcadeWindow />
-                </DraggableResizeableWindow>
-              ),
-            });
-          }}
-          className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded hover:from-yellow-400 hover:to-orange-400 transition-all duration-200 hover:scale-105 min-w-[120px] text-center font-bold border-2 border-yellow-300 shadow-lg animate-pulse"
-        >
-          🎮 FLUNKY UPPY
-        </button>
-
-        {/* Mystical Zoltar Fortune Machine - Build Mode Only */}
-        {isFeatureEnabled('showZoltarFortune') && (
-          <button
-            onClick={() => {
-              openWindow({
-                key: WINDOW_IDS.ZOLTAR_FORTUNE_APP,
-                window: (
-                  <ZoltarFortuneWindow />
-                ),
+            onClick={async () => {
+              // Pause any currently playing music for better audio experience
+              const allAudioElements = document.querySelectorAll('audio');
+              const pausedAudios: HTMLAudioElement[] = [];
+              
+              // Store currently playing audio and pause them
+              allAudioElements.forEach(audio => {
+                if (!audio.paused) {
+                  pausedAudios.push(audio);
+                  audio.pause();
+                }
               });
+              
+              // Wait a brief moment for silence
+              await new Promise(resolve => setTimeout(resolve, 100));
+              
+              // Play entrance sound effect
+              const audio = new Audio('/music/enter.mp3');
+              audio.volume = 0.7;
+              
+              try {
+                await audio.play();
+                
+                // Wait for sound to finish, then resume music
+                audio.addEventListener('ended', () => {
+                  setTimeout(() => {
+                    pausedAudios.forEach(pausedAudio => {
+                      pausedAudio.play().catch(console.log);
+                    });
+                  }, 200);
+                });
+                
+              } catch (error) {
+                console.log('Audio play failed:', error);
+                // Resume music immediately if sound fails
+                setTimeout(() => {
+                  pausedAudios.forEach(pausedAudio => {
+                    pausedAudio.play().catch(console.log);
+                  });
+                }, 200);
+              }
+              
+              // Open the lobby
+              openLobby();
             }}
-            className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-800 text-white px-4 py-2 rounded hover:from-purple-500 hover:via-indigo-500 hover:to-purple-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center font-bold border-2 border-purple-300 shadow-lg relative overflow-hidden"
+            className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 text-white px-8 py-4 rounded-lg hover:from-purple-500 hover:via-blue-500 hover:to-purple-700 transition-all duration-300 hover:scale-105 text-center font-bold text-xl border-4 border-yellow-300 shadow-2xl relative overflow-hidden"
             style={{
-              textShadow: '0 0 10px rgba(255,255,255,0.5)',
-              background: 'linear-gradient(45deg, #8B4513, #A0522D, #CD853F)',
-              border: '2px solid #FFD700',
-              boxShadow: '0 0 15px rgba(255,215,0,0.5), inset 0 0 10px rgba(255,255,255,0.2)'
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+              boxShadow: '0 8px 25px rgba(138,43,226,0.6), inset 0 0 20px rgba(255,255,255,0.2)',
+              minWidth: '300px',
+              fontSize: '20px',
+              fontFamily: "'Press Start 2P', monospace"
             }}
           >
-            🔮 ZOLTAR
+            🧙‍♂️ ENTER WIZARD'S ARCADE 🧙‍♂️
           </button>
-        )}
         </div>
       </div>
     </div>

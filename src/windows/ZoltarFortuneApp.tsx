@@ -181,69 +181,113 @@ const ZoltarFortuneApp = () => {
     <div style={{
       width: '100%',
       height: '100%',
-      background: 'linear-gradient(135deg, #1a0033, #330066, #1a0033)',
+      background: 'linear-gradient(135deg, #1a0033, #330066, #4B0082, #8B008B, #1a0033)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       padding: '20px',
       minHeight: '600px',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      fontFamily: "'Creepster', 'Chiller', 'Papyrus', cursive"
     }}>
-      {/* Mystical Background Effects */}
+      {/* Mystical Background Pattern */}
       <div style={{
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'radial-gradient(circle at 50% 50%, rgba(138,43,226,0.1) 0%, transparent 50%)',
-        animation: isAnimating ? 'pulse 2s ease-in-out infinite' : 'none'
+        backgroundImage: `
+          radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
+          linear-gradient(45deg, transparent 40%, rgba(255, 69, 180, 0.05) 50%, transparent 60%)
+        `,
+        animation: isAnimating ? 'mysticalPulse 3s ease-in-out infinite' : 'none'
       }} />
 
-      {/* Floating Mystical Orbs */}
-      {[...Array(6)].map((_, i) => (
+      {/* Floating Stars */}
+      {[...Array(12)].map((_, i) => (
         <div
           key={i}
           style={{
             position: 'absolute',
-            width: '8px',
-            height: '8px',
-            background: 'radial-gradient(circle, rgba(255,215,0,0.8), rgba(138,43,226,0.4))',
-            borderRadius: '50%',
+            fontSize: `${8 + Math.random() * 8}px`,
+            color: '#FFD700',
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
-            animation: `float ${3 + Math.random() * 4}s ease-in-out infinite ${Math.random() * 2}s`,
-            boxShadow: '0 0 10px rgba(255,215,0,0.5)'
+            animation: `starTwinkle ${2 + Math.random() * 3}s ease-in-out infinite ${Math.random() * 2}s`,
+            textShadow: '0 0 10px rgba(255,215,0,0.8)',
+            pointerEvents: 'none'
           }}
-        />
+        >
+          ✨
+        </div>
       ))}
 
-      {/* App Header */}
+      {/* Zoltar Image Container */}
+      <div style={{
+        width: '100%',
+        maxWidth: '400px',
+        marginBottom: '20px',
+        position: 'relative',
+        zIndex: 10
+      }}>
+        <div style={{
+          background: 'linear-gradient(145deg, #8B4513, #DAA520, #FFD700, #DAA520, #8B4513)',
+          padding: '15px',
+          borderRadius: '20px',
+          border: '3px solid #FFD700',
+          boxShadow: '0 0 30px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(139, 69, 19, 0.3)',
+          position: 'relative'
+        }}>
+          {/* Ornate Corner Decorations */}
+          <div style={{ position: 'absolute', top: '-5px', left: '-5px', fontSize: '20px', color: '#FFD700' }}>✦</div>
+          <div style={{ position: 'absolute', top: '-5px', right: '-5px', fontSize: '20px', color: '#FFD700' }}>✦</div>
+          <div style={{ position: 'absolute', bottom: '-5px', left: '-5px', fontSize: '20px', color: '#FFD700' }}>✦</div>
+          <div style={{ position: 'absolute', bottom: '-5px', right: '-5px', fontSize: '20px', color: '#FFD700' }}>✦</div>
+          
+          <img
+            src="/images/zoltar/zoltar-background.png"
+            alt="Zoltar Fortune Teller"
+            style={{
+              width: '100%',
+              height: 'auto',
+              borderRadius: '15px',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Mystical Title */}
       <div style={{
         textAlign: 'center',
-        marginBottom: '30px',
+        marginBottom: '20px',
         zIndex: 10
       }}>
         <h1 style={{
-          fontSize: '48px',
+          fontSize: '32px',
           fontWeight: 'bold',
-          background: 'linear-gradient(45deg, #FFD700, #FF69B4, #9370DB)',
+          background: 'linear-gradient(45deg, #FFD700, #FF1493, #9370DB, #FFD700)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          textShadow: '0 0 20px rgba(255,215,0,0.3)',
-          marginBottom: '10px'
+          textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+          marginBottom: '5px',
+          fontFamily: "'Creepster', 'Chiller', serif",
+          letterSpacing: '2px'
         }}>
-          🔮 MYSTICAL ZOLTAR 🔮
+          ☾ THE GREAT ZOLTAR ☽
         </h1>
         <p style={{
           color: '#E6E6FA',
-          fontSize: '18px',
+          fontSize: '16px',
           fontStyle: 'italic',
-          textShadow: '0 0 10px rgba(230,230,250,0.5)'
+          textShadow: '0 0 10px rgba(230,230,250,0.8)',
+          fontFamily: "'Papyrus', serif"
         }}>
-          Ancient Fortune Telling Machine
+          🔮 Mystic Oracle of Destiny 🔮
         </p>
       </div>
 
@@ -342,35 +386,84 @@ const ZoltarFortuneApp = () => {
             }} />
           </div>
 
-          {/* Play Button */}
-          <button
-            onClick={playGame}
-            disabled={isPlaying || balance < PLAY_COST}
-            style={{
-              position: 'absolute',
-              bottom: '60px',
-              left: '50%',
-              transform: isPlaying ? 'translateX(-50%) scale(0.95)' : 'translateX(-50%) scale(1)',
-              width: '200px',
-              height: '60px',
-              background: isPlaying ?
-                'linear-gradient(45deg, #666, #999)' :
-                'linear-gradient(45deg, #FFD700, #FFA500, #FF8C00)',
-              border: 'none',
-              borderRadius: '30px',
-              color: isPlaying ? '#ccc' : '#8B0000',
-              fontWeight: 'bold',
-              fontSize: '16px',
-              fontFamily: 'serif',
-              cursor: isPlaying ? 'not-allowed' : 'pointer',
-              boxShadow: isPlaying ?
-                'inset 0 3px 8px rgba(0,0,0,0.4)' :
-                '0 8px 20px rgba(255,140,0,0.6), inset 0 2px 5px rgba(255,255,255,0.4)',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            {isPlaying ? '🔮 CONSULTING SPIRITS...' : `🔮 SEEK FORTUNE (${PLAY_COST} GUM)`}
-          </button>
+      {/* Mystical Fortune Button */}
+      <div style={{
+        background: 'linear-gradient(145deg, #4B0082, #8B008B, #9400D3, #8B008B, #4B0082)',
+        padding: '20px',
+        borderRadius: '25px',
+        border: '3px solid #FFD700',
+        boxShadow: '0 0 30px rgba(255, 215, 0, 0.5), inset 0 0 20px rgba(75, 0, 130, 0.8)',
+        marginBottom: '20px',
+        position: 'relative',
+        maxWidth: '400px',
+        width: '100%'
+      }}>
+        {/* Ornate Mystical Border */}
+        <div style={{
+          position: 'absolute',
+          top: '-10px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: '24px',
+          color: '#FFD700',
+          textShadow: '0 0 10px rgba(255, 215, 0, 0.8)'
+        }}>
+          ⚜️
+        </div>
+        
+        <button
+          onClick={playGame}
+          disabled={isPlaying || balance < PLAY_COST}
+          style={{
+            width: '100%',
+            height: '70px',
+            background: isPlaying ?
+              'linear-gradient(45deg, #666, #999, #666)' :
+              'linear-gradient(45deg, #FFD700, #FFA500, #FF6347, #FFA500, #FFD700)',
+            border: '3px solid #8B4513',
+            borderRadius: '35px',
+            color: isPlaying ? '#ccc' : '#8B0000',
+            fontWeight: 'bold',
+            fontSize: '18px',
+            fontFamily: "'Creepster', 'Chiller', serif",
+            cursor: isPlaying ? 'not-allowed' : 'pointer',
+            boxShadow: isPlaying ?
+              'inset 0 4px 12px rgba(0,0,0,0.6)' :
+              '0 8px 25px rgba(255,140,0,0.8), inset 0 3px 8px rgba(255,255,255,0.6)',
+            transition: 'all 0.4s ease',
+            textShadow: isPlaying ? 'none' : '2px 2px 4px rgba(0,0,0,0.8)',
+            letterSpacing: '1px',
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: isPlaying ? 
+              'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)' :
+              'none',
+            animation: isPlaying ? 'shimmer 2s ease-in-out infinite' : 'none'
+          }} />
+          <span style={{ position: 'relative', zIndex: 1 }}>
+            {isPlaying ? '🔮 THE SPIRITS WHISPER...' : `✨ DIVINE YOUR FORTUNE ✨`}
+          </span>
+        </button>
+        
+        <div style={{
+          textAlign: 'center',
+          marginTop: '10px',
+          color: '#E6E6FA',
+          fontSize: '14px',
+          fontStyle: 'italic',
+          fontFamily: "'Papyrus', serif"
+        }}>
+          ⭐ Cost: {PLAY_COST} GUM • Fortune Awaits: {WIN_PAYOUT} GUM ⭐
+        </div>
+      </div>
 
           {/* Game Result Display */}
           {showResult && gameResult && (
@@ -466,6 +559,28 @@ const ZoltarFortuneApp = () => {
 
       {/* CSS Animations */}
       <style jsx>{`
+        @keyframes mysticalPulse {
+          0%, 100% { 
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% { 
+            opacity: 0.8;
+            transform: scale(1.02);
+          }
+        }
+
+        @keyframes starTwinkle {
+          0%, 100% { 
+            opacity: 0.4;
+            transform: scale(0.8) rotate(0deg);
+          }
+          50% { 
+            opacity: 1;
+            transform: scale(1.2) rotate(180deg);
+          }
+        }
+
         @keyframes pulse {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 0.9; }
@@ -508,9 +623,14 @@ const ZoltarFortuneApp = () => {
           50% { transform: translateY(-20px); }
         }
 
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+
         button:hover:not(:disabled) {
-          transform: translateX(-50%) scale(1.05) !important;
-          box-shadow: 0 12px 25px rgba(255,140,0,0.8), inset 0 2px 5px rgba(255,255,255,0.5) !important;
+          transform: scale(1.05) !important;
+          box-shadow: 0 12px 35px rgba(255,140,0,1.0), inset 0 3px 8px rgba(255,255,255,0.7) !important;
         }
       `}</style>
     </div>

@@ -12,10 +12,10 @@ const ZoltarFortuneWindow: React.FC = () => {
       onClose={() => closeWindow(WINDOW_IDS.ZOLTAR_FORTUNE_APP)}
       headerTitle="Mystical Zoltar Fortune Machine"
       headerIcon="/images/icons/crystal-ball.png"
-      initialWidth="100%"
-      initialHeight="100%"
+      initialWidth="900px"
+      initialHeight="700px"
       showMaximizeButton={true}
-      openCentered={true}
+      resizable={true}
       style={{
         background: 'linear-gradient(135deg, #1a0033, #330066, #1a0033)'
       }}

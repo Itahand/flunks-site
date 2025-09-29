@@ -26,6 +26,7 @@ export const WINDOW_IDS = {
   TREEHOUSE_TRUNK: "treehouse_trunk",
   TREEHOUSE_WINDOW: "treehouse_window",
   ARCADE_MAIN: "arcade_main",
+  ARCADE_LOBBY: "arcade_lobby",
   ARCADE_TOP_LEFT: "arcade_top_left",
   ARCADE_TOP_RIGHT: "arcade_top_right",
   ARCADE_BOTTOM_LEFT: "arcade_bottom_left",
