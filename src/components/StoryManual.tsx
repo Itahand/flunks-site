@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import CutscenePlayer from './CutscenePlayer';
 import DraggableResizeableWindow from './DraggableResizeableWindow';
 import { WINDOW_IDS } from '../fixed';
+import { getCurrentBuildMode } from '../utils/buildMode';
 
 interface Chapter {
   id: string;
@@ -223,12 +224,54 @@ const sampleChapters: Chapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'homecoming',
+    title: 'Homecoming 🏈',
+    subtitle: 'By Saturday morning, the gym was ready for a night to remember...',
+    unlocked: true, // Will be controlled by build mode
+    thumbnail: '/images/cutscenes/homecoming-main.png',
+    scenes: [
+      // Scene 1: Preparation
+      {
+        id: 'preparation',
+        image: '/images/cutscenes/homecoming-1.png',
+        lines: [
+          'By Saturday morning, the gym was ready for a night to remember. Streamers hung from the rafters, disco balls cast dancing lights across the polished floor, and everything was perfect for homecoming.'
+        ]
+      },
+      // Scene 2: The Announcement
+      {
+        id: 'announcement',
+        image: '/images/cutscenes/homecoming-2.png',
+        lines: [
+          'But by midday, the announcement came: the dance was off. No one gave a reason, just murmurs about a situation still unfolding. Nobody knew for sure what was happening — only that it wasn\'t good.'
+        ]
+      },
+      // Scene 3: The Mystery
+      {
+        id: 'mystery',
+        image: '/images/cutscenes/homecoming-3.png',
+        lines: [
+          'The lights stayed on, the decorations hung in silence, and the dance floor never saw a single step. The mystery of what happened that day still echoes through these empty halls.'
+        ]
+      }
+    ]
   }
 ];
 
 const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [playingCutscene, setPlayingCutscene] = useState(false);
+  
+  // Filter chapters based on build mode - only show Homecoming in build mode
+  const buildMode = getCurrentBuildMode();
+  const availableChapters = sampleChapters.filter(chapter => {
+    if (chapter.id === 'homecoming') {
+      return buildMode === 'build';
+    }
+    return true; // Show all other chapters
+  });
 
   const handleChapterClick = (chapter: Chapter) => {
     if (!chapter.unlocked) return;
@@ -263,7 +306,7 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
         }}>
           {/* Chapter selection in background */}
           <ChapterGrid style={{ opacity: 0.3, pointerEvents: 'none' }}>
-            {sampleChapters.map((chapter, index) => (
+            {availableChapters.map((chapter, index) => (
               <ChapterCard
                 key={chapter.id}
                 unlocked={chapter.unlocked}
@@ -325,7 +368,7 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
       padding: '20px'
     }}>
       <ChapterGrid>
-          {sampleChapters.map((chapter, index) => (
+          {availableChapters.map((chapter, index) => (
             <ChapterCard
               key={chapter.id}
               unlocked={chapter.unlocked}

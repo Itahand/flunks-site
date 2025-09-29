@@ -60,6 +60,7 @@ export const WINDOW_IDS = {
   BULLETIN_BOARD: "bulletin-board",
   YEARBOOK: "yearbook",
   STORY_MANUAL: "story-manual",
+  HOMECOMING_STORY: "homecoming-story",
   VCR_EFFECTS_TEST: "vcr-effects-test",
   
   // New location main windows
