@@ -18,8 +18,8 @@ const HighSchoolMain = () => {
   const [showHomecomingStory, setShowHomecomingStory] = useState(false);
 
   // Use time-based images with your uploaded day/night photos
-  const dayImage = "/images/icons/school-day.png";
-  const nightImage = "/images/icons/school-night.png";
+  const dayImage = "/images/icons/schooltapeday.png";
+  const nightImage = "/images/icons/schooltapenight.png";
   const fallbackImage = "/images/backdrops/BLANK.png";
 
   // Get time-based image info
