@@ -189,7 +189,7 @@ const ZoltarFortuneApp = () => {
       padding: '20px',
       minHeight: '600px',
       position: 'relative',
-      overflow: 'hidden',
+      overflow: 'auto',
       fontFamily: "'Creepster', 'Chiller', 'Papyrus', cursive"
     }}>
       {/* Mystical Background Pattern */}

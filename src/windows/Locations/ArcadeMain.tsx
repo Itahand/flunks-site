@@ -25,18 +25,29 @@ const ArcadeMain = () => {
   // Initialize background music for arcade entrance
   useEffect(() => {
     if (!entranceAudioRef.current) {
-      entranceAudioRef.current = new Audio('/music/80s_Arcade_[Retrowave_Synthwave_Gaming_...]kaizo[cc].mp3');
+      entranceAudioRef.current = new Audio('/music/arcade.mp3');
       entranceAudioRef.current.loop = true;
-      entranceAudioRef.current.volume = 0.3; // 30% volume for entrance
+      entranceAudioRef.current.volume = 1.0; // Full volume
+      
+      // Add error handling and preload
+      entranceAudioRef.current.preload = 'auto';
+      entranceAudioRef.current.addEventListener('error', (e) => {
+        console.error('🎵 Arcade music failed to load:', e);
+      });
+      entranceAudioRef.current.addEventListener('canplaythrough', () => {
+        console.log('🎵 Arcade music loaded successfully');
+      });
     }
 
     const playEntranceMusic = async () => {
       try {
         if (entranceAudioRef.current && !isEntranceMuted) {
+          console.log('🎵 Attempting to play arcade entrance music...');
           await entranceAudioRef.current.play();
+          console.log('🎵 Arcade entrance music playing');
         }
       } catch (error) {
-        console.log('Entrance music autoplay blocked by browser');
+        console.log('🎵 Entrance music autoplay blocked by browser:', error);
       }
     };
 
@@ -333,9 +344,9 @@ const ArcadeMain = () => {
     // Initialize background music when lobby opens
     useEffect(() => {
       if (!audioRef.current) {
-        audioRef.current = new Audio('/music/80s_Arcade_[Retrowave_Synthwave_Gaming_...]kaizo[cc].mp3');
+        audioRef.current = new Audio('/music/arcade.mp3');
         audioRef.current.loop = true;
-        audioRef.current.volume = 0.8;
+        audioRef.current.volume = 1.0;
       }
 
       const playMusic = async () => {
@@ -376,7 +387,7 @@ const ArcadeMain = () => {
       <div style={{
         width: '100%',
         height: '100%',
-        background: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('/images/arcade-lobby.png')`,
+        background: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('/images/arcade/arcade-lobby.png')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -418,14 +429,18 @@ const ArcadeMain = () => {
           🧙‍♂️ WELCOME TO THE WIZARD'S ARCADE! 🧙‍♂️
         </div>
 
-        {/* All Arcade Activities Grid */}
+        {/* Top Row - 4 buttons */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '15px',
-          padding: '20px',
-          maxHeight: 'calc(100% - 100px)',
-          overflowY: 'auto'
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '10px',
+          padding: '10px 20px',
+          position: 'absolute',
+          bottom: '120px',
+          left: '20px',
+          right: '20px',
+          justifyItems: 'center',
+          alignItems: 'center'
         }}>
           {/* Front Area */}
           <button
@@ -446,7 +461,9 @@ const ArcadeMain = () => {
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              fontFamily: "'Press Start 2P', monospace"
+              fontFamily: "'Press Start 2P', monospace",
+              width: '180px',
+              height: '70px'
             }}
           >
             🎮 Front Area
@@ -471,7 +488,9 @@ const ArcadeMain = () => {
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              fontFamily: "'Press Start 2P', monospace"
+              fontFamily: "'Press Start 2P', monospace",
+              width: '180px',
+              height: '70px'
             }}
           >
             🎁 Prize Booth
@@ -490,7 +509,9 @@ const ArcadeMain = () => {
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              fontFamily: "'Press Start 2P', monospace"
+              fontFamily: "'Press Start 2P', monospace",
+              width: '180px',
+              height: '70px'
             }}
           >
             🍿 Snack Corner
@@ -515,11 +536,28 @@ const ArcadeMain = () => {
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              fontFamily: "'Press Start 2P', monospace"
+              fontFamily: "'Press Start 2P', monospace",
+              width: '180px',
+              height: '70px'
             }}
           >
             🚪 Back Room
           </button>
+        </div>
+
+        {/* Bottom Row - 3 buttons: Flappy Flunk, Zoltar, Flunky Uppy */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '10px',
+          padding: '10px 20px',
+          position: 'absolute',
+          bottom: '20px',
+          left: '20px',
+          right: '20px',
+          justifyItems: 'center',
+          alignItems: 'center'
+        }}>
           
           {/* Flappy Flunk Game */}
           <button
@@ -550,7 +588,9 @@ const ArcadeMain = () => {
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              fontFamily: "'Press Start 2P', monospace"
+              fontFamily: "'Press Start 2P', monospace",
+              width: '180px',
+              height: '70px'
             }}
           >
             🐦 FLAPPY FLUNK
@@ -586,49 +626,14 @@ const ArcadeMain = () => {
                 fontWeight: 'bold',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
-                fontFamily: "'Press Start 2P', monospace"
+                fontFamily: "'Press Start 2P', monospace",
+                width: '180px',
+                height: '70px'
               }}
             >
               🦘 FLUNKY UPPY
             </button>
           )}
-
-          {/* Flunky Uppy Arcade Machine */}
-          <button
-            onClick={() => {
-              openWindow({
-                key: "flunky-uppy-arcade",
-                window: (
-                  <DraggableResizeableWindow
-                    windowsId="flunky-uppy-arcade"
-                    headerTitle="🎮 FLUNKY UPPY ARCADE"
-                    onClose={() => closeWindow("flunky-uppy-arcade")}
-                    initialWidth="480px"
-                    initialHeight="640px"
-                    headerIcon="/images/icons/flunky-uppy-icon.png"
-                    resizable={true}
-                  >
-                    <FlunkyUppyArcadeWindow />
-                  </DraggableResizeableWindow>
-                ),
-              });
-            }}
-            style={{
-              background: 'linear-gradient(45deg, #FFD700, #FFA500)',
-              color: 'white',
-              border: '2px solid white',
-              borderRadius: '8px',
-              padding: '15px',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              fontFamily: "'Press Start 2P', monospace",
-              animation: 'pulse 2s infinite'
-            }}
-          >
-            🎮 FLUNKY UPPY
-          </button>
 
           {/* Mystical Zoltar Fortune Machine - Build Mode Only */}
           {isFeatureEnabled('showZoltarFortune') && (
@@ -652,7 +657,9 @@ const ArcadeMain = () => {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 fontFamily: "'Press Start 2P', monospace",
-                boxShadow: '0 0 15px rgba(255,215,0,0.5)'
+                boxShadow: '0 0 15px rgba(255,215,0,0.5)',
+                width: '180px',
+                height: '70px'
               }}
             >
               🔮 ZOLTAR
@@ -684,14 +691,14 @@ const ArcadeMain = () => {
   };
 
   return (
-    <div className="inline-block" style={{ lineHeight: 0 }}>
+    <div className="flex flex-col items-center" style={{ width: 'fit-content', margin: '0 auto' }}>
       {/* Image Section */}
-      <div className="relative inline-block" style={{ lineHeight: 0 }}>
+      <div className="relative flex-shrink-0">
         <img
           src={timeBasedInfo.currentImage}
           alt={`Arcade Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
           className="block object-contain z-0 transition-opacity duration-500"
-          style={{ maxHeight: '600px', width: 'auto', display: 'block', margin: 0 }}
+          style={{ maxHeight: '500px', maxWidth: '700px', width: 'auto', height: 'auto' }}
           onError={(e) => {
             e.currentTarget.src = "/images/backdrops/BLANK.png";
           }}
@@ -721,7 +728,7 @@ const ArcadeMain = () => {
       </div>
 
       {/* Single Enter Button */}
-      <div className="bg-gray-800 p-4">
+      <div className="bg-gray-800 p-3 flex-shrink-0" style={{ width: 'fit-content' }}>
         <div className="flex justify-center">
           <button
             onClick={async () => {
@@ -774,13 +781,14 @@ const ArcadeMain = () => {
               // Open the lobby
               openLobby();
             }}
-            className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 text-white px-8 py-4 rounded-lg hover:from-purple-500 hover:via-blue-500 hover:to-purple-700 transition-all duration-300 hover:scale-105 text-center font-bold text-xl border-4 border-yellow-300 shadow-2xl relative overflow-hidden"
+            className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 text-white px-8 py-4 rounded-lg hover:from-purple-500 hover:via-blue-500 hover:to-purple-700 transition-all duration-300 hover:scale-105 text-center font-bold border-4 border-yellow-300 shadow-2xl relative overflow-hidden"
             style={{
               textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
               boxShadow: '0 8px 25px rgba(138,43,226,0.6), inset 0 0 20px rgba(255,255,255,0.2)',
-              minWidth: '300px',
-              fontSize: '20px',
-              fontFamily: "'Press Start 2P', monospace"
+              minWidth: '400px',
+              fontSize: '16px',
+              fontFamily: "'Press Start 2P', monospace",
+              whiteSpace: 'nowrap'
             }}
           >
             🧙‍♂️ ENTER WIZARD'S ARCADE 🧙‍♂️

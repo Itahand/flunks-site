@@ -15,7 +15,14 @@ const HighSchoolMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   const { walletAddress, user } = useAuth();
   const [buttonClickLoading, setButtonClickLoading] = useState(false);
+  const [backgroundTransition, setBackgroundTransition] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // State for debugging homecoming story
   const [showHomecomingStory, setShowHomecomingStory] = useState(false);
+  
+  // State for school lockdown investigation popup
+  const [showInvestigationPopup, setShowInvestigationPopup] = useState(false);
 
   // Use time-based images with your uploaded day/night photos
   const dayImage = "/images/icons/schooltapeday.png";
@@ -197,6 +204,11 @@ const HighSchoolMain = () => {
     });
   };
 
+  // Handler for showing investigation popup
+  const showInvestigationWarning = () => {
+    setShowInvestigationPopup(true);
+  };
+
   return (
     <div className="relative w-full h-full flex flex-col">
       {/* Image Section */}
@@ -226,266 +238,116 @@ const HighSchoolMain = () => {
         <div className="absolute top-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm z-20">
           Auto: {timeBasedInfo.currentTime}
         </div>
+
+        {/* LOCKDOWN BANNER */}
+        <div className="absolute top-4 right-4 bg-red-600 border-2 border-yellow-400 text-white px-4 py-2 rounded-lg text-sm font-bold z-20 animate-pulse shadow-lg">
+          🚨 SCHOOL LOCKDOWN 🚨
+        </div>
+        
+        {/* Police Tape Overlay */}
+        <div className="absolute inset-x-0 top-0 h-12 z-10 pointer-events-none"
+             style={{
+               background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(251, 191, 36, 0.8) 10px, rgba(251, 191, 36, 0.8) 20px)',
+               borderBottom: '3px solid #fbbf24'
+             }}></div>
+        <div className="absolute inset-x-0 bottom-0 h-12 z-10 pointer-events-none"
+             style={{
+               background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(251, 191, 36, 0.8) 10px, rgba(251, 191, 36, 0.8) 20px)',
+               borderTop: '3px solid #fbbf24'
+             }}></div>
       </div>
 
-      {/* Room Buttons Section */}
-      <div className="bg-gray-800 p-4 border-t border-gray-600">
+      {/* Room Buttons Section - SCHOOL LOCKDOWN */}
+      <div className="bg-red-900 p-4 border-t border-yellow-400 border-t-4 relative" style={{
+        background: 'repeating-linear-gradient(45deg, #7f1d1d, #7f1d1d 10px, #fbbf24 10px, #fbbf24 20px)',
+        borderImage: 'repeating-linear-gradient(90deg, #000 0%, #fbbf24 50%, #000 100%) 1'
+      }}>
         <div className="flex gap-4 flex-wrap justify-center max-w-4xl mx-auto">
-        {/* Hallway */}
+        {/* Hallway - LOCKDOWN */}
         <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.HIGH_SCHOOL_HALLWAY,
-              "Hallway",
-              "Lockers line the walls, covered in mysterious graffiti and faded club posters."
-            )
-          }
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+          onClick={showInvestigationWarning}
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-600 transition-all duration-200 hover:scale-105 min-w-[120px] text-center border-2 border-yellow-400 shadow-lg"
         >
-          🚪 Hallway
+          ☠️ DO NOT ENTER
         </button>
 
-        {/* Classroom */}
+        {/* Classroom - LOCKDOWN */}
         <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.HIGH_SCHOOL_CLASSROOM,
-              "Classroom",
-              "Dusty desks with carved initials. The chalkboard still has equations from the last day of school."
-            )
-          }
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+          onClick={showInvestigationWarning}
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-600 transition-all duration-200 hover:scale-105 min-w-[120px] text-center border-2 border-yellow-400 shadow-lg"
         >
-          📚 Classroom
+          ☠️ DO NOT ENTER
         </button>
 
-        {/* Cafeteria */}
+        {/* Cafeteria - LOCKDOWN */}
         <button
-          onClick={openCafeteria}
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+          onClick={showInvestigationWarning}
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-600 transition-all duration-200 hover:scale-105 min-w-[120px] text-center border-2 border-yellow-400 shadow-lg"
         >
-          🍽️ Cafeteria
+          ☠️ DO NOT ENTER
         </button>
 
-        {/* Gymnasium */}
+        {/* Gymnasium - LOCKDOWN */}
         <button
-          onClick={() =>
-            openWindow({
-              key: WINDOW_IDS.HIGH_SCHOOL_GYMNASIUM,
-              window: (
-                <DraggableResizeableWindow
-                  windowsId={WINDOW_IDS.HIGH_SCHOOL_GYMNASIUM}
-                  headerTitle="Gymnasium"
-                  onClose={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_GYMNASIUM)}
-                  initialWidth="85vw"
-                  initialHeight="85vh"
-                  resizable={true}
-                >
-                  <div className="relative w-full h-full bg-[#2d1810] text-white overflow-auto md:overflow-hidden">
-                    {/* Gymnasium Background Image */}
-                    <img
-                      src="/images/locations/gymnasium.png"
-                      alt="Gymnasium Interior"
-                      className="absolute inset-0 w-full h-full object-cover z-0"
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/backdrops/BLANK.png";
-                      }}
-                    />
-                    
-                    {/* Content Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-40 z-10 flex flex-col min-h-full">
-                      {/* Header Section */}
-                      <div className="p-4 md:p-6 text-center">
-                        <h1 className="text-2xl md:text-3xl font-bold mb-2">🏀 Gymnasium v2.0</h1>
-                        <p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto">
-                          The gymnasium stands eerily quiet. A faded banner hangs crookedly, announcing "HOMECOMING DANCE - CANCELLED DUE TO MYSTERIOUS CIRCUMSTANCES." 
-                          The dance floor that was meant to sparkle with memories now gathers dust, waiting for brave souls to uncover the truth.
-                        </p>
-                      </div>
-
-                      {/* Main Content Area */}
-                      <div className="flex-1 flex items-center justify-center p-4 md:p-6">
-                        <div className="bg-black bg-opacity-80 p-6 md:p-8 rounded-xl max-w-md text-center border border-orange-600 w-full mx-4">
-                          <div className="text-5xl md:text-6xl mb-4">🕺</div>
-                          <h2 className="text-xl md:text-2xl font-bold mb-4 text-orange-400">Homecoming Dance</h2>
-                          
-                          <p className="text-gray-300 mb-6 leading-relaxed text-sm md:text-base">
-                            On one special night only, the gymnasium transforms into a magical dance floor! 
-                            Join the homecoming dance and earn <span className="text-orange-400 font-bold">50 GUM</span> 
-                            for your Chapter 4 Slacker objective. This is a one-time reward.
-                          </p>
-                          
-                          <div className="space-y-3">
-                            {/* Always show test button on vercel.app domains or build mode */}
-                            <HomecomingDanceButton />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Bottom Section - Additional Content */}
-                      <div className="p-4 md:p-6 text-center">
-                        <p className="text-xs md:text-sm text-gray-400">
-                          🎵 Dance the night away and find clues about Flunko's whereabouts...
-                        </p>
-                      </div>
-                      
-                      {/* Homecoming Story Overlay */}
-                      {showHomecomingStory && (
-                        <>
-                          {console.log('🎭 Rendering HomecomingStory component, showHomecomingStory:', showHomecomingStory)}
-                          <div style={{
-                            position: 'fixed',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundColor: 'rgba(255, 0, 0, 0.5)', // Bright red for debugging
-                            zIndex: 99999,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}>
-                            <div style={{
-                              background: 'white',
-                              padding: '20px',
-                              borderRadius: '8px',
-                              color: 'black',
-                              textAlign: 'center'
-                            }}>
-                              <h2>DEBUG: Story Modal</h2>
-                              <p>This is a test to see if modals work!</p>
-                              <button 
-                                onClick={() => {
-                                  console.log('🎭 Debug close clicked');
-                                  setShowHomecomingStory(false);
-                                }}
-                                style={{ 
-                                  background: 'red', 
-                                  color: 'white', 
-                                  padding: '10px 20px', 
-                                  border: 'none',
-                                  borderRadius: '4px'
-                                }}
-                              >
-                                Close Debug
-                              </button>
-                            </div>
-                          </div>
-                          <HomecomingStory onClose={() => {
-                            console.log('Story onClose called');
-                            setShowHomecomingStory(false);
-                          }} />
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </DraggableResizeableWindow>
-              ),
-            })
-          }
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+          onClick={showInvestigationWarning}
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-600 transition-all duration-200 hover:scale-105 min-w-[120px] text-center border-2 border-yellow-400 shadow-lg"
         >
-          🏀 Gymnasium
+          ☠️ DO NOT ENTER
         </button>
 
-        {/* Locker Room */}
+        {/* Locker Room - LOCKDOWN */}
         <button
-          onClick={() =>
-            openWindow({
-              key: WINDOW_IDS.HIGH_SCHOOL_LOCKER_ROOM,
-              window: (
-                <DraggableResizeableWindow
-                  windowsId={WINDOW_IDS.HIGH_SCHOOL_LOCKER_ROOM}
-                  headerTitle="Locker Room"
-                  onClose={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_LOCKER_ROOM)}
-                  initialWidth="70vw"
-                  initialHeight="70vh"
-                  resizable={true}
-                >
-                  <div className="relative w-full h-full bg-[#1a1a1a] text-white overflow-hidden">
-                    {/* Locker Room Background Image */}
-                    <img
-                      src="/images/locations/locker-room.png"
-                      alt="Locker Room Interior"
-                      className="absolute inset-0 w-full h-full object-cover z-0"
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/backdrops/BLANK.png";
-                      }}
-                    />
-                    
-                    {/* Content Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-40 z-10 flex flex-col">
-                      {/* Header Section */}
-                      <div className="p-6 text-center">
-                        <h1 className="text-3xl font-bold mb-2">🏃 Locker Room</h1>
-                        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-                          Rows of metal lockers stand like silent sentinels. Some doors hang open, revealing 
-                          forgotten belongings and mysterious notes. The air smells of old gym clothes and determination.
-                        </p>
-                      </div>
-
-                      {/* Main Content Area */}
-                      <div className="flex-1 flex items-center justify-center p-6">
-                        <div className="bg-black bg-opacity-80 p-8 rounded-xl max-w-md text-center border border-gray-600">
-                          <div className="text-6xl mb-4">🏈</div>
-                          <h2 className="text-2xl font-bold mb-4 text-yellow-400">Special Footballer Reward!</h2>
-                          
-                          <p className="text-gray-300 mb-6 leading-relaxed">
-                            If you own a Flunks NFT with <strong>Footballer Flunk Home</strong> or 
-                            <strong> Footballer Flunk Away</strong> traits, you can claim a special one-time 
-                            reward of <span className="text-yellow-400 font-bold">100 GUM</span>!
-                          </p>
-                          
-                          <FootballerGumClaimButton />
-                        </div>
-                      </div>
-
-                      {/* Bottom Section - Additional Content */}
-                      <div className="p-6 text-center">
-                        <p className="text-sm text-gray-400">
-                          🔍 Explore the lockers and discover what students left behind...
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </DraggableResizeableWindow>
-              ),
-            })
-          }
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+          onClick={showInvestigationWarning}
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-600 transition-all duration-200 hover:scale-105 min-w-[120px] text-center border-2 border-yellow-400 shadow-lg"
         >
-          🏃 Locker Room
+          ☠️ DO NOT ENTER
         </button>
 
-        {/* Library */}
+        {/* Library - LOCKDOWN */}
         <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.HIGH_SCHOOL_LIBRARY,
-              "Library",
-              "Books are scattered everywhere. One particular book seems to glow faintly on the librarian's desk."
-            )
-          }
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+          onClick={showInvestigationWarning}
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-600 transition-all duration-200 hover:scale-105 min-w-[120px] text-center border-2 border-yellow-400 shadow-lg"
         >
-          📖 Library
+          ☠️ DO NOT ENTER
         </button>
 
-        {/* Principal's Office */}
+        {/* Principal's Office - LOCKDOWN */}
         <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.HIGH_SCHOOL_OFFICE,
-              "Principal's Office",
-              "The principal's office is a sterile environment with filing cabinets, awards on the walls, and a large wooden desk. Student disciplinary records are neatly organized, and there's an air of authority that permeates the room. A motivational poster reads 'DISCIPLINE BUILDS CHARACTER'."
-            )
-          }
-          className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+          onClick={showInvestigationWarning}
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-600 transition-all duration-200 hover:scale-105 min-w-[120px] text-center border-2 border-yellow-400 shadow-lg"
         >
-          🏢 Office
+          ☠️ DO NOT ENTER
         </button>
         </div>
       </div>
+
+      {/* Investigation Lockdown Popup */}
+      {showInvestigationPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+          <div className="bg-red-900 border-4 border-yellow-400 rounded-lg p-8 max-w-md text-center shadow-2xl" 
+               style={{
+                 background: 'linear-gradient(45deg, #7f1d1d, #991b1b)',
+                 boxShadow: '0 0 30px rgba(251, 191, 36, 0.5)'
+               }}>
+            <div className="text-6xl mb-4 animate-pulse">🚨</div>
+            <h2 className="text-2xl font-bold text-yellow-400 mb-4">SCHOOL UNDER INVESTIGATION</h2>
+            <div className="text-4xl mb-4">☠️⚠️☠️</div>
+            <p className="text-white text-lg mb-6 leading-relaxed">
+              Seriously, stop clicking! The school is locked down due to mysterious circumstances surrounding 
+              Flunko's disappearance. Federal agents have sealed off all rooms until further notice.
+            </p>
+            <p className="text-yellow-300 text-sm mb-6 italic">
+              "Do not attempt entry. We mean it!"
+            </p>
+            <button 
+              onClick={() => setShowInvestigationPopup(false)}
+              className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 px-6 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
+            >
+              🏃‍♂️ RUN AWAY!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

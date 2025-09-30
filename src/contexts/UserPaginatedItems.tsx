@@ -140,20 +140,7 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
             console.error('❌ This is likely due to lightweight trait optimization changes');
             console.log('🔧 Creating minimal trait structure to preserve authentication...');
             
-            // Create minimal trait objects that preserve authentication while being lightweight
-            const minimalFlunksData = tokenData?.flunks?.map((tokenId: number, index: number) => ([{
-              owner: walletAddress,
-              tokenID: tokenId.toString(),
-              MetadataViewsDisplay: { name: `Flunk #${tokenId}`, description: '', thumbnail: { url: '' } },
-              traits: { traits: [{ name: 'Collection', value: 'Flunks', displayType: null, rarity: null }] },
-              serialNumber: index.toString(),
-              stakingInfo: null,
-              collection: 'Flunks',
-              rewards: 0
-            }])) || [];
-            
-            setFlunksMetadata(minimalFlunksData);
-            console.log('✅ Applied lightweight fallback with', minimalFlunksData.length, 'pages');
+            setFlunksMetadata([]);
           });
 
           Promise.all(allBackpacksMetadata).then((backpacksMetadata) => {
@@ -164,20 +151,7 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
             console.error('❌ This is likely due to lightweight trait optimization changes');
             console.log('🔧 Creating minimal trait structure to preserve authentication...');
             
-            // Create minimal trait objects that preserve authentication while being lightweight
-            const minimalBackpackData = tokenData?.backpack?.map((tokenId: number, index: number) => ([{
-              owner: walletAddress,
-              tokenID: tokenId.toString(),
-              MetadataViewsDisplay: { name: `Backpack #${tokenId}`, description: '', thumbnail: { url: '' } },
-              traits: { traits: [{ name: 'Collection', value: 'Backpack', displayType: null, rarity: null }] },
-              serialNumber: index.toString(),
-              stakingInfo: null,
-              collection: 'Backpack',
-              rewards: 0
-            }])) || [];
-            
-            setBackpacksMetadata(minimalBackpackData);
-            console.log('✅ Applied lightweight fallback with', minimalBackpackData.length, 'pages');
+            setBackpacksMetadata([]);
           });
         } catch (error) {
           console.error('❌ UserPaginatedItems: Error in onSuccess handler:', error);

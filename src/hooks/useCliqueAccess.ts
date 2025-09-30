@@ -4,7 +4,7 @@ import { getWalletStakeInfo } from 'web3/script-get-wallet-stake-info';
 import { getLightweightCliqueInfo } from 'web3/script-get-clique-info';
 import { ObjectDetails } from 'contexts/StakingContext';
 import { isFeatureEnabled } from '../utils/buildMode';
-import { useUserPaginatedItems } from '../contexts/UserPaginatedItems';
+import { usePaginatedItems } from '../contexts/UserPaginatedItems';
 
 export type CliqueType = 'GEEK' | 'JOCK' | 'PREP' | 'FREAK' | 'FLUNKO';
 
@@ -32,7 +32,7 @@ export const useCliqueAccess = (): UseCliqueAccessReturn => {
   const [error, setError] = useState<string | null>(null);
   
   // Use existing NFT data from context to avoid API calls
-  const { allItems, loading: nftLoading } = useUserPaginatedItems();
+  const { allItems, isLoading: nftLoading } = usePaginatedItems();
 
   const walletAddress = primaryWallet?.address;
 

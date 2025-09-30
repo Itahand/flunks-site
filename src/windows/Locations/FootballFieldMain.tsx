@@ -9,28 +9,8 @@ const FootballFieldMain = () => {
   const [buttonClickLoading, setButtonClickLoading] = useState(false);
   const [hasClaimedGum, setHasClaimedGum] = useState(false);
 
-  // Story mode state
-  const [currentStoryPanel, setCurrentStoryPanel] = useState(0);
-  const [showStoryMode, setShowStoryMode] = useState(true);
-
   // Get font styling for JOCK clique (football field is jock territory)
   const fontStyle = getFontStyle('JOCK');
-
-  // Story panels for multi-window narrative
-  const storyPanels = [
-    {
-      title: "Strange Homecoming - Part 1",
-      text: "All day the halls had carried a strange hush, as if the walls themselves were waiting for something to happen. The usual pre-game excitement felt muted, replaced by an odd tension that even the most spirited students couldn't shake."
-    },
-    {
-      title: "Strange Homecoming - Part 2", 
-      text: "By the time the bleachers filled and the lights hummed to life, the strangeness hadn't lifted—it had deepened. The crowd cheered, the band played, but the night's rhythm was wrong, like a song played just out of tune."
-    },
-    {
-      title: "Strange Homecoming - Part 3",
-      text: "This wasn't homecoming. This was the beginning of something else—something slipping quietly away, even as no one noticed. The field lights cast longer shadows than they should, and the air itself seemed to hold its breath."
-    }
-  ];
 
   // Create audio instance for Friday Night Lights - set to loop
   const fridayNightLightsAudio = useMemo(() => {
@@ -130,126 +110,31 @@ const FootballFieldMain = () => {
     }
   };
 
-  const nextStoryPanel = () => {
-    if (currentStoryPanel < storyPanels.length - 1) {
-      setCurrentStoryPanel(currentStoryPanel + 1);
-    } else {
-      setShowStoryMode(false);
-    }
-  };
 
-  const skipStory = () => {
-    setShowStoryMode(false);
-  };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full flex items-center justify-center bg-black">
       {/* Background Image */}
       <img
         src="/images/backdrops/vigil.png"
-        alt="Football Field Background"
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        alt="Football Field Vigil"
+        className="w-full h-full object-contain z-0"
+        style={{
+          // Show full image constrained to container
+          objectFit: 'contain',
+          objectPosition: 'center center',
+          width: '100%',
+          height: '100%'
+        }}
         onError={(e) => {
           e.currentTarget.src = "/images/backdrops/BLANK.png";
         }}
       />
       
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-30 z-5"></div>
+      {/* Subtle Dark Overlay for better button visibility */}
+      <div className="absolute inset-0 bg-black bg-opacity-20 z-5"></div>
 
-      {showStoryMode ? (
-        /* Story Mode Windows */
-        <div className="absolute inset-0 z-20 flex items-center justify-center p-4">
-          <div 
-            className="bg-black border-4 text-white p-6 rounded-none shadow-2xl max-w-2xl w-full"
-            style={{
-              borderColor: '#f5a2d3',
-              background: 'rgba(10, 10, 14, 0.95)',
-            }}
-          >
-            <h2 className="text-xl font-bold mb-4 text-center" style={{ color: '#f5a2d3' }}>
-              {storyPanels[currentStoryPanel].title}
-            </h2>
-            
-            <p className="text-base leading-relaxed mb-6 font-italic">
-              {storyPanels[currentStoryPanel].text}
-            </p>
 
-            <div className="flex justify-between items-center">
-              <button
-                onClick={skipStory}
-                className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded border border-gray-400 transition-colors"
-              >
-                Skip Story
-              </button>
-
-              <div className="flex gap-2">
-                {storyPanels.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full ${
-                      index === currentStoryPanel ? 'bg-pink-400' : 'bg-gray-600'
-                    }`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={nextStoryPanel}
-                className="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-600 hover:to-pink-500 text-white rounded border border-pink-300 transition-all font-bold"
-              >
-                {currentStoryPanel < storyPanels.length - 1 ? 'Continue' : 'Enter Field'}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <>
-          {/* Mobile: Text above everything */}
-          <div className="block sm:hidden absolute top-4 left-0 right-0 z-10 px-4">
-            <div 
-              className="bg-black border-2 text-white p-3 rounded shadow-xl"
-              style={{
-                borderColor: '#f5a2d3',
-                background: 'rgba(10, 10, 14, 0.9)',
-              }}
-            >
-              <p className="text-sm leading-tight font-italic">
-                The night's rhythm was wrong, like a song played just out of tune. This wasn't homecoming.
-              </p>
-            </div>
-          </div>
-
-          {/* Bottom Buttons Container */}
-          <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center gap-2 sm:gap-3 w-full px-4">
-            {/* Friday Night Lights Button */}
-            <button
-              onClick={handleFridayNightLightsClick}
-              disabled={buttonClickLoading || hasClaimedGum}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg transition-all duration-300 shadow-lg border-2 w-full max-w-xs
-                ${buttonClickLoading 
-                  ? 'bg-gray-600 text-gray-300 cursor-not-allowed border-gray-500' 
-                  : hasClaimedGum
-                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed border-gray-600'
-                  : 'bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-white border-yellow-400 hover:scale-105 hover:shadow-yellow-500/50'
-                }`}
-              style={{
-                ...fontStyle,
-                fontSize: 'clamp(16px, 4vw, 18px)',
-                fontWeight: 'bold',
-              }}
-            >
-              {buttonClickLoading 
-                ? '⏳ Loading...' 
-                : hasClaimedGum 
-                ? '🏈 LIGHTS CLAIMED' 
-                : '🏈 FRIDAY NIGHT LIGHTS'
-              }
-            </button>
-
-          </div>
-        </>
-      )}
     </div>
   );
 };

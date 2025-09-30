@@ -334,14 +334,15 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
     
     // Check if user has seen the intro before (localStorage)
     const hasSeenIntroStored = localStorage.getItem('flunks-season-zero-intro-seen');
-    if (!hasSeenIntroStored) {
-      // Show intro cutscene on first visit
-      setTimeout(() => {
-        setShowIntroCutscene(true);
-      }, 1000); // Small delay after map loads
-    } else {
+    // DISABLED: Auto-playing intro cutscene on first visit
+    // if (!hasSeenIntroStored) {
+    //   // Show intro cutscene on first visit
+    //   setTimeout(() => {
+    //     setShowIntroCutscene(true);
+    //   }, 1000); // Small delay after map loads
+    // } else {
       setHasSeenIntro(true);
-    }
+    // }
   }, []);
 
   const handleIntroCutsceneComplete = () => {

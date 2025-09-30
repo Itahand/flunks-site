@@ -277,23 +277,29 @@ export async function spendGum(
   metadata?: any
 ): Promise<GumSpendResult> {
   try {
-    const { data, error } = await supabase.rpc('spend_gum', {
-      p_wallet_address: walletAddress,
-      p_amount: amount,
-      p_source: source,
-      p_metadata: metadata || null
+    const response = await fetch('/api/spend-gum', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        wallet_address: walletAddress,
+        amount,
+        source,
+        metadata
+      })
     });
 
-    if (error) {
-      console.error('Error spending gum:', error);
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('Error spending gum:', result);
       return {
         success: false,
         spent: 0,
-        error: error.message
+        error: result.error || 'Failed to spend gum'
       };
     }
 
-    return data as GumSpendResult;
+    return result as GumSpendResult;
   } catch (error) {
     console.error('Error in spendGum:', error);
     return {
