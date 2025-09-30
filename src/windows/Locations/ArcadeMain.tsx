@@ -291,9 +291,9 @@ const ArcadeMain = () => {
     // Initialize background music when lobby opens
     useEffect(() => {
       if (!audioRef.current) {
-        audioRef.current = new Audio('/music/arcade.mp3');
+        audioRef.current = new Audio('/music/80s_Arcade_[Retrowave_Synthwave_Gaming_...]kaizo[cc].mp3');
         audioRef.current.loop = true;
-        audioRef.current.volume = 0.3;
+        audioRef.current.volume = 0.8;
       }
 
       const playMusic = async () => {
@@ -649,7 +649,7 @@ const ArcadeMain = () => {
           src={timeBasedInfo.currentImage}
           alt={`Arcade Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
           className="block object-contain z-0 transition-opacity duration-500"
-          style={{ maxHeight: '400px', width: 'auto', display: 'block', margin: 0 }}
+          style={{ maxHeight: '600px', width: 'auto', display: 'block', margin: 0 }}
           onError={(e) => {
             e.currentTarget.src = "/images/backdrops/BLANK.png";
           }}

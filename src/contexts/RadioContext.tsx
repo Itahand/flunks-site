@@ -58,7 +58,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [trackIndex, setTrackIndex] = useState(() => getRandomStartingStation());
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState(0.3);
   const [stationData, setStationData] = useState<StationData[]>([]);
   const [currentTrackInStation, setCurrentTrackInStation] = useState<number[]>([0, 0, 0, 0]);
 
