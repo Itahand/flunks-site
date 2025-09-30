@@ -146,7 +146,7 @@ const FootballFieldMain = () => {
     <div className="relative w-full h-full">
       {/* Background Image */}
       <img
-        src="/images/backdrops/football-field.png"
+        src="/images/backdrops/vigil.png"
         alt="Football Field Background"
         className="absolute inset-0 w-full h-full object-cover z-0"
         onError={(e) => {
