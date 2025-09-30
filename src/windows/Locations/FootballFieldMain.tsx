@@ -2,19 +2,12 @@ import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "contexts/AuthContext";
 import { awardGum } from "utils/gumAPI";
 import { trackFridayNightLightsClick, checkFridayNightLightsClicked } from "../../utils/fridayNightLightsTracking";
-import { checkRepeatOffenderEligibility, formatTimeRemaining } from "../../utils/repeatOffenderTracking";
 import { getFontStyle } from "utils/fontConfig";
 
 const FootballFieldMain = () => {
   const { walletAddress, user } = useAuth();
   const [buttonClickLoading, setButtonClickLoading] = useState(false);
   const [hasClaimedGum, setHasClaimedGum] = useState(false);
-  const [repeatOffenderLoading, setRepeatOffenderLoading] = useState(false);
-  const [repeatOffenderEligibility, setRepeatOffenderEligibility] = useState<{
-    canClaim: boolean;
-    timeRemaining?: number;
-    lastClaimTime?: string;
-  }>({ canClaim: false });
 
   // Story mode state
   const [currentStoryPanel, setCurrentStoryPanel] = useState(0);
@@ -88,12 +81,6 @@ const FootballFieldMain = () => {
         try {
           const hasClicked = await checkFridayNightLightsClicked(walletAddress);
           setHasClaimedGum(hasClicked);
-          
-          // If they've claimed Friday Night Lights, check repeat offender eligibility
-          if (hasClicked) {
-            const eligibility = await checkRepeatOffenderEligibility(walletAddress);
-            setRepeatOffenderEligibility(eligibility);
-          }
         } catch (error) {
           console.error("Error checking GUM status:", error);
         }
@@ -130,10 +117,6 @@ const FootballFieldMain = () => {
         await awardGum(walletAddress, "friday_night_lights", { amount: 50, description: "Friday Night Lights click" });
         setHasClaimedGum(true);
         
-        // Check repeat offender eligibility now that they've claimed Friday Night Lights
-        const eligibility = await checkRepeatOffenderEligibility(walletAddress);
-        setRepeatOffenderEligibility(eligibility);
-        
         alert("🏈 FRIDAY NIGHT LIGHTS! You earned 50 GUM! The crowd roars with excitement!");
       } else {
         setHasClaimedGum(true);
@@ -144,40 +127,6 @@ const FootballFieldMain = () => {
       alert("Something went wrong with Friday Night Lights. Try again!");
     } finally {
       setButtonClickLoading(false);
-    }
-  };
-
-  const handleRepeatOffenderClick = async () => {
-    if (!walletAddress || !user) {
-      alert("Please connect your wallet first!");
-      return;
-    }
-
-    if (repeatOffenderLoading || !repeatOffenderEligibility.canClaim) return;
-
-    setRepeatOffenderLoading(true);
-    try {
-      const response = await fetch('/api/claim-repeat-offender', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ walletAddress })
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        alert(`🏈 REPEAT OFFENDER! You earned ${result.gumAwarded} GUM! The legend continues!`);
-        // Refresh eligibility status
-        const eligibility = await checkRepeatOffenderEligibility(walletAddress);
-        setRepeatOffenderEligibility(eligibility);
-      } else {
-        alert(`❌ ${result.error || 'Failed to claim Repeat Offender reward. Please try again.'}`);
-      }
-    } catch (error) {
-      console.error("Failed to process Repeat Offender claim:", error);
-      alert("Something went wrong with Repeat Offender claim. Try again!");
-    } finally {
-      setRepeatOffenderLoading(false);
     }
   };
 
@@ -298,34 +247,6 @@ const FootballFieldMain = () => {
               }
             </button>
 
-            {/* Repeat Offender Button */}
-            {hasClaimedGum && (
-              <button
-                onClick={handleRepeatOffenderClick}
-                disabled={repeatOffenderLoading || !repeatOffenderEligibility.canClaim}
-                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 shadow-lg border-2 w-full max-w-xs
-                  ${repeatOffenderLoading 
-                    ? 'bg-gray-600 text-gray-300 cursor-not-allowed border-gray-500' 
-                    : !repeatOffenderEligibility.canClaim
-                    ? 'bg-red-700 text-red-300 cursor-not-allowed border-red-600'
-                    : 'bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white border-red-400 hover:scale-105 hover:shadow-red-500/50'
-                  }`}
-                style={{
-                  ...fontStyle,
-                  fontSize: 'clamp(14px, 3.5vw, 16px)',
-                  fontWeight: 'bold',
-                }}
-              >
-                {repeatOffenderLoading 
-                  ? '⏳ Loading...' 
-                  : !repeatOffenderEligibility.canClaim && repeatOffenderEligibility.timeRemaining
-                  ? `🚫 Wait ${formatTimeRemaining(repeatOffenderEligibility.timeRemaining)}`
-                  : repeatOffenderEligibility.canClaim
-                  ? '🔄 REPEAT OFFENDER (+50 GUM)'
-                  : '🔄 REPEAT OFFENDER'
-                }
-              </button>
-            )}
           </div>
         </>
       )}
