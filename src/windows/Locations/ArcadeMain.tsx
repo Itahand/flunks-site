@@ -13,10 +13,52 @@ import ZoltarFortuneWindow from "windows/ZoltarFortuneWindow";
 const ArcadeMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   
+  // Background music for arcade entrance
+  const entranceAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [isEntranceMuted, setIsEntranceMuted] = useState(false);
+
   // Use your uploaded day/night images for Arcade
   const dayImage = "/images/icons/arcade-day.png";
   const nightImage = "/images/icons/arcade-night.png";
   const timeBasedInfo = useTimeBasedImage(dayImage, nightImage);
+
+  // Initialize background music for arcade entrance
+  useEffect(() => {
+    if (!entranceAudioRef.current) {
+      entranceAudioRef.current = new Audio('/music/80s_Arcade_[Retrowave_Synthwave_Gaming_...]kaizo[cc].mp3');
+      entranceAudioRef.current.loop = true;
+      entranceAudioRef.current.volume = 0.3; // 30% volume for entrance
+    }
+
+    const playEntranceMusic = async () => {
+      try {
+        if (entranceAudioRef.current && !isEntranceMuted) {
+          await entranceAudioRef.current.play();
+        }
+      } catch (error) {
+        console.log('Entrance music autoplay blocked by browser');
+      }
+    };
+
+    playEntranceMusic();
+
+    return () => {
+      if (entranceAudioRef.current) {
+        entranceAudioRef.current.pause();
+        entranceAudioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (entranceAudioRef.current) {
+      if (isEntranceMuted) {
+        entranceAudioRef.current.pause();
+      } else {
+        entranceAudioRef.current.play().catch(console.log);
+      }
+    }
+  }, [isEntranceMuted]);
 
   const openRoom = (roomKey: string, title: string, content: string) => {
     // Memphis-style colors for the text
@@ -668,6 +710,14 @@ const ArcadeMain = () => {
         <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm z-20">
           {timeBasedInfo.currentTime}
         </div>
+
+        {/* Music Control Button */}
+        <button
+          onClick={() => setIsEntranceMuted(!isEntranceMuted)}
+          className="absolute top-4 left-4 bg-black bg-opacity-70 text-white border-none rounded-full w-10 h-10 cursor-pointer z-20 text-lg hover:bg-opacity-90 transition-all duration-300"
+        >
+          {isEntranceMuted ? "🔇" : "🎵"}
+        </button>
       </div>
 
       {/* Single Enter Button */}
@@ -675,7 +725,12 @@ const ArcadeMain = () => {
         <div className="flex justify-center">
           <button
             onClick={async () => {
-              // Pause any currently playing music for better audio experience
+              // Pause entrance music specifically
+              if (entranceAudioRef.current) {
+                entranceAudioRef.current.pause();
+              }
+              
+              // Pause any other currently playing music for better audio experience
               const allAudioElements = document.querySelectorAll('audio');
               const pausedAudios: HTMLAudioElement[] = [];
               

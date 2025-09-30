@@ -249,7 +249,7 @@ const ZoltarFortuneApp = () => {
           <div style={{ position: 'absolute', bottom: '-5px', right: '-5px', fontSize: '20px', color: '#FFD700' }}>✦</div>
           
           <img
-            src="/images/zoltar/zoltar-background.png"
+            src="/images/backdrops/zoltar-background.png"
             alt="Zoltar Fortune Teller"
             style={{
               width: '100%',
