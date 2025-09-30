@@ -50,10 +50,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Always call hooks unconditionally to maintain stable hook order
   const paginatedData = usePaginatedItems();
   
-  // Safe NFT data access after hook call
-  const flunksCount = paginatedData?.flunksCount || 0;
-  const backpacksCount = paginatedData?.backpacksCount || 0;
-  const nftLoading = paginatedData?.isLoading || false;
+  // Safe NFT data access after hook call with better fallbacks for data loading issues
+  const flunksCount = paginatedData?.flunksCount ?? 0;
+  const backpacksCount = paginatedData?.backpacksCount ?? 0;
+  const nftLoading = paginatedData?.isLoading ?? false;
+  const hasNftError = !!paginatedData?.error;
   
   // Determine authentication state
   const isWalletConnected = !!primaryWallet?.address;
@@ -87,10 +88,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       walletAddress,
       flunksCount,
       hasFlunks,
+      hasNftError,
+      nftLoading,
       isLoading: combinedLoading,
+      paginatedDataError: paginatedData?.error,
       timestamp: new Date().toISOString()
     });
-  }, [isAuthenticated, isWalletConnected, isUserConnected, walletAddress, flunksCount, hasFlunks, combinedLoading]);
+  }, [isAuthenticated, isWalletConnected, isUserConnected, walletAddress, flunksCount, hasFlunks, combinedLoading, hasNftError, nftLoading]);
   
   // Helper functions
   const requiresAuth = () => !isAuthenticated;

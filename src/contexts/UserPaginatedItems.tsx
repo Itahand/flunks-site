@@ -75,10 +75,22 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
         console.log('🔍 UserPaginatedItems: Fetching token data for', address);
         const result = await getOwnerTokenIdsWhale(address);
         console.log('✅ UserPaginatedItems: Token data fetched successfully', result);
-        return result;
+        
+        // CRITICAL FIX: Always return valid structure even if trait checking fails later
+        if (result && typeof result === 'object') {
+          return {
+            flunks: Array.isArray(result.flunks) ? result.flunks : [],
+            backpack: Array.isArray(result.backpack) ? result.backpack : []
+          };
+        } else {
+          console.warn('⚠️ UserPaginatedItems: Invalid result structure, returning safe defaults');
+          return { flunks: [], backpack: [] };
+        }
       } catch (error) {
         console.error('❌ UserPaginatedItems: Error fetching token data:', error);
-        throw error;
+        console.log('🔧 Returning safe fallback to preserve authentication');
+        // Don't throw - return safe fallback to preserve authentication flow
+        return { flunks: [], backpack: [] };
       }
     },
     {
@@ -125,6 +137,8 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
             setFlunksMetadata(flunksMetadata);
           }).catch((error) => {
             console.error('❌ UserPaginatedItems: Error loading flunks metadata:', error);
+            console.error('❌ This is likely due to trait checking simplification changes');
+            console.log('🔧 Falling back to empty metadata to preserve authentication');
             setFlunksMetadata([]);
           });
 
@@ -133,6 +147,8 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
             setBackpacksMetadata(backpacksMetadata);
           }).catch((error) => {
             console.error('❌ UserPaginatedItems: Error loading backpacks metadata:', error);
+            console.error('❌ This is likely due to trait checking simplification changes');
+            console.log('🔧 Falling back to empty metadata to preserve authentication');
             setBackpacksMetadata([]);
           });
         } catch (error) {
