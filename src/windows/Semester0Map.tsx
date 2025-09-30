@@ -87,15 +87,6 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
     hasFlunks: true
   } : { isAuthenticated, flunksCount, hasFlunks };
 
-  // Football field time-based access rule: Friday through Monday
-  const footballFieldTimeRule = {
-    name: "Football Field",
-    description: "Available Friday through Monday for game weekends",
-    timeWindows: [
-      { startHour: 0, endHour: 24, days: [5, 6, 0, 1] } // Friday, Saturday, Sunday, Monday (all day)
-    ]
-  };
-
   // Helper function to handle location access - checks NFT ownership but allows wallet-only auth
   const handleLocationAccess = (
     locationKey: string, 
@@ -788,11 +779,10 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
             >
             </DynamicHouseIcon>
             
-            {/* Football Field - only visible Friday through Monday */}
-            {isLocationOpen(footballFieldTimeRule) && (
-              <DynamicHouseIcon
-                houseId="football-field"
-                className={`${styles["nav-icon"]} ${styles['football-field-nav']}`}
+            {/* Football Field - now visible at all times */}
+            <DynamicHouseIcon
+              houseId="football-field"
+              className={`${styles["nav-icon"]} ${styles['football-field-nav']}`}
                 onClick={() => {
                   // On mobile, if this is the second tap, proceed with opening
                   if (isMobile && touchedLocation === 'football-field') {
@@ -846,7 +836,6 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                 onTouchEnd={handleTouchLeave}
               >
               </DynamicHouseIcon>
-            )}
             
             {/* Rug Doctor - Build Mode Only */}
             {buildMode === 'build' && (
