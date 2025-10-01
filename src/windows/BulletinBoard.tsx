@@ -183,20 +183,21 @@ const BulletinBoard: React.FC = () => {
         
         <div style={{ order: 2 }}>
           <BulletinContent>
-            <BulletinTitle>📋 COMMUNITY CHALLENGES</BulletinTitle>
-            <BulletinList>
-              <BulletinItem>
-                It's <PrizeText>homecoming week</PrizeText>! Everybody get ready for the big dance on <TerminalText>Saturday</TerminalText> in the high school gym!
-              </BulletinItem>
-              
-              <BulletinItem>
-                Can you help us find the owner of the <AstronautText>Astro 1/1 NFT</AstronautText>? This rare collectible belongs to someone in our community! Check the <TerminalText>astronaut poster</TerminalText> for clues.
-              </BulletinItem>
-              
-              <BulletinItem>
-                There's soon to be a way to unlock the chapter 3 <AstronautText>"Picture Day"</AstronautText> ... Good luck finding it <TerminalText>;)</TerminalText>
-              </BulletinItem>
-            </BulletinList>
+            <div style={{ 
+              textAlign: 'center', 
+              fontSize: 'clamp(24px, 8vw, 48px)', 
+              fontWeight: 'bold', 
+              color: '#ff0000',
+              textShadow: '2px 2px 0px #000000',
+              fontFamily: 'Impact, Arial Black, sans-serif',
+              letterSpacing: 'clamp(1px, 0.5vw, 4px)',
+              marginTop: 'clamp(20px, 5vh, 40px)',
+              padding: '0 10px',
+              lineHeight: '1.1',
+              wordBreak: 'keep-all'
+            }}>
+              MISSING PLZ HLP
+            </div>
           </BulletinContent>
         </div>
       </BulletinBoardContainer>

@@ -148,11 +148,11 @@ export const APP_PERMISSIONS: AppPermission[] = [
     buildModeFeature: 'showPictureDay'
   },
   
-  // Story Manual - Available to all users (temporarily removing access restrictions for debugging)
+  // Story Manual - Available to all users
   {
     id: 'story-manual',
     title: 'The Story So Far',
-    requiredLevel: [], // Temporarily removed restrictions to debug issue
+    requiredLevel: ['ADMIN', 'BETA', 'COMMUNITY'], // Fixed: Allow all access levels
     description: 'Interactive story chapters and cutscenes',
     buildModeFeature: 'showStoryManual'
   },
@@ -250,6 +250,8 @@ export const hasAppPermission = (appId: string, userAccessLevel?: AccessLevel): 
   }
   
   // Check if user's access level is in the required levels
+  // If requiredLevel is empty, allow all access levels
+  if (appPermission.requiredLevel.length === 0) return true;
   return appPermission.requiredLevel.includes(userAccessLevel);
 };
 

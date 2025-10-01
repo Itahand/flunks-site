@@ -135,320 +135,448 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
 
   return (
     <div style={{
-      background: 'rgba(0,0,0,0.8)',
-      border: '2px solid #4a90e2',
-      borderRadius: '12px',
-      padding: '20px',
+      background: 'linear-gradient(135deg, #001122 0%, #002244 50%, #003366 100%)',
+      border: '4px solid #FFD700',
+      borderRadius: '0',
+      padding: '0',
       marginTop: '20px',
       color: 'white',
-      fontFamily: 'MS Sans Serif, sans-serif'
+      fontFamily: '"Courier New", monospace',
+      position: 'relative',
+      overflow: 'hidden',
+      boxShadow: 'inset 0 0 50px rgba(255, 215, 0, 0.2), 0 0 30px rgba(0, 0, 0, 0.8)',
+      animation: 'nintendoGlow 3s ease-in-out infinite alternate'
     }}>
-      {/* Header */}
+      {/* Nintendo-Style Background Pattern */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundImage: `
+          radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+          radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 1px, transparent 1px)
+        `,
+        backgroundSize: '20px 20px',
+        animation: 'starFieldMove 20s linear infinite',
+        pointerEvents: 'none'
+      }} />
+
+      {/* Epic Nintendo Title */}
       <div style={{
         textAlign: 'center',
-        marginBottom: '20px'
+        padding: '20px 20px 10px 20px',
+        background: 'linear-gradient(90deg, #FFD700, #FFA500, #FFD700)',
+        borderBottom: '4px solid #B8860B',
+        position: 'relative',
+        animation: 'titleShine 2s ease-in-out infinite'
       }}>
-        {/* Title */}
         <div style={{
-          fontSize: '18px',
+          fontSize: 'clamp(28px, 8vw, 56px)',
           fontWeight: 'bold',
-          color: '#4a90e2',
-          marginBottom: '12px'
+          color: '#001122',
+          textShadow: '3px 3px 0px #FFFFFF, -3px -3px 0px #FFFFFF, 3px -3px 0px #FFFFFF, -3px 3px 0px #FFFFFF',
+          letterSpacing: '4px',
+          animation: 'titlePulse 1.5s ease-in-out infinite',
+          marginBottom: '12px',
+          fontFamily: '"Courier New", "Lucida Console", monospace',
+          imageRendering: 'pixelated'
         }}>
-          📋 Semester Zero: Finding Flunko
+          SEMESTER ZERO
         </div>
-        
-        {/* Chapter Navigation - Mobile Optimized */}
         <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '12px'
+          fontSize: 'clamp(18px, 4vw, 32px)',
+          color: '#001122',
+          fontWeight: 'bold',
+          textShadow: '2px 2px 0px #FFFFFF, -2px -2px 0px #FFFFFF, 2px -2px 0px #FFFFFF, -2px 2px 0px #FFFFFF',
+          letterSpacing: '2px'
         }}>
-          {/* Chapter Buttons Row */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: '8px',
-            padding: '8px',
-            width: '100%',
-            maxWidth: '320px',
-            overflowX: 'auto',
-            scrollbarWidth: 'thin',
-            scrollbarColor: '#4a90e2 transparent'
-          }}>
-            <button
-              onClick={() => setCurrentWeek(1)}
-              style={{
-                background: currentWeek === 1 ? 'rgba(74, 144, 226, 0.5)' : 'transparent',
-                border: currentWeek === 1 ? '1px solid #4a90e2' : '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '4px',
-                color: currentWeek === 1 ? '#fff' : '#ccc',
-                padding: '8px 14px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                minWidth: '80px',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Chapter 1
-            </button>
-            <button
-              onClick={() => setCurrentWeek(2)}
-              style={{
-                background: currentWeek === 2 ? 'rgba(255, 165, 0, 0.5)' : 'transparent',
-                border: currentWeek === 2 ? '1px solid #ffa500' : '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '4px',
-                color: currentWeek === 2 ? '#fff' : '#ccc',
-                padding: '8px 14px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                minWidth: '80px',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Chapter 2
-            </button>
-            <button
-              onClick={() => setCurrentWeek(3)}
-              style={{
-                background: currentWeek === 3 ? 'rgba(255, 20, 147, 0.5)' : 'transparent',
-                border: currentWeek === 3 ? '1px solid #ff1493' : '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '4px',
-                color: currentWeek === 3 ? '#fff' : '#ccc',
-                padding: '8px 14px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                minWidth: '80px',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Chapter 3
-            </button>
-            <button
-              onClick={() => setCurrentWeek(4)}
-              style={{
-                background: currentWeek === 4 ? 'rgba(255, 165, 0, 0.5)' : 'transparent',
-                border: currentWeek === 4 ? '1px solid #ffa500' : '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '4px',
-                color: currentWeek === 4 ? '#fff' : '#ccc',
-                padding: '8px 14px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                minWidth: '80px',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Chapter 4
-            </button>
-          </div>
-          
-          {/* Refresh Button Row */}
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={() => loadObjectives(true)}
-              disabled={loading}
-              style={{
-                background: 'rgba(74, 144, 226, 0.2)',
-                border: '1px solid #4a90e2',
-                borderRadius: '4px',
-                color: '#4a90e2',
-                padding: '6px 12px',
-                fontSize: '12px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.5 : 1
-              }}
-            >
-              {loading ? '⏳' : '🔄'} Refresh
-            </button>
-                        {/* Hard Reset button hidden per user request */}
-            {false && (
+          ~ FINDING FLUNKO ~
+        </div>
+      </div>
+
+      {/* Level Select Menu */}
+      <div style={{
+        padding: '20px',
+        background: 'linear-gradient(180deg, rgba(0, 34, 68, 0.9) 0%, rgba(0, 17, 34, 0.9) 100%)'
+      }}>
+        {/* Chapter Selection Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+          gap: '16px',
+          marginBottom: '20px',
+          padding: '16px',
+          background: 'rgba(0, 0, 0, 0.3)',
+          border: '2px solid #FFD700',
+          borderRadius: '8px'
+        }}>
+          {[1, 2, 3, 4].map((chapter) => {
+            const isSelected = currentWeek === chapter;
+            const chapterData = chapter === 4 ? chapter4ObjectivesStatus :
+                              chapter === 3 ? chapter3ObjectivesStatus : 
+                              chapter === 2 ? chapter2ObjectivesStatus : 
+                              objectivesStatus;
+            const chapterProgress = chapterData ? calculateObjectiveProgress(chapterData.completedObjectives) : 0;
+            const isComplete = chapterProgress === 100;
+            
+            return (
               <button
-                onClick={() => {}}
-                disabled={loading}
+                key={chapter}
+                onClick={() => setCurrentWeek(chapter as 1 | 2 | 3 | 4)}
                 style={{
-                  background: 'transparent',
-                  border: '1px solid #ff8c00',
-                  borderRadius: '4px',
-                  color: '#ff8c00',
-                  padding: '6px 12px',
-                  fontSize: '12px',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  opacity: loading ? 0.5 : 1
+                  background: isSelected 
+                    ? 'linear-gradient(45deg, #FFD700, #FFA500)' 
+                    : isComplete 
+                      ? 'linear-gradient(45deg, #32CD32, #228B22)'
+                      : 'linear-gradient(45deg, #4169E1, #1E90FF)',
+                  border: '3px solid ' + (isSelected ? '#FFFFFF' : isComplete ? '#00FF00' : '#87CEEB'),
+                  borderRadius: '8px',
+                  color: isSelected ? '#001122' : '#FFFFFF',
+                  padding: '12px 8px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  textShadow: isSelected ? '1px 1px 0px #FFFFFF' : '1px 1px 2px #000000',
+                  animation: isSelected ? 'levelFloat 2s ease-in-out infinite' : isComplete ? 'powerUp 3s ease-in-out infinite' : 'none',
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
               >
-                🔥 Hard Reset
-              </button>
-            )}
-          </div>
-        </div>
-        
-        <div style={{
-          fontSize: '14px',
-          color: '#ccc',
-          marginBottom: '12px'
-        }}>
-          Chapter {currentWeek} Objectives ({completedCount}/{totalCount} Complete)
-        </div>
-        
-        {/* Progress Bar */}
-        <div style={{
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: '10px',
-          height: '8px',
-          overflow: 'hidden',
-          position: 'relative'
-        }}>
-          <div style={{
-            background: progress === 100 
-              ? 'linear-gradient(90deg, #00ff00, #32cd32)' 
-              : 'linear-gradient(90deg, #4a90e2, #357abd)',
-            height: '100%',
-            width: `${progress}%`,
-            borderRadius: '10px',
-            transition: 'width 0.5s ease-out'
-          }} />
-        </div>
-        <div style={{
-          fontSize: '12px',
-          color: '#aaa',
-          marginTop: '4px'
-        }}>
-          {progress}% Complete
-        </div>
-      </div>
-
-      {/* Objectives List */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px'
-      }}>
-        {currentObjectivesData.completedObjectives.map((objective) => (
-          <div
-            key={objective.id}
-            style={{
-              background: objective.completed 
-                ? 'rgba(0, 255, 0, 0.1)' 
-                : currentWeek === 3 
-                  ? 'rgba(255, 20, 147, 0.05)' // Pink tint for Chapter 3
-                  : currentWeek === 2 
-                    ? 'rgba(255, 165, 0, 0.05)' // Orange tint for Chapter 2
-                    : 'rgba(255, 255, 255, 0.05)',
-              border: objective.completed 
-                ? '1px solid rgba(0, 255, 0, 0.3)' 
-                : currentWeek === 3
-                  ? '1px solid rgba(255, 20, 147, 0.3)' // Pink border for Chapter 3
-                  : currentWeek === 2
-                    ? '1px solid rgba(255, 165, 0, 0.3)' // Orange border for Chapter 2
-                    : '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '8px',
-              padding: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              transition: 'all 0.3s ease',
-              position: 'relative'
-            }}
-          >
-            <div style={{ flex: 1 }}>
-              <div style={{
-                fontSize: '16px',
-                fontWeight: 'bold',
-                color: objective.completed ? '#00ff00' : '#fff',
-                marginBottom: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                {objective.completed ? '✅' : '⭕'} {objective.title}
-              </div>
-              <div style={{
-                fontSize: '12px',
-                color: '#ccc',
-                marginBottom: '4px'
-              }}>
-                {objective.description}
-              </div>
-              {objective.reward && (
                 <div style={{
-                  fontSize: '11px',
-                  color: currentWeek === 3 ? '#ff1493' : currentWeek === 2 ? '#ffa500' : '#4a90e2',
-                  fontWeight: 'bold'
+                  fontSize: '18px',
+                  marginBottom: '4px'
                 }}>
-                  🍬 Reward: +{objective.reward} GUM
+                  {isComplete ? '👑' : chapter === 1 ? '🏫' : chapter === 2 ? '🏀' : chapter === 3 ? '📸' : '💃'}
                 </div>
-              )}
-            </div>
-            
-            {objective.completed && (
-              <div style={{
-                background: 'rgba(0, 255, 0, 0.2)',
-                borderRadius: '50%',
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '16px',
-                animation: 'completePulse 2s ease-in-out infinite'
-              }}>
-                ✓
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+                <div>CHAPTER {chapter}</div>
+                <div style={{
+                  fontSize: '10px',
+                  marginTop: '4px',
+                  opacity: 0.8
+                }}>
+                  {chapterProgress}% COMPLETE
+                </div>
+                {isComplete && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '-2px',
+                    right: '-2px',
+                    background: '#FFD700',
+                    color: '#001122',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    animation: 'starTwinkle 1s ease-in-out infinite'
+                  }}>
+                    ★
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-      {/* Completion Message */}
-      {progress === 100 && (
+        {/* Current Chapter Info */}
         <div style={{
-          background: 'linear-gradient(45deg, rgba(0, 255, 0, 0.2), rgba(50, 205, 50, 0.2))',
-          border: '2px solid #00ff00',
+          background: 'linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%)',
+          border: '2px solid #FFD700',
           borderRadius: '8px',
-          padding: '12px',
-          marginTop: '16px',
-          textAlign: 'center',
-          animation: 'completionGlow 2s ease-in-out infinite alternate'
+          padding: '16px',
+          marginBottom: '20px',
+          textAlign: 'center'
         }}>
           <div style={{
             fontSize: '18px',
             fontWeight: 'bold',
-            color: '#00ff00',
-            marginBottom: '4px'
+            color: '#FFD700',
+            marginBottom: '8px',
+            textShadow: '2px 2px 4px #000000',
+            animation: 'titlePulse 2s ease-in-out infinite'
           }}>
-            🎉 All Objectives Complete! 🎉
+            {currentWeek === 1 ? '🏫 CHAPTER 1: THE BEGINNING' :
+             currentWeek === 2 ? '🏀 CHAPTER 2: JOCKS HOUSE' :
+             currentWeek === 3 ? '📸 CHAPTER 3: PICTURE DAY' :
+             '💃 CHAPTER 4: HOMECOMING DANCE'}
           </div>
           <div style={{
             fontSize: '14px',
-            color: '#32cd32'
+            color: '#FFFFFF',
+            marginBottom: '12px'
           }}>
-            You're ready for the next chapter!
+            MISSIONS COMPLETED: {completedCount}/{totalCount}
+          </div>
+          
+          {/* Epic Progress Bar */}
+          <div style={{
+            background: '#001122',
+            border: '2px solid #FFD700',
+            borderRadius: '20px',
+            height: '20px',
+            overflow: 'hidden',
+            position: 'relative',
+            boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)'
+          }}>
+            <div style={{
+              background: progress === 100 
+                ? 'linear-gradient(90deg, #FFD700, #32CD32, #FFD700)' 
+                : 'linear-gradient(90deg, #4169E1, #1E90FF, #87CEEB)',
+              height: '100%',
+              width: `${progress}%`,
+              borderRadius: '18px',
+              transition: 'width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              animation: progress === 100 ? 'powerUp 2s ease-in-out infinite' : 'none',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {progress === 100 && (
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.5) 50%, transparent 70%)',
+                  animation: 'shine 2s ease-in-out infinite'
+                }} />
+              )}
+            </div>
+            <div style={{
+              position: 'absolute',
+              top: '2px',
+              left: '0',
+              right: '0',
+              bottom: '0',
+              color: '#FFFFFF',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              lineHeight: '16px',
+              textShadow: '1px 1px 2px #000000'
+            }}>
+              {progress}%
+            </div>
           </div>
         </div>
-      )}
+
+        {/* Mission Objectives Grid */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px'
+        }}>
+          {currentObjectivesData.completedObjectives.map((objective, index) => (
+            <div
+              key={objective.id}
+              style={{
+                background: objective.completed 
+                  ? 'linear-gradient(135deg, rgba(50, 205, 50, 0.3), rgba(0, 255, 0, 0.2))' 
+                  : 'linear-gradient(135deg, rgba(65, 105, 225, 0.2), rgba(30, 144, 255, 0.1))',
+                border: objective.completed 
+                  ? '2px solid #32CD32' 
+                  : '2px solid #4169E1',
+                borderRadius: '8px',
+                padding: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'all 0.5s ease',
+                position: 'relative',
+                overflow: 'hidden',
+                animation: objective.completed ? 'missionComplete 3s ease-in-out infinite' : 'levelFloat 4s ease-in-out infinite',
+                animationDelay: `${index * 0.2}s`
+              }}
+            >
+              <div style={{ flex: 1 }}>
+                <div style={{
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  color: objective.completed ? '#32CD32' : '#FFFFFF',
+                  marginBottom: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  textShadow: '1px 1px 2px #000000'
+                }}>
+                  <span style={{
+                    fontSize: '20px',
+                    animation: objective.completed ? 'starTwinkle 1s ease-in-out infinite' : 'none'
+                  }}>
+                    {objective.completed ? '🏆' : '⚡'}
+                  </span>
+                  MISSION {index + 1}: {objective.title.toUpperCase()}
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: '#CCCCCC',
+                  marginBottom: '8px',
+                  lineHeight: '1.4'
+                }}>
+                  {objective.description}
+                </div>
+                {objective.reward && (
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#FFD700',
+                    fontWeight: 'bold',
+                    textShadow: '1px 1px 2px #000000'
+                  }}>
+                    🍬 REWARD: +{objective.reward} GUM POWER
+                  </div>
+                )}
+              </div>
+              
+              {objective.completed && (
+                <div style={{
+                  background: 'linear-gradient(45deg, #FFD700, #32CD32)',
+                  border: '2px solid #FFFFFF',
+                  borderRadius: '50%',
+                  width: '50px',
+                  height: '50px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '24px',
+                  animation: 'powerUp 2s ease-in-out infinite',
+                  color: '#001122',
+                  textShadow: 'none'
+                }}>
+                  ✓
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Completion Fanfare */}
+        {progress === 100 && (
+          <div style={{
+            background: 'linear-gradient(45deg, rgba(255, 215, 0, 0.4), rgba(50, 205, 50, 0.4))',
+            border: '3px solid #FFD700',
+            borderRadius: '12px',
+            padding: '20px',
+            marginTop: '20px',
+            textAlign: 'center',
+            animation: 'completionFanfare 2s ease-in-out infinite alternate',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#FFD700',
+              marginBottom: '8px',
+              textShadow: '2px 2px 4px #000000',
+              animation: 'titlePulse 1s ease-in-out infinite'
+            }}>
+              🎉 CHAPTER COMPLETE! 🎉
+            </div>
+            <div style={{
+              fontSize: '16px',
+              color: '#32CD32',
+              fontWeight: 'bold',
+              textShadow: '1px 1px 2px #000000'
+            }}>
+              READY FOR NEXT ADVENTURE!
+            </div>
+            
+            {/* Celebration Particles */}
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  position: 'absolute',
+                  top: `${20 + i * 15}%`,
+                  left: `${10 + i * 20}%`,
+                  width: '20px',
+                  height: '20px',
+                  background: i % 2 === 0 ? '#FFD700' : '#32CD32',
+                  borderRadius: '50%',
+                  animation: `starTwinkle ${1 + i * 0.3}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.2}s`
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Control Panel */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '12px',
+          marginTop: '20px',
+          padding: '16px',
+          background: 'rgba(0, 0, 0, 0.5)',
+          border: '2px solid #4169E1',
+          borderRadius: '8px'
+        }}>
+          <button
+            onClick={() => loadObjectives(true)}
+            disabled={loading}
+            style={{
+              background: loading 
+                ? 'linear-gradient(45deg, #666666, #444444)' 
+                : 'linear-gradient(45deg, #4169E1, #1E90FF)',
+              border: '2px solid #FFFFFF',
+              borderRadius: '6px',
+              color: '#FFFFFF',
+              padding: '10px 20px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              textShadow: '1px 1px 2px #000000',
+              animation: loading ? 'none' : 'levelFloat 3s ease-in-out infinite',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {loading ? '⏳ LOADING...' : '🔄 REFRESH MISSIONS'}
+          </button>
+        </div>
+      </div>
 
       <style jsx>{`
-        @keyframes completePulse {
-          0%, 100% { transform: scale(1); opacity: 0.8; }
-          50% { transform: scale(1.1); opacity: 1; }
+        @keyframes nintendoGlow {
+          0% { box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.2), 0 0 30px rgba(0, 0, 0, 0.8); }
+          100% { box-shadow: inset 0 0 60px rgba(255, 215, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.3); }
         }
         
-        @keyframes completionGlow {
-          0% { box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); }
-          100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.6); }
+        @keyframes starFieldMove {
+          0% { transform: translateX(0) translateY(0); }
+          100% { transform: translateX(-20px) translateY(-20px); }
+        }
+        
+        @keyframes titleShine {
+          0% { background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700); }
+          50% { background: linear-gradient(90deg, #FFA500, #FFD700, #FFA500); }
+          100% { background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700); }
+        }
+        
+        @keyframes missionComplete {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-2px) scale(1.02); }
+        }
+        
+        @keyframes completionFanfare {
+          0% { 
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), inset 0 0 20px rgba(50, 205, 50, 0.3);
+            transform: scale(1);
+          }
+          100% { 
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(50, 205, 50, 0.5);
+            transform: scale(1.02);
+          }
+        }
+        
+        @keyframes shine {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
         }
       `}</style>
     </div>

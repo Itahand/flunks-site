@@ -404,15 +404,70 @@ const LockerSystemNew: React.FC = () => {
           transition: width 0.1s ease-out;
           background: linear-gradient(90deg, #40a9ff, #1890ff, #096dd9);
         }
+        
+        /* 8-bit Pixel Locker Styles */
+        .pixel-locker {
+          font-family: 'Courier New', monospace;
+          image-rendering: pixelated;
+          image-rendering: -moz-crisp-edges;
+          image-rendering: crisp-edges;
+        }
+        
+        @keyframes pixelGlow {
+          0% { box-shadow: 0 0 10px #00ffff, inset 0 0 10px rgba(0, 255, 255, 0.2); }
+          50% { box-shadow: 0 0 20px #ff00ff, inset 0 0 20px rgba(255, 0, 255, 0.3); }
+          100% { box-shadow: 0 0 10px #00ffff, inset 0 0 10px rgba(0, 255, 255, 0.2); }
+        }
+        
+        .pixel-nameplate {
+          animation: pixelGlow 3s ease-in-out infinite;
+        }
+        
+        /* Nintendo-Style Animations */
+        @keyframes starTwinkle {
+          0%, 100% { opacity: 0.8; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        @keyframes titlePulse {
+          0%, 100% { 
+            transform: scale(1); 
+            text-shadow: 4px 4px 0px #ff0000, -2px -2px 0px #0000ff, 0 0 20px #ffff00;
+          }
+          50% { 
+            transform: scale(1.05); 
+            text-shadow: 6px 6px 0px #ff0000, -3px -3px 0px #0000ff, 0 0 30px #ffff00, 0 0 40px #ff0000;
+          }
+        }
+        
+        @keyframes levelFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes powerUp {
+          0% { transform: scale(1) skew(0deg); }
+          20% { transform: scale(1.05) skew(2deg); }
+          40% { transform: scale(1.1) skew(-2deg); }
+          60% { transform: scale(1.05) skew(1deg); }
+          80% { transform: scale(1.02) skew(-1deg); }
+          100% { transform: scale(1) skew(0deg); }
+        }
       `}</style>
       <div style={{
         width: '100%',
         height: '100%',
         position: 'relative',
-        backgroundImage: 'url(/images/my-locker-front.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        background: `
+          linear-gradient(90deg, 
+            #1a1a2e 0%, #16213e 10%, #0f3460 20%, #16213e 30%, #1a1a2e 40%,
+            #1a1a2e 60%, #16213e 70%, #0f3460 80%, #16213e 90%, #1a1a2e 100%
+          ),
+          repeating-linear-gradient(0deg,
+            transparent 0px, transparent 8px,
+            rgba(0, 255, 255, 0.1) 8px, rgba(0, 255, 255, 0.1) 10px
+          )
+        `,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -659,50 +714,186 @@ const LockerSystemNew: React.FC = () => {
                       ))}
                     </div>
 
-                    {/* Section 1: Top */}
-                    <div className="locker-section" style={{
+                    {/* Section 1: Top - 8-Bit Pixel Locker Interface */}
+                    <div className="locker-section pixel-locker" style={{
                       height: '80vh',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       textAlign: 'center',
-                      position: 'relative'
+                      position: 'relative',
+                      background: `
+                        linear-gradient(180deg, 
+                          #4a90e2 0%, #357abd 20%, #2c5f88 40%, #357abd 60%, #4a90e2 80%, #5ba0f2 100%
+                        )
+                      `
                     }}>
+                      {/* 8-Bit Style Locker Door */}
                       <div style={{
-                        background: 'rgba(40, 167, 69, 0.95)',
-                        color: 'white',
-                        padding: '30px',
-                        borderRadius: '15px',
-                        maxWidth: 'min(95%, 500px)',
-                        width: '100%',
-                        animation: currentSection === 1 ? 'lockerGlow 3s ease-in-out infinite' : 'none',
-                        backdropFilter: 'blur(10px)'
+                        width: 'min(400px, 90vw)',
+                        height: 'min(500px, 70vh)',
+                        background: `
+                          linear-gradient(90deg, 
+                            #7c7c7c 0%, #a0a0a0 5%, #d4d4d4 10%, #f0f0f0 15%, #d4d4d4 20%, #a0a0a0 25%, #7c7c7c 30%,
+                            #7c7c7c 70%, #a0a0a0 75%, #d4d4d4 80%, #f0f0f0 85%, #d4d4d4 90%, #a0a0a0 95%, #7c7c7c 100%
+                          )
+                        `,
+                        border: '6px solid #333',
+                        borderRadius: '8px',
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '20px',
+                        boxShadow: `
+                          0 0 0 2px #666,
+                          0 0 0 4px #999,
+                          inset 0 0 20px rgba(255, 255, 255, 0.3),
+                          0 8px 16px rgba(0, 0, 0, 0.4)
+                        `,
+                        imageRendering: 'pixelated'
                       }}>
-                        <div style={{ fontSize: '48px', marginBottom: '20px' }}>🏠</div>
-                        <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>
-                          LOCKER #{lockerInfo.locker_number}
-                        </div>
-                        {lockerInfo.username && (
-                          <div style={{ fontSize: '18px', marginBottom: '15px', color: '#90EE90' }}>
-                            👤 {lockerInfo.username}
+                        
+                        {/* Locker Vents - Top */}
+                        <div style={{
+                          width: '80%',
+                          height: '40px',
+                          background: `
+                            repeating-linear-gradient(0deg,
+                              #333 0px, #333 3px, 
+                              transparent 3px, transparent 8px
+                            )
+                          `,
+                          border: '2px solid #222',
+                          borderRadius: '4px'
+                        }} />
+                        
+                        {/* Username Display Area - Pixel Style Nameplate */}
+                        <div className="pixel-nameplate" style={{
+                          width: '90%',
+                          background: `
+                            linear-gradient(45deg, 
+                              #ff6b35 0%, #f7931e 25%, #ffd700 50%, #f7931e 75%, #ff6b35 100%
+                            )
+                          `,
+                          border: '4px solid #333',
+                          borderRadius: '8px',
+                          padding: '15px 10px',
+                          margin: '10px 0',
+                          position: 'relative'
+                        }}>
+                          <div style={{
+                            background: '#000',
+                            color: '#00ff00',
+                            fontFamily: 'Courier New, monospace',
+                            fontSize: 'clamp(14px, 4vw, 20px)',
+                            fontWeight: 'bold',
+                            padding: '8px',
+                            borderRadius: '4px',
+                            border: '2px solid #00ff00',
+                            textShadow: '0 0 8px #00ff00',
+                            letterSpacing: '2px',
+                            textTransform: 'uppercase'
+                          }}>
+                            {lockerInfo.username || 'STUDENT'}
                           </div>
-                        )}
-                        <div style={{ fontSize: '16px', marginBottom: '20px', opacity: 0.9 }}>
-                          Welcome to your personal locker!
                         </div>
                         
-                        {/* Scroll indicator removed */}
-                        {/*
-                        <div className="scroll-indicator" style={{ 
-                          fontSize: '14px', 
-                          marginTop: '20px',
-                          cursor: 'pointer'
-                        }}
-                        onClick={() => scrollToSection(2)}
-                        >
-                          ⬇️ Scroll down to explore
+                        {/* Locker Number Display - Classic Arcade Style */}
+                        <div style={{
+                          width: '70%',
+                          background: `
+                            radial-gradient(circle, 
+                              #ff00ff 0%, #8b00ff 30%, #4b0082 60%, #000 100%
+                            )
+                          `,
+                          border: '6px solid #333',
+                          borderRadius: '12px',
+                          padding: '20px',
+                          margin: '15px 0',
+                          position: 'relative',
+                          boxShadow: `
+                            inset 0 0 20px rgba(255, 0, 255, 0.5),
+                            0 0 30px rgba(255, 0, 255, 0.3)
+                          `
+                        }}>
+                          <div style={{
+                            color: '#00ffff',
+                            fontFamily: 'Courier New, monospace',
+                            fontSize: 'clamp(24px, 6vw, 36px)',
+                            fontWeight: 'bold',
+                            textShadow: `
+                              0 0 10px #00ffff,
+                              0 0 20px #00ffff,
+                              0 0 30px #00ffff
+                            `,
+                            letterSpacing: '3px'
+                          }}>
+                            LOCKER
+                          </div>
+                          <div style={{
+                            color: '#ffff00',
+                            fontFamily: 'Courier New, monospace',
+                            fontSize: 'clamp(32px, 8vw, 48px)',
+                            fontWeight: 'bold',
+                            textShadow: `
+                              0 0 10px #ffff00,
+                              0 0 20px #ffff00,
+                              0 0 30px #ffff00
+                            `,
+                            letterSpacing: '4px',
+                            marginTop: '5px'
+                          }}>
+                            #{lockerInfo.locker_number}
+                          </div>
                         </div>
-                        */}
+                        
+                        {/* Locker Handle - Pixel Art Style */}
+                        <div style={{
+                          width: '20px',
+                          height: '60px',
+                          background: `
+                            linear-gradient(90deg, 
+                              #ffd700 0%, #ffed4e 50%, #ffd700 100%
+                            )
+                          `,
+                          border: '3px solid #333',
+                          borderRadius: '10px',
+                          position: 'absolute',
+                          right: '15px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          boxShadow: `
+                            inset 0 0 10px rgba(255, 215, 0, 0.8),
+                            2px 2px 5px rgba(0, 0, 0, 0.5)
+                          `
+                        }}>
+                          <div style={{
+                            width: '8px',
+                            height: '8px',
+                            background: '#333',
+                            borderRadius: '50%',
+                            margin: '26px auto'
+                          }} />
+                        </div>
+                        
+                        {/* Digital Welcome Message */}
+                        <div style={{
+                          background: '#000',
+                          color: '#00ff00',
+                          fontFamily: 'Courier New, monospace',
+                          fontSize: 'clamp(10px, 2.5vw, 14px)',
+                          padding: '8px',
+                          border: '2px solid #00ff00',
+                          borderRadius: '4px',
+                          textAlign: 'center',
+                          width: '90%',
+                          textShadow: '0 0 5px #00ff00',
+                          animation: 'pixelGlow 2s ease-in-out infinite'
+                        }}>
+                          &gt; WELCOME TO YOUR LOCKER_
+                        </div>
                       </div>
                     </div>
 
@@ -1207,29 +1398,64 @@ const LockerSystemNew: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Section 4: Weekly Objectives Section */}
+                    {/* Section 4: Nintendo-Style Level Select Screen */}
                     <div className="locker-section" style={{
                       height: 'auto',
-                      minHeight: '60vh',
+                      minHeight: '100vh',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: 'linear-gradient(180deg, rgba(74, 144, 226, 0.2) 0%, rgba(52, 73, 94, 0.1) 100%)',
+                      background: `
+                        radial-gradient(circle at 20% 20%, rgba(0, 100, 255, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 100, 0, 0.2) 0%, transparent 50%),
+                        linear-gradient(135deg, #001122 0%, #003366 25%, #002244 50%, #001133 75%, #000011 100%)
+                      `,
                       position: 'relative',
-                      padding: '40px 20px'
+                      padding: '20px',
+                      overflow: 'hidden'
                     }}>
+                      
+                      {/* Animated Background Stars */}
                       <div style={{
-                        background: 'rgba(52, 73, 94, 0.95)',
-                        color: 'white',
-                        padding: '25px',
-                        borderRadius: '15px',
-                        textAlign: 'center',
-                        maxWidth: '500px',
+                        position: 'absolute',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        background: `
+                          radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                          radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                          radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                          radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.7), transparent),
+                          radial-gradient(2px 2px at 160px 30px, #fff, transparent)
+                        `,
+                        backgroundRepeat: 'repeat',
+                        backgroundSize: '200px 100px',
+                        animation: 'starTwinkle 4s ease-in-out infinite'
+                      }} />
+                      
+                      {/* Nintendo-Style Level Select Interface */}
+                      <div style={{
+                        background: `
+                          linear-gradient(145deg, #1a237e 0%, #303f9f 20%, #3f51b5 40%, #5c6bc0 60%, #7986cb 80%, #9fa8da 100%),
+                          repeating-linear-gradient(90deg, 
+                            transparent 0px, transparent 2px,
+                            rgba(255, 255, 255, 0.1) 2px, rgba(255, 255, 255, 0.1) 4px
+                          )
+                        `,
+                        border: '8px solid #fff',
+                        borderRadius: '20px',
+                        padding: '30px',
+                        maxWidth: 'min(90vw, 800px)',
                         width: '100%',
-                        backdropFilter: 'blur(10px)',
-                        border: '2px solid rgba(74, 144, 226, 0.3)',
-                        boxShadow: '0 8px 32px rgba(74, 144, 226, 0.3)'
+                        boxShadow: `
+                          0 0 0 4px #000,
+                          0 0 0 8px #fff,
+                          0 0 30px rgba(0, 0, 255, 0.5),
+                          inset 0 0 30px rgba(255, 255, 255, 0.2)
+                        `,
+                        position: 'relative',
+                        imageRendering: 'pixelated'
                       }}>
+                        
+                        {/* Main Content Container */}
                         <WeeklyObjectives />
                       </div>
                     </div>

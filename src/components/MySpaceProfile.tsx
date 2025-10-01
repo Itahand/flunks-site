@@ -443,18 +443,53 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
       return [
         {
           author: "Casey",
-          text: "paradise motel after the hoco dance this weekend?",
+          text: "Flunko, where are you?! We miss you so much! The arcade isn't the same without you 😭",
           time: "2 hours ago"
         },
         {
           author: "Drew",
-          text: "Dude, that guitar solo last night was INSANE! 🎸",
-          time: "Yesterday at 7:23 PM"
+          text: "Dude, it's been 3 days! Come back! We need our gaming buddy! Miss you bro 🎸🎮",
+          time: "1 day ago"
         },
         {
           author: "Alex",
-          text: "Movie night at my place Friday? Got the new releases! 🎬",
+          text: "Still saving your favorite controller for when you get back! Hope you're okay wherever you are 🎬🕹️",
+          time: "2 days ago"
+        },
+        {
+          author: "Skater_Mike99",
+          text: "Yo Flunko! Nobody's seen you since Monday! The whole crew is worried man! Come home! 🛹",
+          time: "2 days ago"
+        },
+        {
+          author: "TechnoKid",
+          text: "Missing our late night gaming sessions! It's been 3 days, hope we find you soon! 💔",
           time: "3 days ago"
+        },
+        {
+          author: "RaveGirl_Sarah",
+          text: "FLUNKO WHERE ARE YOU?! You missed chemistry class! Everyone's asking! Hope you're safe! ✨💕",
+          time: "3 days ago"
+        },
+        {
+          author: "Bomber_Jacket_Brad",
+          text: "Saw you at lunch on Monday but haven't seen you since! The parking lot crew is incomplete! 🚗",
+          time: "3 days ago"
+        },
+        {
+          author: "Walkman_Jenny",
+          text: "That guitar solo at lunch Monday was sick! But where did you go after school?! Miss you! 🎧",
+          time: "4 days ago"
+        },
+        {
+          author: "Neon_Nick",
+          text: "Dude the whole school is talking about you! Everyone misses the coolest kid around! Come back! �",
+          time: "3 weeks ago"
+        },
+        {
+          author: "Pager_Princess",
+          text: "Can't wait to hang at the arcade this weekend! You better show up! 📟💜",
+          time: "1 week ago"
         }
       ];
     }
