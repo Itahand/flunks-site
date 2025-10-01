@@ -17,9 +17,9 @@ const ArcadeMain = () => {
   const entranceAudioRef = useRef<HTMLAudioElement | null>(null);
   const [isEntranceMuted, setIsEntranceMuted] = useState(false);
 
-  // Use your uploaded day/night images for Arcade
-  const dayImage = "/images/icons/arcade-day.png";
-  const nightImage = "/images/icons/arcade-night.png";
+  // Use the "Flunko missing" themed day/night images for Arcade
+  const dayImage = "/images/icons/arcade-flunko-day.png";
+  const nightImage = "/images/icons/arcade-flunko-night.png";
   const timeBasedInfo = useTimeBasedImage(dayImage, nightImage);
 
   // Initialize background music for arcade entrance
@@ -419,14 +419,31 @@ const ArcadeMain = () => {
         <div style={{
           textAlign: 'center',
           padding: '20px',
-          background: 'linear-gradient(45deg, #FFD700, #FF69B4, #9370DB)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          fontSize: '32px',
-          fontWeight: 'bold',
           fontFamily: "'Press Start 2P', monospace"
         }}>
-          🧙‍♂️ WELCOME TO THE WIZARD'S ARCADE! 🧙‍♂️
+          <div style={{
+            background: 'linear-gradient(45deg, #FFD700, #FF6347)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontSize: 'clamp(20px, 4vw, 28px)',
+            fontWeight: 'bold',
+            marginBottom: '8px',
+            textShadow: '2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000',
+            letterSpacing: '2px'
+          }}>
+            🧙‍♂️ WELCOME TO 🧙‍♂️
+          </div>
+          <div style={{
+            background: 'linear-gradient(45deg, #9370DB, #FF69B4)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontSize: 'clamp(18px, 3.5vw, 24px)',
+            fontWeight: 'bold',
+            textShadow: '2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000',
+            letterSpacing: '3px'
+          }}>
+            THE WIZARD'S ARCADE!
+          </div>
         </div>
 
         {/* Top Row - 4 buttons */}
@@ -680,8 +697,8 @@ const ArcadeMain = () => {
           onClose={() => closeWindow(WINDOW_IDS.ARCADE_LOBBY)}
           headerTitle="🧙‍♂️ Wizard's Arcade Lobby"
           headerIcon="/images/icons/arcade-day.png"
-          initialWidth="900px"
-          initialHeight="700px"
+          initialWidth="1050px"
+          initialHeight="800px"
           resizable={true}
         >
           <ArcadeLobby />
@@ -698,7 +715,7 @@ const ArcadeMain = () => {
           src={timeBasedInfo.currentImage}
           alt={`Arcade Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
           className="block object-contain z-0 transition-opacity duration-500"
-          style={{ maxHeight: '500px', maxWidth: '700px', width: 'auto', height: 'auto' }}
+          style={{ maxHeight: '750px', maxWidth: '1050px', width: 'auto', height: 'auto' }}
           onError={(e) => {
             e.currentTarget.src = "/images/backdrops/BLANK.png";
           }}
@@ -783,12 +800,13 @@ const ArcadeMain = () => {
             }}
             className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 text-white px-8 py-4 rounded-lg hover:from-purple-500 hover:via-blue-500 hover:to-purple-700 transition-all duration-300 hover:scale-105 text-center font-bold border-4 border-yellow-300 shadow-2xl relative overflow-hidden"
             style={{
-              textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-              boxShadow: '0 8px 25px rgba(138,43,226,0.6), inset 0 0 20px rgba(255,255,255,0.2)',
-              minWidth: '400px',
-              fontSize: '16px',
+              textShadow: '3px 3px 6px rgba(0,0,0,0.8)',
+              boxShadow: '0 12px 35px rgba(138,43,226,0.8), inset 0 0 25px rgba(255,255,255,0.3)',
+              minWidth: '600px',
+              fontSize: '20px',
               fontFamily: "'Press Start 2P', monospace",
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
+              padding: '20px 40px'
             }}
           >
             🧙‍♂️ ENTER WIZARD'S ARCADE 🧙‍♂️

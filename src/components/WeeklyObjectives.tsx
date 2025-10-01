@@ -173,11 +173,11 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         animation: 'titleShine 2s ease-in-out infinite'
       }}>
         <div style={{
-          fontSize: 'clamp(28px, 8vw, 56px)',
+          fontSize: 'clamp(20px, 6vw, 40px)',
           fontWeight: 'bold',
           color: '#001122',
-          textShadow: '3px 3px 0px #FFFFFF, -3px -3px 0px #FFFFFF, 3px -3px 0px #FFFFFF, -3px 3px 0px #FFFFFF',
-          letterSpacing: '4px',
+          textShadow: '2px 2px 0px #FFFFFF, -2px -2px 0px #FFFFFF, 2px -2px 0px #FFFFFF, -2px 2px 0px #FFFFFF',
+          letterSpacing: '3px',
           animation: 'titlePulse 1.5s ease-in-out infinite',
           marginBottom: '12px',
           fontFamily: '"Courier New", "Lucida Console", monospace',
