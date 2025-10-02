@@ -457,7 +457,7 @@ const ArcadeMain = () => {
           </div>
         </div>
 
-        {/* All Buttons - Stacked vertically on black background at bottom */}
+        {/* All Buttons - Responsive grid layout */}
         <div style={{
           position: 'absolute',
           bottom: '0',
@@ -465,13 +465,17 @@ const ArcadeMain = () => {
           right: '0',
           backgroundColor: '#000000',
           padding: 'clamp(10px, 3vw, 20px)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'clamp(8px, 2vw, 12px)',
-          alignItems: 'center',
           borderTop: '3px solid #FFD700',
           boxShadow: '0 -5px 20px rgba(0,0,0,0.8)'
         }}>
+          {/* Button container with responsive layout */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(180px, 100%), 1fr))',
+            gap: 'clamp(8px, 2vw, 12px)',
+            maxWidth: '1000px',
+            margin: '0 auto'
+          }}>
           {/* Front Area */}
           <button
             onClick={() =>
@@ -493,7 +497,6 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '100%',
-              maxWidth: 'min(400px, 90vw)',
               minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
@@ -525,7 +528,6 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '100%',
-              maxWidth: 'min(400px, 90vw)',
               minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
@@ -551,7 +553,6 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '100%',
-              maxWidth: 'min(400px, 90vw)',
               minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
@@ -583,7 +584,6 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '100%',
-              maxWidth: 'min(400px, 90vw)',
               minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
@@ -629,7 +629,6 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '100%',
-              maxWidth: 'min(400px, 90vw)',
               minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
@@ -676,7 +675,6 @@ const ArcadeMain = () => {
                 transition: 'all 0.3s ease',
                 fontFamily: "'Press Start 2P', monospace",
                 width: '100%',
-                maxWidth: 'min(400px, 90vw)',
                 minHeight: '50px',
                 display: 'flex',
                 alignItems: 'center',
@@ -716,7 +714,6 @@ const ArcadeMain = () => {
                 fontFamily: "'Press Start 2P', monospace",
                 boxShadow: '0 0 15px rgba(255,215,0,0.5)',
                 width: '100%',
-                maxWidth: 'min(400px, 90vw)',
                 minHeight: '50px',
                 display: 'flex',
                 alignItems: 'center',
@@ -727,6 +724,7 @@ const ArcadeMain = () => {
               ZOLTAR
             </button>
           )}
+          </div>
         </div>
       </div>
     );
