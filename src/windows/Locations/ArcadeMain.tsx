@@ -457,7 +457,7 @@ const ArcadeMain = () => {
           </div>
         </div>
 
-        {/* All Buttons - Responsive grid layout */}
+        {/* All Buttons - Two rows: locations on top, games on bottom */}
         <div style={{
           position: 'absolute',
           bottom: '0',
@@ -468,13 +468,13 @@ const ArcadeMain = () => {
           borderTop: '3px solid #FFD700',
           boxShadow: '0 -5px 20px rgba(0,0,0,0.8)'
         }}>
-          {/* Button container with responsive layout */}
+          {/* Top Row - Location Buttons (4 buttons) */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(180px, 100%), 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))',
             gap: 'clamp(8px, 2vw, 12px)',
             maxWidth: '1000px',
-            margin: '0 auto'
+            margin: '0 auto 12px auto'
           }}>
           {/* Front Area */}
           <button
@@ -593,7 +593,16 @@ const ArcadeMain = () => {
           >
             Back Room
           </button>
+          </div>
 
+          {/* Bottom Row - Game Buttons (3 buttons) */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))',
+            gap: 'clamp(8px, 2vw, 12px)',
+            maxWidth: '1000px',
+            margin: '0 auto'
+          }}>
           {/* Flappy Flunk Game */}
           <button
             onClick={() => {

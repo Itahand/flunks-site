@@ -312,6 +312,9 @@ const LockerSystemNew: React.FC = () => {
       headerTitle="My Locker"
       windowsId={WINDOW_IDS.USER_PROFILE}
       onClose={() => closeWindow(WINDOW_IDS.USER_PROFILE)}
+      initialWidth="min(750px, 95vw)"
+      initialHeight="90%"
+      resizable={true}
     >
       <style>{`
         @keyframes gumEarnings {
@@ -736,7 +739,7 @@ const LockerSystemNew: React.FC = () => {
                       height: '80vh',
                       minHeight: '400px',
                       backgroundImage: 'url(/images/my-locker-front.png)',
-                      backgroundSize: 'contain',
+                      backgroundSize: 'cover',
                       backgroundPosition: 'center',
                       backgroundRepeat: 'no-repeat',
                       // Fallback if image doesn't load
@@ -748,34 +751,38 @@ const LockerSystemNew: React.FC = () => {
                       justifyContent: 'flex-start',
                       padding: '20px'
                     }}>
-                      {/* Nameplate at the top */}
+                      {/* Metallic Nameplate - positioned for middle locker */}
                       <div style={{
-                        marginTop: '20px',
-                        background: 'rgba(8, 24, 60, 0.82)',
-                        color: '#FFD700',
-                        padding: '12px 24px',
-                        borderRadius: '14px',
+                        position: 'absolute',
+                        top: '26%', // Moved down from 18%
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        background: 'linear-gradient(180deg, #e8e8e8 0%, #b8b8b8 45%, #a0a0a0 55%, #c8c8c8 100%)',
+                        color: '#000000',
+                        padding: '8px 14px', // Slightly smaller padding
+                        borderRadius: '3px',
                         textAlign: 'center',
-                        border: '2px solid rgba(255, 215, 0, 0.7)',
-                        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.45)',
-                        backdropFilter: 'blur(6px)',
-                        width: 'min(70%, 260px)',
-                        letterSpacing: '0.5px'
+                        border: '1px solid #8a8a8a',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.2)',
+                        width: 'clamp(110px, 16%, 160px)', // Slightly smaller
+                        letterSpacing: '0.5px',
+                        fontFamily: 'Arial, sans-serif'
                       }}>
                         <div style={{
-                          fontSize: 'clamp(16px, 3.5vw, 20px)',
-                          fontWeight: 'bold',
-                          marginBottom: '4px',
+                          fontSize: 'clamp(12px, 1.6vw, 16px)', // Bigger username
+                          fontWeight: 'bold', // Made bold instead of 600
+                          marginBottom: '3px',
                           textTransform: 'uppercase',
-                          textShadow: '0 2px 6px rgba(0, 0, 0, 0.4)'
+                          letterSpacing: '0.8px',
+                          color: '#000000'
                         }}>
                           {lockerInfo.username || 'STUDENT'}
                         </div>
                         <div style={{
-                          fontSize: 'clamp(18px, 4.5vw, 24px)',
-                          fontWeight: 'bold',
-                          color: '#FFE066',
-                          textShadow: '0 0 10px rgba(255, 215, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5)'
+                          fontSize: 'clamp(8px, 1vw, 10px)', // Smaller locker number
+                          fontWeight: '600',
+                          color: '#1a1a1a',
+                          letterSpacing: '0.5px'
                         }}>
                           LOCKER #{lockerInfo.locker_number}
                         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useGum } from '../contexts/GumContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -8,7 +8,7 @@ interface GameResult {
   message: string;
 }
 
-const ZoltarFortuneApp = () => {
+const ZoltarFortuneApp: React.FC = () => {
   const { balance, spendGum, earnGum } = useGum();
   const { walletAddress } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
@@ -21,33 +21,31 @@ const ZoltarFortuneApp = () => {
     totalSpent: 0,
     totalWon: 0
   });
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   const PLAY_COST = 10;
   const WIN_PAYOUT = 250;
-  const WIN_CHANCE = 1 / 30; // 3.33% chance (good house edge!)
+  const WIN_CHANCE = 1 / 30;
 
-  // Mystical fortunes for different outcomes
-  const winMessages = [
-    "🔮 The spirits smile upon you! Fortune favors the bold!",
-    "✨ The cosmic forces align! Great wealth awaits you!",
-    "🌟 The ancient prophecy comes true! You are chosen!",
-    "💫 Destiny has spoken! The universe rewards your courage!",
-    "🎭 The fates have decided! Victory is yours, brave soul!",
-    "🏆 The mystical energies converge! You have been blessed!",
-    "⭐ The stars dance in celebration of your triumph!",
-    "🌙 The moon goddess bestows her favor upon you!"
-  ];
+  // Play background music when component mounts
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      audioRef.current = new Audio('/sounds/zoltar-theme.mp3');
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.3;
+      audioRef.current.play().catch(err => {
+        console.log('Audio autoplay prevented:', err);
+      });
+    }
 
-  const loseMessages = [
-    "🔮 The mists are cloudy today... but tomorrow brings new hope!",
-    "✨ The spirits whisper: 'Patience, young seeker...'",
-    "🌙 Not all who wander are lost. Try again when the moon is full!",
-    "⭐ The stars are not aligned... but they will be soon!",
-    "🎭 Even the greatest fortune tellers cannot always see clearly...",
-    "🌫️ The crystal ball shows... shadows. But light will come!",
-    "🦉 The wise owl says: 'Knowledge comes to those who persist.'",
-    "🍀 Your luck builds with each attempt. The spirits take notice..."
-  ];
+    // Cleanup: stop music when component unmounts
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   // Load game stats from localStorage
   useEffect(() => {
@@ -67,9 +65,53 @@ const ZoltarFortuneApp = () => {
     }
   }, [walletAddress]);
 
-  // Generate secure random outcome
+  const winMessages = [
+    "The spirits smile upon you! Fortune favors the bold! Your lucky numbers: 3, 7, 9, 1",
+    "The cosmic forces align! Great wealth awaits you! Your lucky numbers: 2, 5, 8, 4",
+    "The ancient prophecy comes true! You are chosen! Your lucky numbers: 1, 6, 3, 9",
+    "Destiny has spoken! The universe rewards your courage! Your lucky numbers: 4, 8, 2, 7",
+    "The fates have decided! Victory is yours, brave soul! Your lucky numbers: 5, 1, 6, 3"
+  ];
+
+  const loseMessages = [
+    "The mists are cloudy today... but tomorrow brings new hope!",
+    "The spirits whisper: Patience, young seeker...",
+    "Not all who wander are lost. Try again when the moon is full!",
+    "The stars are not aligned... but they will be soon!",
+    "Even the greatest fortune tellers cannot always see clearly...",
+    "The crystal ball shows shadows... your fortune hides in the fog.",
+    "The ancient ones speak, but their words are veiled in mystery.",
+    "Your destiny awaits, dear soul, but not at this moment in time.",
+    "The winds of fate blow in strange directions... patience is key.",
+    "The cards have been drawn, but they tell of a journey not yet complete.",
+    "The moon waxes, the moon wanes... your time shall come again.",
+    "I see great things ahead, but first you must walk through darkness.",
+    "The spirits are restless tonight... they cannot reveal what is hidden.",
+    "Your path is shrouded, but fear not, for light always returns.",
+    "The cosmic wheel turns slowly... fortune will smile upon you soon.",
+    "The tea leaves swirl and dance, but their message remains unclear.",
+    "Your aura shimmers with potential... it merely needs time to bloom.",
+    "The oracle has spoken: Not yet, but very soon, child of destiny.",
+    "I gaze into the void and see... more attempts shall bring clarity.",
+    "The spirits test your resolve... prove your worth and try again.",
+    "Your fortune sleeps beneath the surface... it shall awaken in time.",
+    "The ancient runes speak of patience... your reward lies just ahead.",
+    "The celestial bodies whisper secrets... but today they remain silent.",
+    "I see threads of gold in your future... they are not ready to shine.",
+    "The mystical forces are gathering... but they need more time to align.",
+    "Your chakras are clouded... cleanse your spirit and return to me.",
+    "The pendulum swings, but it has not reached its peak yet.",
+    "The universe works in mysterious ways... trust the journey, seeker.",
+    "The flames dance and flicker... they show promise, but not today.",
+    "Your third eye opens slowly... with each visit, you see more clearly.",
+    "The spirits smile, but they ask you to prove your dedication first.",
+    "The wheel of fortune spins endlessly... your number will come up soon.",
+    "The ancestors watch over you... they say: one more time, brave soul.",
+    "Your energy flows with the river of fate... it has not reached the sea.",
+    "The mystical energies retreat... but they shall return stronger for you."
+  ];
+
   const generateOutcome = useCallback((): GameResult => {
-    // Use crypto.getRandomValues for better randomness
     const randomArray = new Uint32Array(1);
     crypto.getRandomValues(randomArray);
     const random = randomArray[0] / (0xFFFFFFFF + 1);
@@ -93,12 +135,12 @@ const ZoltarFortuneApp = () => {
 
   const playGame = async () => {
     if (!walletAddress) {
-      alert('🔮 The spirits require you to connect your mystic wallet first!');
+      alert('The spirits require you to connect your mystic wallet first!');
       return;
     }
 
     if (balance < PLAY_COST) {
-      alert(`🔮 You need at least ${PLAY_COST} GUM to consult the mystical Zoltar!`);
+      alert(`You need at least ${PLAY_COST} GUM to consult the mystical Zoltar!`);
       return;
     }
 
@@ -110,15 +152,14 @@ const ZoltarFortuneApp = () => {
     setIsAnimating(true);
 
     try {
-      // First, deduct the cost
-      const spendResult = await spendGum(PLAY_COST, 'zoltar_fortune_app', {
-        game: 'zoltar_standalone',
+      const spendResult = await spendGum(PLAY_COST, 'zoltar_fortune_machine', {
+        game: 'zoltar',
         timestamp: new Date().toISOString(),
         cost: PLAY_COST
       });
 
       if (!spendResult.success) {
-        alert(`🔮 The spirits reject your offering: ${spendResult.error}`);
+        alert(`The spirits reject your offering: ${spendResult.error}`);
         setIsPlaying(false);
         setIsAnimating(false);
         return;
@@ -131,20 +172,17 @@ const ZoltarFortuneApp = () => {
         totalSpent: gameStats.totalSpent + PLAY_COST
       };
 
-      // Generate the game outcome
       const outcome = generateOutcome();
       
-      // Animate for dramatic effect
       setTimeout(async () => {
         setGameResult(outcome);
         setIsAnimating(false);
         setShowResult(true);
 
-        // If they won, award the payout and update stats
         if (outcome.isWinner) {
           try {
-            await earnGum('zoltar_fortune_app_win', {
-              game: 'zoltar_standalone',
+            await earnGum('zoltar_fortune_machine_win', {
+              game: 'zoltar',
               win_amount: outcome.payout,
               timestamp: new Date().toISOString()
             });
@@ -158,79 +196,161 @@ const ZoltarFortuneApp = () => {
 
         updateStats(newStats);
 
-        // Reset after showing result
         setTimeout(() => {
           setIsPlaying(false);
           setShowResult(false);
           setGameResult(null);
-        }, 6000);
-      }, 3500); // 3.5 second dramatic pause
+        }, 5000);
+      }, 3000);
 
     } catch (error) {
       console.error('Error playing Zoltar:', error);
       setIsPlaying(false);
       setIsAnimating(false);
-      alert('🔮 The mystical forces are disrupted! Please try again.');
+      alert('The mystical forces are disrupted! Please try again.');
     }
   };
 
-  const winRate = gameStats.totalPlays > 0 ? ((gameStats.totalWins / gameStats.totalPlays) * 100).toFixed(1) : '0.0';
-  const netProfit = gameStats.totalWon - gameStats.totalSpent;
-
   return (
-    <div style={{
-      width: '100%',
-      height: '100%',
-      background: 'linear-gradient(135deg, #1a0033, #330066, #4B0082, #8B008B, #1a0033)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      padding: '20px',
-      minHeight: '600px',
-      position: 'relative',
-      overflow: 'auto',
-      fontFamily: "'Creepster', 'Chiller', 'Papyrus', cursive"
-    }}>
-      {/* Mystical Background Pattern */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundImage: `
-          radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
-          linear-gradient(45deg, transparent 40%, rgba(255, 69, 180, 0.05) 50%, transparent 60%)
-        `,
-        animation: isAnimating ? 'mysticalPulse 3s ease-in-out infinite' : 'none'
-      }} />
-
-      {/* Floating Stars */}
-      {[...Array(12)].map((_, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute',
-            fontSize: `${8 + Math.random() * 8}px`,
-            color: '#FFD700',
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            animation: `starTwinkle ${2 + Math.random() * 3}s ease-in-out infinite ${Math.random() * 2}s`,
-            textShadow: '0 0 10px rgba(255,215,0,0.8)',
-            pointerEvents: 'none'
-          }}
-        >
-          ✨
+    <>
+      <style>
+        {`
+          @keyframes pulse {
+            0%, 100% { 
+              box-shadow: 0 0 40px rgba(138,43,226,0.8), inset 0 0 30px rgba(255,255,255,0.4);
+            }
+            50% { 
+              box-shadow: 0 0 60px rgba(138,43,226,1), inset 0 0 40px rgba(255,255,255,0.6);
+            }
+          }
+          
+          @keyframes fadeIn {
+            from { 
+              opacity: 0;
+            }
+            to { 
+              opacity: 1;
+            }
+          }
+          
+          /* Mobile responsive styles */
+          @media (max-width: 768px) {
+            .zoltar-crystal-ball {
+              width: 180px !important;
+              height: 180px !important;
+              font-size: 90px !important;
+              margin-bottom: 40px !important;
+            }
+            
+            .zoltar-gum-display {
+              font-size: 22px !important;
+              padding: 8px 20px !important;
+            }
+            
+            .zoltar-button {
+              width: 90% !important;
+              max-width: 350px !important;
+              height: 80px !important;
+              font-size: 16px !important;
+            }
+            
+            .zoltar-message-box {
+              padding: 30px 20px !important;
+              font-size: 16px !important;
+            }
+            
+            .zoltar-win-text {
+              font-size: 32px !important;
+            }
+            
+            .zoltar-message-text {
+              font-size: 16px !important;
+            }
+          }
+        `}
+      </style>
+      
+      {/* Dramatic Overlay for Messages - Appears on TOP with dimmed background */}
+      {showResult && gameResult && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.85)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          animation: 'fadeIn 0.5s ease-out',
+          pointerEvents: 'none'
+        }}>
+          <div 
+            className="zoltar-message-box"
+            style={{
+            background: gameResult.isWinner 
+              ? 'linear-gradient(135deg, rgba(255,215,0,0.95), rgba(255,165,0,0.95))'
+              : 'linear-gradient(135deg, rgba(139,0,139,0.95), rgba(75,0,130,0.95))',
+            color: gameResult.isWinner ? '#000' : '#FFF',
+            padding: '50px 60px',
+            borderRadius: '30px',
+            border: `6px solid ${gameResult.isWinner ? '#FFD700' : '#FF69B4'}`,
+            textAlign: 'center',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            boxShadow: gameResult.isWinner 
+              ? '0 0 60px rgba(255,215,0,1), inset 0 0 30px rgba(255,255,255,0.3)'
+              : '0 0 60px rgba(255,105,180,1), inset 0 0 30px rgba(255,255,255,0.2)',
+            maxWidth: '90%',
+            width: '600px',
+            animation: 'fadeIn 0.5s ease-out',
+            margin: '0 auto'
+          }}>
+            {gameResult.isWinner && (
+              <div 
+                className="zoltar-win-text"
+                style={{ 
+                fontSize: '48px', 
+                marginBottom: '20px', 
+                textShadow: '0 0 20px rgba(255,215,0,0.8)',
+                animation: 'pulse 1s ease-in-out infinite'
+              }}>
+                ✨ YOU WON {gameResult.payout} GUM! ✨
+              </div>
+            )}
+            <div 
+              className="zoltar-message-text"
+              style={{ 
+              fontFamily: "'Papyrus', serif", 
+              lineHeight: '1.8', 
+              fontSize: '20px',
+              textShadow: gameResult.isWinner ? '0 1px 2px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.5)'
+            }}>
+              {gameResult.message}
+            </div>
+          </div>
         </div>
-      ))}
-
-      {/* Zoltar Image Container */}
+      )}
+      
       <div style={{
         width: '100%',
-        maxWidth: '400px',
-        marginBottom: '20px',
+        height: '100%',
+        background: 'linear-gradient(135deg, #1a0033, #330066, #1a0033)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        padding: '20px',
+        minHeight: '600px',
+        position: 'relative',
+        overflow: 'auto'
+      }}>
+      {/* Zoltar Image at the top */}
+      <div style={{
+        width: '100%',
+        maxWidth: '500px',
+        marginBottom: '30px',
         position: 'relative',
         zIndex: 10
       }}>
@@ -264,25 +384,25 @@ const ZoltarFortuneApp = () => {
       {/* Mystical Title */}
       <div style={{
         textAlign: 'center',
-        marginBottom: '20px',
+        marginBottom: '30px',
         zIndex: 10
       }}>
         <h1 style={{
-          fontSize: '32px',
+          fontSize: '36px',
           fontWeight: 'bold',
           background: 'linear-gradient(45deg, #FFD700, #FF1493, #9370DB, #FFD700)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-          marginBottom: '5px',
+          marginBottom: '8px',
           fontFamily: "'Creepster', 'Chiller', serif",
-          letterSpacing: '2px'
+          letterSpacing: '3px'
         }}>
           ☾ THE GREAT ZOLTAR ☽
         </h1>
         <p style={{
           color: '#E6E6FA',
-          fontSize: '16px',
+          fontSize: '18px',
           fontStyle: 'italic',
           textShadow: '0 0 10px rgba(230,230,250,0.8)',
           fontFamily: "'Papyrus', serif"
@@ -291,349 +411,184 @@ const ZoltarFortuneApp = () => {
         </p>
       </div>
 
-      {/* Main Zoltar Machine */}
+      {/* Fortune Machine Container */}
+      {/* Fortune Machine Container */}
       <div style={{
         position: 'relative',
-        width: '400px',
+        width: '600px',
         height: '500px',
-        margin: '20px auto',
-        zIndex: 10
+        margin: '40px auto 60px',
+        zIndex: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
-        {/* Machine Frame */}
-        <div style={{
-          width: '100%',
-          height: '100%',
-          background: 'linear-gradient(145deg, #8B4513, #A0522D, #CD853F)',
-          border: '6px solid #FFD700',
-          borderRadius: '30px 30px 15px 15px',
-          boxShadow: '0 15px 40px rgba(0,0,0,0.7), inset 0 0 30px rgba(255,215,0,0.3)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
           
-          {/* Mystical Glow Effect */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: isAnimating ? 
-              'radial-gradient(circle, rgba(255,215,0,0.5) 0%, transparent 70%)' :
-              'transparent',
-            animation: isAnimating ? 'pulse 1.5s ease-in-out infinite' : 'none'
-          }} />
-
-          {/* Crystal Ball Area */}
-          <div style={{
-            position: 'absolute',
-            top: '60px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '150px',
-            height: '150px',
+          {/* Crystal Ball - Centered and Lower */}
+          <div 
+            className="zoltar-crystal-ball"
+            style={{
+            width: '240px',
+            height: '240px',
             borderRadius: '50%',
-            background: isAnimating ?
-              'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(138,43,226,0.7), rgba(75,0,130,0.9))' :
-              'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.7), rgba(138,43,226,0.5), rgba(75,0,130,0.7))',
-            border: '4px solid #FFD700',
-            boxShadow: isAnimating ?
-              '0 0 40px rgba(138,43,226,1), inset 0 0 30px rgba(255,255,255,0.4)' :
-              '0 0 20px rgba(138,43,226,0.6), inset 0 0 25px rgba(255,255,255,0.3)',
-            animation: isAnimating ? 'crystalGlow 2.5s ease-in-out infinite' : 'none'
-          }}>
-            {/* Mystical swirls inside crystal ball */}
-            <div style={{
-              position: 'absolute',
-              top: '25%',
-              left: '25%',
-              right: '25%',
-              bottom: '25%',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%)',
-              borderRadius: '50%',
-              animation: isAnimating ? 'spin 4s linear infinite' : 'none'
-            }} />
-          </div>
-
-          {/* Zoltar's Eyes */}
-          <div style={{
-            position: 'absolute',
-            top: '240px',
-            left: '50%',
-            transform: 'translateX(-50%)',
+            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(138,43,226,0.6), rgba(75,0,130,0.8))',
+            border: '6px solid #FFD700',
+            boxShadow: '0 0 40px rgba(138,43,226,0.8), inset 0 0 30px rgba(255,255,255,0.4)',
             display: 'flex',
-            gap: '50px'
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '120px',
+            pointerEvents: 'none',
+            animation: isAnimating ? 'pulse 0.5s ease-in-out infinite' : 'none',
+            marginBottom: '60px'
           }}>
-            <div style={{
-              width: '25px',
-              height: '25px',
-              borderRadius: '50%',
-              background: isAnimating ?
-                'radial-gradient(circle, #FFD700, #FF6B6B)' :
-                'radial-gradient(circle, #FF4500, #8B0000)',
-              boxShadow: '0 0 15px rgba(255,69,0,0.9)',
-              animation: isAnimating ? 'eyeGlow 2s ease-in-out infinite' : 'none'
-            }} />
-            <div style={{
-              width: '25px',
-              height: '25px',
-              borderRadius: '50%',
-              background: isAnimating ?
-                'radial-gradient(circle, #FFD700, #FF6B6B)' :
-                'radial-gradient(circle, #FF4500, #8B0000)',
-              boxShadow: '0 0 15px rgba(255,69,0,0.9)',
-              animation: isAnimating ? 'eyeGlow 2s ease-in-out infinite 0.7s' : 'none'
-            }} />
+            🔮
           </div>
 
-      {/* Mystical Fortune Button */}
-      <div style={{
-        background: 'linear-gradient(145deg, #4B0082, #8B008B, #9400D3, #8B008B, #4B0082)',
-        padding: '20px',
-        borderRadius: '25px',
-        border: '3px solid #FFD700',
-        boxShadow: '0 0 30px rgba(255, 215, 0, 0.5), inset 0 0 20px rgba(75, 0, 130, 0.8)',
-        marginBottom: '20px',
-        position: 'relative',
-        maxWidth: '400px',
-        width: '100%'
-      }}>
-        {/* Ornate Mystical Border */}
-        <div style={{
-          position: 'absolute',
-          top: '-10px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          fontSize: '24px',
-          color: '#FFD700',
-          textShadow: '0 0 10px rgba(255, 215, 0, 0.8)'
-        }}>
-          ⚜️
-        </div>
-        
-        <button
-          onClick={playGame}
-          disabled={isPlaying || balance < PLAY_COST}
-          style={{
-            width: '100%',
-            height: '70px',
-            background: isPlaying ?
-              'linear-gradient(45deg, #666, #999, #666)' :
-              'linear-gradient(45deg, #FFD700, #FFA500, #FF6347, #FFA500, #FFD700)',
-            border: '3px solid #8B4513',
-            borderRadius: '35px',
-            color: isPlaying ? '#ccc' : '#8B0000',
-            fontWeight: 'bold',
-            fontSize: '18px',
-            fontFamily: "'Creepster', 'Chiller', serif",
-            cursor: isPlaying ? 'not-allowed' : 'pointer',
-            boxShadow: isPlaying ?
-              'inset 0 4px 12px rgba(0,0,0,0.6)' :
-              '0 8px 25px rgba(255,140,0,0.8), inset 0 3px 8px rgba(255,255,255,0.6)',
-            transition: 'all 0.4s ease',
-            textShadow: isPlaying ? 'none' : '2px 2px 4px rgba(0,0,0,0.8)',
-            letterSpacing: '1px',
-            position: 'relative',
-            overflow: 'hidden'
-          }}
-        >
+          {/* GUM Balance - Gypsy style centered below crystal ball */}
           <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: isPlaying ? 
-              'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)' :
-              'none',
-            animation: isPlaying ? 'shimmer 2s ease-in-out infinite' : 'none'
-          }} />
-          <span style={{ position: 'relative', zIndex: 1 }}>
-            {isPlaying ? '🔮 THE SPIRITS WHISPER...' : `✨ DIVINE YOUR FORTUNE ✨`}
-          </span>
-        </button>
-        
-        <div style={{
-          textAlign: 'center',
-          marginTop: '10px',
-          color: '#E6E6FA',
-          fontSize: '14px',
-          fontStyle: 'italic',
-          fontFamily: "'Papyrus', serif"
-        }}>
-          ⭐ Cost: {PLAY_COST} GUM • Fortune Awaits: {WIN_PAYOUT} GUM ⭐
-        </div>
-      </div>
-
-          {/* Game Result Display */}
-          {showResult && gameResult && (
-            <div style={{
-              position: 'absolute',
-              top: '290px',
-              left: '15px',
-              right: '15px',
-              background: 'rgba(0,0,0,0.9)',
-              color: gameResult.isWinner ? '#FFD700' : '#FF69B4',
-              padding: '20px',
-              borderRadius: '15px',
-              border: `3px solid ${gameResult.isWinner ? '#FFD700' : '#FF69B4'}`,
-              textAlign: 'center',
-              fontSize: '14px',
+            textAlign: 'center',
+            marginBottom: '50px'
+          }}>
+            <div 
+              className="zoltar-gum-display"
+              style={{
+              display: 'inline-block',
+              color: '#FFD700',
+              fontSize: '28px',
               fontWeight: 'bold',
-              animation: 'fadeIn 0.7s ease-in-out',
-              boxShadow: `0 0 20px ${gameResult.isWinner ? 'rgba(255,215,0,0.5)' : 'rgba(255,105,180,0.5)'}`
+              fontFamily: "'Papyrus', serif",
+              textShadow: '0 0 15px rgba(255,215,0,0.8), 0 0 30px rgba(255,215,0,0.5)',
+              padding: '10px 30px',
+              borderTop: '2px solid #FFD700',
+              borderBottom: '2px solid #FFD700',
+              position: 'relative'
             }}>
-              {gameResult.isWinner && (
-                <div style={{ fontSize: '20px', marginBottom: '10px' }}>
-                  🎉 FORTUNE FAVORS YOU! 🎉<br />
-                  +{gameResult.payout} GUM!
-                </div>
-              )}
-              <div style={{ lineHeight: '1.4' }}>{gameResult.message}</div>
+              <span style={{ 
+                fontSize: '32px',
+                marginRight: '10px',
+                filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.8))'
+              }}>💰</span>
+              {balance} GUM
+              <span style={{
+                position: 'absolute',
+                left: '-15px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                fontSize: '20px'
+              }}>✦</span>
+              <span style={{
+                position: 'absolute',
+                right: '-15px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                fontSize: '20px'
+              }}>✦</span>
             </div>
-          )}
-        </div>
+          </div>
+
+          {/* Play Button - BIG and CLICKABLE with smaller font */}
+          <button
+            className="zoltar-button"
+            onClick={playGame}
+            disabled={isPlaying || balance < PLAY_COST}
+            style={{
+              width: '400px',
+              height: '100px',
+              background: isPlaying ?
+                'linear-gradient(45deg, #666, #999)' :
+                'linear-gradient(45deg, #FFD700, #FFA500, #FF8C00)',
+              border: '5px solid #8B0000',
+              borderRadius: '50px',
+              color: isPlaying ? '#ccc' : '#8B0000',
+              fontWeight: 'bold',
+              fontSize: '18px',
+              fontFamily: "'Papyrus', serif",
+              cursor: isPlaying || balance < PLAY_COST ? 'not-allowed' : 'pointer',
+              boxShadow: isPlaying ?
+                'inset 0 3px 8px rgba(0,0,0,0.4)' :
+                '0 10px 35px rgba(255,140,0,0.8), inset 0 3px 8px rgba(255,255,255,0.6)',
+              transition: 'all 0.3s ease',
+              zIndex: 100,
+              textShadow: isPlaying ? 'none' : '0 2px 4px rgba(0,0,0,0.4)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isPlaying && balance >= PLAY_COST) {
+                e.currentTarget.style.transform = 'scale(1.1)';
+                e.currentTarget.style.boxShadow = '0 15px 45px rgba(255,140,0,1), inset 0 3px 8px rgba(255,255,255,0.7)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = isPlaying ?
+                'inset 0 3px 8px rgba(0,0,0,0.4)' :
+                '0 10px 35px rgba(255,140,0,0.8), inset 0 3px 8px rgba(255,255,255,0.6)';
+            }}
+          >
+            {isPlaying ? '🔮 CONSULTING THE SPIRITS...' : `🔮 CONSULT THE ORACLE (${PLAY_COST} GUM)`}
+          </button>
       </div>
 
-      {/* Game Statistics Panel */}
+      {/* Game Statistics Panel - Moved down below crystal ball */}
       <div style={{
-        background: 'rgba(0,0,0,0.7)',
-        border: '2px solid #FFD700',
-        borderRadius: '15px',
-        padding: '20px',
-        margin: '20px',
+        background: 'rgba(0,0,0,0.8)',
+        border: '3px solid #FFD700',
+        borderRadius: '20px',
+        padding: '30px',
+        margin: '20px auto 50px',
         textAlign: 'center',
-        minWidth: '300px',
-        zIndex: 10
+        minWidth: '400px',
+        maxWidth: '500px',
+        zIndex: 10,
+        boxShadow: '0 0 30px rgba(255,215,0,0.4)'
       }}>
-        <h3 style={{ color: '#FFD700', marginBottom: '15px', fontSize: '18px' }}>
+        <h3 style={{ 
+          color: '#FFD700', 
+          marginBottom: '25px', 
+          fontSize: '22px',
+          fontFamily: "'Papyrus', serif",
+          textShadow: '0 0 10px rgba(255,215,0,0.6)'
+        }}>
           📊 Your Mystical Journey
         </h3>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', color: '#E6E6FA' }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: '1fr 1fr', 
+          gap: '25px', 
+          color: '#E6E6FA' 
+        }}>
           <div>
-            <div style={{ fontSize: '14px', opacity: 0.8 }}>Games Played</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{gameStats.totalPlays}</div>
+            <div style={{ fontSize: '16px', opacity: 0.8, marginBottom: '8px' }}>Games Played</div>
+            <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{gameStats.totalPlays}</div>
           </div>
           <div>
-            <div style={{ fontSize: '14px', opacity: 0.8 }}>Win Rate</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold', color: gameStats.totalWins > 0 ? '#00ff00' : '#ffffff' }}>
-              {winRate}%
+            <div style={{ fontSize: '16px', opacity: 0.8, marginBottom: '8px' }}>Win Rate</div>
+            <div style={{ fontSize: '28px', fontWeight: 'bold', color: gameStats.totalWins > 0 ? '#00ff00' : '#ffffff' }}>
+              {gameStats.totalPlays > 0 ? ((gameStats.totalWins / gameStats.totalPlays) * 100).toFixed(1) : '0.0'}%
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '14px', opacity: 0.8 }}>Total Spent</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#ff6666' }}>
+            <div style={{ fontSize: '16px', opacity: 0.8, marginBottom: '8px' }}>Total Spent</div>
+            <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#ff6666' }}>
               {gameStats.totalSpent} GUM
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '14px', opacity: 0.8 }}>Net Result</div>
+            <div style={{ fontSize: '16px', opacity: 0.8, marginBottom: '8px' }}>Net Result</div>
             <div style={{ 
-              fontSize: '20px', 
+              fontSize: '28px', 
               fontWeight: 'bold', 
-              color: netProfit >= 0 ? '#00ff00' : '#ff6666' 
+              color: (gameStats.totalWon - gameStats.totalSpent) >= 0 ? '#00ff00' : '#ff6666' 
             }}>
-              {netProfit >= 0 ? '+' : ''}{netProfit} GUM
+              {(gameStats.totalWon - gameStats.totalSpent) >= 0 ? '+' : ''}{gameStats.totalWon - gameStats.totalSpent} GUM
             </div>
           </div>
         </div>
       </div>
-
-      {/* Balance Display */}
-      <div style={{
-        position: 'fixed',
-        top: '20px',
-        right: '20px',
-        background: 'rgba(0,0,0,0.8)',
-        color: '#FFD700',
-        padding: '10px 20px',
-        borderRadius: '25px',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        border: '2px solid #FFD700',
-        zIndex: 100
-      }}>
-        💰 {balance.toLocaleString()} GUM
       </div>
-
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes mysticalPulse {
-          0%, 100% { 
-            opacity: 0.3;
-            transform: scale(1);
-          }
-          50% { 
-            opacity: 0.8;
-            transform: scale(1.02);
-          }
-        }
-
-        @keyframes starTwinkle {
-          0%, 100% { 
-            opacity: 0.4;
-            transform: scale(0.8) rotate(0deg);
-          }
-          50% { 
-            opacity: 1;
-            transform: scale(1.2) rotate(180deg);
-          }
-        }
-
-        @keyframes pulse {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.9; }
-        }
-
-        @keyframes crystalGlow {
-          0%, 100% { 
-            box-shadow: 0 0 20px rgba(138,43,226,0.6), inset 0 0 25px rgba(255,255,255,0.3);
-            transform: scale(1);
-          }
-          50% { 
-            box-shadow: 0 0 60px rgba(138,43,226,1.2), inset 0 0 40px rgba(255,255,255,0.6);
-            transform: scale(1.08);
-          }
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        @keyframes eyeGlow {
-          0%, 100% { 
-            box-shadow: 0 0 15px rgba(255,69,0,0.9);
-            transform: scale(1);
-          }
-          50% { 
-            box-shadow: 0 0 30px rgba(255,215,0,1.5);
-            transform: scale(1.3);
-          }
-        }
-
-        @keyframes fadeIn {
-          0% { opacity: 0; transform: translateY(20px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-
-        button:hover:not(:disabled) {
-          transform: scale(1.05) !important;
-          box-shadow: 0 12px 35px rgba(255,140,0,1.0), inset 0 3px 8px rgba(255,255,255,0.7) !important;
-        }
-      `}</style>
-    </div>
+    </>
   );
 };
 

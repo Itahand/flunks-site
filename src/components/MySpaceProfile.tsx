@@ -482,8 +482,58 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
           time: "4 days ago"
         },
         {
+          author: "PizzaBoy_Tony",
+          text: "Your parents came by asking if we've seen you... this is getting serious man! Where are you?! 🍕",
+          time: "1 day ago"
+        },
+        {
+          author: "Beanie_Beth",
+          text: "I tried calling your house like 5 times! Your mom sounds really worried. Please call someone! 📞",
+          time: "1 day ago"
+        },
+        {
+          author: "FlanelShirt_Dan",
+          text: "Coach is asking about you. Said you missed practice all week. This isn't like you bro! 🏀",
+          time: "2 days ago"
+        },
+        {
+          author: "Scrunchie_Stacy",
+          text: "Everyone at lunch is talking about how you just disappeared! Are you hiding from someone?? 🤔",
+          time: "2 days ago"
+        },
+        {
+          author: "GrungeDude_Kyle",
+          text: "Your locker hasn't been touched in days. The janitor asked if you moved schools! Come back! 🎒",
+          time: "3 days ago"
+        },
+        {
+          author: "PopRocks_Melissa",
+          text: "They're making missing person posters in the office! This is getting scary! Hope you're OK! 😰",
+          time: "3 days ago"
+        },
+        {
+          author: "Skateboard_Sam",
+          text: "Checked all your usual spots - arcade, pizza place, record store. Nobody's seen you since Monday! 🛹",
+          time: "3 days ago"
+        },
+        {
+          author: "BubbleGum_Lisa",
+          text: "Your seat in English has been empty all week! Mrs. Henderson keeps asking if anyone knows anything! 📖",
+          time: "4 days ago"
+        },
+        {
+          author: "HipHop_Marcus",
+          text: "Yo the rumors are getting wild! Some kids are saying you ran away, others say aliens! Talk to us! 👽",
+          time: "4 days ago"
+        },
+        {
+          author: "ChainWallet_Chris",
+          text: "Your bike is still chained up at school from Monday! That's how we know something's really wrong! 🚲",
+          time: "4 days ago"
+        },
+        {
           author: "Neon_Nick",
-          text: "Dude the whole school is talking about you! Everyone misses the coolest kid around! Come back! �",
+          text: "Dude the whole school is talking about you! Everyone misses the coolest kid around! Come back! 🌟",
           time: "3 weeks ago"
         },
         {
