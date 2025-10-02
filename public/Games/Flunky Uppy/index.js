@@ -653,29 +653,30 @@ function fall() {
       grid.removeChild(grid.firstChild)
     }
     
-    // Create game over screen
+    // Create game over screen with retro pixel styling
     const gameOverDiv = document.createElement('div');
     gameOverDiv.style.cssText = `
       position: absolute;
-      top: 50%;
+      top: 45%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.95);
       color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
+      padding: 25px 30px;
+      border-radius: 12px;
       text-align: center;
-      font-family: Arial, sans-serif;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
       z-index: 1000;
-      border: 2px solid #333;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      max-width: 250px;
-      min-width: 200px;
+      border: 4px solid #ff4757;
+      box-shadow: 0 0 20px rgba(255, 71, 87, 0.8), inset 0 0 10px rgba(0,0,0,0.5);
+      max-width: 280px;
+      min-width: 240px;
+      image-rendering: pixelated;
     `;
     gameOverDiv.innerHTML = `
-      <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #ff4757;">Game Over!</h3>
-      <p style="margin: 0 0 12px 0; font-size: 14px; color: #00ffff;">Score: ${score}</p>
-      <p style="margin: 0; font-size: 12px; color: #ffd700;">Click the restart platform below to play again!</p>
+      <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #ff4757; text-shadow: 2px 2px 0px #000, 0 0 10px #ff4757;">Game Over!</h3>
+      <p style="margin: 0 0 18px 0; font-size: 13px; color: #00ffff; text-shadow: 1px 1px 0px #000;">Score: ${score}</p>
+      <p style="margin: 0; font-size: 9px; color: #ffd700; line-height: 1.6; text-shadow: 1px 1px 0px #000;">Click the restart platform below to play again!</p>
     `;
     grid.appendChild(gameOverDiv);
     
@@ -696,22 +697,24 @@ function fall() {
       bottom: 20px;
       left: 50%;
       transform: translateX(30px);
-      width: 120px;
-      height: 20px;
+      width: 140px;
+      height: 24px;
       background: linear-gradient(135deg, #ffd700, #ffed4e);
-      border: 3px solid #ff6b35;
-      border-radius: 10px;
+      border: 4px solid #ff6b35;
+      border-radius: 4px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.6);
+      box-shadow: 0 4px 0px #cc5528, 0 8px 20px rgba(255, 215, 0, 0.6);
       z-index: 999;
       animation: restartPlatformPulse 1.5s infinite alternate;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: Arial, sans-serif;
-      font-size: 10px;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 8px;
       font-weight: bold;
-      color: #333;
+      color: #8B0000;
+      text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+      image-rendering: pixelated;
     `;
     restartPlatform.textContent = 'CLICK TO RESTART';
     
@@ -722,11 +725,11 @@ function fall() {
       style.textContent = `
         @keyframes restartPlatformPulse {
           0% {
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.6);
+            box-shadow: 0 4px 0px #cc5528, 0 8px 20px rgba(255, 215, 0, 0.6);
             transform: translateX(30px) scale(1);
           }
           100% {
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.9);
+            box-shadow: 0 4px 0px #cc5528, 0 10px 25px rgba(255, 215, 0, 0.9);
             transform: translateX(30px) scale(1.05);
           }
         }
@@ -734,7 +737,12 @@ function fall() {
         #restartPlatform:hover {
           background: linear-gradient(135deg, #ffed4e, #ffd700);
           transform: translateX(30px) scale(1.1) !important;
-          box-shadow: 0 8px 25px rgba(255, 215, 0, 1);
+          box-shadow: 0 4px 0px #cc5528, 0 12px 30px rgba(255, 215, 0, 1);
+        }
+        
+        #restartPlatform:active {
+          transform: translateX(30px) translateY(2px) scale(1.08) !important;
+          box-shadow: 0 2px 0px #cc5528, 0 6px 15px rgba(255, 215, 0, 0.8);
         }
       `;
       document.head.appendChild(style);
@@ -755,22 +763,24 @@ function fall() {
       bottom: 20px;
       left: 50%;
       transform: translateX(-130px);
-      width: 100px;
-      height: 20px;
+      width: 110px;
+      height: 24px;
       background: linear-gradient(135deg, #4CAF50, #45a049);
-      border: 3px solid #2E7D32;
-      border-radius: 10px;
+      border: 4px solid #2E7D32;
+      border-radius: 4px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.6);
+      box-shadow: 0 4px 0px #1B5E20, 0 8px 20px rgba(76, 175, 80, 0.6);
       z-index: 999;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: Arial, sans-serif;
-      font-size: 10px;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 8px;
       font-weight: bold;
       color: white;
+      text-shadow: 1px 1px 0px rgba(0,0,0,0.5);
       transition: all 0.3s ease;
+      image-rendering: pixelated;
     `;
     leaderboardButton.textContent = '🏆 SCORES';
     
@@ -778,13 +788,24 @@ function fall() {
     leaderboardButton.addEventListener('mouseenter', () => {
       leaderboardButton.style.background = 'linear-gradient(135deg, #45a049, #4CAF50)';
       leaderboardButton.style.transform = 'translateX(-130px) scale(1.1)';
-      leaderboardButton.style.boxShadow = '0 8px 25px rgba(76, 175, 80, 1)';
+      leaderboardButton.style.boxShadow = '0 4px 0px #1B5E20, 0 10px 25px rgba(76, 175, 80, 1)';
     });
     
     leaderboardButton.addEventListener('mouseleave', () => {
       leaderboardButton.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
       leaderboardButton.style.transform = 'translateX(-130px) scale(1)';
-      leaderboardButton.style.boxShadow = '0 4px 15px rgba(76, 175, 80, 0.6)';
+      leaderboardButton.style.boxShadow = '0 4px 0px #1B5E20, 0 8px 20px rgba(76, 175, 80, 0.6)';
+    });
+    
+    // Add press effect
+    leaderboardButton.addEventListener('mousedown', () => {
+      leaderboardButton.style.transform = 'translateX(-130px) translateY(2px) scale(1.08)';
+      leaderboardButton.style.boxShadow = '0 2px 0px #1B5E20, 0 6px 15px rgba(76, 175, 80, 0.8)';
+    });
+    
+    leaderboardButton.addEventListener('mouseup', () => {
+      leaderboardButton.style.transform = 'translateX(-130px) scale(1.1)';
+      leaderboardButton.style.boxShadow = '0 4px 0px #1B5E20, 0 10px 25px rgba(76, 175, 80, 1)';
     });
     
     // Add click event listener to open leaderboard
@@ -814,13 +835,15 @@ function fall() {
     gameOverDoodler.classList.add('game-over-doodler'); // Add special class
     gameOverDoodler.style.cssText = `
       position: absolute;
-      bottom: 45px;
+      bottom: 50px;
       left: 50%;
       transform: translateX(-50%);
-      width: 75px;
-      height: 73px;
-      background-image: url('flunko-down.png');
+      width: 95px;
+      height: 92px;
+      background-image: url('die.png');
       background-size: contain;
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
       z-index: 1000;
     `;
     grid.appendChild(gameOverDoodler);
