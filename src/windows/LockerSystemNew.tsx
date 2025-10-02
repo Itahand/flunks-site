@@ -300,56 +300,11 @@ const LockerSystemNew: React.FC = () => {
   const scrollToSection = (section: 1 | 2 | 3) => {
     // Scroll functionality disabled - no longer scrolls to sections
     console.log(`Scroll to section ${section} disabled`);
-    // if (scrollContainerRef.current) {
-    //   const container = scrollContainerRef.current;
-    //   const containerHeight = container.clientHeight;
-      
-    //   let targetScrollTop = 0;
-      
-    //   if (section === 1) {
-    //     targetScrollTop = 0;
-    //   } else if (section === 2) {
-    //     targetScrollTop = containerHeight * 0.8;
-    //   } else if (section === 3) {
-    //     targetScrollTop = containerHeight * 0.8 + containerHeight * 1.4;
-    //   }
-      
-    //   container.scrollTo({
-    //     top: targetScrollTop,
-    //     behavior: 'smooth'
-    //   });
-      
-    //   setCurrentSection(section);
-    // }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Scroll navigation disabled - only jacket switching remains active
-    // if (e.key === 'ArrowUp' && currentSection > 1) {
-    //   e.preventDefault();
-    //   scrollToSection((currentSection - 1) as 1 | 2 | 3);
-    // } else if (e.key === 'ArrowDown' && currentSection < 3) {
-    //   e.preventDefault();
-    //   scrollToSection((currentSection + 1) as 1 | 2 | 3);
-    // } else 
-    if (e.key === 'ArrowLeft' && currentSection === 2) {
-      e.preventDefault();
-      switchJacket('left');
-    } else if (e.key === 'ArrowRight' && currentSection === 2) {
-      e.preventDefault();
-      switchJacket('right');
-    } 
-    // Section jumping disabled
-    // else if (e.key === '1') {
-    //   e.preventDefault();
-    //   scrollToSection(1);
-    // } else if (e.key === '2') {
-    //   e.preventDefault();
-    //   scrollToSection(2);
-    // } else if (e.key === '3') {
-    //   e.preventDefault();
-    //   scrollToSection(3);
-    // }
+    // Keyboard navigation disabled for now
+    console.log('Keyboard navigation disabled');
   };
 
   return (
@@ -728,42 +683,45 @@ const LockerSystemNew: React.FC = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
+                      justifyContent: 'flex-start',
                       padding: '20px'
                     }}>
-                      {/* Optional overlay with locker info */}
+                      {/* Nameplate at the top */}
                       <div style={{
-                        position: 'absolute',
-                        bottom: '20px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        background: 'rgba(0,0,0,0.8)',
+                        marginTop: '20px',
+                        background: 'rgba(8, 24, 60, 0.82)',
                         color: '#FFD700',
-                        padding: '15px 25px',
-                        borderRadius: '8px',
+                        padding: '12px 24px',
+                        borderRadius: '14px',
                         textAlign: 'center',
-                        border: '2px solid #FFD700',
-                        backdropFilter: 'blur(5px)'
+                        border: '2px solid rgba(255, 215, 0, 0.7)',
+                        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.45)',
+                        backdropFilter: 'blur(6px)',
+                        width: 'min(70%, 260px)',
+                        letterSpacing: '0.5px'
                       }}>
                         <div style={{
-                          fontSize: 'clamp(16px, 4vw, 20px)',
+                          fontSize: 'clamp(16px, 3.5vw, 20px)',
                           fontWeight: 'bold',
-                          marginBottom: '5px'
+                          marginBottom: '4px',
+                          textTransform: 'uppercase',
+                          textShadow: '0 2px 6px rgba(0, 0, 0, 0.4)'
                         }}>
                           {lockerInfo.username || 'STUDENT'}
                         </div>
                         <div style={{
-                          fontSize: 'clamp(18px, 5vw, 24px)',
+                          fontSize: 'clamp(18px, 4.5vw, 24px)',
                           fontWeight: 'bold',
-                          color: '#FFD700',
-                          textShadow: '0 0 8px #FFD700'
+                          color: '#FFE066',
+                          textShadow: '0 0 10px rgba(255, 215, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5)'
                         }}>
                           LOCKER #{lockerInfo.locker_number}
                         </div>
                       </div>
                     </div>
 
-                    {/* Section 2: Middle (Letter Jacket with Enhanced Effects) */}
+                    {/* Section 2: Middle (Letter Jacket with Enhanced Effects) - HIDDEN FOR NOW */}
+                    {false && (
                     <div className="locker-section" style={{
                       height: 'max(100vh, 800px)',
                       minHeight: '100vh',
@@ -1040,91 +998,200 @@ const LockerSystemNew: React.FC = () => {
                         */}
                       </div>
                     </div>
+                    )}
 
                     {/* Section 3: Bottom - GUM MANAGEMENT CENTER */}
                     <div className="locker-section" style={{
-                      height: '70vh',
+                      height: 'auto',
+                      minHeight: '100vh',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: 'linear-gradient(180deg, rgba(255,20,147,0.2) 0%, rgba(138,43,226,0.1) 100%)',
-                      position: 'relative'
+                      background: 'linear-gradient(180deg, #020b1d 0%, #041c3f 35%, #020b1d 100%)',
+                      position: 'relative',
+                      padding: '60px 20px 40px'
                     }}>
+                      {/* Animated Background Stars */}
                       <div style={{
-                        background: 'rgba(75, 0, 130, 0.95)',
-                        color: 'white',
-                        padding: '25px',
-                        borderRadius: '15px',
-                        textAlign: 'center',
-                        maxWidth: 'min(95%, 500px)',
+                        position: 'absolute',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        background: `
+                          radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                          radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                          radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                          radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.7), transparent),
+                          radial-gradient(2px 2px at 160px 30px, #fff, transparent)
+                        `,
+                        backgroundRepeat: 'repeat',
+                        backgroundSize: '200px 100px',
+                        animation: 'starTwinkle 4s ease-in-out infinite',
+                        opacity: 0.6
+                      }} />
+                      
+                      <div style={{
+                        background: 'rgba(6, 20, 56, 0.92)',
+                        border: '2px solid rgba(255, 255, 255, 0.28)',
+                        borderRadius: '26px',
+                        padding: '36px 32px',
+                        maxWidth: 'min(92vw, 760px)',
                         width: '100%',
-                        backdropFilter: 'blur(10px)',
-                        border: '2px solid rgba(255,20,147,0.3)',
-                        transform: currentSection === 3 ? 'scale(1.02)' : 'scale(1)',
-                        transition: 'transform 0.3s ease',
-                        boxShadow: '0 8px 32px rgba(255,20,147,0.3)'
+                        boxShadow: '0 24px 60px rgba(3, 12, 34, 0.65)',
+                        position: 'relative',
+                        backdropFilter: 'blur(14px)'
                       }}>
-                        <div style={{ fontSize: '32px', marginBottom: '15px' }}>🍬</div>
-                        <div style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '20px', color: '#ff69b4' }}>
-                          Gum Management Center
+                        {/* 16-bit Game UI Header */}
+                        <div style={{ 
+                          fontSize: '38px', 
+                          marginBottom: '8px', 
+                          textAlign: 'center',
+                          filter: 'drop-shadow(0 0 8px rgba(255, 105, 180, 0.6))',
+                          animation: 'float 3s ease-in-out infinite'
+                        }}>
+                          🍬
+                        </div>
+                        <div style={{ 
+                          fontSize: '28px', 
+                          fontWeight: 'bold', 
+                          marginBottom: '24px', 
+                          color: '#ff69b4', 
+                          textAlign: 'center',
+                          fontFamily: '"Press Start 2P", "Courier New", monospace',
+                          textShadow: '3px 3px 0px #000, -1px -1px 0px rgba(255,105,180,0.5)',
+                          letterSpacing: '2px',
+                          textTransform: 'uppercase',
+                          lineHeight: '1.6'
+                        }}>
+                          <span style={{ fontSize: '24px' }}>Bubble Bank</span>
                         </div>
                         
-                        {/* Current Balance Display */}
+                        {/* Current Balance Display - Retro Game Stats Box */}
                         <div style={{
-                          background: 'rgba(0,0,0,0.6)',
-                          border: '2px solid #ff69b4',
-                          borderRadius: '12px',
-                          padding: '15px',
-                          marginBottom: '20px',
+                          background: 'rgba(0, 0, 0, 0.75)',
+                          border: '4px solid #ff69b4',
+                          borderRadius: '8px',
+                          padding: '20px',
+                          marginBottom: '24px',
                           position: 'relative',
-                          overflow: 'hidden'
+                          boxShadow: 'inset 0 0 20px rgba(255, 105, 180, 0.3), 0 8px 16px rgba(0, 0, 0, 0.4)',
+                          imageRendering: 'pixelated'
                         }}>
+                          {/* Retro corner decorations */}
                           <div style={{
-                            background: 'linear-gradient(90deg, #ff1493, #9370db)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            fontSize: '24px',
+                            position: 'absolute',
+                            top: '6px',
+                            left: '6px',
+                            width: '12px',
+                            height: '12px',
+                            background: '#ff69b4',
+                            boxShadow: '0 0 8px #ff69b4'
+                          }} />
+                          <div style={{
+                            position: 'absolute',
+                            top: '6px',
+                            right: '6px',
+                            width: '12px',
+                            height: '12px',
+                            background: '#ff69b4',
+                            boxShadow: '0 0 8px #ff69b4'
+                          }} />
+                          <div style={{
+                            position: 'absolute',
+                            bottom: '6px',
+                            left: '6px',
+                            width: '12px',
+                            height: '12px',
+                            background: '#ff69b4',
+                            boxShadow: '0 0 8px #ff69b4'
+                          }} />
+                          <div style={{
+                            position: 'absolute',
+                            bottom: '6px',
+                            right: '6px',
+                            width: '12px',
+                            height: '12px',
+                            background: '#ff69b4',
+                            boxShadow: '0 0 8px #ff69b4'
+                          }} />
+                          
+                          <div style={{
+                            fontFamily: '"Courier New", monospace',
+                            fontSize: '32px',
                             fontWeight: 'bold',
-                            marginBottom: '5px'
+                            color: '#FFD700',
+                            textShadow: '2px 2px 0px #000, 0 0 10px #FFD700',
+                            marginBottom: '8px',
+                            letterSpacing: '2px',
+                            textAlign: 'center'
                           }}>
                             {gumBalance.toLocaleString()} GUM
                           </div>
-                          <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                            💰 Your Current Balance
+                          <div style={{ 
+                            fontSize: '13px', 
+                            opacity: 0.9,
+                            color: '#00ff00',
+                            fontFamily: '"Courier New", monospace',
+                            textShadow: '1px 1px 0px #000',
+                            textAlign: 'center'
+                          }}>
+                            💰 YOUR CURRENT BALANCE
                           </div>
                           
-                          {/* Animated background particles */}
+                          {/* Animated scanline effect */}
                           <div style={{
                             position: 'absolute',
-                            top: '5px',
-                            right: '5px',
-                            width: '8px',
-                            height: '8px',
-                            background: '#ff1493',
-                            borderRadius: '50%',
-                            opacity: 0.6,
-                            animation: 'pulse 2s ease-in-out infinite'
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '100%',
+                            background: 'repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
+                            pointerEvents: 'none'
                           }} />
                         </div>
 
-                        {/* Daily Check-in Section */}
+                        {/* Daily Check-in Section - Power-Up Box Style */}
                         <div style={{
-                          background: 'rgba(255,255,255,0.1)',
-                          borderRadius: '10px',
-                          padding: '15px',
-                          marginBottom: '15px',
-                          border: '1px solid rgba(255,255,255,0.2)'
+                          background: 'linear-gradient(135deg, rgba(30, 60, 114, 0.8) 0%, rgba(42, 82, 152, 0.8) 100%)',
+                          borderRadius: '12px',
+                          padding: '18px',
+                          marginBottom: '20px',
+                          border: '3px solid rgba(100, 149, 237, 0.6)',
+                          boxShadow: '0 4px 15px rgba(100, 149, 237, 0.3), inset 0 0 20px rgba(100, 149, 237, 0.1)',
+                          position: 'relative'
                         }}>
-                          <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px' }}>
-                            🌅 Daily Check-in
+                          {/* Top accent bar */}
+                          <div style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: '10%',
+                            right: '10%',
+                            height: '3px',
+                            background: 'linear-gradient(90deg, transparent, #6495ED, transparent)'
+                          }} />
+                          
+                          <div style={{ 
+                            fontWeight: 'bold', 
+                            marginBottom: '10px',
+                            color: '#FFD700',
+                            fontFamily: '"Press Start 2P", "Courier New", monospace',
+                            fontSize: '12px',
+                            textShadow: '2px 2px 0px #000',
+                            textAlign: 'center'
+                          }}>
+                            DAILY CHECK-IN
                           </div>
-                          <div style={{ fontSize: '13px', marginBottom: '12px', opacity: 0.9 }}>
+                          <div style={{ 
+                            fontSize: '13px', 
+                            marginBottom: '12px', 
+                            opacity: 0.95,
+                            color: '#E0E0E0',
+                            textAlign: 'center'
+                          }}>
                             Claim your daily gum bonus!
                           </div>
                           
                           {/* Cooldown Timer */}
                           {primaryWallet?.address && (
-                            <div style={{ margin: '8px 0', fontSize: '14px' }}>
+                            <div style={{ margin: '8px 0', fontSize: '14px', textAlign: 'center' }}>
                               <GumCooldownTimer
                                 walletAddress={primaryWallet.address}
                                 source="daily_checkin"
@@ -1136,34 +1203,39 @@ const LockerSystemNew: React.FC = () => {
                             </div>
                           )}
                           
+                          <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                           <button
                             style={{
                               background: canClaimDaily ? 
                                 'linear-gradient(145deg, #32cd32, #228b22)' :
-                                'linear-gradient(145deg, #666, #444)',
+                                'linear-gradient(145deg, #555, #333)',
                               color: 'white',
-                              border: 'none',
-                              padding: '8px 16px',
-                              borderRadius: '6px',
-                              fontSize: '12px',
+                              border: canClaimDaily ? '3px solid #FFD700' : '3px solid #666',
+                              padding: '10px 20px',
+                              borderRadius: '8px',
+                              fontSize: '13px',
                               fontWeight: 'bold',
+                              fontFamily: '"Press Start 2P", "Courier New", monospace',
                               cursor: canClaimDaily ? 'pointer' : 'not-allowed',
                               boxShadow: canClaimDaily ? 
-                                '0 3px 8px rgba(50,205,50,0.4)' :
-                                '0 3px 8px rgba(102,102,102,0.4)',
-                              transition: 'all 0.2s ease',
-                              opacity: canClaimDaily ? 1 : 0.6
+                                '0 4px 12px rgba(50,205,50,0.5), inset 0 -4px 0 rgba(0,0,0,0.3)' :
+                                '0 2px 6px rgba(102,102,102,0.4), inset 0 -2px 0 rgba(0,0,0,0.5)',
+                              transition: 'all 0.15s ease',
+                              opacity: canClaimDaily ? 1 : 0.6,
+                              textShadow: '2px 2px 0px #000',
+                              imageRendering: 'pixelated',
+                              position: 'relative'
                             }}
                             onMouseOver={(e) => {
                               if (canClaimDaily) {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 5px 15px rgba(50,205,50,0.6)';
+                                e.currentTarget.style.transform = 'translateY(-3px)';
+                                e.currentTarget.style.boxShadow = '0 6px 18px rgba(50,205,50,0.7), inset 0 -4px 0 rgba(0,0,0,0.3)';
                               }
                             }}
                             onMouseOut={(e) => {
                               if (canClaimDaily) {
                                 e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 3px 8px rgba(50,205,50,0.4)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(50,205,50,0.5), inset 0 -4px 0 rgba(0,0,0,0.3)';
                               }
                             }}
                             disabled={!canClaimDaily}
@@ -1196,48 +1268,9 @@ const LockerSystemNew: React.FC = () => {
                           >
                             {canClaimDaily ? '✨ Claim 15 GUM' : '⏰ Daily Amount Claimed'}
                           </button>
+                          </div>
                         </div>
 
-                        {/* Interactive Gum Activities */}
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-around',
-                          margin: '15px 0',
-                          gap: '8px'
-                        }}>
-                          {[
-                            { icon: '❓', label: 'Bonus', color: '#ff6b6b' },
-                            { icon: '❓', label: 'Events', color: '#4ecdc4' },
-                            { icon: '❓', label: 'Stats', color: '#45b7d1' },
-                            { icon: '❓', label: 'Trade', color: '#96ceb4' }
-                          ].map((item, index) => (
-                            <div key={index} style={{
-                              fontSize: '18px',
-                              padding: '8px',
-                              background: `rgba(255,255,255,0.1)`,
-                              borderRadius: '8px',
-                              transition: 'all 0.3s ease',
-                              animation: currentSection === 3 ? `fadeInUp 0.5s ease-out ${index * 0.1}s both` : 'none',
-                              border: `1px solid ${item.color}`,
-                              minWidth: '50px',
-                              textAlign: 'center',
-                              opacity: 0.6
-                            }}
-                            title={`${item.label} - Coming Soon`}
-                            >
-                              <div>{item.icon}</div>
-                              <div style={{ fontSize: '9px', marginTop: '2px', opacity: 0.8 }}>
-                                {item.label}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        
-                        <div style={{ fontSize: '13px', lineHeight: '1.4', opacity: 0.9, marginBottom: '12px' }}>
-                          🍬 Your personal gum stash! Earn daily bonuses, complete challenges, 
-                          and manage your gum collection from your locker.
-                        </div>
-                        
                         {/* Back to top scroll indicator removed */}
                         {/*
                         <div style={{ 
@@ -1271,14 +1304,10 @@ const LockerSystemNew: React.FC = () => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: `
-                        radial-gradient(circle at 20% 20%, rgba(0, 100, 255, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(255, 100, 0, 0.2) 0%, transparent 50%),
-                        linear-gradient(135deg, #001122 0%, #003366 25%, #002244 50%, #001133 75%, #000011 100%)
-                      `,
+                      background: 'linear-gradient(180deg, #020b1d 0%, #041c3f 35%, #020b1d 100%)',
                       position: 'relative',
-                      padding: '20px',
-                      overflow: 'hidden'
+                      padding: '20px 20px 40px',
+                      overflow: 'visible'
                     }}>
                       
                       {/* Animated Background Stars */}
@@ -1299,26 +1328,16 @@ const LockerSystemNew: React.FC = () => {
                       
                       {/* Nintendo-Style Level Select Interface */}
                       <div style={{
-                        background: `
-                          linear-gradient(145deg, #1a237e 0%, #303f9f 20%, #3f51b5 40%, #5c6bc0 60%, #7986cb 80%, #9fa8da 100%),
-                          repeating-linear-gradient(90deg, 
-                            transparent 0px, transparent 2px,
-                            rgba(255, 255, 255, 0.1) 2px, rgba(255, 255, 255, 0.1) 4px
-                          )
-                        `,
-                        border: '8px solid #fff',
-                        borderRadius: '20px',
-                        padding: '30px',
-                        maxWidth: 'min(90vw, 800px)',
+                        background: 'rgba(6, 20, 56, 0.92)',
+                        border: '2px solid rgba(255, 255, 255, 0.28)',
+                        borderRadius: '26px',
+                        padding: '36px 32px',
+                        maxWidth: 'min(92vw, 760px)',
                         width: '100%',
-                        boxShadow: `
-                          0 0 0 4px #000,
-                          0 0 0 8px #fff,
-                          0 0 30px rgba(0, 0, 255, 0.5),
-                          inset 0 0 30px rgba(255, 255, 255, 0.2)
-                        `,
+                        boxShadow: '0 24px 60px rgba(3, 12, 34, 0.65)',
                         position: 'relative',
-                        imageRendering: 'pixelated'
+                        backdropFilter: 'blur(14px)',
+                        overflow: 'visible'
                       }}>
                         
                         {/* Main Content Container */}

@@ -740,7 +740,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                           headerTitle="Arcade"
                           onClose={() => closeWindow(WINDOW_IDS.ARCADE_MAIN)}
                           initialWidth="70vw"
-                          initialHeight="70vh"
+                          initialHeight="90vh"
                           resizable={true}
                         >
                           <ArcadeMain />
@@ -759,7 +759,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                           headerTitle="Arcade"
                           onClose={() => closeWindow(WINDOW_IDS.ARCADE_MAIN)}
                           initialWidth="70vw"
-                          initialHeight="70vh"
+                          initialHeight="90vh"
                           resizable={true}
                         >
                           <ArcadeMain />

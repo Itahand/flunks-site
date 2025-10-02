@@ -27,7 +27,7 @@ const ArcadeMain = () => {
     if (!entranceAudioRef.current) {
       entranceAudioRef.current = new Audio('/music/arcade.mp3');
       entranceAudioRef.current.loop = true;
-      entranceAudioRef.current.volume = 1.0; // Full volume
+      entranceAudioRef.current.volume = 0.5; // 50% volume
       
       // Add error handling and preload
       entranceAudioRef.current.preload = 'auto';
@@ -346,7 +346,7 @@ const ArcadeMain = () => {
       if (!audioRef.current) {
         audioRef.current = new Audio('/music/arcade.mp3');
         audioRef.current.loop = true;
-        audioRef.current.volume = 1.0;
+        audioRef.current.volume = 0.25; // 25% volume
       }
 
       const playMusic = async () => {
@@ -422,27 +422,30 @@ const ArcadeMain = () => {
           fontFamily: "'Press Start 2P', monospace"
         }}>
           <div style={{
-            background: 'linear-gradient(45deg, #FFD700, #FF6347)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            fontSize: 'clamp(20px, 4vw, 28px)',
-            fontWeight: 'bold',
-            marginBottom: '8px',
-            textShadow: '2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000',
-            letterSpacing: '2px'
+            color: '#E0E0E0',
+            fontSize: 'clamp(12px, 2vw, 16px)',
+            fontWeight: 'normal',
+            marginBottom: '12px',
+            letterSpacing: '4px',
+            textTransform: 'uppercase',
+            opacity: 0.9,
+            fontFamily: "'Courier New', monospace"
           }}>
-            🧙‍♂️ WELCOME TO 🧙‍♂️
+            WELCOME TO THE
           </div>
           <div style={{
-            background: 'linear-gradient(45deg, #9370DB, #FF69B4)',
+            background: 'linear-gradient(45deg, #FFD700, #FF1493, #00CED1, #FFD700)',
+            backgroundSize: '200% auto',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            fontSize: 'clamp(18px, 3.5vw, 24px)',
+            fontSize: 'clamp(28px, 5vw, 48px)',
             fontWeight: 'bold',
-            textShadow: '2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000',
-            letterSpacing: '3px'
+            textShadow: '3px 3px 0px #000, -2px -2px 0px rgba(255,215,0,0.3)',
+            letterSpacing: '3px',
+            animation: 'shimmer 3s linear infinite',
+            filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.5))'
           }}>
-            THE WIZARD'S ARCADE!
+            WIZARD'S ARCADE
           </div>
         </div>
 
@@ -480,10 +483,14 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '180px',
-              height: '70px'
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
             }}
           >
-            🎮 Front Area
+            Front Area
           </button>
 
           {/* Prize Booth */}
@@ -507,10 +514,14 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '180px',
-              height: '70px'
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
             }}
           >
-            🎁 Prize Booth
+            Prize Booth
           </button>
 
           {/* Snack Corner */}
@@ -528,10 +539,14 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '180px',
-              height: '70px'
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
             }}
           >
-            🍿 Snack Corner
+            Snack Corner
           </button>
 
           {/* Back Room */}
@@ -555,30 +570,37 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '180px',
-              height: '70px'
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
             }}
           >
-            🚪 Back Room
+            Back Room
           </button>
         </div>
 
         {/* Bottom Row - 3 buttons: Flappy Flunk, Zoltar, Flunky Uppy */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '10px',
+          display: 'flex',
+          gap: '15px',
           padding: '10px 20px',
           position: 'absolute',
-          bottom: '20px',
-          left: '20px',
-          right: '20px',
-          justifyItems: 'center',
+          bottom: '10px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          justifyContent: 'center',
           alignItems: 'center'
         }}>
           
           {/* Flappy Flunk Game */}
           <button
-            onClick={() =>
+            onClick={() => {
+              // Stop lobby music when opening game
+              if (audioRef.current) {
+                audioRef.current.pause();
+              }
               openWindow({
                 key: WINDOW_IDS.FLAPPY_FLUNK,
                 window: (
@@ -593,8 +615,8 @@ const ArcadeMain = () => {
                     <FlappyFlunkWindow />
                   </DraggableResizeableWindow>
                 ),
-              })
-            }
+              });
+            }}
             style={{
               background: 'linear-gradient(45deg, #9370DB, #8A2BE2)',
               color: 'white',
@@ -607,16 +629,24 @@ const ArcadeMain = () => {
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
               width: '180px',
-              height: '70px'
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
             }}
           >
-            🐦 FLAPPY FLUNK
+            FLAPPY FLUNK
           </button>
           
           {/* Flunky Uppy Game - Build Mode Only */}
           {isFeatureEnabled('showFlunkyUppy') && (
             <button
-              onClick={() =>
+              onClick={() => {
+                // Stop lobby music when opening game
+                if (audioRef.current) {
+                  audioRef.current.pause();
+                }
                 openWindow({
                   key: WINDOW_IDS.FLUNKY_UPPY,
                   window: (
@@ -631,8 +661,8 @@ const ArcadeMain = () => {
                       <FlunkJumpWindow />
                     </DraggableResizeableWindow>
                   ),
-                })
-              }
+                });
+              }}
               style={{
                 background: 'linear-gradient(45deg, #FF4500, #FF6347)',
                 color: 'white',
@@ -645,10 +675,14 @@ const ArcadeMain = () => {
                 transition: 'all 0.3s ease',
                 fontFamily: "'Press Start 2P', monospace",
                 width: '180px',
-                height: '70px'
+                height: '70px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center'
               }}
             >
-              🦘 FLUNKY UPPY
+              FLUNKY UPPY
             </button>
           )}
 
@@ -656,6 +690,10 @@ const ArcadeMain = () => {
           {isFeatureEnabled('showZoltarFortune') && (
             <button
               onClick={() => {
+                // Stop lobby music when opening game
+                if (audioRef.current) {
+                  audioRef.current.pause();
+                }
                 openWindow({
                   key: WINDOW_IDS.ZOLTAR_FORTUNE_APP,
                   window: (
@@ -676,10 +714,14 @@ const ArcadeMain = () => {
                 fontFamily: "'Press Start 2P', monospace",
                 boxShadow: '0 0 15px rgba(255,215,0,0.5)',
                 width: '180px',
-                height: '70px'
+                height: '70px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center'
               }}
             >
-              🔮 ZOLTAR
+              ZOLTAR
             </button>
           )}
         </div>
@@ -734,18 +776,10 @@ const ArcadeMain = () => {
         <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm z-20">
           {timeBasedInfo.currentTime}
         </div>
-
-        {/* Music Control Button */}
-        <button
-          onClick={() => setIsEntranceMuted(!isEntranceMuted)}
-          className="absolute top-4 left-4 bg-black bg-opacity-70 text-white border-none rounded-full w-10 h-10 cursor-pointer z-20 text-lg hover:bg-opacity-90 transition-all duration-300"
-        >
-          {isEntranceMuted ? "🔇" : "🎵"}
-        </button>
       </div>
 
-      {/* Single Enter Button */}
-      <div className="bg-gray-800 p-3 flex-shrink-0" style={{ width: 'fit-content' }}>
+      {/* Single Enter Button - Positioned below image */}
+      <div className="bg-gray-800 p-3 flex-shrink-0" style={{ width: '100%', maxWidth: '1050px' }}>
         <div className="flex justify-center">
           <button
             onClick={async () => {
