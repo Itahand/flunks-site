@@ -30,9 +30,9 @@ const ZoltarFortuneApp: React.FC = () => {
   // Play background music when component mounts
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      audioRef.current = new Audio('/sounds/zoltar-theme.mp3');
+      audioRef.current = new Audio('/sounds/zoltar.mp3');
       audioRef.current.loop = true;
-      audioRef.current.volume = 0.3;
+      audioRef.current.volume = 0.5;
       audioRef.current.play().catch(err => {
         console.log('Audio autoplay prevented:', err);
       });

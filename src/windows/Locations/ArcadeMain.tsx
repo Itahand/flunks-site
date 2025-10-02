@@ -346,7 +346,7 @@ const ArcadeMain = () => {
       if (!audioRef.current) {
         audioRef.current = new Audio('/music/arcade.mp3');
         audioRef.current.loop = true;
-        audioRef.current.volume = 0.25; // 25% volume
+        audioRef.current.volume = 0.3; // 30% volume
       }
 
       const playMusic = async () => {

@@ -141,6 +141,13 @@ export const GumProvider: React.FC<GumProviderProps> = ({
       console.log('🍬 GumProvider: Award result:', result);
       
       if (result.success && result.earned > 0) {
+        // Play bubble sound when GUM is earned
+        if (typeof Audio !== 'undefined') {
+          const bubbleSound = new Audio('/sounds/bubble.mp3');
+          bubbleSound.volume = 0.5; // Set to 50% volume
+          bubbleSound.play().catch(e => console.log('Could not play bubble sound:', e));
+        }
+        
         // Update local balance immediately for responsive UI
         setBalance(prev => prev + result.earned);
         
