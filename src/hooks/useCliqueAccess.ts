@@ -91,21 +91,22 @@ export const useCliqueAccess = (): UseCliqueAccessReturn => {
                     access.GEEK = true;
                     break;
                   case 'JOCK':
-                  case 'JOCKS':
-                  case 'ATHLETE':
-                  case 'ATHLETES':
-                    access.JOCK = true;
-                    break;
-                  case 'PREPS':
-                  case 'PREPPY':
-                    access.PREP = true;
-                    break;
-                  case 'FREAK':
-                  case 'FREAKS':
-                  case 'OUTCAST':
-                  case 'OUTCASTS':
-                    access.FREAK = true;
-                    break;
+                case 'JOCKS':
+                case 'ATHLETE':
+                case 'ATHLETES':
+                  access.JOCK = true;
+                  break;
+                case 'PREP':
+                case 'PREPS':
+                case 'PREPPY':
+                  access.PREP = true;
+                  break;
+                case 'FREAK':
+                case 'FREAKS':
+                case 'OUTCAST':
+                case 'OUTCASTS':
+                  access.FREAK = true;
+                  break;
                   case 'FLUNKO':
                     access.FLUNKO = true;
                     break;

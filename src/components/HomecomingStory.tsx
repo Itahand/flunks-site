@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const StoryContainer = styled.div`
@@ -217,6 +217,34 @@ interface HomecomingStoryProps {
 const HomecomingStory: React.FC<HomecomingStoryProps> = ({ onClose }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize and play homecoming music
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      audioRef.current = new Audio('/sounds/homecoming.mp3');
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().catch(err => {
+        console.log('Audio autoplay prevented:', err);
+      });
+    }
+
+    // Cleanup: stop music when component unmounts
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  // Handle mute toggle
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
 
   const storySlides = [
     "By Saturday morning, the gym was ready for a night to remember. Streamers hung from the rafters, disco balls cast dancing lights across the polished floor, and everything was perfect for homecoming.",
@@ -240,7 +268,6 @@ const HomecomingStory: React.FC<HomecomingStoryProps> = ({ onClose }) => {
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
-    // Add audio logic here if needed
   };
 
   return (
