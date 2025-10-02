@@ -415,18 +415,24 @@ const ArcadeMain = () => {
           {isMuted ? "🔇" : "🎵"}
         </button>
 
-        {/* Wizard's Arcade Title */}
+        {/* Wizard's Arcade Title - Positioned at top */}
         <div style={{
           textAlign: 'center',
-          padding: '20px',
-          fontFamily: "'Press Start 2P', monospace"
+          padding: 'clamp(10px, 3vw, 20px)',
+          fontFamily: "'Press Start 2P', monospace",
+          position: 'absolute',
+          top: '10px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '90%',
+          maxWidth: '900px'
         }}>
           <div style={{
             color: '#E0E0E0',
-            fontSize: 'clamp(12px, 2vw, 16px)',
+            fontSize: 'clamp(8px, 2.5vw, 16px)',
             fontWeight: 'normal',
-            marginBottom: '12px',
-            letterSpacing: '4px',
+            marginBottom: 'clamp(6px, 2vw, 12px)',
+            letterSpacing: 'clamp(1px, 0.5vw, 4px)',
             textTransform: 'uppercase',
             opacity: 0.9,
             fontFamily: "'Courier New', monospace"
@@ -438,29 +444,33 @@ const ArcadeMain = () => {
             backgroundSize: '200% auto',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            fontSize: 'clamp(28px, 5vw, 48px)',
+            fontSize: 'clamp(20px, 5vw, 48px)',
             fontWeight: 'bold',
             textShadow: '3px 3px 0px #000, -2px -2px 0px rgba(255,215,0,0.3)',
-            letterSpacing: '3px',
+            letterSpacing: 'clamp(1px, 0.3vw, 3px)',
             animation: 'shimmer 3s linear infinite',
-            filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.5))'
+            filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.5))',
+            wordBreak: 'break-word',
+            hyphens: 'auto'
           }}>
             WIZARD'S ARCADE
           </div>
         </div>
 
-        {/* Top Row - 4 buttons */}
+        {/* All Buttons - Stacked vertically on black background at bottom */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '10px',
-          padding: '10px 20px',
           position: 'absolute',
-          bottom: '120px',
-          left: '20px',
-          right: '20px',
-          justifyItems: 'center',
-          alignItems: 'center'
+          bottom: '0',
+          left: '0',
+          right: '0',
+          backgroundColor: '#000000',
+          padding: 'clamp(10px, 3vw, 20px)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'clamp(8px, 2vw, 12px)',
+          alignItems: 'center',
+          borderTop: '3px solid #FFD700',
+          boxShadow: '0 -5px 20px rgba(0,0,0,0.8)'
         }}>
           {/* Front Area */}
           <button
@@ -476,14 +486,15 @@ const ArcadeMain = () => {
               color: 'white',
               border: '2px solid white',
               borderRadius: '8px',
-              padding: '15px',
-              fontSize: '14px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
-              width: '180px',
-              height: '70px',
+              width: '100%',
+              maxWidth: 'min(400px, 90vw)',
+              minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -507,14 +518,15 @@ const ArcadeMain = () => {
               color: 'white',
               border: '2px solid white',
               borderRadius: '8px',
-              padding: '15px',
-              fontSize: '14px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
-              width: '180px',
-              height: '70px',
+              width: '100%',
+              maxWidth: 'min(400px, 90vw)',
+              minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -532,14 +544,15 @@ const ArcadeMain = () => {
               color: 'white',
               border: '2px solid white',
               borderRadius: '8px',
-              padding: '15px',
-              fontSize: '14px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
-              width: '180px',
-              height: '70px',
+              width: '100%',
+              maxWidth: 'min(400px, 90vw)',
+              minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -563,14 +576,15 @@ const ArcadeMain = () => {
               color: 'white',
               border: '2px solid white',
               borderRadius: '8px',
-              padding: '15px',
-              fontSize: '14px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
-              width: '180px',
-              height: '70px',
+              width: '100%',
+              maxWidth: 'min(400px, 90vw)',
+              minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -579,21 +593,7 @@ const ArcadeMain = () => {
           >
             Back Room
           </button>
-        </div>
 
-        {/* Bottom Row - 3 buttons: Flappy Flunk, Zoltar, Flunky Uppy */}
-        <div style={{
-          display: 'flex',
-          gap: '15px',
-          padding: '10px 20px',
-          position: 'absolute',
-          bottom: '10px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-          
           {/* Flappy Flunk Game */}
           <button
             onClick={() => {
@@ -622,14 +622,15 @@ const ArcadeMain = () => {
               color: 'white',
               border: '2px solid white',
               borderRadius: '8px',
-              padding: '15px',
-              fontSize: '14px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               fontFamily: "'Press Start 2P', monospace",
-              width: '180px',
-              height: '70px',
+              width: '100%',
+              maxWidth: 'min(400px, 90vw)',
+              minHeight: '50px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -668,14 +669,15 @@ const ArcadeMain = () => {
                 color: 'white',
                 border: '2px solid white',
                 borderRadius: '8px',
-                padding: '15px',
-                fontSize: '14px',
+                padding: 'clamp(10px, 2.5vw, 15px)',
+                fontSize: 'clamp(10px, 2.5vw, 14px)',
                 fontWeight: 'bold',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 fontFamily: "'Press Start 2P', monospace",
-                width: '180px',
-                height: '70px',
+                width: '100%',
+                maxWidth: 'min(400px, 90vw)',
+                minHeight: '50px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -706,15 +708,16 @@ const ArcadeMain = () => {
                 color: '#FFD700',
                 border: '2px solid #FFD700',
                 borderRadius: '8px',
-                padding: '15px',
-                fontSize: '14px',
+                padding: 'clamp(10px, 2.5vw, 15px)',
+                fontSize: 'clamp(10px, 2.5vw, 14px)',
                 fontWeight: 'bold',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 fontFamily: "'Press Start 2P', monospace",
                 boxShadow: '0 0 15px rgba(255,215,0,0.5)',
-                width: '180px',
-                height: '70px',
+                width: '100%',
+                maxWidth: 'min(400px, 90vw)',
+                minHeight: '50px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

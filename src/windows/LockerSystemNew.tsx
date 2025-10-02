@@ -414,15 +414,23 @@ const LockerSystemNew: React.FC = () => {
         height: '100%',
         position: 'relative',
         background: `
-          linear-gradient(90deg, 
-            #1a1a2e 0%, #16213e 10%, #0f3460 20%, #16213e 30%, #1a1a2e 40%,
-            #1a1a2e 60%, #16213e 70%, #0f3460 80%, #16213e 90%, #1a1a2e 100%
-          ),
-          repeating-linear-gradient(0deg,
-            transparent 0px, transparent 8px,
-            rgba(0, 255, 255, 0.1) 8px, rgba(0, 255, 255, 0.1) 10px
-          )
+          #0a0a0a,
+          radial-gradient(circle at 15% 20%, #FF6B6B 3px, transparent 3px),
+          radial-gradient(circle at 85% 40%, #4ECDC4 2px, transparent 2px),
+          radial-gradient(circle at 35% 60%, #FFD700 2.5px, transparent 2.5px),
+          radial-gradient(circle at 75% 15%, #FF1493 2px, transparent 2px),
+          radial-gradient(circle at 25% 85%, #00CED1 3px, transparent 3px),
+          radial-gradient(circle at 90% 75%, #FFEAA7 2px, transparent 2px),
+          radial-gradient(circle at 50% 30%, #98D8E8 2.5px, transparent 2.5px),
+          radial-gradient(circle at 65% 90%, #96CEB4 2px, transparent 2px),
+          linear-gradient(45deg, transparent 48%, rgba(255, 107, 107, 0.15) 49%, rgba(255, 107, 107, 0.15) 51%, transparent 52%),
+          linear-gradient(-45deg, transparent 48%, rgba(78, 205, 196, 0.15) 49%, rgba(78, 205, 196, 0.15) 51%, transparent 52%),
+          repeating-linear-gradient(90deg, transparent 0px, transparent 80px, rgba(255, 215, 0, 0.1) 80px, rgba(255, 215, 0, 0.1) 82px),
+          repeating-linear-gradient(0deg, transparent 0px, transparent 80px, rgba(255, 20, 147, 0.1) 80px, rgba(255, 20, 147, 0.1) 82px)
         `,
+        backgroundSize: '100% 100%, 120px 120px, 140px 140px, 100px 100px, 160px 160px, 130px 130px, 110px 110px, 150px 150px, 90px 90px, 200px 200px, 200px 200px, 100% 100%, 100% 100%',
+        backgroundPosition: '0 0, 0 0, 60px 60px, 30px 30px, 80px 80px, 40px 40px, 70px 70px, 20px 20px, 50px 50px, 0 0, 0 0, 0 0, 0 0',
+        backgroundColor: '#0a0a0a',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -496,17 +504,54 @@ const LockerSystemNew: React.FC = () => {
                 textAlign: 'center',
                 maxWidth: '400px'
               }}>
+                {/* Retro NES styled warning box */}
                 <div style={{
-                  background: 'rgba(255, 193, 7, 0.9)',
-                  color: '#000',
+                  background: 'linear-gradient(45deg, #1e1e1e, #2d2d30, #1e1e1e)',
+                  border: '3px solid #FFD700',
                   padding: '20px',
-                  borderRadius: '12px',
-                  marginBottom: '20px'
+                  borderRadius: '4px',
+                  marginBottom: '20px',
+                  position: 'relative',
+                  boxShadow: '0 0 20px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 6px 0 #8B7500'
                 }}>
-                  <div style={{ fontSize: '24px', marginBottom: '10px' }}>🔐</div>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold' }}>Connect Your Wallet</div>
-                  <div style={{ fontSize: '14px', marginTop: '8px' }}>
-                    Connect your wallet to access the new automatic locker system
+                  {/* Retro scanlines */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'repeating-linear-gradient(0deg, rgba(255, 215, 0, 0.05) 0px, rgba(255, 215, 0, 0.05) 1px, transparent 1px, transparent 2px)',
+                    pointerEvents: 'none',
+                    borderRadius: '4px'
+                  }} />
+                  
+                  <div style={{ 
+                    fontSize: '32px', 
+                    marginBottom: '12px',
+                    filter: 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))'
+                  }}>🔐</div>
+                  <div style={{ 
+                    fontSize: '14px', 
+                    fontWeight: 'bold',
+                    color: '#FFD700',
+                    textShadow: '0 0 10px rgba(255, 215, 0, 0.7), 2px 2px 0px #000',
+                    fontFamily: "'Press Start 2P', monospace",
+                    marginBottom: '10px',
+                    letterSpacing: '1px',
+                    lineHeight: '1.6'
+                  }}>
+                    CONNECT YOUR WALLET
+                  </div>
+                  <div style={{ 
+                    fontSize: '10px', 
+                    marginTop: '8px',
+                    color: '#00ffff',
+                    textShadow: '0 0 5px rgba(0, 255, 255, 0.5)',
+                    fontFamily: "'Press Start 2P', monospace",
+                    lineHeight: '1.6'
+                  }}>
+                    ACCESS THE NEW AUTOMATIC LOCKER SYSTEM
                   </div>
                 </div>
 
@@ -522,17 +567,34 @@ const LockerSystemNew: React.FC = () => {
                 
                 <DynamicConnectButton>
                   <button style={{
-                    background: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    fontSize: '16px',
+                    background: 'linear-gradient(180deg, #00ffff 0%, #0088ff 100%)',
+                    color: '#000',
+                    border: '3px solid #fff',
+                    padding: '14px 28px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
                     fontWeight: 'bold',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(0,123,255,0.3)'
-                  }}>
-                    🔗 Connect Wallet
+                    fontFamily: "'Press Start 2P', monospace",
+                    boxShadow: '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)',
+                    textShadow: '1px 1px 0px rgba(255, 255, 255, 0.5)',
+                    transition: 'all 0.1s',
+                    letterSpacing: '1px'
+                  }}
+                  onMouseDown={(e) => {
+                    e.currentTarget.style.transform = 'translateY(3px)';
+                    e.currentTarget.style.boxShadow = '0 3px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
+                  }}
+                  >
+                    🔗 CONNECT WALLET
                   </button>
                 </DynamicConnectButton>
               </div>
@@ -1009,7 +1071,7 @@ const LockerSystemNew: React.FC = () => {
                       justifyContent: 'center',
                       background: 'linear-gradient(180deg, #020b1d 0%, #041c3f 35%, #020b1d 100%)',
                       position: 'relative',
-                      padding: '60px 20px 40px'
+                      padding: '60px 20px 20px'
                     }}>
                       {/* Animated Background Stars */}
                       <div style={{
@@ -1270,30 +1332,6 @@ const LockerSystemNew: React.FC = () => {
                           </button>
                           </div>
                         </div>
-
-                        {/* Back to top scroll indicator removed */}
-                        {/*
-                        <div style={{ 
-                          fontSize: '11px', 
-                          marginTop: '10px', 
-                          opacity: 0.7,
-                          cursor: 'pointer',
-                          padding: '6px',
-                          background: 'rgba(255,255,255,0.05)',
-                          borderRadius: '4px',
-                          transition: 'background 0.3s ease'
-                        }}
-                        onClick={() => scrollToSection(1)}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                        }}
-                        >
-                          ⬆️ Back to top
-                        </div>
-                        */}
                       </div>
                     </div>
 
