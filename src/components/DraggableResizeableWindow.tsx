@@ -300,6 +300,8 @@ const DraggableResizeableWindow: React.FC<Props> = (props) => {
             flexGrow: 1,
             height: "100%",
             minHeight: 0,
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch',
             background: props.windowsId === 'HIGH_SCHOOL_OFFICE_SUCCESS' ? '#2a2a2a' : undefined,
             padding: props.windowsId === 'HIGH_SCHOOL_OFFICE_SUCCESS' ? '0' : undefined,
           }}
