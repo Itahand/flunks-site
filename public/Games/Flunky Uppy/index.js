@@ -657,12 +657,12 @@ function fall() {
     const gameOverDiv = document.createElement('div');
     gameOverDiv.style.cssText = `
       position: absolute;
-      top: 50%;
+      top: 35%;
       left: 50%;
       transform: translate(-50%, -50%);
       background: rgba(0, 0, 0, 0.95);
       color: white;
-      padding: 25px 30px;
+      padding: 20px 25px;
       border-radius: 12px;
       text-align: center;
       font-family: 'Press Start 2P', 'Courier New', monospace;
@@ -694,23 +694,23 @@ function fall() {
     restartPlatform.classList.add('platform');
     restartPlatform.style.cssText = `
       position: absolute;
-      bottom: 20px;
+      bottom: 120px;
       left: 50%;
-      transform: translateX(30px);
-      width: 140px;
-      height: 24px;
+      transform: translateX(-50%);
+      width: 160px;
+      height: 28px;
       background: linear-gradient(135deg, #ffd700, #ffed4e);
       border: 4px solid #ff6b35;
       border-radius: 4px;
       cursor: pointer;
       box-shadow: 0 4px 0px #cc5528, 0 8px 20px rgba(255, 215, 0, 0.6);
-      z-index: 999;
+      z-index: 1001;
       animation: restartPlatformPulse 1.5s infinite alternate;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Press Start 2P', 'Courier New', monospace;
-      font-size: 8px;
+      font-size: 9px;
       font-weight: bold;
       color: #8B0000;
       text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
@@ -726,22 +726,22 @@ function fall() {
         @keyframes restartPlatformPulse {
           0% {
             box-shadow: 0 4px 0px #cc5528, 0 8px 20px rgba(255, 215, 0, 0.6);
-            transform: translateX(30px) scale(1);
+            transform: translateX(-50%) scale(1);
           }
           100% {
             box-shadow: 0 4px 0px #cc5528, 0 10px 25px rgba(255, 215, 0, 0.9);
-            transform: translateX(30px) scale(1.05);
+            transform: translateX(-50%) scale(1.05);
           }
         }
         
         #restartPlatform:hover {
           background: linear-gradient(135deg, #ffed4e, #ffd700);
-          transform: translateX(30px) scale(1.1) !important;
+          transform: translateX(-50%) scale(1.1) !important;
           box-shadow: 0 4px 0px #cc5528, 0 12px 30px rgba(255, 215, 0, 1);
         }
         
         #restartPlatform:active {
-          transform: translateX(30px) translateY(2px) scale(1.08) !important;
+          transform: translateX(-50%) translateY(2px) scale(1.08) !important;
           box-shadow: 0 2px 0px #cc5528, 0 6px 15px rgba(255, 215, 0, 0.8);
         }
       `;
@@ -760,22 +760,22 @@ function fall() {
     leaderboardButton.id = 'leaderboardButton';
     leaderboardButton.style.cssText = `
       position: absolute;
-      bottom: 20px;
+      bottom: 70px;
       left: 50%;
-      transform: translateX(-130px);
-      width: 110px;
-      height: 24px;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
       background: linear-gradient(135deg, #4CAF50, #45a049);
       border: 4px solid #2E7D32;
       border-radius: 4px;
       cursor: pointer;
       box-shadow: 0 4px 0px #1B5E20, 0 8px 20px rgba(76, 175, 80, 0.6);
-      z-index: 999;
+      z-index: 1001;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Press Start 2P', 'Courier New', monospace;
-      font-size: 8px;
+      font-size: 9px;
       font-weight: bold;
       color: white;
       text-shadow: 1px 1px 0px rgba(0,0,0,0.5);
@@ -787,13 +787,13 @@ function fall() {
     // Add hover effect
     leaderboardButton.addEventListener('mouseenter', () => {
       leaderboardButton.style.background = 'linear-gradient(135deg, #45a049, #4CAF50)';
-      leaderboardButton.style.transform = 'translateX(-130px) scale(1.1)';
+      leaderboardButton.style.transform = 'translateX(-50%) scale(1.1)';
       leaderboardButton.style.boxShadow = '0 4px 0px #1B5E20, 0 10px 25px rgba(76, 175, 80, 1)';
     });
     
     leaderboardButton.addEventListener('mouseleave', () => {
       leaderboardButton.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
-      leaderboardButton.style.transform = 'translateX(-130px) scale(1)';
+      leaderboardButton.style.transform = 'translateX(-50%) scale(1)';
       leaderboardButton.style.boxShadow = '0 4px 0px #1B5E20, 0 8px 20px rgba(76, 175, 80, 0.6)';
     });
     
