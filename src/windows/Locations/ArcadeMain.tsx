@@ -648,56 +648,53 @@ const ArcadeMain = () => {
             FLAPPY FLUNK
           </button>
           
-          {/* Flunky Uppy Game - Build Mode Only */}
-          {isFeatureEnabled('showFlunkyUppy') && (
-            <button
-              onClick={() => {
-                // Stop lobby music when opening game
-                if (audioRef.current) {
-                  audioRef.current.pause();
-                }
-                openWindow({
-                  key: WINDOW_IDS.FLUNKY_UPPY,
-                  window: (
-                    <DraggableResizeableWindow
-                      windowsId={WINDOW_IDS.FLUNKY_UPPY}
-                      onClose={() => closeWindow(WINDOW_IDS.FLUNKY_UPPY)}
-                      headerTitle="Flunky Uppy"
-                      initialWidth="420px"
-                      initialHeight="720px"
-                      headerIcon="/images/icons/flunky-uppy-icon.png?v=2"
-                    >
-                      <FlunkJumpWindow />
-                    </DraggableResizeableWindow>
-                  ),
-                });
-              }}
-              style={{
-                background: 'linear-gradient(45deg, #FF4500, #FF6347)',
-                color: 'white',
-                border: '2px solid white',
-                borderRadius: '8px',
-                padding: 'clamp(10px, 2.5vw, 15px)',
-                fontSize: 'clamp(10px, 2.5vw, 14px)',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                fontFamily: "'Press Start 2P', monospace",
-                width: '100%',
-                minHeight: '50px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center'
-              }}
-            >
-              FLUNKY UPPY
-            </button>
-          )}
+          {/* Flunky Uppy Game */}
+          <button
+            onClick={() => {
+              // Stop lobby music when opening game
+              if (audioRef.current) {
+                audioRef.current.pause();
+              }
+              openWindow({
+                key: WINDOW_IDS.FLUNKY_UPPY,
+                window: (
+                  <DraggableResizeableWindow
+                    windowsId={WINDOW_IDS.FLUNKY_UPPY}
+                    onClose={() => closeWindow(WINDOW_IDS.FLUNKY_UPPY)}
+                    headerTitle="Flunky Uppy"
+                    initialWidth="420px"
+                    initialHeight="720px"
+                    headerIcon="/images/icons/flunky-uppy-icon.png?v=2"
+                  >
+                    <FlunkJumpWindow />
+                  </DraggableResizeableWindow>
+                ),
+              });
+            }}
+            style={{
+              background: 'linear-gradient(45deg, #FF4500, #FF6347)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              fontFamily: "'Press Start 2P', monospace",
+              width: '100%',
+              minHeight: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}
+          >
+            FLUNKY UPPY
+          </button>
 
-          {/* Mystical Zoltar Fortune Machine - Build Mode Only */}
-          {isFeatureEnabled('showZoltarFortune') && (
-            <button
+          {/* Mystical Zoltar Fortune Machine */}
+          <button
               onClick={() => {
                 // Stop lobby music when opening game
                 if (audioRef.current) {
@@ -732,7 +729,6 @@ const ArcadeMain = () => {
             >
               ZOLTAR
             </button>
-          )}
           </div>
         </div>
       </div>
