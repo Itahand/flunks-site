@@ -139,15 +139,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   class Platform {
     constructor(newPlatBottom, platformNumber = 0) {
-      // Calculate max left position based on actual grid width minus platform width (85px)
-      const platformWidth = 85
-      const maxLeft = gridWidth - platformWidth
-      this.left = Math.random() * maxLeft
       this.bottom = newPlatBottom
       this.visual = document.createElement('div')
       
-      // Determine platform type based on platform number
-      if (platformNumber > 0 && platformNumber % 20 === 0) {
+      // Determine platform type and width based on score and platform number
+      if (score >= 1000) {
+        // LEGENDARY MODE - Tiny platforms!
+        this.type = 'legendary'
+        this.jumpHeight = 200
+        this.width = 35  // Much smaller - less than half normal size!
+      } else if (platformNumber > 0 && platformNumber % 20 === 0) {
         // Special platform every 20 platforms
         this.type = 'special'
         this.jumpHeight = 300  // Higher jump
@@ -174,6 +175,10 @@ document.addEventListener('DOMContentLoaded', () => {
           this.width = 85
         }
       }
+      
+      // Calculate max left position based on actual platform width
+      const maxLeft = gridWidth - this.width
+      this.left = Math.random() * maxLeft
 
       const visual = this.visual
       visual.classList.add('platform')
@@ -182,7 +187,11 @@ document.addEventListener('DOMContentLoaded', () => {
       visual.style.width = this.width + 'px'
       
       // Set platform colors based on type
-      if (this.type === 'special') {
+      if (this.type === 'legendary') {
+        visual.style.backgroundColor = '#9C27B0'  // Purple for legendary tiny platforms
+        visual.style.border = '2px solid #7B1FA2'
+        visual.style.boxShadow = '0 0 15px rgba(156, 39, 176, 0.8)'
+      } else if (this.type === 'special') {
         visual.style.backgroundColor = '#ff6b35'  // Orange special platform
         visual.style.border = '2px solid #ff4500'
         visual.style.boxShadow = '0 0 10px rgba(255, 107, 53, 0.5)'
@@ -210,10 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return 3;  // Reduce to 3 platforms after 125 points
     } else if (score < 225) {
       return 2;  // Reduce to 2 platforms after 175 points
-    } else if (score < 1000) {
-      return 1;  // Only 1 platform from 225-999 points - extreme difficulty
     } else {
-      return 0;  // NO platforms after 1000 points - INSANE MODE (must use existing platforms perfectly)
+      return 1;  // Only 1 platform after 225 points - platforms become TINY at 1000+
     }
   }
 
@@ -313,14 +320,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Dynamic platform spacing based on current difficulty
             let currentPlatformCount = getPlatformCount();
-            
-            // Only create new platforms if platformCount > 0 (after 1000 score, no new platforms)
-            if (currentPlatformCount > 0) {
-              let dynamicSpacing = 600 / currentPlatformCount;
-              platformCounter++  // Increment platform counter
-              var newPlatform = new Platform(600 + dynamicSpacing, platformCounter)
-              platforms.push(newPlatform)
-            }
+            let dynamicSpacing = 600 / currentPlatformCount;
+            platformCounter++  // Increment platform counter
+            var newPlatform = new Platform(600 + dynamicSpacing, platformCounter)
+            platforms.push(newPlatform)
           }
       }) 
     }
