@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   const grid = document.querySelector('.grid')
+  
+  // Get actual grid dimensions (will be 400px on desktop, potentially less on mobile)
+  let gridWidth = grid.offsetWidth
+  let gridHeight = grid.offsetHeight
+  const doodlerWidth = 75
+  
   let doodler = null  // Initialize as null, will be created in createDoodler()
   let isGameOver = false
   let speed = 3
@@ -8,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let platforms = []
   let score = 0
   let platformCounter = 0  // Track total platforms created
-  let doodlerLeftSpace = 156  // Center the doodler (400px grid width / 2 - 87px doodler width / 2)
+  let doodlerLeftSpace = (gridWidth / 2) - (doodlerWidth / 2)  // Center the doodler dynamically
   let startPoint = 300  // Start higher for better building placement
   let doodlerBottomSpace = startPoint
   const gravity = 0.9
@@ -133,7 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   class Platform {
     constructor(newPlatBottom, platformNumber = 0) {
-      this.left = Math.random() * 315
+      // Calculate max left position based on actual grid width minus platform width (85px)
+      const platformWidth = 85
+      const maxLeft = gridWidth - platformWidth
+      this.left = Math.random() * maxLeft
       this.bottom = newPlatBottom
       this.visual = document.createElement('div')
       
@@ -506,13 +515,14 @@ function fall() {
     isGoingRight = true
     lastDirection = 'right'  // Update direction for sprite selection
     rightTimerId = setInterval(function () {
-      // Grid is 400px wide, doodler is 75px, so max position is 325px (400 - 75)
-      if (doodlerLeftSpace < 325) {
+      // Calculate max position based on actual grid width
+      const maxPosition = gridWidth - doodlerWidth
+      if (doodlerLeftSpace < maxPosition) {
         doodlerLeftSpace += 5
         doodler.style.left = doodlerLeftSpace + 'px'
       } else {
         // Stop at boundary
-        doodlerLeftSpace = 325
+        doodlerLeftSpace = maxPosition
         doodler.style.left = doodlerLeftSpace + 'px'
       }
     },20)
