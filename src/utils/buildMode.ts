@@ -65,7 +65,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showMemeManager: false,
     showMyPlace: true,
     showFlappyFlunk: true,
-    showFlunkyUppy: false,
+    showFlunkyUppy: true,
     showGameManual: true,
     showTerminal: true,
     showCliqueAccess: true,
@@ -82,7 +82,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showCutscenes: false,
     showStoryManual: true,
     showVCREffectsTest: false,
-    showZoltarFortune: false,
+    showZoltarFortune: true,
     
     // Special Announcements - visible on public site
     flappyFlunkWeekend: true,

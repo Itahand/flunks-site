@@ -20,6 +20,7 @@ import { WINDOW_IDS } from "fixed";
 import { useWindowsContext } from "contexts/WindowsContext";
 import AccessGate from "components/AccessGate";
 import FlappyFlunkWindow from "windows/Games/FlappyFlunkWindow";
+import FlunkyUppyArcadeWindow from "windows/Games/FlunkyUppyArcadeWindow";
 import RadioPlayer from "components/RadioPlayer";
 import FHSSchool from "windows/FHSSchool";
 import MyPlace from "windows/MyPlace";
@@ -389,6 +390,29 @@ const windowsMemod = useMemo(() => (
                 headerIcon="/images/icons/story-mode.png"
               >
                 <StoryManual onClose={() => closeWindow(WINDOW_IDS.STORY_MANUAL)} />
+              </DraggableResizeableWindow>
+            ),
+          })}
+        />
+
+        {/* 6.7. Flunky Uppy */}
+        <ConditionalAppIcon
+          appId="flunky-uppy"
+          title="Flunky Uppy"
+          icon="/images/icons/flunky-uppy-icon.png"
+          onDoubleClick={() => openWindow({
+            key: WINDOW_IDS.FLUNKY_UPPY,
+            window: (
+              <DraggableResizeableWindow
+                windowsId={WINDOW_IDS.FLUNKY_UPPY}
+                onClose={() => closeWindow(WINDOW_IDS.FLUNKY_UPPY)}
+                initialWidth="90vw"
+                initialHeight="90vh"
+                resizable={true}
+                headerTitle="Flunky Uppy"
+                headerIcon="/images/icons/flunky-uppy-icon.png"
+              >
+                <FlunkyUppyArcadeWindow />
               </DraggableResizeableWindow>
             ),
           })}
