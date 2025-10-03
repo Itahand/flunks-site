@@ -41,6 +41,7 @@ scrn.onkeydown = function keyDown(e) {
         pipe.pipes = [];
         UI.score.curr = 0;
         SFX.played = false;
+        window.scoreSent = false;
         break;
     }
   }
