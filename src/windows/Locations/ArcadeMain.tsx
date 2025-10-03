@@ -429,10 +429,10 @@ const ArcadeMain = () => {
         }}>
           <div style={{
             color: '#E0E0E0',
-            fontSize: 'clamp(8px, 2.5vw, 16px)',
+            fontSize: 'clamp(6px, 2vw, 16px)',
             fontWeight: 'normal',
-            marginBottom: 'clamp(6px, 2vw, 12px)',
-            letterSpacing: 'clamp(1px, 0.5vw, 4px)',
+            marginBottom: 'clamp(4px, 1.5vw, 12px)',
+            letterSpacing: 'clamp(0.5px, 0.3vw, 4px)',
             textTransform: 'uppercase',
             opacity: 0.9,
             fontFamily: "'Courier New', monospace"
@@ -444,14 +444,15 @@ const ArcadeMain = () => {
             backgroundSize: '200% auto',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            fontSize: 'clamp(20px, 5vw, 48px)',
+            fontSize: 'clamp(14px, 4vw, 48px)',
             fontWeight: 'bold',
             textShadow: '3px 3px 0px #000, -2px -2px 0px rgba(255,215,0,0.3)',
-            letterSpacing: 'clamp(1px, 0.3vw, 3px)',
+            letterSpacing: 'clamp(0.5px, 0.2vw, 3px)',
             animation: 'shimmer 3s linear infinite',
             filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.5))',
             wordBreak: 'break-word',
-            hyphens: 'auto'
+            hyphens: 'auto',
+            lineHeight: '1.2'
           }}>
             WIZARD'S ARCADE
           </div>
@@ -465,6 +466,7 @@ const ArcadeMain = () => {
           right: '0',
           backgroundColor: '#000000',
           padding: 'clamp(10px, 3vw, 20px)',
+          paddingTop: 'clamp(80px, 15vw, 100px)',
           borderTop: '3px solid #FFD700',
           boxShadow: '0 -5px 20px rgba(0,0,0,0.8)'
         }}>

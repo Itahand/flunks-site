@@ -657,7 +657,7 @@ function fall() {
     const gameOverDiv = document.createElement('div');
     gameOverDiv.style.cssText = `
       position: absolute;
-      top: 45%;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       background: rgba(0, 0, 0, 0.95);
