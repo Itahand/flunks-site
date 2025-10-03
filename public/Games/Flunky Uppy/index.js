@@ -482,11 +482,11 @@ function fall() {
     isGoingLeft = true
     lastDirection = 'left'  // Update direction for sprite selection
     leftTimerId = setInterval(function () {
-        if (doodlerLeftSpace >= 0) {
+        if (doodlerLeftSpace > 0) {
           doodlerLeftSpace -= 5
           doodler.style.left = doodlerLeftSpace + 'px'
         } else {
-          // Stop at boundary instead of reversing
+          // Stop at boundary
           doodlerLeftSpace = 0
           doodler.style.left = doodlerLeftSpace + 'px'
         }
@@ -506,13 +506,13 @@ function fall() {
     isGoingRight = true
     lastDirection = 'right'  // Update direction for sprite selection
     rightTimerId = setInterval(function () {
-      //changed to 313 to fit doodle image
-      if (doodlerLeftSpace <= 313) {
+      // Grid is 400px wide, doodler is 75px, so max position is 325px (400 - 75)
+      if (doodlerLeftSpace < 325) {
         doodlerLeftSpace += 5
         doodler.style.left = doodlerLeftSpace + 'px'
       } else {
-        // Stop at boundary instead of reversing
-        doodlerLeftSpace = 313
+        // Stop at boundary
+        doodlerLeftSpace = 325
         doodler.style.left = doodlerLeftSpace + 'px'
       }
     },20)
@@ -748,8 +748,12 @@ function fall() {
       document.head.appendChild(style);
     }
     
-    // Add click event listener for restart
+    // Add click AND touch event listeners for restart (mobile support)
     restartPlatform.addEventListener('click', restartGame);
+    restartPlatform.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      restartGame();
+    });
     
     grid.appendChild(restartPlatform);
     return restartPlatform;
