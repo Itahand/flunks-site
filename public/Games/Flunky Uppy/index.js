@@ -822,8 +822,18 @@ function fall() {
       leaderboardButton.style.boxShadow = '0 4px 0px #1B5E20, 0 10px 25px rgba(76, 175, 80, 1)';
     });
     
-    // Add click event listener to open leaderboard
+    // Add click AND touch event listeners to open leaderboard (mobile support)
     leaderboardButton.addEventListener('click', () => {
+      // Send message to parent window to open leaderboard
+      if (window.parent) {
+        window.parent.postMessage({
+          type: 'FLUNKY_UPPY_OPEN_LEADERBOARD'
+        }, '*');
+      }
+    });
+    
+    leaderboardButton.addEventListener('touchend', (e) => {
+      e.preventDefault();
       // Send message to parent window to open leaderboard
       if (window.parent) {
         window.parent.postMessage({
