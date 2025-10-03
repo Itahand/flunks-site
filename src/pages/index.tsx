@@ -21,6 +21,7 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import AccessGate from "components/AccessGate";
 import FlappyFlunkWindow from "windows/Games/FlappyFlunkWindow";
 import FlunkyUppyArcadeWindow from "windows/Games/FlunkyUppyArcadeWindow";
+import FlunkJumpWindow from "windows/Games/FlunkJumpWindow";
 import RadioPlayer from "components/RadioPlayer";
 import FHSSchool from "windows/FHSSchool";
 import MyPlace from "windows/MyPlace";
@@ -406,13 +407,13 @@ const windowsMemod = useMemo(() => (
               <DraggableResizeableWindow
                 windowsId={WINDOW_IDS.FLUNKY_UPPY}
                 onClose={() => closeWindow(WINDOW_IDS.FLUNKY_UPPY)}
-                initialWidth="90vw"
-                initialHeight="90vh"
+                initialWidth="420px"
+                initialHeight="720px"
                 resizable={true}
                 headerTitle="Flunky Uppy"
                 headerIcon="/images/icons/flunky-uppy-icon.png"
               >
-                <FlunkyUppyArcadeWindow />
+                <FlunkJumpWindow />
               </DraggableResizeableWindow>
             ),
           })}
