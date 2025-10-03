@@ -210,8 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return 3;  // Reduce to 3 platforms after 125 points
     } else if (score < 225) {
       return 2;  // Reduce to 2 platforms after 175 points
+    } else if (score < 1000) {
+      return 1;  // Only 1 platform from 225-999 points - extreme difficulty
     } else {
-      return 1;  // Only 1 platform after 225 points - extreme difficulty
+      return 0;  // NO platforms after 1000 points - INSANE MODE (must use existing platforms perfectly)
     }
   }
 
@@ -241,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (score === 200) message = 'GETTING HARDER! Even fewer platforms!';
     else if (score === 300) message = 'EXPERT MODE! Minimal platforms!';
     else if (score === 500) message = 'INSANE MODE! Maximum difficulty!';
+    else if (score === 1000) message = 'LEGENDARY MODE! NO NEW PLATFORMS!';
     
     notification.textContent = message;
     grid.appendChild(notification);
@@ -304,16 +307,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Check for difficulty milestones and show notifications
-            if (score === 100 || score === 200 || score === 300 || score === 500) {
+            if (score === 100 || score === 200 || score === 300 || score === 500 || score === 1000) {
               showDifficultyNotification(score);
             }
             
             // Dynamic platform spacing based on current difficulty
             let currentPlatformCount = getPlatformCount();
-            let dynamicSpacing = 600 / currentPlatformCount;
-            platformCounter++  // Increment platform counter
-            var newPlatform = new Platform(600 + dynamicSpacing, platformCounter)
-            platforms.push(newPlatform)
+            
+            // Only create new platforms if platformCount > 0 (after 1000 score, no new platforms)
+            if (currentPlatformCount > 0) {
+              let dynamicSpacing = 600 / currentPlatformCount;
+              platformCounter++  // Increment platform counter
+              var newPlatform = new Platform(600 + dynamicSpacing, platformCounter)
+              platforms.push(newPlatform)
+            }
           }
       }) 
     }
@@ -417,12 +424,17 @@ function fall() {
         gameOver()
       }
       platforms.forEach(platform => {
+        // Only allow jumping on platforms that are visible on screen (below 600px)
+        // This prevents exploiting platforms above the visible area
+        const isPlatformVisible = platform.bottom <= gridHeight;
+        
         if (
           (doodlerBottomSpace >= platform.bottom) &&
           (doodlerBottomSpace <= (platform.bottom + 15)) &&
           ((doodlerLeftSpace + 60) >= platform.left) && 
           (doodlerLeftSpace <= (platform.left + platform.width)) &&
-          !isJumping
+          !isJumping &&
+          isPlatformVisible  // NEW: Only jump on platforms within visible screen
           ) {
             console.log('tick')
             startPoint = doodlerBottomSpace
