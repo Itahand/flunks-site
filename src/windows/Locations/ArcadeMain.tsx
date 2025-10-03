@@ -760,14 +760,14 @@ const ArcadeMain = () => {
   };
 
   return (
-    <div className="flex flex-col items-center" style={{ width: 'fit-content', margin: '0 auto' }}>
+    <div className="flex flex-col items-center w-full px-4 md:px-0" style={{ maxWidth: '1050px', margin: '0 auto' }}>
       {/* Image Section */}
-      <div className="relative flex-shrink-0">
+      <div className="relative w-full flex-shrink-0">
         <img
           src={timeBasedInfo.currentImage}
           alt={`Arcade Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
-          className="block object-contain z-0 transition-opacity duration-500"
-          style={{ maxHeight: '750px', maxWidth: '1050px', width: 'auto', height: 'auto' }}
+          className="block object-contain w-full h-auto z-0 transition-opacity duration-500"
+          style={{ maxHeight: '750px' }}
           onError={(e) => {
             e.currentTarget.src = "/images/backdrops/BLANK.png";
           }}
@@ -789,7 +789,7 @@ const ArcadeMain = () => {
       </div>
 
       {/* Single Enter Button - Positioned below image */}
-      <div className="bg-gray-800 p-3 flex-shrink-0" style={{ width: '100%', maxWidth: '1050px' }}>
+      <div className="bg-gray-800 p-3 w-full flex-shrink-0" style={{ maxWidth: '1050px' }}>
         <div className="flex justify-center">
           <button
             onClick={async () => {
@@ -842,15 +842,13 @@ const ArcadeMain = () => {
               // Open the lobby
               openLobby();
             }}
-            className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 text-white px-8 py-4 rounded-lg hover:from-purple-500 hover:via-blue-500 hover:to-purple-700 transition-all duration-300 hover:scale-105 text-center font-bold border-4 border-yellow-300 shadow-2xl relative overflow-hidden"
+            className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 text-white px-6 md:px-8 py-4 rounded-lg hover:from-purple-500 hover:via-blue-500 hover:to-purple-700 transition-all duration-300 hover:scale-105 text-center font-bold border-4 border-yellow-300 shadow-2xl relative overflow-hidden w-full max-w-[600px]"
             style={{
               textShadow: '3px 3px 6px rgba(0,0,0,0.8)',
               boxShadow: '0 12px 35px rgba(138,43,226,0.8), inset 0 0 25px rgba(255,255,255,0.3)',
-              minWidth: '600px',
-              fontSize: '20px',
+              fontSize: '18px',
               fontFamily: "'Press Start 2P', monospace",
-              whiteSpace: 'nowrap',
-              padding: '20px 40px'
+              padding: '16px 24px'
             }}
           >
             🧙‍♂️ ENTER WIZARD'S ARCADE 🧙‍♂️
