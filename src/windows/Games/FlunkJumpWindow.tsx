@@ -186,7 +186,8 @@ const FlunkJumpWindow = () => {
     const handler = (event: MessageEvent) => {
       if (event.data?.type === 'FLUNKY_UPPY_SCORE') {
         const score = event.data.score;
-        console.log('🦘 Flunky Uppy score received:', score);
+        const timestamp = Date.now(); // Add timestamp to make each submission unique
+        console.log('🦘 Flunky Uppy score received:', score, 'at', timestamp);
         
         fcl.currentUser().snapshot().then((user: any) => {
           console.log('👤 User authentication check:', { 
@@ -201,7 +202,7 @@ const FlunkJumpWindow = () => {
             return;
           }
           
-          console.log('📮 Submitting Flunky Uppy score to database:', { wallet: wallet.substring(0, 10) + '...', score });
+          console.log('📮 Submitting Flunky Uppy score to database:', { wallet: wallet.substring(0, 10) + '...', score, timestamp });
           
           // Generate username from wallet address
           const username = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
@@ -213,7 +214,7 @@ const FlunkJumpWindow = () => {
             body: JSON.stringify({ wallet, score, username }),
           })
           .then(response => {
-            console.log('📊 Flunky Uppy score submission response status:', response.status);
+            console.log('📊 Flunky Uppy score submission response status:', response.status, 'for score:', score);
             if (!response.ok) {
               return response.text().then(text => {
                 throw new Error(`Score API Error ${response.status}: ${text}`);
