@@ -125,7 +125,7 @@ const PlayIcon = styled.div`
 // Sample chapter data - this would come from your game state/progress
 const sampleChapters: Chapter[] = [
   {
-    id: 'homecoming',
+    id: 'story-so-far',
     title: 'The Story So Far 📖',
     subtitle: 'The sky looked different back then. Maybe it was brighter… or maybe I just had younger eyes.',
     unlocked: true,
@@ -269,9 +269,9 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
   const buildMode = getCurrentBuildMode();
   const availableChapters = sampleChapters.filter(chapter => {
     if (chapter.id === 'homecoming') {
-      return buildMode === 'build';
+      return buildMode === 'build'; // Only show actual Homecoming chapter in build mode
     }
-    return true; // Show all other chapters
+    return true; // Show all other chapters including "The Story So Far"
   });
 
   const handleChapterClick = (chapter: Chapter) => {

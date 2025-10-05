@@ -222,7 +222,7 @@ const HomecomingStory: React.FC<HomecomingStoryProps> = ({ onClose }) => {
   // Initialize and play homecoming music
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      audioRef.current = new Audio('/sounds/homecoming.mp3');
+      audioRef.current = new Audio('/music/homecoming.mp3');
       audioRef.current.loop = true;
       audioRef.current.volume = 0.5;
       audioRef.current.play().catch(err => {
