@@ -540,6 +540,11 @@ const MySpaceProfile: React.FC<MySpaceProfileProps> = ({ clique }) => {
           author: "Pager_Princess",
           text: "Can't wait to hang at the arcade this weekend! You better show up! 📟💜",
           time: "1 week ago"
+        },
+        {
+          author: "Jordan",
+          text: "Hey Flunko, are you still going to stay at Paradise Motel homecoming night? Hit me back! 🏨",
+          time: "2 weeks ago"
         }
       ];
     }

@@ -473,7 +473,11 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               color: '#FFD700',
               marginBottom: '8px',
               textShadow: '2px 2px 4px #000000',
-              animation: 'titlePulse 1s ease-in-out infinite'
+              animation: 'titlePulse 1s ease-in-out infinite',
+              fontFamily: '"Press Start 2P", "Courier New", monospace',
+              position: 'relative',
+              zIndex: 10,
+              letterSpacing: '2px'
             }}>
               🎉 CHAPTER COMPLETE! 🎉
             </div>
@@ -481,7 +485,11 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               fontSize: '16px',
               color: '#32CD32',
               fontWeight: 'bold',
-              textShadow: '1px 1px 2px #000000'
+              textShadow: '1px 1px 2px #000000',
+              fontFamily: '"Press Start 2P", "Courier New", monospace',
+              position: 'relative',
+              zIndex: 10,
+              letterSpacing: '1px'
             }}>
               READY FOR NEXT ADVENTURE!
             </div>

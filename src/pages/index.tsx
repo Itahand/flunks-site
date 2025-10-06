@@ -410,6 +410,7 @@ const windowsMemod = useMemo(() => (
                 initialWidth="420px"
                 initialHeight="720px"
                 resizable={true}
+                maximizable={false}
                 headerTitle="Flunky Uppy"
                 headerIcon="/images/icons/flunky-uppy-icon.png"
               >
