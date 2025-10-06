@@ -1400,6 +1400,35 @@
   background-image: url('/images/icons/paradise-motel-icon.png');
 }
 
+/* Build-mode only (hidden on public) upcoming / extra locations */
+.treehouse-nav {
+  background-image: url('/images/icons/tree.png'); /* fallback icon */
+}
+
+.snack-shack-nav {
+  background-image: url('/images/icons/snack-shack-icon.png');
+}
+
+.four-thieves-bar-nav {
+  background-image: url('/images/icons/four-thieves-bar-icon.png');
+}
+
+.flunk-fm-nav {
+  background-image: url('/images/icons/flunk-fm-icon.png');
+}
+
+.police-station-nav {
+  background-image: url('/images/icons/police-station-icon.png');
+}
+
+.shed-nav {
+  background-image: url('/images/icons/shed-icon.png');
+}
+
+.junkyard-nav {
+  background-image: url('/images/icons/junkyard-icon.png');
+}
+
 /* Special hover effect for Football Field in navigation */
 .nav-icon.football-field-nav:hover {
   animation: heartbeat 2.4s ease-in-out infinite, activePulse 1.5s ease-in-out infinite;

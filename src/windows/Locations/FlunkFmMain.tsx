@@ -79,6 +79,20 @@ const FlunkFmMain = () => {
       >
         📻 Office
       </button>
+
+      {/* Transmission Tower */}
+      <button
+        onClick={() =>
+          openRoom(
+            WINDOW_IDS.FLUNK_FM_TRANSMITTER,
+            "Transmission Tower",
+            "Up a narrow metal ladder sits the old broadcast switch. Red warning lights blink over a log book tracking mysteriously timed outages."
+          )
+        }
+        className="absolute bottom-4 right-4 bg-indigo-900 text-white px-3 py-2 rounded z-10 hover:bg-indigo-700 transition-transform duration-200 hover:scale-105"
+      >
+        📡 Tower
+      </button>
     </div>
   );
 };

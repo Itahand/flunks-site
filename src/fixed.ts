@@ -73,6 +73,10 @@ export const WINDOW_IDS = {
   LAKE_TREE_MAIN: "lake_tree_main",
   SNACK_SHACK_MAIN: "snack_shack_main",
   RUG_DOCTOR_MAIN: "rug_doctor_main",
+  SNACK_SHACK_COUNTER: "snack_shack_counter",
+  SNACK_SHACK_GRILL_LINE: "snack_shack_grill_line",
+  SNACK_SHACK_STOCK_ROOM: "snack_shack_stock_room",
+  SNACK_SHACK_PICNIC_AREA: "snack_shack_picnic_area",
   
   // Rug Doctor rooms
   RUG_DOCTOR_FRONT_COUNTER: "rug_doctor_front_counter",
@@ -80,10 +84,23 @@ export const WINDOW_IDS = {
   RUG_DOCTOR_STORAGE_ROOM: "rug_doctor_storage_room",
   RUG_DOCTOR_BACK_OFFICE: "rug_doctor_back_office",
   FOUR_THIEVES_BAR_MAIN: "four_thieves_bar_main",
+  FOUR_THIEVES_BAR_MAIN_BAR: "four_thieves_bar_main_bar",
+  FOUR_THIEVES_BAR_POOL_ROOM: "four_thieves_bar_pool_room",
+  FOUR_THIEVES_BAR_PRIVATE_BOOTH: "four_thieves_bar_private_booth",
+  FOUR_THIEVES_BAR_BACK_ALLEY: "four_thieves_bar_back_alley",
   SHED_MAIN: "shed_main",
+  SHED_WORKBENCH: "shed_workbench",
+  SHED_TOOL_WALL: "shed_tool_wall",
+  SHED_STORAGE: "shed_storage",
+  SHED_SECRET_TRAPDOOR: "shed_secret_trapdoor",
   POLICE_STATION_MAIN: "police_station_main",
+  POLICE_STATION_INTERROGATION_ROOM: "police_station_interrogation_room",
   PREPS_HOUSE_MAIN: "preps_house_main",
   FOOTBALL_FIELD_MAIN: "football_field_main",
+  JUNKYARD_CAR_STACKS: "junkyard_car_stacks",
+  JUNKYARD_CAR_CRUSHER: "junkyard_car_crusher",
+  JUNKYARD_OFFICE: "junkyard_office",
+  JUNKYARD_SECRET_BUNKER: "junkyard_secret_bunker",
   
   // New locations
   SECRET_TREEHOUSE_MAIN: "secret_treehouse_main",
@@ -145,6 +162,7 @@ export const WINDOW_IDS = {
   FLUNK_FM_STUDIO: "flunk_fm_studio",
   FLUNK_FM_BOOTH: "flunk_fm_booth",
   FLUNK_FM_OFFICE: "flunk_fm_office",
+  FLUNK_FM_TRANSMITTER: "flunk_fm_transmitter",
   
   POLICE_STATION_FRONT_DESK: "police_station_front_desk",
   POLICE_STATION_CELLS: "police_station_cells",

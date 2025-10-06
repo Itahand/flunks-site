@@ -79,6 +79,20 @@ const PoliceStationMain = () => {
       >
         📦 Evidence Room
       </button>
+
+      {/* Interrogation Room */}
+      <button
+        onClick={() =>
+          openRoom(
+            WINDOW_IDS.POLICE_STATION_INTERROGATION_ROOM,
+            "Interrogation Room",
+            "One swinging bulb, a scarred metal table, and a mirrored wall that hums with hidden tape recorders. Someone left a cold cup of coffee that never seems to cool."
+          )
+        }
+        className="absolute bottom-4 right-4 bg-blue-900 text-white px-3 py-2 rounded z-10 hover:bg-blue-700 transition-transform duration-200 hover:scale-105"
+      >
+        🚨 Interrogation
+      </button>
     </div>
   );
 };

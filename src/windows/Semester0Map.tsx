@@ -163,17 +163,18 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
 
   // Location data for enhanced hover previews - ALL LOCATIONS
   const locationData = {
+    'treehouse': { title: "Treehouse", description: "A clubhouse hidden in plain sight. Boarded walls are covered in scribbled case notes and summer secrets.", icon: "🌲", rooms: [{ name: "Loft", description: "Climb up to boxes of comic books and a cracked telescope." }, { name: "Work Desk", description: "Maps, red string, and a lone walkie talkie blink with a green light." }, { name: "Old Trunk", description: "Packed with flashlights, diaries, and a locked metal box." }, { name: "Secret Window", description: "Peek across the lake where a distant light flashes back." }] },
+    'snack-shack': { title: "Snack Shack", description: "Grease, gossip, and neon order numbers. Late-night hunger meets whispered rumors.", icon: "🍟", rooms: [{ name: "Service Counter", description: "Where sizzling orders and secrets change hands" }, { name: "Grill Line", description: "The line cooks hear everything while flipping burgers" }, { name: "Stock Room", description: "Supplies stacked beside hidden ledgers" }, { name: "Picnic Tables", description: "Sticky benches lit by parking lot lights" }] },
     'arcade': { title: "Arcade", description: "Old machines hum with half-lit screens. The sounds of vintage games echo through the dimly lit space.", icon: "🕹️", rooms: [{ name: "Main Floor", description: "Classic arcade cabinets line the walls" }, { name: "Prize Counter", description: "Dusty toys and forgotten treasures" }, { name: "Back Room", description: "Broken machines and spare parts" }, { name: "Office", description: "The manager's cluttered workspace" }] },
     'jocks-house': { title: "Jock's House", description: "Sports trophies and team spirit fill every room. Motivational posters line the walls with messages like 'ZERO EXCUSES' and 'WINNERS NEVER QUIT' reminding everyone that there are zero excuses for failure.", icon: "🏠", rooms: [{ name: "Trophy Room", description: "Championships and glory on display" }, { name: "Home Gym", description: "Weights and training equipment" }, { name: "Team Lounge", description: "Where champions gather and plan" }, { name: "Basement", description: "Sports gear storage and team equipment vault" }] },
     'freaks-house': { title: "Freak's House", description: "A dark and mysterious dwelling where the outcasts gather. The walls are covered in band posters and strange artwork.", icon: "🖤", rooms: [{ name: "Dark Living Room", description: "Candles flicker in the shadows" }, { name: "Music Corner", description: "Heavy metal echoes through the air" }, { name: "Art Studio", description: "Strange paintings line the walls" }, { name: "Secret Basement", description: "What lurks below remains hidden" }] },
     'geeks-house': { title: "Geek's House", description: "A laboratory of knowledge and innovation. Computer screens glow with endless possibilities.", icon: "🤓", rooms: [{ name: "Computer Lab", description: "Multiple screens displaying code and data" }, { name: "Workshop", description: "Electronics and gadgets being assembled" }, { name: "Library", description: "Technical manuals and sci-fi novels" }, { name: "Testing Room", description: "Experiments in progress" }] },
     'preps-house': { title: "Prep's House", description: "Perfection and privilege behind manicured lawns. Every detail speaks of wealth and status.", icon: "💅", rooms: [{ name: "Grand Foyer", description: "Marble floors and crystal chandeliers" }, { name: "Study", description: "Leather-bound books and mahogany furniture" }, { name: "Walk-in Closet", description: "Designer clothes and luxury accessories" }, { name: "Private Suite", description: "Elegance and exclusivity" }] },
-    'flunk-fm': { title: "Flunk FM", description: "The voice of the town broadcasts from here. Radio waves carry secrets across the airwaves.", icon: "📻", rooms: [{ name: "Studio", description: "Microphones and mixing boards" }, { name: "Control Room", description: "Technical equipment and broadcast controls" }, { name: "Music Library", description: "Vinyl records and forgotten hits" }, { name: "DJ Booth", description: "Where the magic happens live on air" }] },
-    'police-station': { title: "Police Station", description: "Where authority meets the streets. Case files and evidence tell stories of justice and mystery.", icon: "👮", rooms: [{ name: "Front Desk", description: "First line of law and order" }, { name: "Investigation Room", description: "Where suspects are questioned" }, { name: "Evidence Locker", description: "Secrets locked away for safekeeping" }, { name: "Chief's Office", description: "Command center of local law enforcement" }] },
+    'flunk-fm': { title: "Radio Station", description: "The voice of the town broadcasts from here. Radio waves carry secrets across the airwaves.", icon: "📻", rooms: [{ name: "Recording Studio", description: "Microphones and mixing boards" }, { name: "DJ Booth", description: "Where the magic happens live on air" }, { name: "Station Office", description: "Paperwork and ad spots pile to the ceiling" }, { name: "Transmission Tower", description: "Climb ladders to the blinking beacon" }] },
+    'police-station': { title: "Police Station", description: "Where authority meets the streets. Case files and evidence tell stories of justice and mystery.", icon: "👮", rooms: [{ name: "Front Desk", description: "First line of law and order" }, { name: "Holding Cells", description: "Cold benches and etched initials" }, { name: "Evidence Locker", description: "Secrets locked away for safekeeping" }, { name: "Interrogation Room", description: "Bright lights and tougher questions" }] },
     'football-field': { title: "Football Field", description: "candles always staying lit on the field with talks of cancelling the big game coming up", icon: "🏈", rooms: [{ name: "50-Yard Line", description: "The heart of game day glory" }, { name: "Locker Room", description: "Pre-game rituals and team talks" }, { name: "Press Box", description: "Bird's eye view of all the action" }, { name: "Equipment Shed", description: "Gear and maintenance supplies" }] },
-    'snack-shack': { title: "Snack Shack", description: "Quick bites for hungry students. The aroma of carnival food and teenage memories.", icon: "🍟", rooms: [{ name: "Counter", description: "Where orders are taken and friendships made" }, { name: "Kitchen", description: "Grease, heat, and comfort food" }, { name: "Storage", description: "Supplies and secret ingredients" }, { name: "Picnic Area", description: "Outdoor seating under string lights" }] },
-    'four-thieves-bar': { title: "Four Thieves Bar", description: "The local watering hole where secrets are shared over drinks and the jukebox plays forgotten tunes.", icon: "🍺", rooms: [{ name: "Main Bar", description: "Where the locals gather to forget" }, { name: "Pool Room", description: "Games and hushed conversations" }, { name: "Private Booth", description: "Deals are made in the shadows" }, { name: "Back Alley", description: "Where the real business happens" }] },
-    'junkyard': { title: "Junkyard", description: "Treasures hide among the rust and ruin. Every pile of scrap tells a story of the past.", icon: "🚗", rooms: [{ name: "Car Graveyard", description: "Rusted vehicles hold forgotten memories" }, { name: "Scrap Heap", description: "Metal treasures wait to be discovered" }, { name: "Office Shack", description: "The owner's domain filled with records" }, { name: "Hidden Bunker", description: "What secrets lie underground?" }] },
+    'four-thieves-bar': { title: "4 Thieves Bar", description: "Neon lights and bad bargains. The jukebox only plays requests if it likes you.", icon: "🍺", rooms: [{ name: "Main Bar", description: "Regulars claim the corner stools" }, { name: "Pool Room", description: "Cue balls and whispered side bets" }, { name: "Private Booths", description: "Deals are made in the shadows" }, { name: "Back Alley", description: "Deliveries come through the side door" }] },
+    'junkyard': { title: "Junkyard", description: "Treasures hide among the rust and ruin. Every pile of scrap tells a story of the past.", icon: "🚗", rooms: [{ name: "Car Stacks", description: "Rusted vehicles hold forgotten memories" }, { name: "Crusher", description: "Hydraulics flatten secrets into cubes" }, { name: "Office Trailer", description: "Ledger books and radio scanners hum" }, { name: "Hidden Bunker", description: "What secrets lie underground?" }] },
     'lake-tree': { title: "Lake Tree", description: "A peaceful spot where secrets are carved in bark. The old tree has witnessed many stories.", icon: "🌳", rooms: [{ name: "Tree Base", description: "Carved initials and love letters" }, { name: "Rope Swing", description: "Summer fun and daring leaps" }, { name: "Picnic Spot", description: "Quiet conversations under shade" }, { name: "Hidden Hollow", description: "Secret meetings and whispered confessions" }] },
     'rug-doctor': { title: "Rug Doctor", description: "Making the old look new again. Steam and suds wash away more than just stains.", icon: "🧽", rooms: [{ name: "Front Counter", description: "Customer service with a smile" }, { name: "Cleaning Bay", description: "Industrial machines and chemical solutions" }, { name: "Storage Room", description: "Cleaning supplies and equipment" }, { name: "Back Office", description: "Business records and appointment books" }] },
     'shed': { title: "Old Shed", description: "Once you go in, you're never the same. Rusty tools and forgotten projects gather dust.", icon: "🏚️", rooms: [{ name: "Main Area", description: "Cluttered workspace with mysterious projects" }, { name: "Tool Wall", description: "Rusty implements of unknown purpose" }, { name: "Corner Pile", description: "Junk that might be treasure" }, { name: "Hidden Compartment", description: "What was someone trying to hide?" }] },
@@ -665,6 +666,319 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
         <div className={styles["nav-section"]}>
           <h3>Main Locations</h3>
           <div className={styles["nav-buttons"]}>
+            {/* Build mode only: upcoming locations (hidden on public) */}
+            {buildMode === 'build' && (
+              <>
+                <DynamicHouseIcon
+                  houseId="treehouse"
+                  className={`${styles["nav-icon"]} ${styles['treehouse-nav']}`}
+                  onClick={() => {
+                    if (isMobile && touchedLocation === 'treehouse') {
+                      setTouchedLocation(null); setHovered(null);
+                      handleLocationAccess('treehouse', () => openWindow({
+                        key: WINDOW_IDS.TREEHOUSE_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.TREEHOUSE_MAIN}
+                            headerTitle="Treehouse"
+                            onClose={() => closeWindow(WINDOW_IDS.TREEHOUSE_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <TreehouseMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    } else if (!isMobile) {
+                      handleLocationAccess('treehouse', () => openWindow({
+                        key: WINDOW_IDS.TREEHOUSE_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.TREEHOUSE_MAIN}
+                            headerTitle="Treehouse"
+                            onClose={() => closeWindow(WINDOW_IDS.TREEHOUSE_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <TreehouseMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    }
+                  }}
+                  onMouseEnter={() => setHovered('treehouse')}
+                  onMouseLeave={() => setHovered(null)}
+                  onTouchStart={() => user && handleTouchEnter('treehouse')}
+                  onTouchEnd={handleTouchLeave}
+                />
+                <DynamicHouseIcon
+                  houseId="snack-shack"
+                  className={`${styles["nav-icon"]} ${styles['snack-shack-nav']}`}
+                  onClick={() => {
+                    if (isMobile && touchedLocation === 'snack-shack') {
+                      setTouchedLocation(null); setHovered(null);
+                      handleLocationAccess('snack-shack', () => openWindow({
+                        key: WINDOW_IDS.SNACK_SHACK_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.SNACK_SHACK_MAIN}
+                            headerTitle="Snack Shack"
+                            onClose={() => closeWindow(WINDOW_IDS.SNACK_SHACK_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <SnackShackMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    } else if (!isMobile) {
+                      handleLocationAccess('snack-shack', () => openWindow({
+                        key: WINDOW_IDS.SNACK_SHACK_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.SNACK_SHACK_MAIN}
+                            headerTitle="Snack Shack"
+                            onClose={() => closeWindow(WINDOW_IDS.SNACK_SHACK_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <SnackShackMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    }
+                  }}
+                  onMouseEnter={() => setHovered('snack-shack')}
+                  onMouseLeave={() => setHovered(null)}
+                  onTouchStart={() => user && handleTouchEnter('snack-shack')}
+                  onTouchEnd={handleTouchLeave}
+                />
+                <DynamicHouseIcon
+                  houseId="four-thieves-bar"
+                  className={`${styles["nav-icon"]} ${styles['four-thieves-bar-nav']}`}
+                  onClick={() => {
+                    if (isMobile && touchedLocation === 'four-thieves-bar') {
+                      setTouchedLocation(null); setHovered(null);
+                      handleLocationAccess('four-thieves-bar', () => openWindow({
+                        key: WINDOW_IDS.FOUR_THIEVES_BAR_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.FOUR_THIEVES_BAR_MAIN}
+                            headerTitle="4 Thieves Bar"
+                            onClose={() => closeWindow(WINDOW_IDS.FOUR_THIEVES_BAR_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <FourThievesBarMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    } else if (!isMobile) {
+                      handleLocationAccess('four-thieves-bar', () => openWindow({
+                        key: WINDOW_IDS.FOUR_THIEVES_BAR_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.FOUR_THIEVES_BAR_MAIN}
+                            headerTitle="4 Thieves Bar"
+                            onClose={() => closeWindow(WINDOW_IDS.FOUR_THIEVES_BAR_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <FourThievesBarMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    }
+                  }}
+                  onMouseEnter={() => setHovered('four-thieves-bar')}
+                  onMouseLeave={() => setHovered(null)}
+                  onTouchStart={() => user && handleTouchEnter('four-thieves-bar')}
+                  onTouchEnd={handleTouchLeave}
+                />
+                <DynamicHouseIcon
+                  houseId="flunk-fm"
+                  className={`${styles["nav-icon"]} ${styles['flunk-fm-nav']}`}
+                  onClick={() => {
+                    if (isMobile && touchedLocation === 'flunk-fm') {
+                      setTouchedLocation(null); setHovered(null);
+                      handleLocationAccess('flunk-fm', () => openWindow({
+                        key: WINDOW_IDS.FLUNK_FM_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.FLUNK_FM_MAIN}
+                            headerTitle="Flunk FM"
+                            onClose={() => closeWindow(WINDOW_IDS.FLUNK_FM_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <FlunkFmMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    } else if (!isMobile) {
+                      handleLocationAccess('flunk-fm', () => openWindow({
+                        key: WINDOW_IDS.FLUNK_FM_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.FLUNK_FM_MAIN}
+                            headerTitle="Flunk FM"
+                            onClose={() => closeWindow(WINDOW_IDS.FLUNK_FM_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <FlunkFmMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    }
+                  }}
+                  onMouseEnter={() => setHovered('flunk-fm')}
+                  onMouseLeave={() => setHovered(null)}
+                  onTouchStart={() => user && handleTouchEnter('flunk-fm')}
+                  onTouchEnd={handleTouchLeave}
+                />
+                <DynamicHouseIcon
+                  houseId="police-station"
+                  className={`${styles["nav-icon"]} ${styles['police-station-nav']}`}
+                  onClick={() => {
+                    if (isMobile && touchedLocation === 'police-station') {
+                      setTouchedLocation(null); setHovered(null);
+                      handleLocationAccess('police-station', () => openWindow({
+                        key: WINDOW_IDS.POLICE_STATION_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.POLICE_STATION_MAIN}
+                            headerTitle="Police Station"
+                            onClose={() => closeWindow(WINDOW_IDS.POLICE_STATION_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <PoliceStationMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    } else if (!isMobile) {
+                      handleLocationAccess('police-station', () => openWindow({
+                        key: WINDOW_IDS.POLICE_STATION_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.POLICE_STATION_MAIN}
+                            headerTitle="Police Station"
+                            onClose={() => closeWindow(WINDOW_IDS.POLICE_STATION_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <PoliceStationMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    }
+                  }}
+                  onMouseEnter={() => setHovered('police-station')}
+                  onMouseLeave={() => setHovered(null)}
+                  onTouchStart={() => user && handleTouchEnter('police-station')}
+                  onTouchEnd={handleTouchLeave}
+                />
+                <DynamicHouseIcon
+                  houseId="shed"
+                  className={`${styles["nav-icon"]} ${styles['shed-nav']}`}
+                  onClick={() => {
+                    if (isMobile && touchedLocation === 'shed') {
+                      setTouchedLocation(null); setHovered(null);
+                      handleLocationAccess('shed', () => openWindow({
+                        key: WINDOW_IDS.SHED_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.SHED_MAIN}
+                            headerTitle="Old Shed"
+                            onClose={() => closeWindow(WINDOW_IDS.SHED_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <ShedMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    } else if (!isMobile) {
+                      handleLocationAccess('shed', () => openWindow({
+                        key: WINDOW_IDS.SHED_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.SHED_MAIN}
+                            headerTitle="Old Shed"
+                            onClose={() => closeWindow(WINDOW_IDS.SHED_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <ShedMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    }
+                  }}
+                  onMouseEnter={() => setHovered('shed')}
+                  onMouseLeave={() => setHovered(null)}
+                  onTouchStart={() => user && handleTouchEnter('shed')}
+                  onTouchEnd={handleTouchLeave}
+                />
+                <DynamicHouseIcon
+                  houseId="junkyard"
+                  className={`${styles["nav-icon"]} ${styles['junkyard-nav']}`}
+                  onClick={() => {
+                    if (isMobile && touchedLocation === 'junkyard') {
+                      setTouchedLocation(null); setHovered(null);
+                      handleLocationAccess('junkyard', () => openWindow({
+                        key: WINDOW_IDS.JUNKYARD_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.JUNKYARD_MAIN}
+                            headerTitle="Junkyard"
+                            onClose={() => closeWindow(WINDOW_IDS.JUNKYARD_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <JunkyardMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    } else if (!isMobile) {
+                      handleLocationAccess('junkyard', () => openWindow({
+                        key: WINDOW_IDS.JUNKYARD_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.JUNKYARD_MAIN}
+                            headerTitle="Junkyard"
+                            onClose={() => closeWindow(WINDOW_IDS.JUNKYARD_MAIN)}
+                            initialWidth="60vw"
+                            initialHeight="60vh"
+                            resizable={true}
+                          >
+                            <JunkyardMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      }) );
+                    }
+                  }}
+                  onMouseEnter={() => setHovered('junkyard')}
+                  onMouseLeave={() => setHovered(null)}
+                  onTouchStart={() => user && handleTouchEnter('junkyard')}
+                  onTouchEnd={handleTouchLeave}
+                />
+              </>
+            )}
             <DynamicHouseIcon
               houseId="high-school"
               className={`${styles["nav-icon"]} ${styles['high-school-nav']}`}
