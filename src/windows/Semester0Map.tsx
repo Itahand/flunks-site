@@ -665,7 +665,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
       <div className={styles["bottom-nav"]}>
         <div className={styles["nav-section"]}>
           <h3>Main Locations</h3>
-          <div className={styles["nav-buttons"]}>
+          <div className={`${styles["nav-buttons"]} ${buildMode === 'build' ? styles["nav-buttons-grid"] : ''}`}>
             {/* Build mode only: upcoming locations (hidden on public) */}
             {buildMode === 'build' && (
               <>
