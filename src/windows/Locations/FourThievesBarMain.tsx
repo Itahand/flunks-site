@@ -38,62 +38,145 @@ const FourThievesBarMain = () => {
         className="absolute inset-0 w-full h-full object-cover z-0"
       />
 
-      <div className="absolute inset-0 z-10">
-        {/* Main Bar */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.FOUR_THIEVES_BAR_MAIN_BAR,
-              "Main Bar",
-              "Sticky mahogany stretches the length of the room. Four mismatched bar stools are permanently claimed by regulars who speak only in whispers when outsiders enter."
-            )
-          }
-          className="absolute top-6 left-6 bg-amber-900 text-white px-4 py-2 rounded shadow-lg border border-amber-500 hover:bg-amber-800 transition-transform duration-200 hover:scale-105"
-        >
-          🥃 Main Bar
-        </button>
+      {/* Buttons at bottom in grid layout - Arcade style */}
+      <div style={{
+        position: 'absolute',
+        bottom: '0',
+        left: '0',
+        right: '0',
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        padding: 'clamp(10px, 3vw, 20px)',
+        borderTop: '3px solid #FFD700',
+        boxShadow: '0 -5px 20px rgba(0,0,0,0.8)',
+        zIndex: 10
+      }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))',
+          gap: 'clamp(8px, 2vw, 12px)',
+          maxWidth: '1000px',
+          margin: '0 auto'
+        }}>
+          {/* Main Bar */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.FOUR_THIEVES_BAR_MAIN_BAR,
+                "Main Bar",
+                "Sticky mahogany stretches the length of the room. Four mismatched bar stools are permanently claimed by regulars who speak only in whispers when outsiders enter."
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #D4A574, #8B4513)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              width: '100%',
+              minHeight: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}
+          >
+            🥃 Main Bar
+          </button>
 
-        {/* Pool Room */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.FOUR_THIEVES_BAR_POOL_ROOM,
-              "Pool Room",
-              "The green felt is scarred with cigarette burns, and the cue rack is missing two sticks. Someone carved a warning into the table: 'Don’t break unless you’re ready to lose.'"
-            )
-          }
-          className="absolute top-6 right-6 bg-emerald-900 text-white px-4 py-2 rounded shadow-lg border border-emerald-500 hover:bg-emerald-800 transition-transform duration-200 hover:scale-105"
-        >
-          🎱 Pool Room
-        </button>
+          {/* Pool Room */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.FOUR_THIEVES_BAR_POOL_ROOM,
+                "Pool Room",
+                "The green felt is scarred with cigarette burns, and the cue rack is missing two sticks. Someone carved a warning into the table: 'Don't break unless you're ready to lose.'"
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #2E8B57, #006400)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              width: '100%',
+              minHeight: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}
+          >
+            🎱 Pool Room
+          </button>
 
-        {/* Private Booths */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.FOUR_THIEVES_BAR_PRIVATE_BOOTH,
-              "Private Booths",
-              "Curved leather booths offer just enough privacy for bad deals. The flickering neon sign above them is wired to short out whenever the wrong name is spoken."
-            )
-          }
-          className="absolute bottom-6 left-6 bg-purple-900 text-white px-4 py-2 rounded shadow-lg border border-purple-500 hover:bg-purple-800 transition-transform duration-200 hover:scale-105"
-        >
-          🕵️ Private Booths
-        </button>
+          {/* Private Booths */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.FOUR_THIEVES_BAR_PRIVATE_BOOTH,
+                "Private Booths",
+                "Curved leather booths offer just enough privacy for bad deals. The flickering neon sign above them is wired to short out whenever the wrong name is spoken."
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #8B008B, #4B0082)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              width: '100%',
+              minHeight: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}
+          >
+            🕵️ Private Booths
+          </button>
 
-        {/* Back Alley */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.FOUR_THIEVES_BAR_BACK_ALLEY,
-              "Back Alley",
-              "A single buzzing light illuminates crates of contraband soda and a door marked KEEP OUT. The alley camera is always pointed just slightly the wrong way."
-            )
-          }
-          className="absolute bottom-6 right-6 bg-slate-900 text-white px-4 py-2 rounded shadow-lg border border-slate-500 hover:bg-slate-800 transition-transform duration-200 hover:scale-105"
-        >
-          🚪 Back Alley
-        </button>
+          {/* Back Alley */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.FOUR_THIEVES_BAR_BACK_ALLEY,
+                "Back Alley",
+                "A single buzzing light illuminates crates of contraband soda and a door marked KEEP OUT. The alley camera is always pointed just slightly the wrong way."
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #708090, #2F4F4F)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              width: '100%',
+              minHeight: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}
+          >
+            🚪 Back Alley
+          </button>
+        </div>
       </div>
     </div>
   );

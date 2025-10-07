@@ -20,6 +20,8 @@ import RugDoctorMain from "windows/Locations/RugDoctorMain";
 import ShedMain from "windows/Locations/ShedMain";
 import HighSchoolMain from "windows/Locations/HighSchoolMain";
 import ParadiseMotelMain from "windows/Locations/ParadiseMotelMain";
+import WishingTreeMain from "windows/Locations/WishingTreeMain";
+import FrenshipMain from "windows/Locations/FrenshipMain";
 import DraggableResizeableWindow from 'components/DraggableResizeableWindow';
 import CutscenePlayer from 'components/CutscenePlayer';
 import { WINDOW_IDS } from "fixed";
@@ -550,7 +552,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
         hovered === 'high-school' || hovered === 'arcade' || hovered === 'football-field' || hovered === 'rug-doctor' ||
         hovered === 'freaks-house' || hovered === 'geeks-house' || hovered === 'jocks-house' || hovered === 'preps-house' ||
         hovered === 'treehouse' || hovered === 'snack-shack' || hovered === 'four-thieves-bar' || hovered === 'flunk-fm' ||
-        hovered === 'police-station' || hovered === 'shed' || hovered === 'junkyard'
+        hovered === 'police-station' || hovered === 'shed' || hovered === 'junkyard' || hovered === 'paradise-motel' ||
+        hovered === 'wishing-tree' || hovered === 'frenship'
       ) && (
         <div className={styles["map-overlay"]} />
       )}
@@ -600,6 +603,15 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
       )}
       {!isMobile && hovered === 'junkyard' && (
         <div className={`${styles["map-location-hover"]} ${styles["junkyard"]}`} />
+      )}
+      {!isMobile && hovered === 'paradise-motel' && (
+        <div className={`${styles["map-location-hover"]} ${styles["paradise-motel"]}`} />
+      )}
+      {!isMobile && hovered === 'wishing-tree' && (
+        <div className={`${styles["map-location-hover"]} ${styles["wishing-tree"]}`} />
+      )}
+      {!isMobile && hovered === 'frenship' && (
+        <div className={`${styles["map-location-hover"]} ${styles["frenship"]}`} />
       )}
 
       <button className={styles["close-btn"]} onClick={onClose}>✖</button>
@@ -1290,6 +1302,122 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   setHovered(null);
                 }}
                 onTouchStart={() => user && handleTouchEnter('paradise-motel')}
+                onTouchEnd={handleTouchLeave}
+              >
+              </DynamicHouseIcon>
+            )}
+            
+            {/* Wishing Tree - Build Mode Only */}
+            {buildMode === 'build' && (
+              <DynamicHouseIcon
+                houseId="wishing-tree"
+                className={`${styles["nav-icon"]} ${styles['wishing-tree-nav']}`}
+                onClick={() => {
+                  if (isMobile && touchedLocation === 'wishing-tree') {
+                    setTouchedLocation(null);
+                    setHovered(null);
+                    handleLocationAccess('wishing-tree', () => 
+                      openWindow({
+                        key: WINDOW_IDS.WISHING_TREE_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.WISHING_TREE_MAIN}
+                            headerTitle="Wishing Tree"
+                            onClose={() => closeWindow(WINDOW_IDS.WISHING_TREE_MAIN)}
+                            initialWidth="70vw"
+                            initialHeight="70vh"
+                            resizable={true}
+                          >
+                            <WishingTreeMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      })
+                    );
+                  } else if (!isMobile) {
+                    handleLocationAccess('wishing-tree', () => 
+                      openWindow({
+                        key: WINDOW_IDS.WISHING_TREE_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.WISHING_TREE_MAIN}
+                            headerTitle="Wishing Tree"
+                            onClose={() => closeWindow(WINDOW_IDS.WISHING_TREE_MAIN)}
+                            initialWidth="70vw"
+                            initialHeight="70vh"
+                            resizable={true}
+                          >
+                            <WishingTreeMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      })
+                    );
+                  }
+                }}
+                onMouseEnter={() => {
+                  setHovered('wishing-tree');
+                }}
+                onMouseLeave={() => {
+                  setHovered(null);
+                }}
+                onTouchStart={() => user && handleTouchEnter('wishing-tree')}
+                onTouchEnd={handleTouchLeave}
+              >
+              </DynamicHouseIcon>
+            )}
+            
+            {/* Frenship - Build Mode Only */}
+            {buildMode === 'build' && (
+              <DynamicHouseIcon
+                houseId="frenship"
+                className={`${styles["nav-icon"]} ${styles['frenship-nav']}`}
+                onClick={() => {
+                  if (isMobile && touchedLocation === 'frenship') {
+                    setTouchedLocation(null);
+                    setHovered(null);
+                    handleLocationAccess('frenship', () => 
+                      openWindow({
+                        key: WINDOW_IDS.FRENSHIP_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.FRENSHIP_MAIN}
+                            headerTitle="Frenship"
+                            onClose={() => closeWindow(WINDOW_IDS.FRENSHIP_MAIN)}
+                            initialWidth="70vw"
+                            initialHeight="70vh"
+                            resizable={true}
+                          >
+                            <FrenshipMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      })
+                    );
+                  } else if (!isMobile) {
+                    handleLocationAccess('frenship', () => 
+                      openWindow({
+                        key: WINDOW_IDS.FRENSHIP_MAIN,
+                        window: (
+                          <DraggableResizeableWindow
+                            windowsId={WINDOW_IDS.FRENSHIP_MAIN}
+                            headerTitle="Frenship"
+                            onClose={() => closeWindow(WINDOW_IDS.FRENSHIP_MAIN)}
+                            initialWidth="70vw"
+                            initialHeight="70vh"
+                            resizable={true}
+                          >
+                            <FrenshipMain />
+                          </DraggableResizeableWindow>
+                        ),
+                      })
+                    );
+                  }
+                }}
+                onMouseEnter={() => {
+                  setHovered('frenship');
+                }}
+                onMouseLeave={() => {
+                  setHovered(null);
+                }}
+                onTouchStart={() => user && handleTouchEnter('frenship')}
                 onTouchEnd={handleTouchLeave}
               >
               </DynamicHouseIcon>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTimeBasedImage, HOUSE_CONFIGS, BUILDING_CONFIGS } from '../utils/timeBasedImages';
+import { useTimeBasedImage, HOUSE_CONFIGS, BUILDING_CONFIGS, LOCATION_CONFIGS } from '../utils/timeBasedImages';
 import styles from '../styles/map.module.css';
 
 interface DynamicHouseIconProps {
@@ -37,9 +37,20 @@ export function DynamicHouseIcon({
   ) : null;
 
   // Determine the image URL to use
-  const imageUrl = timeBasedImage 
-    ? timeBasedImage.currentImage 
-    : `/images/icons/${houseId}-icon.png`; // Fallback to regular icon
+  let imageUrl: string;
+  
+  // First check for location-specific config
+  if (LOCATION_CONFIGS[houseId]) {
+    imageUrl = LOCATION_CONFIGS[houseId].iconPath;
+  } 
+  // Then check for time-based image
+  else if (timeBasedImage) {
+    imageUrl = timeBasedImage.currentImage;
+  } 
+  // Finally fall back to standard icon naming
+  else {
+    imageUrl = `/images/icons/${houseId}-icon.png`;
+  }
 
   return (
     <div

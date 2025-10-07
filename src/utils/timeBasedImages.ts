@@ -109,6 +109,14 @@ export const HOUSE_CONFIGS: Record<string, TimeBasedImage> = {
   // Removed all house configs to use standard 300x300 icons instead
 };
 
+// Special configurations for locations that need explicit icon paths
+export const LOCATION_CONFIGS: Record<string, { iconPath: string }> = {
+  'treehouse': { iconPath: '/images/icons/treehouse.png' },
+  'four-thieves-bar': { iconPath: '/images/icons/4%20thieves.png' },
+  'wishing-tree': { iconPath: '/images/icons/wishing%20tree.png' },
+  'frenship': { iconPath: '/images/icons/frenship.png' },
+};
+
 // Building configurations with day/night switching
 export const BUILDING_CONFIGS: Record<string, TimeBasedImage> = {
   // Removed all building configs to use standard 300x300 icons instead

@@ -100,6 +100,8 @@ export const WINDOW_IDS = {
   // New locations
   HIGH_SCHOOL_MAIN: "high_school_main",
   PARADISE_MOTEL_MAIN: "paradise_motel_main",
+  WISHING_TREE_MAIN: "wishing_tree_main",
+  FRENSHIP_MAIN: "frenship_main",
   
   
   // High School rooms
@@ -118,6 +120,18 @@ export const WINDOW_IDS = {
   PARADISE_MOTEL_ROOM_1: "paradise_motel_room_1",
   PARADISE_MOTEL_ROOM_2: "paradise_motel_room_2",
   PARADISE_MOTEL_POOL: "paradise_motel_pool",
+  
+  // Wishing Tree rooms
+  WISHING_TREE_BASE: "wishing_tree_base",
+  WISHING_TREE_WALL: "wishing_tree_wall",
+  WISHING_TREE_HOLLOW: "wishing_tree_hollow",
+  WISHING_TREE_GARDEN: "wishing_tree_garden",
+  
+  // Frenship rooms
+  FRENSHIP_HALL: "frenship_hall",
+  FRENSHIP_COURTYARD: "frenship_courtyard",
+  FRENSHIP_LOCKERS: "frenship_lockers",
+  FRENSHIP_MEMORY: "frenship_memory",
   
   // Jock's House rooms
   JOCKS_HOUSE_LIVING_ROOM: "jocks_house_living_room",

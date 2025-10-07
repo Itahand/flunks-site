@@ -488,7 +488,7 @@
 .four-thieves-bar {
   top: 55%;
   left: 44%;
-  background-image: url('/images/icons/four-thieves-bar-icon.png');
+  background-image: url('/images/icons/4%20thieves.png');
 }
 
 .high-school {
@@ -539,6 +539,18 @@
   top: 18%;
   left: 44%;
   background-image: url('/images/icons/paradise-motel-icon.png');
+}
+
+.wishing-tree {
+  top: 65%;
+  left: 58%;
+  background-image: url('/images/icons/wishing%20tree.png');
+}
+
+.frenship {
+  top: 38%;
+  left: 35%;
+  background-image: url('/images/icons/frenship.png');
 }
 
 .shed {
@@ -596,7 +608,8 @@
 /* Background images for each location */
 .map-location-hover.high-school {
   background-image: url('/images/icons/high-school-icon.png');
-  animation: mapLocationPulse 2s ease-in-out infinite, heartbeat 2.4s ease-in-out infinite;
+  animation: mapLocationPulse 2s ease-in-out infinite;
+  /* Removed heartbeat animation - it conflicts with centering transform */
 }
 
 .map-location-hover.arcade {
@@ -1428,6 +1441,8 @@
 
 .flunk-fm-nav {
   background-image: url('/images/icons/flunk-fm-icon.png');
+  background-position: center -50px !important; /* Move image up 50px from top */
+  background-size: 110% !important; /* Enlarge icon by 10% */
 }
 
 .police-station-nav {
@@ -1440,6 +1455,14 @@
 
 .junkyard-nav {
   background-image: url('/images/icons/junkyard-icon.png');
+}
+
+.wishing-tree-nav {
+  background-image: url('/images/icons/wishing%20tree.png');
+}
+
+.frenship-nav {
+  background-image: url('/images/icons/frenship.png');
 }
 
 /* Special hover effect for Football Field in navigation */

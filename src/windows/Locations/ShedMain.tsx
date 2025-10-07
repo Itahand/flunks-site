@@ -38,62 +38,145 @@ const ShedMain = () => {
         className="absolute inset-0 w-full h-full object-cover z-0"
       />
 
-      <div className="absolute inset-0 z-10">
-        {/* Workbench */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.SHED_WORKBENCH,
-              "Workbench",
-              "Tools are frozen mid-project: a half-sanded bat, a radio cracked open, and a sketch taped beneath a rusty clamp titled 'Phase Two'."
-            )
-          }
-          className="absolute top-6 left-6 bg-orange-800 text-white px-4 py-2 rounded shadow-lg border border-orange-500 hover:bg-orange-700 transition-transform duration-200 hover:scale-105"
-        >
-          🔧 Workbench
-        </button>
+      {/* Buttons at bottom in grid layout - Arcade style */}
+      <div style={{
+        position: 'absolute',
+        bottom: '0',
+        left: '0',
+        right: '0',
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        padding: 'clamp(10px, 3vw, 20px)',
+        borderTop: '3px solid #FFD700',
+        boxShadow: '0 -5px 20px rgba(0,0,0,0.8)',
+        zIndex: 10
+      }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))',
+          gap: 'clamp(8px, 2vw, 12px)',
+          maxWidth: '1000px',
+          margin: '0 auto'
+        }}>
+          {/* Workbench */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.SHED_WORKBENCH,
+                "Workbench",
+                "Tools are frozen mid-project: a half-sanded bat, a radio cracked open, and a sketch taped beneath a rusty clamp titled 'Phase Two'."
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #C2410C, #EA580C)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              width: '100%',
+              minHeight: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}
+          >
+            🔧 Workbench
+          </button>
 
-        {/* Tool Wall */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.SHED_TOOL_WALL,
-              "Tool Wall",
-              "Every hook is labeled in fading marker: wrenches, bolt cutters, and a spot simply marked '?'. One outline is empty."
-            )
-          }
-          className="absolute top-6 right-6 bg-stone-800 text-white px-4 py-2 rounded shadow-lg border border-stone-500 hover:bg-stone-700 transition-transform duration-200 hover:scale-105"
-        >
-          🧰 Tool Wall
-        </button>
+          {/* Tool Wall */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.SHED_TOOL_WALL,
+                "Tool Wall",
+                "Every hook is labeled in fading marker: wrenches, bolt cutters, and a spot simply marked '?'. One outline is empty."
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #57534E, #78716C)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              width: '100%',
+              minHeight: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}
+          >
+            🧰 Tool Wall
+          </button>
 
-        {/* Storage */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.SHED_STORAGE,
-              "Storage Crates",
-              "Milk crates overflow with polaroids, gas masks, and old science fair trophies. A hidden drawer clicks when you press the cracked baseball card."
-            )
-          }
-          className="absolute bottom-6 left-6 bg-lime-800 text-white px-4 py-2 rounded shadow-lg border border-lime-500 hover:bg-lime-700 transition-transform duration-200 hover:scale-105"
-        >
-          📦 Storage
-        </button>
+          {/* Storage */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.SHED_STORAGE,
+                "Storage Crates",
+                "Milk crates overflow with polaroids, gas masks, and old science fair trophies. A hidden drawer clicks when you press the cracked baseball card."
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #4D7C0F, #65A30D)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              width: '100%',
+              minHeight: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}
+          >
+            📦 Storage
+          </button>
 
-        {/* Trapdoor */}
-        <button
-          onClick={() =>
-            openRoom(
-              WINDOW_IDS.SHED_SECRET_TRAPDOOR,
-              "Trapdoor",
-              "A loose plank lifts to reveal a ladder descending into pitch darkness. The air below smells like oil and rain-soaked concrete."
-            )
-          }
-          className="absolute bottom-6 right-6 bg-slate-900 text-white px-4 py-2 rounded shadow-lg border border-slate-500 hover:bg-slate-700 transition-transform duration-200 hover:scale-105"
-        >
-          ⬇️ Trapdoor
-        </button>
+          {/* Trapdoor */}
+          <button
+            onClick={() =>
+              openRoom(
+                WINDOW_IDS.SHED_SECRET_TRAPDOOR,
+                "Trapdoor",
+                "A loose plank lifts to reveal a ladder descending into pitch darkness. The air below smells like oil and rain-soaked concrete."
+              )
+            }
+            style={{
+              background: 'linear-gradient(45deg, #0F172A, #475569)',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: '8px',
+              padding: 'clamp(10px, 2.5vw, 15px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              width: '100%',
+              minHeight: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center'
+            }}
+          >
+            ⬇️ Trapdoor
+          </button>
+        </div>
       </div>
     </div>
   );
