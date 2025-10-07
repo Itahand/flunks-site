@@ -1323,13 +1323,13 @@
   align-items: center;
 }
 
-/* Grid layout for build mode: show 4 icons per row */
+/* Grid layout for build mode: show 4 icons per row ONLY on mobile.
+   Desktop should remain a single flex row so we intentionally do NOT
+   override the base .nav-buttons flex styling here. The mobile media
+   query below applies the actual grid display. */
 .nav-buttons-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 20px;
-  align-items: center;
-  justify-items: center;
+  /* Desktop inherits flex row layout from .nav-buttons; add no-op custom prop to avoid empty ruleset lint error */
+  --desktop-grid-disabled: 1;
 }
 
 .nav-icon {

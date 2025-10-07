@@ -18,7 +18,6 @@ This directory contains PNG icons for the enhanced hover system on the map.
 - `lake-tree-icon.png` - 🌳 Lake Tree
 - `rug-doctor-icon.png` - 🧽 Rug Doctor
 - `shed-icon.png` - 🏚️ Old Shed
-- `secret-treehouse-icon.png` - 🌲 Secret Treehouse
 - `high-school-icon.png` - 🏫 High School
 - `paradise-motel-icon.png` - 🏨 Paradise Motel
 

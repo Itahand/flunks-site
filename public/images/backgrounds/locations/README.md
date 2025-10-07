@@ -7,7 +7,7 @@ Structure
 Location keys
 arcade, jocks-house, freaks-house, geeks-house, preps-house, flunk-fm, police-station,
 football-field, snack-shack, four-thieves-bar, junkyard, lake-tree, rug-doctor, shed,
-secret-treehouse, high-school, paradise-motel
+high-school, paradise-motel
 
 Room slug rules
 - Lowercase, spaces and punctuation -> dash

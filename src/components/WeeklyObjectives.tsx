@@ -460,54 +460,63 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
             background: 'linear-gradient(45deg, rgba(255, 215, 0, 0.4), rgba(50, 205, 50, 0.4))',
             border: '3px solid #FFD700',
             borderRadius: '12px',
-            padding: '20px',
+            padding: '16px 14px',
             marginTop: '20px',
             textAlign: 'center',
             animation: 'completionFanfare 2s ease-in-out infinite alternate',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            maxWidth: '100%',
+            width: '100%',
+            boxSizing: 'border-box'
           }}>
             <div style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#FFD700',
-              marginBottom: '8px',
-              textShadow: '2px 2px 4px #000000',
-              animation: 'titlePulse 1s ease-in-out infinite',
-              fontFamily: '"Press Start 2P", "Courier New", monospace',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
               position: 'relative',
-              zIndex: 10,
-              letterSpacing: '2px'
+              zIndex: 10
             }}>
-              🎉 CHAPTER COMPLETE! 🎉
+              <div style={{
+                fontSize: 'clamp(14px, 5vw, 22px)',
+                fontWeight: 'bold',
+                color: '#FFD700',
+                textShadow: '2px 2px 4px #000000',
+                animation: 'titlePulse 1s ease-in-out infinite',
+                fontFamily: '"Press Start 2P", "Courier New", monospace',
+                letterSpacing: '1px',
+                lineHeight: 1.2,
+                wordBreak: 'break-word'
+              }}>🎉 CHAPTER<br/>COMPLETE! 🎉</div>
+              <div style={{
+                fontSize: 'clamp(10px, 4vw, 16px)',
+                color: '#32CD32',
+                fontWeight: 'bold',
+                textShadow: '1px 1px 2px #000000',
+                fontFamily: '"Press Start 2P", "Courier New", monospace',
+                letterSpacing: '1px',
+                lineHeight: 1.25,
+                wordBreak: 'break-word',
+                maxWidth: '95%'
+              }}>READY FOR<br/>NEXT ADVENTURE!</div>
             </div>
-            <div style={{
-              fontSize: '16px',
-              color: '#32CD32',
-              fontWeight: 'bold',
-              textShadow: '1px 1px 2px #000000',
-              fontFamily: '"Press Start 2P", "Courier New", monospace',
-              position: 'relative',
-              zIndex: 10,
-              letterSpacing: '1px'
-            }}>
-              READY FOR NEXT ADVENTURE!
-            </div>
-            
             {/* Celebration Particles */}
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
                 style={{
                   position: 'absolute',
-                  top: `${20 + i * 15}%`,
-                  left: `${10 + i * 20}%`,
-                  width: '20px',
-                  height: '20px',
+                  top: `${15 + i * 16}%`,
+                  left: `${8 + i * 18}%`,
+                  width: '14px',
+                  height: '14px',
                   background: i % 2 === 0 ? '#FFD700' : '#32CD32',
                   borderRadius: '50%',
+                  opacity: 0.85,
                   animation: `starTwinkle ${1 + i * 0.3}s ease-in-out infinite`,
-                  animationDelay: `${i * 0.2}s`
+                  animationDelay: `${i * 0.25}s`
                 }}
               />
             ))}

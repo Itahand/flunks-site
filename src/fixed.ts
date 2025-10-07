@@ -98,15 +98,9 @@ export const WINDOW_IDS = {
   JUNKYARD_SECRET_BUNKER: "junkyard_secret_bunker",
   
   // New locations
-  SECRET_TREEHOUSE_MAIN: "secret_treehouse_main",
   HIGH_SCHOOL_MAIN: "high_school_main",
   PARADISE_MOTEL_MAIN: "paradise_motel_main",
   
-  // Secret Treehouse rooms
-  SECRET_TREEHOUSE_LOFT: "secret_treehouse_loft",
-  SECRET_TREEHOUSE_DESK: "secret_treehouse_desk", 
-  SECRET_TREEHOUSE_TRUNK: "secret_treehouse_trunk",
-  SECRET_TREEHOUSE_WINDOW: "secret_treehouse_window",
   
   // High School rooms
   HIGH_SCHOOL_HALLWAY: "high_school_hallway",
