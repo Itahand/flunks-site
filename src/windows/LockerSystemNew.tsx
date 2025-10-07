@@ -1312,7 +1312,27 @@ const LockerSystemNew: React.FC = () => {
                             disabled={!canClaimDaily}
                             onClick={async () => {
                               if (!canClaimDaily) return;
-                              
+
+                              // Lazy init a reusable bubble sound (attach to window to persist during session)
+                              try {
+                                if (typeof window !== 'undefined' && typeof Audio !== 'undefined') {
+                                  const anyWindow = window as any;
+                                  if (!anyWindow.__bubbleClaimSound) {
+                                    anyWindow.__bubbleClaimSound = new Audio('/sounds/bubble.mp3');
+                                    anyWindow.__bubbleClaimSound.volume = 0.5;
+                                  }
+                                  // Basic rate limiting: don't spam play within 300ms
+                                  const now = Date.now();
+                                  if (!anyWindow.__lastBubblePlay || now - anyWindow.__lastBubblePlay > 300) {
+                                    anyWindow.__bubbleClaimSound.currentTime = 0; // restart
+                                    anyWindow.__bubbleClaimSound.play().catch(() => {});
+                                    anyWindow.__lastBubblePlay = now;
+                                  }
+                                }
+                              } catch (e) {
+                                // Non-fatal; ignore audio errors
+                              }
+
                               // Implement daily check-in logic
                               try {
                                 const result = await fetch('/api/daily-checkin', {

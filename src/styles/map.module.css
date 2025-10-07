@@ -1411,7 +1411,11 @@
 
 /* Build-mode only (hidden on public) upcoming / extra locations */
 .treehouse-nav {
-  background-image: url('/images/icons/treehouse.png'); /* updated to dedicated treehouse art */
+  /* Use dedicated treehouse art; fallback to legacy if moved */
+  background-image: url('/images/icons/treehouse.png'), url('/images/icons/treehouse-icon.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .snack-shack-nav {
