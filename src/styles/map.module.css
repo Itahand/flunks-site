@@ -425,9 +425,9 @@
 
 /* Adjust these based on where the icons should appear on the map image */
 .treehouse {
-  top: 74%;   
-  left: 23%;  /* Updated position for secret treehouse */
-  background-image: url('/images/icons/secret-treehouse-icon.png');
+  top: 74%;
+  left: 23%;
+  background-image: url('/images/icons/treehouse.png'); /* updated to new unified treehouse asset */
 }
 
 .arcade {
@@ -1402,7 +1402,7 @@
 
 /* Build-mode only (hidden on public) upcoming / extra locations */
 .treehouse-nav {
-  background-image: url('/images/icons/tree.png'); /* fallback icon */
+  background-image: url('/images/icons/treehouse.png'); /* updated to dedicated treehouse art */
 }
 
 .snack-shack-nav {

@@ -36,11 +36,6 @@ export const WINDOW_IDS = {
   MOTEL_TOP_RIGHT: "motel_top_right",
   MOTEL_BOTTOM_LEFT: "motel_bottom_left",
   MOTEL_BOTTOM_RIGHT: "motel_bottom_right",
-  DINER_MAIN: "diner_main",
-  DINER_TOP_LEFT: "diner_top_left",
-  DINER_TOP_RIGHT: "diner_top_right",
-  DINER_BOTTOM_LEFT: "diner_bottom_left",
-  DINER_BOTTOM_RIGHT: "diner_bottom_right",
   FLAPPY_FLUNK: "flappy_flunk",
   FLAPPY_FLUNK_LEADERBOARD: "flappy_flunk_leaderboard",
   FLUNKY_UPPY: "flunky_uppy",
@@ -230,27 +225,27 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
   },
   [WINDOW_IDS.TREEHOUSE_MAIN]: {
     appName: "Treehouse",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/treehouse.png",
     key: WINDOW_IDS.TREEHOUSE_MAIN,
   },
   [WINDOW_IDS.TREEHOUSE_LOFT]: {
     appName: "Loft",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/treehouse.png",
     key: WINDOW_IDS.TREEHOUSE_LOFT,
   },
   [WINDOW_IDS.TREEHOUSE_DESK]: {
     appName: "Work Desk",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/treehouse.png",
     key: WINDOW_IDS.TREEHOUSE_DESK,
   },
   [WINDOW_IDS.TREEHOUSE_TRUNK]: {
     appName: "Old Trunk",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/treehouse.png",
     key: WINDOW_IDS.TREEHOUSE_TRUNK,
   },
   [WINDOW_IDS.TREEHOUSE_WINDOW]: {
     appName: "Window View",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/treehouse.png",
     key: WINDOW_IDS.TREEHOUSE_WINDOW,
   },
   [WINDOW_IDS.ARCADE_MAIN]: {
@@ -280,53 +275,28 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
   },
   [WINDOW_IDS.MOTEL_MAIN]: {
     appName: "Motel",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/paradise-motel-icon.png",
     key: WINDOW_IDS.MOTEL_MAIN,
   },
   [WINDOW_IDS.MOTEL_TOP_LEFT]: {
     appName: "Motel TL",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/paradise-motel-icon.png",
     key: WINDOW_IDS.MOTEL_TOP_LEFT,
   },
   [WINDOW_IDS.MOTEL_TOP_RIGHT]: {
     appName: "Motel TR",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/paradise-motel-icon.png",
     key: WINDOW_IDS.MOTEL_TOP_RIGHT,
   },
   [WINDOW_IDS.MOTEL_BOTTOM_LEFT]: {
     appName: "Motel BL",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/paradise-motel-icon.png",
     key: WINDOW_IDS.MOTEL_BOTTOM_LEFT,
   },
   [WINDOW_IDS.MOTEL_BOTTOM_RIGHT]: {
     appName: "Motel BR",
-    appIcon: "/images/icons/tree.png",
+    appIcon: "/images/icons/paradise-motel-icon.png",
     key: WINDOW_IDS.MOTEL_BOTTOM_RIGHT,
-  },
-  [WINDOW_IDS.DINER_MAIN]: {
-    appName: "Diner",
-    appIcon: "/images/icons/tree.png",
-    key: WINDOW_IDS.DINER_MAIN,
-  },
-  [WINDOW_IDS.DINER_TOP_LEFT]: {
-    appName: "Diner TL",
-    appIcon: "/images/icons/tree.png",
-    key: WINDOW_IDS.DINER_TOP_LEFT,
-  },
-  [WINDOW_IDS.DINER_TOP_RIGHT]: {
-    appName: "Diner TR",
-    appIcon: "/images/icons/tree.png",
-    key: WINDOW_IDS.DINER_TOP_RIGHT,
-  },
-  [WINDOW_IDS.DINER_BOTTOM_LEFT]: {
-    appName: "Diner BL",
-    appIcon: "/images/icons/tree.png",
-    key: WINDOW_IDS.DINER_BOTTOM_LEFT,
-  },
-  [WINDOW_IDS.DINER_BOTTOM_RIGHT]: {
-    appName: "Diner BR",
-    appIcon: "/images/icons/tree.png",
-    key: WINDOW_IDS.DINER_BOTTOM_RIGHT,
   },
   [WINDOW_IDS.FLAPPY_FLUNK]: {
     appName: "Flappy Flunk",

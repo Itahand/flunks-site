@@ -4,7 +4,6 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import TreehouseMain from "windows/Locations/TreehouseMain";
 import ArcadeMain from "windows/Locations/ArcadeMain";
 import MotelMain from "windows/Locations/MotelMain";
-import DinerMain from "windows/Locations/DinerMain";
 // New location imports
 import JocksHouseMain from "windows/Locations/JocksHouseMain";
 import FreaksHouseMain from "windows/Locations/FreaksHouseMain";
@@ -549,7 +548,12 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
             className={styles["background-map"]}
             alt="Semester 0 Map"
           />      {/* Screen dimming overlay - appears when hovering over any target location */}
-      {!isMobile && (hovered === 'high-school' || hovered === 'arcade' || hovered === 'football-field' || hovered === 'rug-doctor' || hovered === 'freaks-house' || hovered === 'geeks-house' || hovered === 'jocks-house' || hovered === 'preps-house') && (
+      {!isMobile && (
+        hovered === 'high-school' || hovered === 'arcade' || hovered === 'football-field' || hovered === 'rug-doctor' ||
+        hovered === 'freaks-house' || hovered === 'geeks-house' || hovered === 'jocks-house' || hovered === 'preps-house' ||
+        hovered === 'treehouse' || hovered === 'snack-shack' || hovered === 'four-thieves-bar' || hovered === 'flunk-fm' ||
+        hovered === 'police-station' || hovered === 'shed' || hovered === 'junkyard'
+      ) && (
         <div className={styles["map-overlay"]} />
       )}
 
@@ -577,6 +581,27 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
       )}
       {!isMobile && hovered === 'preps-house' && (
         <div className={`${styles["map-location-hover"]} ${styles["preps-house"]}`} />
+      )}
+      {!isMobile && hovered === 'treehouse' && (
+        <div className={`${styles["map-location-hover"]} ${styles["treehouse"]}`} />
+      )}
+      {!isMobile && hovered === 'snack-shack' && (
+        <div className={`${styles["map-location-hover"]} ${styles["snack-shack"]}`} />
+      )}
+      {!isMobile && hovered === 'four-thieves-bar' && (
+        <div className={`${styles["map-location-hover"]} ${styles["four-thieves-bar"]}`} />
+      )}
+      {!isMobile && hovered === 'flunk-fm' && (
+        <div className={`${styles["map-location-hover"]} ${styles["flunk-fm"]}`} />
+      )}
+      {!isMobile && hovered === 'police-station' && (
+        <div className={`${styles["map-location-hover"]} ${styles["police-station"]}`} />
+      )}
+      {!isMobile && hovered === 'shed' && (
+        <div className={`${styles["map-location-hover"]} ${styles["shed"]}`} />
+      )}
+      {!isMobile && hovered === 'junkyard' && (
+        <div className={`${styles["map-location-hover"]} ${styles["junkyard"]}`} />
       )}
 
       <button className={styles["close-btn"]} onClick={onClose}>✖</button>
