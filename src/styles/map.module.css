@@ -1323,6 +1323,15 @@
   align-items: center;
 }
 
+/* Grid layout for build mode: show 4 icons per row */
+.nav-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  align-items: center;
+  justify-items: center;
+}
+
 .nav-icon {
   position: relative;
   width: 70px;
@@ -1510,6 +1519,13 @@
   .nav-buttons {
     gap: 15px;
     justify-content: center;
+  }
+
+  /* Keep 4 per row on build site even on mobile */
+  .nav-buttons-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px 12px; /* row and column gaps */
+    justify-items: center;
   }
   
   .nav-icon {
