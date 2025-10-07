@@ -761,9 +761,96 @@ const FlunksMessenger: React.FC = () => {
   if (!user) {
     return (
       <UserSetup>
-        <h2>🔒 Connect Wallet to Chat</h2>
-        <p>Please connect your wallet to access Flunks Messenger</p>
-        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+        {/* Retro NES styled warning box */}
+        <div style={{
+          background: 'linear-gradient(45deg, #1e1e1e, #2d2d30, #1e1e1e)',
+          border: '3px solid #FFD700',
+          padding: '20px',
+          borderRadius: '4px',
+          marginBottom: '20px',
+          position: 'relative',
+          boxShadow: '0 0 20px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 6px 0 #8B7500',
+          maxWidth: '400px'
+        }}>
+          {/* Retro scanlines */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'repeating-linear-gradient(0deg, rgba(255, 215, 0, 0.05) 0px, rgba(255, 215, 0, 0.05) 1px, transparent 1px, transparent 2px)',
+            pointerEvents: 'none',
+            borderRadius: '4px'
+          }} />
+          
+          <div style={{ 
+            fontSize: '32px', 
+            marginBottom: '12px',
+            filter: 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))'
+          }}>💬</div>
+          <div style={{ 
+            fontSize: '14px', 
+            fontWeight: 'bold',
+            color: '#FFD700',
+            textShadow: '0 0 10px rgba(255, 215, 0, 0.7), 2px 2px 0px #000',
+            fontFamily: "'Press Start 2P', monospace",
+            marginBottom: '10px',
+            letterSpacing: '1px',
+            lineHeight: '1.6'
+          }}>
+            CONNECT YOUR WALLET
+          </div>
+          <div style={{ 
+            fontSize: '10px', 
+            marginTop: '8px',
+            color: '#00ffff',
+            textShadow: '0 0 5px rgba(0, 255, 255, 0.5)',
+            fontFamily: "'Press Start 2P', monospace",
+            lineHeight: '1.6'
+          }}>
+            ACCESS FLUNKS MESSENGER
+          </div>
+        </div>
+
+        <button style={{
+          background: 'linear-gradient(180deg, #00ffff 0%, #0088ff 100%)',
+          color: '#000',
+          border: '3px solid #fff',
+          padding: '14px 28px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          fontFamily: "'Press Start 2P', monospace",
+          boxShadow: '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)',
+          textShadow: '1px 1px 0px rgba(255, 255, 255, 0.5)',
+          transition: 'all 0.1s',
+          letterSpacing: '1px'
+        }}
+        onMouseDown={(e) => {
+          e.currentTarget.style.transform = 'translateY(3px)';
+          e.currentTarget.style.boxShadow = '0 3px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
+        }}
+        onMouseUp={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
+        }}
+        onClick={() => {
+          // Trigger the DynamicWidget connection
+          const dynamicBtn = document.querySelector('[data-testid="dynamic-widget-button"]') as HTMLElement;
+          if (dynamicBtn) dynamicBtn.click();
+        }}
+        >
+          🔗 LOG IN OR SIGN UP
+        </button>
+        
+        {/* Hidden DynamicWidget - we'll trigger it programmatically */}
+        <div style={{ display: 'none' }}>
           <DynamicWidget />
         </div>
       </UserSetup>
