@@ -230,95 +230,133 @@ const sampleChapters: Chapter[] = [
     title: 'Homecoming 🏈',
     subtitle: 'Thursday: The homecoming parade rolled through town, everything was perfect...',
     unlocked: true, // Will be controlled by build mode
-    thumbnail: '/images/cutscenes/homecoming-main.png',
+    thumbnail: '/images/cutscenes/homecoming/homecoming-main.png',
     scenes: [
-      // Scene 1: Thursday - Homecoming Parade
+      // Scene 1: Thursday - The Dream
       {
         id: 'thursday-parade',
-        image: '/images/cutscenes/homecoming-1.png',
+        image: '/images/cutscenes/homecoming/homecoming-main.png',
         lines: [
-          'Thursday: The homecoming parade rolled through town like something out of a dream. Floats wrapped in crimson and gold, the marching band playing our fight song, everyone smiling in the afternoon sun. Looking back now, it all seems brighter than it probably was. But that\'s how memory works, isn\'t it?'
+          'Thursday felt like something out of a dream. The parade crawled down Main Street, floats wrapped in crimson and gold, the marching band echoing between brick buildings. Kids chased candy in the street. The air smelled like popcorn and autumn. Looking back, it all feels brighter than it probably was — that soft, golden kind of memory you can\'t quite trust.'
         ],
         music: '/music/homecomingstory.mp3'
       },
-      // Scene 2: Thursday Evening - Preparations
+      // Scene 2: Homecoming Court
       {
-        id: 'thursday-prep',
-        image: '/images/cutscenes/homecoming-2.png',
+        id: 'homecoming-court',
+        image: '/images/cutscenes/homecoming/homecoming-1.png',
         lines: [
-          'That evening, the gym glowed with possibility. We stayed late hanging streamers, stringing lights, transforming cinder blocks and hardwood into something magical. The disco ball caught the light just right. Everything felt perfect. We had no idea what was coming.'
+          'The usual suspects lined up for Homecoming Court — the ones everyone expected. Smiles that had been in yearbooks since kindergarten, names the town could recite by heart. Sons and daughters of the same families who\'d walked the halls decades before.',
+          '',
+          'In a place like this, it\'s hard to fall through the cracks — everyone knows you, everyone waves. Generations born, raised, and rooted here like the maples out by the football field.'
         ]
       },
-      // Scene 3: Friday Morning - Murmurs Start
+      // Scene 3: Friday Morning
       {
-        id: 'friday-murmurs',
-        image: '/images/cutscenes/homecoming-3.png',
+        id: 'friday-morning',
+        image: '/images/cutscenes/homecoming/homecoming-2.png',
         lines: [
-          'Friday morning arrived with whispers we tried to ignore. Something in the teachers\' eyes didn\'t match their reassuring smiles. We pushed it aside, focused on pep rallies and last-minute plans. The murmurs were easy to dismiss when the sun was still shining.'
+          'Friday morning carried a weird quiet. Teachers whispering in doorways, eyes darting just long enough to notice. We brushed it off — chalked it up to nerves before the big game. The pep rally roared like normal, but underneath the cheers, something heavy was starting to settle in.'
         ]
       },
-      // Scene 4: Friday Afternoon - The Geek
+      // Scene 4: Friday Night Game
       {
-        id: 'friday-geek',
-        image: '/images/cutscenes/homecoming-4.png',
+        id: 'friday-night-game',
+        image: '/images/cutscenes/homecoming/homecoming-3.png',
         lines: [
-          'They\'d known each other from late nights at the arcade, high scores and shared quarters. From tutoring sessions that always ran long, equations turning into real conversations. When the call came, it hit different. Some friendships are built on more than just showing up to the same place.'
+          'By Friday night, the whispers had turned into something heavier — the kind of quiet that hums beneath the noise. The bleachers were packed, the band still played, but people were starting to look at each other instead of the field. The players didn\'t hear it — not yet. They were locked in, chasing a win under the glare of the lights.',
+          '',
+          'And when that last-minute touchdown hit, the crowd erupted like always… but the cheers felt thinner this time. Somewhere between the echoes, you could feel it — that something wasn\'t right, and no one wanted to be the first to say it.'
         ]
       },
-      // Scene 5: Friday Night - The Jock
+      // Scene 5: The Geek
       {
-        id: 'friday-jock',
-        image: '/images/cutscenes/homecoming-5.png',
+        id: 'the-geek',
+        image: '/images/cutscenes/homecoming/homecoming-4.png',
         lines: [
-          'The team won that night. Scoreboard blazing, crowd roaring. But they couldn\'t shake the feeling that something was wrong. Early morning workouts together, parties where they\'d always found each other in the crowd. When you know someone like that, you know when something\'s off. Even through the victory, the worry gnawed.'
+          'They\'d bonded over late-night arcade runs, sharing quarters and secrets between flashing screens. Study sessions that turned into stories, inside jokes no one else got. When the call came, it didn\'t make sense. Some connections just hit deeper — like a code only two people ever knew.'
         ]
       },
-      // Scene 6: Saturday Morning - The Freak
+      // Scene 6: The Jock
       {
-        id: 'saturday-freak',
-        image: '/images/cutscenes/homecoming-6.png',
+        id: 'the-jock',
+        image: '/images/cutscenes/homecoming/homecoming-5.png',
         lines: [
-          'Saturday morning, the call came. They met at concerts, discovered the same underground bands, ended up at the same parties where the real conversations happened after midnight. That kind of connection doesn\'t just disappear. But when the phone rang, it felt like maybe it had. The news broke everything.'
+          'He\'d known Flunko forever. Same babysitter, same muddy backyard, same scraped knees from summers that felt like they\'d never end. Even when they grew up on opposite sides of town — one with a beat-up truck, the other with hand-me-down cleats — it didn\'t matter. They were teammates, brothers in all but name.',
+          '',
+          'Friday nights were their rhythm: brothers in arms going into battle. But that night, something was off. He couldn\'t shake the feeling — that strange ache that comes when a piece of your past doesn\'t show up where it always should.'
         ]
       },
-      // Scene 7: Saturday Afternoon - The Prep
+      // Scene 7: The Freak
       {
-        id: 'saturday-prep',
-        image: '/images/cutscenes/homecoming-7.png',
+        id: 'the-freak',
+        image: '/images/cutscenes/homecoming/homecoming-6.png',
         lines: [
-          'Country club summers and Boy Scout camping trips. They\'d grown up in the same circles, knew each other\'s families, shared history that went back to childhood. When the official announcement came that the dance was cancelled, it wasn\'t just a cancelled dance. It was the end of something that felt permanent.'
+          'Morning came slow. News spread faster. They\'d met through static-filled mixtapes and midnight basement shows. Two people who found each other in the noise. When the phone rang, everything tilted. The songs they used to share suddenly sounded hollow.'
         ]
       },
-      // Scene 8: Saturday Night - Empty Gym
+      // Scene 8: The Prep
       {
-        id: 'saturday-night',
-        image: '/images/cutscenes/homecoming-8.png',
+        id: 'the-prep',
+        image: '/images/cutscenes/homecoming/homecoming-7.png',
         lines: [
-          'Saturday night, the gym sat in darkness. All those decorations we\'d hung with such care just... waiting. The disco ball that should\'ve been spinning caught no light. The silence was deafening. We all felt it, that hollow ache of something stolen.'
+          'They\'d known each other since treehouse summers and picture-day smiles. They were in the same troop for the scouts for as long as they can remember. The kind of friendship you think will just always be there.',
+          '',
+          'The news hit like a ton of bricks. The sudden sharp, numb feeling spread throughout his body like a chill from the first morning freeze of the year. He heard the sounds, but stopped processing the words. "Your friend is missing" and then everything goes blank...'
         ]
       },
-      // Scene 9: Sunday - The Search Begins
+      // Scene 9: The Empty Gym
+      {
+        id: 'empty-gym',
+        image: '/images/cutscenes/homecoming/homecoming-gym.png',
+        lines: [
+          'The gym was supposed to glow that night — decked out in silver streamers, cardboard stars, and an MTV theme everyone was looking forward to. They\'d even built a makeshift Moon Man for the stage, spray-painted and glittered under the cheap lights. It should\'ve been loud — music shaking the floor, laughter echoing off the bleachers.',
+          '',
+          'Instead, it sat still. Decorations hung like ghosts in the dark, the disco ball catching only the glow of emergency lights. While the gym waited, everyone else was out searching — flashlights in hand, hearts pounding, trying to find what the night had stolen.'
+        ]
+      },
+      // Scene 10: Sunday Search
       {
         id: 'sunday-search',
-        image: '/images/cutscenes/homecoming-9.png',
+        image: '/images/cutscenes/homecoming/homecoming-8.png',
         lines: [
-          'Sunday morning felt surreal. Search parties forming, the whole town mobilizing. Parents with trembling hands holding photos, asking if anyone had seen anything, heard anything. We walked familiar streets that suddenly felt foreign, looking for answers that seemed impossible to find.'
+          'By Sunday, the whole town was out. Scouring the ditches, retracing steps. Parents calling names into the wind. Streets that once felt safe started to feel like someone else\'s town. Every corner held a maybe, every sound felt like hope trying to find its way home.'
         ]
       },
-      // Scene 10: Monday - School Cancelled
+      // Scene 11: Missing Posters
       {
-        id: 'monday-cancelled',
-        image: '/images/cutscenes/homecoming-10.png',
+        id: 'missing-posters',
+        image: '/images/cutscenes/homecoming/homecoming-9.png',
         lines: [
-          'Monday, the halls stayed empty. No bells, no voices, no life. Just silence where there should have been the sound of home. We were supposed to be back, comparing stories from the weekend, laughing about the dance. Instead, there was nothing. Just absence.'
+          'The whole town was covered in paper faces. Flyers on light poles, grocery store windows, the diner door — all curling at the edges in the autumn wind. The radio played his name between songs, the local news ran the same school photo on repeat.',
+          '',
+          'Parents stood shoulder to shoulder, voices cracking as they called out into fields that suddenly felt endless. Days passed. No tracks. No trail. Just a name that echoed everywhere, and a silence that grew louder each time the sun went down. It was like he\'d vanished — clean, without a trace.'
         ]
       },
-      // Scene 11: The Mystery Remains
+      // Scene 12: Town Response
       {
-        id: 'mystery-remains',
-        image: '/images/cutscenes/homecoming-11.png',
+        id: 'town-response',
+        image: '/images/cutscenes/homecoming/homecoming-10.png',
         lines: [
-          'Looking back now, everything about that week glows with an amber light. The parade, the decorations, the hope. Memory does that—makes the before times shimmer. The mystery of what happened still echoes through these halls. Some questions never get answered. Some losses never stop hurting. We carry them forward, into whatever comes next.'
+          'In a town like ours, everything stops when something like this happens. The 4 Thieves bar and grill closed early. The Snack Shack handed out coffee for free. People who hadn\'t spoken in years found themselves side by side stapling posters to telephone poles. Murals started to appear — chalk drawings on sidewalks, spray paint on brick walls — his face looking out over the streets he used to walk.',
+          '',
+          'Folks checked the creek, the fields, the old hangouts behind the school. Everyone had a story, a theory, a memory. That\'s how small towns work — when one person goes missing, the whole world narrows until all that matters is bringing them home.'
+        ]
+      },
+      // Scene 13: Monday Investigation
+      {
+        id: 'monday-investigation',
+        image: '/images/cutscenes/homecoming/homecoming-11.png',
+        lines: [
+          'But come Monday, the school went dark. Police tape wrapped the entrances, the kind you\'d only ever seen on TV. Reporters parked out front, microphones catching the wind while investigators moved through hallways that used to buzz with noise. They talked to everyone — students, teachers, anyone who might\'ve seen something, heard something, felt something.'
+        ]
+      },
+      // Scene 14: The Beginning
+      {
+        id: 'the-beginning',
+        image: '/images/cutscenes/homecoming/homecoming-12.png',
+        lines: [
+          'For the rest of the week, the doors stayed locked, the air thick with questions. But somewhere in all that silence, four of Flunko\'s friends started piecing things together. Familiar faces, familiar places — trying to make sense of it all. The halls might\'ve been empty, but the story was just starting to wake up.'
         ]
       }
     ]
