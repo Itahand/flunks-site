@@ -376,7 +376,7 @@ interface OnlineUser {
 }
 
 const FlunksMessenger: React.FC = () => {
-  const { user } = useDynamicContext();
+  const { user, setShowAuthFlow } = useDynamicContext();
   
   // Add debugging for user state
   useEffect(() => {
@@ -779,7 +779,7 @@ const FlunksMessenger: React.FC = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'repeating-linear-gradient(0deg, rgba(255, 215, 0, 0.05) 0px, rgba(255, 215, 0, 0.05) 1px, transparent 1px, transparent 2px)',
+            background: 'repeating-linear-gradient(0deg, rgba(255, 215, 0, 0.05) 0pxthe, rgba(255, 215, 0, 0.05) 1px, transparent 1px, transparent 2px)',
             pointerEvents: 'none',
             borderRadius: '4px'
           }} />
@@ -841,18 +841,15 @@ const FlunksMessenger: React.FC = () => {
           e.currentTarget.style.boxShadow = '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
         }}
         onClick={() => {
-          // Trigger the DynamicWidget connection
-          const dynamicBtn = document.querySelector('[data-testid="dynamic-widget-button"]') as HTMLElement;
-          if (dynamicBtn) dynamicBtn.click();
+          // Trigger Dynamic wallet authentication
+          console.log('🔗 Opening Dynamic wallet login...');
+          setShowAuthFlow(true);
         }}
         >
           🔗 LOG IN OR SIGN UP
         </button>
         
-        {/* Hidden DynamicWidget - we'll trigger it programmatically */}
-        <div style={{ display: 'none' }}>
-          <DynamicWidget />
-        </div>
+        {/* No need for hidden DynamicWidget - using setShowAuthFlow instead */}
       </UserSetup>
     );
   }
