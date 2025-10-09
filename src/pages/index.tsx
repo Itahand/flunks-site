@@ -396,30 +396,6 @@ const windowsMemod = useMemo(() => (
           })}
         />
 
-        {/* 6.7. Flunky Uppy */}
-        <ConditionalAppIcon
-          appId="flunky-uppy"
-          title="Flunky Uppy"
-          icon="/images/icons/flunky-uppy-icon.png"
-          onDoubleClick={() => openWindow({
-            key: WINDOW_IDS.FLUNKY_UPPY,
-            window: (
-              <DraggableResizeableWindow
-                windowsId={WINDOW_IDS.FLUNKY_UPPY}
-                onClose={() => closeWindow(WINDOW_IDS.FLUNKY_UPPY)}
-                initialWidth="420px"
-                initialHeight="720px"
-                resizable={true}
-                maximizable={false}
-                headerTitle="Flunky Uppy"
-                headerIcon="/images/icons/flunky-uppy-icon.png"
-              >
-                <FlunkJumpWindow />
-              </DraggableResizeableWindow>
-            ),
-          })}
-        />
-
         {/* 5b. VCR Effects Test - Development Tool */}
         <ConditionalAppIcon
           appId="vcr-test"

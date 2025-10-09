@@ -242,7 +242,7 @@ const TextBox = styled.div`
     top: auto;
     left: auto;
     transform: none;
-    margin: 10px auto;
+    margin: 15px auto;
     border-width: 3px;
     font-size: 14px;
   }

@@ -284,7 +284,7 @@ const sampleChapters: Chapter[] = [
         lines: [
           'He\'d known Flunko forever. Same babysitter, same muddy backyard, same scraped knees from summers that felt like they\'d never end. Even when they grew up on opposite sides of town — one with a beat-up truck, the other with hand-me-down cleats — it didn\'t matter. They were teammates, brothers in all but name.',
           '',
-          'Friday nights were their rhythm: brothers in arms going into battle. But that night, something was off. He couldn\'t shake the feeling — that strange ache that comes when a piece of your past doesn\'t show up where it always should.'
+          'Friday nights usually hit different: brothers in arms going into battle. But last night without Flunko on the sidelines he could tell, something was off. He couldn\'t shake the feeling — that strange ache that comes when a piece of your past doesn\'t show up where it always should.'
         ]
       },
       // Scene 7: The Freak
@@ -369,11 +369,11 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [playingCutscene, setPlayingCutscene] = useState(false);
   
-  // Filter chapters based on build mode - only show Homecoming in build mode
+  // Filter chapters based on build mode - show Homecoming in both build and public modes
   const buildMode = getCurrentBuildMode();
   const availableChapters = sampleChapters.filter(chapter => {
     if (chapter.id === 'homecoming') {
-      return buildMode === 'build'; // Only show actual Homecoming chapter in build mode
+      return buildMode === 'build' || buildMode === 'public'; // Show Homecoming in build and public modes
     }
     return true; // Show all other chapters including "The Story So Far"
   });
