@@ -358,7 +358,7 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
   },
   [WINDOW_IDS.ZOLTAR_FORTUNE_APP]: {
     appName: "Mystical Zoltar",
-    appIcon: "/images/icons/crystal-ball.png",
+    appIcon: "/images/icons/zoltar-icon.png",
     key: WINDOW_IDS.ZOLTAR_FORTUNE_APP,
   },
   [WINDOW_IDS.MEME_MANAGER]: {
