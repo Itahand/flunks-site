@@ -237,7 +237,7 @@ const sampleChapters: Chapter[] = [
         id: 'thursday-parade',
         image: '/images/cutscenes/homecoming/homecoming-main.png',
         lines: [
-          'Thursday felt like something out of a dream. The parade crawled down Main Street, floats wrapped in crimson and gold, the marching band echoing between brick buildings. Kids chased candy in the street. The air smelled like popcorn and autumn. Looking back, it all feels brighter than it probably was — that soft, golden kind of memory you can\'t quite trust.'
+          'Thursday felt like something out of a dream. The parade crawled down Main Street, floats wrapped in pink and black, the marching band echoing between brick buildings. Kids chased candy in the street. The air smelled like popcorn and autumn. Looking back, it all feels brighter than it probably was — that soft, golden kind of memory you can\'t quite trust.'
         ],
         music: '/music/homecomingstory.mp3'
       },
@@ -351,12 +351,14 @@ const sampleChapters: Chapter[] = [
           'But come Monday, the school went dark. Police tape wrapped the entrances, the kind you\'d only ever seen on TV. Reporters parked out front, microphones catching the wind while investigators moved through hallways that used to buzz with noise. They talked to everyone — students, teachers, anyone who might\'ve seen something, heard something, felt something.'
         ]
       },
-      // Scene 14: The Beginning
+            // Scene 14: The Beginning
       {
         id: 'the-beginning',
-        image: '/images/cutscenes/homecoming/homecoming-12.png',
+        image: '/images/cutscenes/homecoming/homecoming-final.png',
         lines: [
-          'For the rest of the week, the doors stayed locked, the air thick with questions. But somewhere in all that silence, four of Flunko\'s friends started piecing things together. Familiar faces, familiar places — trying to make sense of it all. The halls might\'ve been empty, but the story was just starting to wake up.'
+          'And that\'s when the real work started. Four kids who knew each other from passing in the halls and shared glances — a geek, a freak, a prep, a jock. Different worlds, same story now. They met up in the fading light, drawn together by the silence that had swallowed their town.',
+          '',
+          'What began as whispers had turned into something else — purpose, maybe. Hope, definitely. In that moment, standing there under the hum of streetlights, they didn\'t know what they\'d find. But they knew one thing for sure — they weren\'t going to stop looking.'
         ]
       }
     ]
