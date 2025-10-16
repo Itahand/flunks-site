@@ -343,3 +343,47 @@ export const getChapter4ObjectivesStatus = async (walletAddress: string): Promis
     completedObjectives
   };
 };
+
+// Get Chapter 5 objectives status for a user
+export const getChapter5ObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
+  console.log('🎯 [CHAPTER5] getChapter5ObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
+  
+  // TODO: Add tracking functions for Chapter 5 objectives
+  const slackerObjectiveCompleted = false; // Placeholder
+  const overachieverObjectiveCompleted = false; // Placeholder
+
+  console.log('📊 [CHAPTER5] Objectives status:', { 
+    slackerObjectiveCompleted, 
+    overachieverObjectiveCompleted,
+    walletSlice: walletAddress?.slice(0,10) + '...'
+  });
+
+  const completedObjectives: ChapterObjective[] = [
+    {
+      id: 'slacker_chapter5',
+      title: 'The Slacker',
+      description: '???',
+      type: 'custom',
+      completed: slackerObjectiveCompleted,
+      reward: 50
+    },
+    {
+      id: 'overachiever_chapter5',
+      title: 'The Overachiever',
+      description: '???',
+      type: 'custom',
+      completed: overachieverObjectiveCompleted,
+      reward: 100
+    }
+  ];
+
+  const progress = calculateObjectiveProgress(completedObjectives);
+  console.log('🎯 Chapter 5 Final progress calculated:', progress + '%');
+  
+  return {
+    fridayNightLightsClicked: false, // Not relevant for Chapter 5
+    crackedCode: false, // Not relevant for Chapter 5
+    votedInPictureDay: false, // Not relevant for Chapter 5
+    completedObjectives
+  };
+};

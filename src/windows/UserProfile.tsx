@@ -10,7 +10,7 @@ import { GumDisplay } from '../components/GumDisplay';
 import { useGum } from '../contexts/GumContext';
 import { getActiveSpecialEvents, canParticipateInEvent, claimSpecialEvent, type SpecialEvent } from '../services/specialEventsService';
 import { canClaimDailyLogin, claimDailyLogin } from '../services/dailyLoginService';
-import { getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, getChapter4ObjectivesStatus, ChapterObjective } from '../utils/weeklyObjectives';
+import { getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, getChapter4ObjectivesStatus, getChapter5ObjectivesStatus, ChapterObjective } from '../utils/weeklyObjectives';
 
 const UserProfile: React.FC = () => {
   const { closeWindow } = useWindowsContext();
@@ -20,7 +20,7 @@ const UserProfile: React.FC = () => {
   const { profile, hasProfile, loading: profileLoading } = useUserProfile();
   const { balance, refreshBalance, refreshStats } = useGum();
   const [devBypass, setDevBypass] = useState(false);
-  const [currentSection, setCurrentSection] = useState<1 | 2 | 3 | 4>(4); // Default to Chapter 3 - Picture Day
+  const [currentSection, setCurrentSection] = useState<1 | 2 | 3 | 4 | 5>(5); // Default to Chapter 5 - Paradise Motel
   const [showProfileCreation, setShowProfileCreation] = useState(false);
   const [specialEvents, setSpecialEvents] = useState<SpecialEvent[]>([]);
   const [canClaimDaily, setCanClaimDaily] = useState(false);
@@ -32,6 +32,8 @@ const UserProfile: React.FC = () => {
   const [chapter3Loading, setChapter3Loading] = useState(false);
   const [chapter4Objectives, setChapter4Objectives] = useState<ChapterObjective[]>([]);
   const [chapter4Loading, setChapter4Loading] = useState(false);
+  const [chapter5Objectives, setChapter5Objectives] = useState<ChapterObjective[]>([]);
+  const [chapter5Loading, setChapter5Loading] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -99,6 +101,20 @@ const UserProfile: React.FC = () => {
     }
   };
 
+  const loadChapter5Objectives = async () => {
+    if (!primaryWallet?.address) return;
+    setChapter5Loading(true);
+    try {
+      const objectiveStatus = await getChapter5ObjectivesStatus(primaryWallet!.address);
+      setChapter5Objectives(objectiveStatus.completedObjectives);
+      console.log('📋 Chapter 5 objectives loaded:', objectiveStatus.completedObjectives);
+    } catch (error) {
+      console.error('❌ Failed to load Chapter 5 objectives:', error);
+    } finally {
+      setChapter5Loading(false);
+    }
+  };
+
   // Check daily login status and load special events
   useEffect(() => {
     if (!primaryWallet?.address) return;
@@ -117,6 +133,8 @@ const UserProfile: React.FC = () => {
     loadSpecialEvents();
     loadChapter2Objectives();
     loadChapter3Objectives();
+    loadChapter4Objectives();
+    loadChapter5Objectives();
     
     // Set up interval to refresh special events
     const interval = setInterval(() => {
@@ -124,6 +142,7 @@ const UserProfile: React.FC = () => {
       loadChapter2Objectives();
       loadChapter3Objectives();
       loadChapter4Objectives();
+      loadChapter5Objectives();
     }, 30000); // Check every 30 seconds
     
     return () => clearInterval(interval);
@@ -252,7 +271,7 @@ const UserProfile: React.FC = () => {
   };
 
   // Smooth scroll to specific section
-  const scrollToSection = (section: 1 | 2 | 3 | 4) => {
+  const scrollToSection = (section: 1 | 2 | 3 | 4 | 5) => {
     // Scroll functionality disabled
     console.log(`Scroll to section ${section} disabled`);
     // if (scrollContainerRef.current) {
@@ -289,6 +308,7 @@ const UserProfile: React.FC = () => {
       const middleHeight = containerHeight * 1.4;
       const gumSectionHeight = containerHeight * 0.8;
       const chapter3Height = containerHeight * 1.2;
+      const chapter4Height = containerHeight * 1.2;
       
       if (scrollTop < topHeight * 0.5) {
         setCurrentSection(1);
@@ -296,15 +316,17 @@ const UserProfile: React.FC = () => {
         setCurrentSection(2);
       } else if (scrollTop < topHeight + middleHeight + gumSectionHeight * 0.5) {
         setCurrentSection(3);
-      } else {
+      } else if (scrollTop < topHeight + middleHeight + gumSectionHeight + chapter3Height * 0.5) {
         setCurrentSection(4);
+      } else {
+        setCurrentSection(5);
       }
     }
   };
 
   return (
     <DraggableResizeableWindow
-      headerTitle="🔄 My Locker (NEW AUTO SYSTEM)"
+      headerTitle="My Locker"
       windowsId={WINDOW_IDS.USER_PROFILE}
       onClose={() => closeWindow(WINDOW_IDS.USER_PROFILE)}
     >
@@ -554,10 +576,10 @@ const UserProfile: React.FC = () => {
               gap: '5px',
               zIndex: 100
             }}>
-              {[1, 2, 3, 4].map(section => (
+              {[1, 2, 3, 4, 5].map(section => (
                 <button
                   key={section}
-                  onClick={() => scrollToSection(section as 1 | 2 | 3 | 4)}
+                  onClick={() => scrollToSection(section as 1 | 2 | 3 | 4 | 5)}
                   style={{
                     background: currentSection === section ? '#FFD700' : 'rgba(255,255,255,0.8)',
                     color: currentSection === section ? '#654321' : '#8B4513',
@@ -1258,6 +1280,152 @@ const UserProfile: React.FC = () => {
                 <p style={{ margin: '8px 0 0 0', fontSize: '12px', opacity: 0.8 }}>
                   💡 Navigate to the high school from the map and enter the gymnasium to find the dance floor.
                 </p>
+              </div>
+            </div>
+
+            {/* Section 6 - Chapter 5: Paradise Motel */}
+            <div style={{
+              height: '120vh',
+              minHeight: '600px',
+              background: `linear-gradient(135deg, rgba(139, 69, 19, 0.9) 0%, rgba(101, 67, 33, 0.95) 50%, rgba(160, 82, 45, 1) 100%)`,
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '40px 20px',
+              gap: '20px'
+            }}>
+              {/* Chapter 5 Title */}
+              <div style={{
+                background: 'rgba(0,0,0,0.8)',
+                color: '#CD853F',
+                padding: '30px',
+                borderRadius: '16px',
+                textAlign: 'center',
+                border: '3px solid #8B4513',
+                width: '100%',
+                maxWidth: '600px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+              }}>
+                <div style={{ marginBottom: '20px' }}>
+                  <h2 style={{ margin: '0 0 10px 0', fontSize: '28px' }}>🏨 Chapter 5: Paradise Motel</h2>
+                  <p style={{ margin: '0', fontSize: '16px', color: '#DDD' }}>Explore the mysteries of the Paradise Motel</p>
+                </div>
+
+                {/* Objectives List */}
+                <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {chapter5Loading ? (
+                    <div style={{
+                      background: 'rgba(0,0,0,0.8)',
+                      color: '#CD853F',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      border: '2px solid #8B4513'
+                    }}>
+                      <p style={{ margin: '0', fontSize: '16px' }}>🔄 Loading objectives...</p>
+                    </div>
+                  ) : chapter5Objectives.length > 0 ? (
+                    chapter5Objectives.map((objective) => (
+                      <div key={objective.id} style={{
+                        background: objective.completed ? 'rgba(34, 139, 34, 0.9)' : 'rgba(0,0,0,0.8)',
+                        color: objective.completed ? '#90EE90' : '#CD853F',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        border: objective.completed ? '2px solid #32CD32' : '2px solid #8B4513',
+                        position: 'relative'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div>
+                            <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 'bold' }}>
+                              {objective.completed ? '✅' : '📋'} {objective.title}
+                            </h3>
+                            <p style={{ margin: '0', fontSize: '14px', opacity: 0.9 }}>
+                              {objective.description}
+                            </p>
+                          </div>
+                          {objective.reward && (
+                            <div style={{
+                              background: objective.completed ? 'rgba(50, 205, 50, 0.3)' : 'rgba(255,215,0,0.2)',
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              fontSize: '14px',
+                              fontWeight: 'bold',
+                              color: objective.completed ? '#90EE90' : '#FFD700',
+                              border: objective.completed ? '1px solid #32CD32' : '1px solid #FFD700'
+                            }}>
+                              +{objective.reward} GUM
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{
+                      background: 'rgba(0,0,0,0.8)',
+                      color: '#CD853F',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      border: '2px solid #8B4513'
+                    }}>
+                      <p style={{ margin: '0', fontSize: '16px' }}>📋 No objectives available</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Progress Summary */}
+                {chapter5Objectives.length > 0 && (
+                  <div style={{
+                    background: 'rgba(0,0,0,0.8)',
+                    color: '#CD853F',
+                    padding: '15px',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    border: '2px solid #8B4513',
+                    width: '100%',
+                    maxWidth: '300px'
+                  }}>
+                    <p style={{ margin: '0', fontSize: '16px', fontWeight: 'bold' }}>
+                      📊 Progress: {chapter5Objectives.filter(obj => obj.completed).length}/{chapter5Objectives.length}
+                    </p>
+                    <div style={{
+                      background: 'rgba(255,255,255,0.2)',
+                      borderRadius: '10px',
+                      height: '8px',
+                      marginTop: '8px',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{
+                        background: '#CD853F',
+                        height: '100%',
+                        width: `${(chapter5Objectives.filter(obj => obj.completed).length / chapter5Objectives.length) * 100}%`,
+                        borderRadius: '10px',
+                        transition: 'width 0.3s ease'
+                      }} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Hint for Paradise Motel */}
+                <div style={{
+                  background: 'rgba(139, 69, 19, 0.8)',
+                  color: '#FFF',
+                  padding: '15px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  border: '2px solid #8B4513',
+                  width: '100%',
+                  maxWidth: '400px'
+                }}>
+                  <p style={{ margin: '0', fontSize: '14px', fontStyle: 'italic', fontWeight: 'bold' }}>
+                    🏨 The Paradise Motel awaits on the map...
+                  </p>
+                  <p style={{ margin: '8px 0 0 0', fontSize: '12px', opacity: 0.8 }}>
+                    💡 More details coming soon!
+                  </p>
+                </div>
               </div>
             </div>
             

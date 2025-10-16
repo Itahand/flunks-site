@@ -178,7 +178,7 @@ const FHSSchool: React.FC<Props> = ({ onClose }) => {
         events: [
           { day: 4, label: '2nd Arcade Challenge Begins', color: 'bg-purple-400' },
           { day: 13, label: 'Columbus Day', color: 'bg-red-400' },
-          { day: 25, label: '3rd Arcade Challenge Begins', color: 'bg-purple-400' },
+          { day: 31, label: '3rd Arcade Challenge Begins', color: 'bg-purple-400' },
           { day: 31, label: 'Halloween', color: 'bg-purple-400' }
         ]
       },
@@ -392,8 +392,7 @@ const FHSSchool: React.FC<Props> = ({ onClose }) => {
                   <h4 className="font-semibold text-orange-600">🎃 October Events:</h4>
                   <ul className="text-sm space-y-1">
                     <li>• 13th: Columbus Day</li>
-                    <li>• 25th: 3rd Arcade Challenge Begins</li>
-                    <li>• 31st: Halloween</li>
+                    <li>• 31st: 3rd Arcade Challenge Begins & Halloween</li>
                   </ul>
                 </div>
                 <div>
