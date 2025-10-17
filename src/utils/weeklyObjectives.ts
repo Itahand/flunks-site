@@ -3,6 +3,7 @@ import { checkFridayNightLightsClicked } from './fridayNightLightsTracking';
 import { checkCafeteriaButtonClicked } from './cafeteriaButtonTracking';
 import { checkFlunkoClicked } from './flunkoClickTracking';
 import { checkParadiseMotelEntered } from './paradiseMotelTracking';
+import { checkParadiseMotelRoom7NightVisit } from './paradiseMotelRoom7Tracking';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -348,9 +349,9 @@ export const getChapter4ObjectivesStatus = async (walletAddress: string): Promis
 export const getChapter5ObjectivesStatus = async (walletAddress: string): Promise<ObjectiveStatus> => {
   console.log('🎯 [CHAPTER5] getChapter5ObjectivesStatus called for wallet:', walletAddress?.slice(0,10) + '...');
   
-  // TODO: Add tracking functions for Chapter 5 objectives
-  const slackerObjectiveCompleted = false; // Placeholder
-  const overachieverObjectiveCompleted = false; // Placeholder
+  // Check if user visited Room 7 at night (Slacker objective)
+  const slackerObjectiveCompleted = await checkParadiseMotelRoom7NightVisit(walletAddress);
+  const overachieverObjectiveCompleted = false; // TODO: Define Chapter 5 Overachiever objective
 
   console.log('📊 [CHAPTER5] Objectives status:', { 
     slackerObjectiveCompleted, 
@@ -362,7 +363,7 @@ export const getChapter5ObjectivesStatus = async (walletAddress: string): Promis
     {
       id: 'slacker_chapter5',
       title: 'The Slacker',
-      description: '???',
+      description: 'shhhh, don\'t tell anyone...',
       type: 'custom',
       completed: slackerObjectiveCompleted,
       reward: 50

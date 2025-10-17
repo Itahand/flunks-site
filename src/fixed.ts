@@ -119,6 +119,8 @@ export const WINDOW_IDS = {
   PARADISE_MOTEL_LOBBY: "paradise_motel_lobby",
   PARADISE_MOTEL_ROOM_1: "paradise_motel_room_1",
   PARADISE_MOTEL_ROOM_2: "paradise_motel_room_2",
+  PARADISE_MOTEL_ROOM_6: "paradise_motel_room_6",
+  PARADISE_MOTEL_ROOM_7: "paradise_motel_room_7",
   PARADISE_MOTEL_POOL: "paradise_motel_pool",
   
   // Wishing Tree rooms

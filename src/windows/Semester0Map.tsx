@@ -1265,8 +1265,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                             windowsId={WINDOW_IDS.PARADISE_MOTEL_MAIN}
                             headerTitle="Paradise Motel"
                             onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_MAIN)}
-                            initialWidth="70vw"
-                            initialHeight="70vh"
+                            initialWidth="900px"
+                            initialHeight="75vh"
                             resizable={true}
                           >
                             <ParadiseMotelMain />
@@ -1284,8 +1284,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                             windowsId={WINDOW_IDS.PARADISE_MOTEL_MAIN}
                             headerTitle="Paradise Motel"
                             onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_MAIN)}
-                            initialWidth="70vw"
-                            initialHeight="70vh"
+                            initialWidth="900px"
+                            initialHeight="75vh"
                             resizable={true}
                           >
                             <ParadiseMotelMain />
