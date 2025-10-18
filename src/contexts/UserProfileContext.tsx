@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { useUnifiedWallet } from './UnifiedWalletContext';
 
 export interface UserProfile {
   id: number;
@@ -48,12 +49,13 @@ interface UserProfileProviderProps {
 
 export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ children }) => {
   const { primaryWallet } = useDynamicContext();
+  const { address: unifiedAddress } = useUnifiedWallet();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Use real wallet only
-  const walletAddress = primaryWallet?.address;
+  // Use unified wallet address
+  const walletAddress = unifiedAddress;
 
   // Fetch user profile when wallet connects
   const fetchProfile = async () => {

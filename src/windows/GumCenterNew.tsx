@@ -4,9 +4,10 @@ import { useWindowsContext } from "contexts/WindowsContext";
 import { WINDOW_IDS } from "fixed";
 import AppLoader from "components/AppLoader";
 import {
-  DynamicConnectButton,
   useDynamicContext,
+  DynamicConnectButton,
 } from "@dynamic-labs/sdk-react-core";
+import UnifiedConnectButton from "../components/UnifiedConnectButton";
 import ErrorWindow from "./ErrorWindow";
 import { useUserProfile } from "contexts/UserProfileContext";
 import UserProfile from "./UserProfile";
@@ -96,9 +97,9 @@ const GumballMachine: React.FC = () => {
             <Button onClick={() => closeWindow(WINDOW_IDS.GUMBALL_MACHINE)}>
               Close
             </Button>
-            <DynamicConnectButton>
+            <UnifiedConnectButton>
               <Button className="ml-auto">Sign In</Button>
-            </DynamicConnectButton>
+            </UnifiedConnectButton>
           </>
         }
         windowId={WINDOW_IDS.GUMBALL_MACHINE}

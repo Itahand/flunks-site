@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { useUnifiedWallet } from './UnifiedWalletContext';
 import { usePaginatedItems } from './UserPaginatedItems';
 
 interface AuthContextType {
@@ -44,6 +45,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, primaryWallet } = useDynamicContext();
+  const { isConnected, address } = useUnifiedWallet();
   const [isLoading, setIsLoading] = useState(true);
   
   // CRITICAL FIX: Never wrap hooks in try/catch - causes React error #310
@@ -56,11 +58,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const nftLoading = paginatedData?.isLoading ?? false;
   const hasNftError = !!paginatedData?.error;
   
-  // Determine authentication state
-  const isWalletConnected = !!primaryWallet?.address;
+  // Determine authentication state using unified wallet
+  const isWalletConnected = isConnected;
   const isUserConnected = !!user;
   const isAuthenticated = isWalletConnected || isUserConnected;
-  const walletAddress = primaryWallet?.address || null;
+  const walletAddress = address;
   
   // NFT data
   const hasFlunks = flunksCount > 0;

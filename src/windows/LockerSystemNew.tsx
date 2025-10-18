@@ -6,6 +6,8 @@ import { isMobileDevice } from '../utils/mobileWalletDetection';
 import { useWindowsContext } from '../contexts/WindowsContext';
 import { useLockerInfo, useLockerAssignment } from '../hooks/useLocker';
 import { useDynamicContext, DynamicConnectButton } from '@dynamic-labs/sdk-react-core';
+import { useUnifiedWallet } from '../contexts/UnifiedWalletContext';
+import UnifiedConnectButton from '../components/UnifiedConnectButton';
 import { getUserGumBalance, getUserGumTransactions } from '../utils/gumAPI';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { useGum } from '../contexts/GumContext';
@@ -18,6 +20,7 @@ const LockerSystemNew: React.FC = () => {
   const { lockerInfo, loading, error, refetch } = useLockerInfo();
   const { assignLocker, assigning } = useLockerAssignment();
   const { primaryWallet, setShowAuthFlow } = useDynamicContext();
+  const { isConnected, address: unifiedAddress, walletType, disconnect } = useUnifiedWallet();
   const { hasProfile, profile } = useUserProfile();
   const { balance, stats } = useGum();
   const [devBypass, setDevBypass] = useState(false);
@@ -27,6 +30,7 @@ const LockerSystemNew: React.FC = () => {
   const [todayGum, setTodayGum] = useState<number>(0);
   const [streak, setStreak] = useState<number>(0);
   const [canClaimDaily, setCanClaimDaily] = useState(false);
+  const [hasRoom7Key, setHasRoom7Key] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Jacket options (now using jersey assets)
@@ -54,11 +58,12 @@ const LockerSystemNew: React.FC = () => {
 
   // Load gum balance and tracking data when wallet connects
   useEffect(() => {
-    if (primaryWallet?.address) {
+    if (unifiedAddress) {
       loadGumBalance();
       loadGumTrackingData();
+      checkRoom7Key();
     }
-  }, [primaryWallet?.address]);
+  }, [unifiedAddress]);
 
   // Use GumContext balance if available
   useEffect(() => {
@@ -80,12 +85,19 @@ const LockerSystemNew: React.FC = () => {
       loadGumTrackingData();
     };
 
+    const handleRoom7KeyObtained = () => {
+      // Refresh key status when obtained
+      checkRoom7Key();
+    };
+
     window.addEventListener('gumBalanceUpdated', handleGumUpdate);
     window.addEventListener('dailyLoginClaimed', handleDailyLoginClaimed);
+    window.addEventListener('room7KeyObtained', handleRoom7KeyObtained);
     
     return () => {
       window.removeEventListener('gumBalanceUpdated', handleGumUpdate);
       window.removeEventListener('dailyLoginClaimed', handleDailyLoginClaimed);
+      window.removeEventListener('room7KeyObtained', handleRoom7KeyObtained);
     };
   }, []);
 
@@ -148,27 +160,41 @@ const LockerSystemNew: React.FC = () => {
   }, [currentSection]);
 
   const loadGumBalance = async () => {
-    if (!primaryWallet?.address) return;
+    if (!unifiedAddress) return;
     try {
-      const balance = await getUserGumBalance(primaryWallet.address);
+      const balance = await getUserGumBalance(unifiedAddress);
       setGumBalance(balance || 0);
     } catch (error) {
       console.error('Error loading gum balance:', error);
     }
   };
 
+  // Check if user has Room 7 key
+  const checkRoom7Key = async () => {
+    if (!unifiedAddress) return;
+    try {
+      const response = await fetch(`/api/check-room7-key?walletAddress=${unifiedAddress}`);
+      const data = await response.json();
+      if (data.success && data.hasKey) {
+        setHasRoom7Key(true);
+      }
+    } catch (error) {
+      console.error('Error checking Room 7 key:', error);
+    }
+  };
+
   // Load real gum tracking data
   const loadGumTrackingData = async () => {
-    if (!primaryWallet?.address) {
+    if (!unifiedAddress) {
       console.log('🔍 LockerSystem: No wallet address, skipping tracking data load');
       return;
     }
     
-    console.log('🔍 LockerSystem: Loading GUM tracking data for:', primaryWallet.address.slice(0, 8) + '...');
+    console.log('🔍 LockerSystem: Loading GUM tracking data for:', unifiedAddress.slice(0, 8) + '...');
     
     try {
       // Get recent transactions to calculate today's earnings
-      const transactions = await getUserGumTransactions(primaryWallet.address, 50, 0);
+      const transactions = await getUserGumTransactions(unifiedAddress, 50, 0);
       console.log('📊 LockerSystem: Retrieved', transactions.length, 'transactions');
       
       // Calculate today's earnings
@@ -252,7 +278,7 @@ const LockerSystemNew: React.FC = () => {
 
   // Toggle dev bypass mode
   const toggleDevBypass = () => {
-    if (primaryWallet?.address === "0xe327216d843357f1") {
+    if (unifiedAddress === "0xe327216d843357f1") {
       setDevBypass(!devBypass);
     }
   };
@@ -260,7 +286,7 @@ const LockerSystemNew: React.FC = () => {
   const handleCreateProfile = async () => {
     console.log('🚀 NEW SYSTEM: handleCreateProfile called - Checking for existing profile first!');
     
-    if (!primaryWallet?.address) {
+    if (!unifiedAddress) {
       alert('Please connect your wallet first!');
       return;
     }
@@ -447,6 +473,56 @@ const LockerSystemNew: React.FC = () => {
       tabIndex={0}
       onKeyDown={handleKeyDown}
       >
+        {/* Wallet Status Bar - Shows connected wallet and disconnect button */}
+        {isConnected && (
+          <div style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            background: 'rgba(0, 0, 0, 0.7)',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            zIndex: 1001,
+            fontSize: '12px',
+            color: 'white',
+            fontFamily: 'w95fa, "Courier New", monospace'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '16px' }}>{walletType === 'dynamic' ? '💎' : '🌊'}</span>
+              <span style={{ fontSize: '11px', opacity: 0.9 }}>
+                {unifiedAddress?.slice(0, 6)}...{unifiedAddress?.slice(-4)}
+              </span>
+            </div>
+            <button
+              onClick={async () => {
+                if (confirm('Disconnect wallet? You will need to reconnect to access your locker.')) {
+                  await disconnect();
+                  closeWindow(WINDOW_IDS.USER_PROFILE);
+                }
+              }}
+              style={{
+                background: '#dc3545',
+                color: 'white',
+                border: 'none',
+                padding: '4px 10px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontFamily: 'w95fa, "Courier New", monospace',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#c82333'}
+              onMouseLeave={(e) => e.currentTarget.style.background = '#dc3545'}
+            >
+              🚪 Disconnect
+            </button>
+          </div>
+        )}
+
         {/* DEV BYPASS TOGGLE - Hidden click area */}
         <div 
           onClick={toggleDevBypass}
@@ -504,7 +580,7 @@ const LockerSystemNew: React.FC = () => {
         {!loading && !error && (
           <>
             {/* No Wallet Connected */}
-            {!primaryWallet && (
+            {!isConnected && (
               <div style={{
                 textAlign: 'center',
                 maxWidth: '400px'
@@ -570,7 +646,7 @@ const LockerSystemNew: React.FC = () => {
                   />
                 )}
                 
-                <DynamicConnectButton>
+                <UnifiedConnectButton>
                   <button style={{
                     background: 'linear-gradient(180deg, #00ffff 0%, #0088ff 100%)',
                     color: '#000',
@@ -601,12 +677,12 @@ const LockerSystemNew: React.FC = () => {
                   >
                     🔗 CONNECT WALLET
                   </button>
-                </DynamicConnectButton>
+                </UnifiedConnectButton>
               </div>
             )}
 
             {/* Wallet Connected - Show Locker System */}
-            {primaryWallet && (
+            {isConnected && (
               <>
                 {/* Already Has Locker */}
                 {lockerInfo?.locker_number && (
@@ -1135,6 +1211,129 @@ const LockerSystemNew: React.FC = () => {
                           <span style={{ fontSize: '24px' }}>Bubble Bank</span>
                         </div>
                         
+                        {/* SPECIAL ITEMS SECTION - 8-bit Retro Style */}
+                        <div style={{
+                          background: 'rgba(0, 0, 51, 0.9)',
+                          border: '4px solid #ff6600',
+                          borderRadius: 0,
+                          padding: '16px',
+                          marginBottom: '24px',
+                          position: 'relative',
+                          boxShadow: `
+                            0 0 0 2px #0066cc,
+                            0 0 0 6px #ff6600,
+                            0 6px 0 6px #000,
+                            inset 0 0 20px rgba(255, 102, 0, 0.2)
+                          `,
+                          imageRendering: 'pixelated'
+                        }}>
+                          {/* Header */}
+                          <div style={{
+                            fontFamily: '"Press Start 2P", "Courier New", monospace',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            color: '#ffcc00',
+                            textTransform: 'uppercase',
+                            textShadow: '2px 2px 0px #000, 0 0 10px rgba(255, 204, 0, 0.6)',
+                            marginBottom: '16px',
+                            textAlign: 'center',
+                            letterSpacing: '1px'
+                          }}>
+                            ⭐ Special Items ⭐
+                          </div>
+                          
+                          {/* Items Grid */}
+                          <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+                            gap: '12px',
+                            minHeight: '100px',
+                            background: '#001166',
+                            border: '2px solid #0066cc',
+                            padding: '12px',
+                            borderRadius: 0,
+                            boxShadow: 'inset 2px 2px 0 rgba(0, 0, 0, 0.5)'
+                          }}>
+                            {/* Room 7 Key */}
+                            {hasRoom7Key && (
+                              <div style={{
+                                background: 'linear-gradient(180deg, #ff8833 0%, #ff6600 100%)',
+                                border: '3px solid #ffcc00',
+                                borderRadius: 0,
+                                padding: '8px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                boxShadow: `
+                                  0 4px 0 #cc5200,
+                                  0 0 10px rgba(255, 204, 0, 0.5)
+                                `,
+                                position: 'relative'
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = `
+                                  0 6px 0 #cc5200,
+                                  0 0 20px rgba(255, 204, 0, 0.8)
+                                `;
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = `
+                                  0 4px 0 #cc5200,
+                                  0 0 10px rgba(255, 204, 0, 0.5)
+                                `;
+                              }}
+                              title="Room 7 Key - Return after dark to access Room 7"
+                              >
+                                <img 
+                                  src="/images/locations/paradise motel/key.png"
+                                  alt="Room 7 Key"
+                                  style={{
+                                    width: '48px',
+                                    height: '48px',
+                                    objectFit: 'contain',
+                                    imageRendering: 'pixelated',
+                                    filter: 'drop-shadow(0 0 8px rgba(255, 204, 0, 0.8))'
+                                  }}
+                                />
+                                <div style={{
+                                  fontFamily: '"Press Start 2P", "Courier New", monospace',
+                                  fontSize: '7px',
+                                  color: '#fff',
+                                  textShadow: '1px 1px 0 #000',
+                                  marginTop: '4px',
+                                  textAlign: 'center',
+                                  lineHeight: '1.4'
+                                }}>
+                                  Room 7<br/>Key
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Empty state when no items */}
+                            {!hasRoom7Key && (
+                              <div style={{
+                                gridColumn: '1 / -1',
+                                textAlign: 'center',
+                                padding: '20px',
+                                color: '#6495ED',
+                                fontFamily: '"Courier New", monospace',
+                                fontSize: '11px',
+                                opacity: 0.7
+                              }}>
+                                No special items yet...<br/>
+                                <span style={{ fontSize: '9px', opacity: 0.8 }}>
+                                  Explore the world to find collectibles!
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
                         {/* Current Balance Display - Retro Game Stats Box */}
                         <div style={{
                           background: 'rgba(0, 0, 0, 0.75)',
@@ -1261,10 +1460,10 @@ const LockerSystemNew: React.FC = () => {
                           </div>
                           
                           {/* Cooldown Timer */}
-                          {primaryWallet?.address && (
+                          {unifiedAddress && (
                             <div style={{ margin: '8px 0', fontSize: '14px', textAlign: 'center' }}>
                               <GumCooldownTimer
-                                walletAddress={primaryWallet.address}
+                                walletAddress={unifiedAddress}
                                 source="daily_checkin"
                                 onCanClaim={(canClaim) => {
                                   // Update button state based on cooldown
@@ -1338,7 +1537,7 @@ const LockerSystemNew: React.FC = () => {
                                 const result = await fetch('/api/daily-checkin', {
                                   method: 'POST',
                                   headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ wallet: primaryWallet?.address })
+                                  body: JSON.stringify({ wallet: unifiedAddress })
                                 });
                                 const data = await result.json();
                                 if (data.success) {
@@ -1407,6 +1606,19 @@ const LockerSystemNew: React.FC = () => {
                         overflow: 'visible'
                       }}>
                         
+                        {/* Debug: Confirm this section renders */}
+                        <div style={{
+                          background: 'rgba(255, 0, 0, 0.2)',
+                          padding: '10px',
+                          marginBottom: '20px',
+                          border: '2px solid red',
+                          color: 'white',
+                          fontFamily: 'monospace',
+                          fontSize: '12px'
+                        }}>
+                          DEBUG: Section 4 Rendered | Locker: {lockerInfo?.locker_number} | Connected: {isConnected ? 'YES' : 'NO'}
+                        </div>
+                        
                         {/* Main Content Container */}
                         <WeeklyObjectives />
                       </div>
@@ -1431,7 +1643,7 @@ const LockerSystemNew: React.FC = () => {
                       ⚠️ Wallet connected but no locker assigned
                       <br />
                       <span style={{ fontSize: '12px', fontStyle: 'italic' }}>
-                        Wallet: {primaryWallet.address.slice(0, 12)}...
+                        Wallet: {unifiedAddress?.slice(0, 12)}...
                       </span>
                     </div>
                     
@@ -1480,7 +1692,7 @@ const LockerSystemNew: React.FC = () => {
         )}
 
         {/* RETRO 90's GUM COUNTER */}
-        {primaryWallet?.address && (
+        {unifiedAddress && (
           <div style={{
             position: 'absolute',
             bottom: '10px',

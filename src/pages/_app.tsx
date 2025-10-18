@@ -29,6 +29,7 @@ import { RadioProvider } from "contexts/RadioContext";
 import { GumProvider } from "contexts/GumContext";
 import { AuthProvider } from "contexts/AuthContext";
 import { MusicProvider } from "contexts/MusicContext";
+import { UnifiedWalletProvider } from "contexts/UnifiedWalletContext";
 import { GumDisplay } from "components/GumDisplay";
 import UserProfilePrompt from "components/UserProfile/UserProfilePrompt";
 import AutoWalletAccessGrant from "components/AutoWalletAccessGrant";
@@ -152,6 +153,10 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                         process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID ||
                         "53675303-5e80-4fe5-88a4-e6caae677432",
                       walletConnectors: [FlowWalletConnectors],
+                      
+                      // CRITICAL: Disable auto-reconnect - user must explicitly connect
+                      initialAuthenticationMode: 'connect-only',
+                      
                       // Restore v3.x mobile wallet configuration
                       walletsFilter: (wallets) => {
                         console.log('🔍 Dynamic walletsFilter - Available wallets:', wallets.map(w => ({ 
@@ -185,21 +190,23 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                       }
                     }}
                   >
-                  <UserProfileProvider>
-                    <PaginatedItemsProvider>
-                      <AuthProvider>
-                          <GumProvider autoRefreshInterval={300000}> {/* 5 minutes - very conservative */}
-                            <div className="app-container min-h-screen w-full overflow-hidden">
-                              <Component {...pageProps} />
-                            </div>
-                            <Analytics />
-                            <AutoWalletAccessGrant />
-                            <UserProfilePrompt autoShow={false} showToast={false} />
-                            <DynamicUserProfile />
-                          </GumProvider>
-                      </AuthProvider>
-                    </PaginatedItemsProvider>
-                  </UserProfileProvider>
+                  <UnifiedWalletProvider>
+                    <UserProfileProvider>
+                      <PaginatedItemsProvider>
+                        <AuthProvider>
+                            <GumProvider autoRefreshInterval={300000}> {/* 5 minutes - very conservative */}
+                              <div className="app-container min-h-screen w-full overflow-hidden">
+                                <Component {...pageProps} />
+                              </div>
+                              <Analytics />
+                              <AutoWalletAccessGrant />
+                              <UserProfilePrompt autoShow={false} showToast={false} />
+                              <DynamicUserProfile />
+                            </GumProvider>
+                        </AuthProvider>
+                      </PaginatedItemsProvider>
+                    </UserProfileProvider>
+                  </UnifiedWalletProvider>
                 </DynamicContextProvider>
                 </ErrorBoundary>
               </ClaimBackpackProvider>

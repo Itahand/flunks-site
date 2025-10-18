@@ -48,6 +48,7 @@ import useThemeSettings from "store/useThemeSettings";
 import { getTimeBasedDesktopBackground } from "utils/timeBasedDesktopBackground";
 import RPGProfileForm from "components/UserProfile/RPGProfileForm";
 import { useUserProfile } from "contexts/UserProfileContext";
+import WalletStatusBar from "components/WalletStatusBar";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import LoadingScreenPreview from "windows/LoadingScreenPreview";
 
@@ -842,6 +843,17 @@ const Home: NextPage = () => {
       
       <MonitorScreenWrapper>
         <AccessLevelStatus />
+        
+        {/* Wallet Status Bar - Top Right */}
+        <div style={{
+          position: 'fixed',
+          top: '15px',
+          right: '15px',
+          zIndex: 9998
+        }}>
+          <WalletStatusBar compact={true} />
+        </div>
+        
         <Desktop />
       </MonitorScreenWrapper>
     </>

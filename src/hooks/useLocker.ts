@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { useUnifiedWallet } from '../contexts/UnifiedWalletContext';
 
 export interface LockerInfo {
   locker_number: number | null;
@@ -21,9 +22,10 @@ export const useLockerInfo = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { primaryWallet } = useDynamicContext();
+  const { address: unifiedAddress } = useUnifiedWallet();
 
   const fetchLockerInfo = async () => {
-    if (!primaryWallet?.address) {
+    if (!unifiedAddress) {
       setLockerInfo(null);
       return;
     }
@@ -32,7 +34,7 @@ export const useLockerInfo = () => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/locker-info?wallet_address=${primaryWallet.address}`);
+      const response = await fetch(`/api/locker-info?wallet_address=${unifiedAddress}`);
       
       if (response.status === 404) {
         // User doesn't exist yet - they'll get a locker when they sign up
@@ -55,7 +57,7 @@ export const useLockerInfo = () => {
 
   useEffect(() => {
     fetchLockerInfo();
-  }, [primaryWallet?.address]);
+  }, [unifiedAddress]);
 
   return { lockerInfo, loading, error, refetch: fetchLockerInfo };
 };
@@ -64,9 +66,10 @@ export const useLockerAssignment = () => {
   const [assigning, setAssigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { primaryWallet } = useDynamicContext();
+  const { address: unifiedAddress } = useUnifiedWallet();
 
   const assignLocker = async (): Promise<{ success: boolean; locker_number?: number; message?: string }> => {
-    if (!primaryWallet?.address) {
+    if (!unifiedAddress) {
       throw new Error('No wallet connected');
     }
 
@@ -80,7 +83,7 @@ export const useLockerAssignment = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          wallet_address: primaryWallet.address
+          wallet_address: unifiedAddress
         })
       });
 

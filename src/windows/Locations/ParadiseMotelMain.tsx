@@ -106,11 +106,11 @@ const ParadiseMotelMain = () => {
           initialHeight="80vh"
           resizable={true}
         >
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full flex items-center justify-center bg-black">
             <img
               src="/images/locations/paradise motel/room-6.png"
               alt="Paradise Motel Room 6"
-              className="absolute inset-0 w-full h-full object-contain bg-black"
+              className="max-w-full max-h-full object-contain"
               onError={(e) => {
                 e.currentTarget.src = "/images/backdrops/BLANK.png";
               }}
@@ -144,13 +144,13 @@ const ParadiseMotelMain = () => {
             initialHeight="80vh"
             resizable={true}
           >
-            <div className="relative w-full h-full flex flex-col">
+            <div className="relative w-full h-full flex flex-col bg-black">
               {/* Room 7 Day Image */}
-              <div className="relative flex-1">
+              <div className="relative flex-1 flex items-center justify-center min-h-0">
                 <img
                   src="/images/locations/paradise motel/room-7-day.png"
                   alt="Paradise Motel Room 7 (Day)"
-                  className="absolute inset-0 w-full h-full object-contain bg-black"
+                  className="max-w-full max-h-full object-contain"
                   onError={(e) => {
                     e.currentTarget.src = "/images/backdrops/BLANK.png";
                   }}
@@ -158,7 +158,7 @@ const ParadiseMotelMain = () => {
               </div>
               
               {/* Peephole Button at Bottom */}
-              <div className="bg-gradient-to-r from-purple-900 to-pink-800 p-4 border-t-4 border-purple-400">
+              <div className="bg-gradient-to-r from-purple-900 to-pink-800 p-4 border-t-4 border-purple-400 flex-shrink-0">
                 <div className="max-w-md mx-auto">
                   <button
                     onClick={() => {
@@ -175,11 +175,11 @@ const ParadiseMotelMain = () => {
                             initialHeight="80vh"
                             resizable={true}
                           >
-                            <div className="relative w-full h-full">
+                            <div className="relative w-full h-full flex items-center justify-center bg-black">
                               <img
                                 src="/images/locations/paradise motel/room-7-peep.png"
                                 alt="Paradise Motel Room 7 Peephole View"
-                                className="absolute inset-0 w-full h-full object-contain bg-black"
+                                className="max-w-full max-h-full object-contain"
                                 onError={(e) => {
                                   e.currentTarget.src = "/images/backdrops/BLANK.png";
                                 }}
@@ -276,17 +276,17 @@ const ParadiseMotelMain = () => {
             initialHeight="80vh"
             resizable={true}
           >
-            <div className="relative w-full h-full">
+            <div className="relative w-full h-full flex items-center justify-center bg-black">
               <img
                 src="/images/locations/paradise motel/room-7.png"
                 alt="Paradise Motel Room 7 (Night)"
-                className="absolute inset-0 w-full h-full object-contain bg-black"
+                className="max-w-full max-h-full object-contain"
                 onError={(e) => {
                   e.currentTarget.src = "/images/backdrops/BLANK.png";
                 }}
               />
               {/* Success message overlay */}
-              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-xl font-bold animate-bounce">
+              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-xl font-bold animate-bounce z-10">
                 🎉 +50 GUM! Slacker Objective Complete!
               </div>
             </div>
@@ -334,19 +334,19 @@ const ParadiseMotelMain = () => {
             {/* 4 Buttons Below Image - Compact */}
             <div className="w-full bg-gradient-to-r from-purple-900 to-pink-800 p-4 border-t-4 border-purple-400 shadow-2xl flex-shrink-0">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
-                {/* Room 1 */}
+                {/* Tiki Bar */}
                 <button
                   onClick={() =>
                     openRoom(
-                      WINDOW_IDS.PARADISE_MOTEL_ROOM_1,
-                      "Room 1",
-                      "The bed is unmade and there's a strange stain on the carpet. The TV shows only static, but sometimes you see shapes moving in it."
+                      WINDOW_IDS.PARADISE_MOTEL_TIKI_BAR,
+                      "Tiki Bar",
+                      "A small tropical-themed bar with bamboo walls and tiki torches. The bartender isn't here, but there's a faint smell of rum and coconut in the air."
                     )
                   }
-                  className="bg-gradient-to-br from-pink-700 to-purple-900 hover:from-pink-600 hover:to-purple-800 text-white px-3 py-3 rounded-lg border-3 border-pink-500 hover:border-pink-400 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg whitespace-nowrap"
+                  className="bg-gradient-to-br from-amber-600 to-orange-800 hover:from-amber-500 hover:to-orange-700 text-white px-3 py-3 rounded-lg border-3 border-amber-400 hover:border-amber-300 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg whitespace-nowrap"
                   style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
                 >
-                  🛏️ Room 1
+                  🍹 Tiki Bar
                 </button>
 
                 {/* Room 6 - Always Accessible */}
@@ -388,7 +388,10 @@ const ParadiseMotelMain = () => {
     // Check time of day - 6 AM to 6 PM is day
     const now = new Date();
     const hour = now.getHours();
-    const isDay = hour >= 6 && hour < 18;
+    
+    // LOCALHOST BYPASS: Force daytime mode for testing
+    const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+    const isDay = isLocalhost ? true : (hour >= 6 && hour < 18);
     
     if (!isDay) {
       // NIGHT: Show empty round back with trash and cigarettes (no maid)
@@ -399,28 +402,23 @@ const ParadiseMotelMain = () => {
             windowsId="paradise-motel-round-back"
             headerTitle="Paradise Motel - 'Round Back 🌙"
             onClose={() => closeWindow("paradise-motel-round-back")}
-            initialWidth="80vw"
-            initialHeight="80vh"
+            initialWidth="auto"
+            initialHeight="90vh"
             resizable={true}
           >
-            <div className="relative w-full h-full overflow-hidden">
+            <div className="relative h-full overflow-hidden flex flex-col md:flex-row justify-center items-center bg-black">
               <img
-                src="/images/backgrounds/locations/paradise-motel/round-back-night.png"
+                src="/images/locations/paradise motel/night-round-back.png"
                 alt="Paradise Motel 'Round Back at Night"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="w-full md:h-full md:w-auto object-contain"
                 onError={(e) => {
                   // Fallback to day image if night image doesn't exist yet
-                  e.currentTarget.src = "/images/backgrounds/locations/paradise-motel/round-back.png";
+                  e.currentTarget.src="/images/locations/paradise motel/daytime-round-back.png";
                 }}
               />
-              <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute inset-0 flex items-center justify-center p-4">
+              <div className="relative md:absolute inset-0 flex items-center justify-center p-4">
                 <div className="bg-gradient-to-br from-gray-900 to-gray-800 border-4 border-gray-600 rounded p-6 max-w-md text-center">
-                  <p className="text-white text-lg font-semibold mb-2">Nobody's here...</p>
-                  <p className="text-gray-300 text-sm">
-                    Just trash, cigarette butts, and the distant sound of cars passing by. 
-                    The maid must work during the day.
-                  </p>
+                  <p className="text-white text-lg font-semibold">Nobody's here...</p>
                 </div>
               </div>
             </div>
@@ -436,22 +434,24 @@ const ParadiseMotelMain = () => {
             windowsId="paradise-motel-round-back"
             headerTitle="Paradise Motel - 'Round Back"
             onClose={() => closeWindow("paradise-motel-round-back")}
-            initialWidth="80vw"
-            initialHeight="80vh"
+            initialWidth="auto"
+            initialHeight="90vh"
             resizable={true}
           >
-            <div className="relative w-full h-full overflow-hidden">
+            <div className="relative h-full overflow-hidden flex flex-col md:flex-row justify-center items-center bg-black">
               <img
-                src="/images/backgrounds/locations/paradise-motel/round-back.png"
+                src="/images/locations/paradise motel/daytime-round-back.png"
                 alt="Paradise Motel 'Round Back"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="w-full md:h-full md:w-auto object-contain"
                 onError={(e) => {
                   e.currentTarget.src = "/images/backdrops/BLANK.png";
                 }}
               />
-              <div className="absolute inset-0 bg-black/60" />
-              <div className="absolute inset-0 flex items-center justify-center p-4 md:p-10">
-                <MaidDialogue onClose={() => closeWindow("paradise-motel-round-back")} />
+              {/* Desktop: Position right side, Mobile: Position below image */}
+              <div className="relative md:absolute inset-0 flex items-end md:items-center justify-center md:justify-end md:pr-32 md:pb-8 p-4 md:p-0">
+                <div className="md:mr-32 md:mt-16">
+                  <MaidDialogue onClose={() => closeWindow("paradise-motel-round-back")} />
+                </div>
               </div>
             </div>
           </DraggableResizeableWindow>

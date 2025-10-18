@@ -13,8 +13,8 @@ export const maidGraph: DialogueGraph = {
       speaker: "maid",
       text: "Hey - aren't you friends with my kid? Did he tell you to come down here?",
       options: {
-        yes: { label: "He said you might be able to help us.", next: "check_in" },
-        no: { label: "I don't know you.", next: "start" },
+        yes: { label: "I don't know you.", next: "start" },
+        no: { label: "He said you might be able to help us.", next: "check_in" },
       },
     },
     check_in: {
@@ -31,8 +31,8 @@ export const maidGraph: DialogueGraph = {
       speaker: "maid",
       text: "Honestly? I don't know. Just rumors. Some say he never left his room, others swear they heard strange noises. All I know is the police have been crawling all over this place ever since.",
       options: {
-        yes: { label: "That must be hard on you.", next: "police_tired" },
-        no: { label: "Why didn't you stick around longer to help find him?", next: "start" },
+        yes: { label: "Why didn't you stick around longer to help find him?", next: "start" },
+        no: { label: "That must be hard on you.", next: "police_tired" },
       },
     },
     police_tired: {
@@ -49,8 +49,8 @@ export const maidGraph: DialogueGraph = {
       speaker: "maid",
       text: "You're here about Room 7, aren't you? I can see it in your eyes. You want to know what really happened.",
       options: {
-        yes: { label: "I just need to know if he left any clues.", next: "timing_concern" },
-        no: { label: "You probably don't even know what happened.", next: "start" },
+        yes: { label: "You probably don't even know what happened.", next: "start" },
+        no: { label: "I just need to know if he left any clues.", next: "timing_concern" },
       },
     },
     timing_concern: {
@@ -58,8 +58,8 @@ export const maidGraph: DialogueGraph = {
       speaker: "maid",
       text: "Listen sweetie, you need to come back after dark. The police don't sit outside the door then. During the day? They're parked right there, watching everyone who comes and goes.",
       options: {
-        yes: { label: "So after dark is safer?", next: "the_plan" },
-        no: { label: "Just take me now, you work here!", next: "start" },
+        yes: { label: "Just take me now, you work here!", next: "start" },
+        no: { label: "So after dark is safer?", next: "the_plan" },
       },
     },
     the_plan: {
@@ -67,8 +67,8 @@ export const maidGraph: DialogueGraph = {
       speaker: "maid",
       text: "Here, take this. No one knows I have the spare. But you don't know where you got it from if you get caught.",
       options: {
-        yes: { label: "You got it. Thanks.", next: "final_warning" },
-        no: { label: "Are you sure this is okay?", next: "start" },
+        yes: { label: "Are you sure this is okay?", next: "start" },
+        no: { label: "You got it. Thanks.", next: "final_warning" },
       },
       set_flags: ["objective_return_after_dark"],
     },

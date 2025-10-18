@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { maidGraph } from "lib/maidGraph";
@@ -6,83 +6,82 @@ import { useDialogue } from "hooks/useDialogue";
 
 const Overlay = styled.div`
   position: relative;
-  width: min(680px, 95vw);
-  max-width: 95vw;
-  max-height: 85vh;
-  background: linear-gradient(135deg, #001a33 0%, #002244 50%, #003355 100%);
-  border: 6px solid #ff6600;
-  border-radius: 4px;
-  padding: 20px;
+  width: min(320px, 85vw);
+  max-width: 85vw;
+  max-height: 70vh;
+  background: #000033;
+  border: 4px solid #ff6600;
+  border-radius: 0;
+  padding: 12px;
   color: #ffffff;
-  font-family: "Courier New", "Courier", monospace;
+  font-family: "Press Start 2P", "Courier New", monospace;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
   box-shadow: 
     0 0 0 2px #0066cc,
-    0 0 0 4px #ff6600,
-    0 8px 24px rgba(0, 0, 0, 0.8),
-    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    0 0 0 6px #ff6600,
+    0 6px 0 6px #000,
+    0 8px 24px rgba(0, 0, 0, 0.9);
   overflow-y: auto;
+  image-rendering: pixelated;
   
   @media (max-width: 768px) {
-    padding: 16px;
-    gap: 12px;
-    max-height: 80vh;
-    border-width: 4px;
+    padding: 10px;
+    gap: 6px;
+    max-height: 65vh;
+    width: min(300px, 85vw);
+    border-width: 3px;
   }
 `;
 
 const Meta = styled.div`
-  font-size: 10px;
-  letter-spacing: 0.15em;
+  font-size: 7px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #00ccff;
-  text-shadow: 0 0 8px rgba(0, 204, 255, 0.6);
+  text-shadow: 2px 2px 0 #003366;
   
   @media (max-width: 768px) {
-    font-size: 9px;
+    font-size: 6px;
   }
 `;
 
 const Speaker = styled.div`
-  font-size: 18px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: #ff9933;
-  text-shadow: 
-    2px 2px 0 #003366,
-    0 0 12px rgba(255, 153, 51, 0.6);
+  text-shadow: 2px 2px 0 #000;
   border-bottom: 3px solid #ff6600;
-  padding-bottom: 8px;
+  padding-bottom: 6px;
   
   @media (max-width: 768px) {
-    font-size: 16px;
+    font-size: 9px;
     border-bottom-width: 2px;
   }
 `;
 
 const DialogueText = styled.div`
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: 10px;
+  line-height: 1.4;
   text-align: left;
   white-space: pre-wrap;
-  color: #e6f2ff;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  padding: 12px;
-  background: rgba(0, 26, 51, 0.6);
+  color: #ffffff;
+  padding: 8px;
+  background: #001166;
   border: 2px solid #0066cc;
-  border-radius: 2px;
-  min-height: 80px;
+  border-radius: 0;
+  min-height: 60px;
   display: flex;
   align-items: center;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.5);
   
   @media (max-width: 768px) {
-    font-size: 14px;
-    line-height: 1.6;
-    padding: 10px;
-    min-height: 70px;
+    font-size: 9px;
+    padding: 7px;
+    min-height: 50px;
   }
 `;
 
@@ -100,41 +99,42 @@ const Choices = styled.div`
 const ChoiceButton = styled.button`
   background: linear-gradient(180deg, #ff8833 0%, #ff6600 100%);
   border: 3px solid #ffaa66;
-  color: #001a33;
+  color: #000000;
   font-weight: 700;
-  font-family: "Courier New", "Courier", monospace;
-  padding: 12px 16px;
+  font-family: "Press Start 2P", "Courier New", monospace;
+  padding: 8px 10px;
   border-radius: 0;
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: none;
   width: 100%;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 13px;
+  letter-spacing: 0.05em;
+  font-size: 8px;
   text-align: left;
   box-shadow: 
-    3px 3px 0 rgba(0, 0, 0, 0.4),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+    4px 4px 0 rgba(0, 0, 0, 0.4),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.3);
+  image-rendering: pixelated;
 
   &:hover {
     background: linear-gradient(180deg, #ffaa66 0%, #ff8833 100%);
     border-color: #ffd699;
-    transform: translate(1px, 1px);
+    transform: translate(2px, 2px);
     box-shadow: 
       2px 2px 0 rgba(0, 0, 0, 0.4),
-      inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+      inset -2px -2px 0 rgba(0, 0, 0, 0.3);
   }
 
   &:active {
-    transform: translate(2px, 2px);
+    transform: translate(4px, 4px);
     box-shadow: 
-      1px 1px 0 rgba(0, 0, 0, 0.4),
-      inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+      0px 0px 0 rgba(0, 0, 0, 0.4),
+      inset -1px -1px 0 rgba(0, 0, 0, 0.3);
   }
   
   @media (max-width: 768px) {
-    padding: 10px 12px;
-    font-size: 12px;
+    padding: 7px 8px;
+    font-size: 7px;
   }
 `;
 
@@ -142,8 +142,8 @@ const SecondaryButton = styled(ChoiceButton)`
   background: linear-gradient(180deg, #0088cc 0%, #0066aa 100%);
   border-color: #00aaff;
   color: #ffffff;
-  font-size: 11px;
-  padding: 8px 12px;
+  font-size: 7px;
+  padding: 6px 8px;
   margin-top: 4px;
   
   &:hover {
@@ -152,8 +152,8 @@ const SecondaryButton = styled(ChoiceButton)`
   }
   
   @media (max-width: 768px) {
-    font-size: 10px;
-    padding: 6px 10px;
+    font-size: 6px;
+    padding: 5px 7px;
   }
 `;
 
@@ -230,11 +230,23 @@ const KeyItem = styled.div`
 `;
 
 const KeyIcon = styled.div`
-  font-size: 48px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   filter: drop-shadow(0 0 12px rgba(255, 204, 0, 0.8));
   
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+  
   @media (max-width: 768px) {
-    font-size: 40px;
+    width: 40px;
+    height: 40px;
   }
 `;
 
@@ -265,6 +277,111 @@ const KeySubtext = styled.div`
   }
 `;
 
+// Fullscreen Key Animation Overlay
+const KeyAnimationOverlay = styled.div<{ $isVisible: boolean }>`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: ${props => props.$isVisible ? 'flex' : 'none'};
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: ${props => props.$isVisible ? 'fadeIn' : 'fadeOut'} 0.3s ease-in-out;
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+`;
+
+const KeyAnimationContainer = styled.div<{ $isAnimating: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  animation: ${props => props.$isAnimating ? 'keyReveal' : 'none'} 3s ease-in-out;
+  
+  @keyframes keyReveal {
+    0% {
+      transform: scale(0.3) rotate(-180deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1) rotate(10deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+`;
+
+const KeyAnimationImage = styled.img`
+  width: 50vw;
+  height: 50vh;
+  max-width: 500px;
+  max-height: 500px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 40px rgba(255, 204, 0, 1))
+          drop-shadow(0 0 80px rgba(255, 153, 0, 0.8))
+          drop-shadow(0 0 120px rgba(255, 102, 0, 0.6));
+  animation: pulse 2s ease-in-out infinite;
+  
+  @keyframes pulse {
+    0%, 100% { 
+      filter: drop-shadow(0 0 40px rgba(255, 204, 0, 1))
+              drop-shadow(0 0 80px rgba(255, 153, 0, 0.8))
+              drop-shadow(0 0 120px rgba(255, 102, 0, 0.6));
+    }
+    50% { 
+      filter: drop-shadow(0 0 60px rgba(255, 204, 0, 1))
+              drop-shadow(0 0 100px rgba(255, 153, 0, 1))
+              drop-shadow(0 0 140px rgba(255, 102, 0, 0.8));
+    }
+  }
+`;
+
+const KeyAnimationText = styled.div`
+  font-family: "Press Start 2P", "Courier New", monospace;
+  font-size: 24px;
+  color: #ffcc00;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-shadow: 
+    3px 3px 0 #003366,
+    0 0 20px rgba(255, 204, 0, 0.8),
+    0 0 40px rgba(255, 153, 0, 0.6);
+  animation: textGlow 2s ease-in-out infinite;
+  
+  @keyframes textGlow {
+    0%, 100% {
+      text-shadow: 
+        3px 3px 0 #003366,
+        0 0 20px rgba(255, 204, 0, 0.8),
+        0 0 40px rgba(255, 153, 0, 0.6);
+    }
+    50% {
+      text-shadow: 
+        3px 3px 0 #003366,
+        0 0 30px rgba(255, 204, 0, 1),
+        0 0 60px rgba(255, 153, 0, 0.8);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
 interface MaidDialogueProps {
   onClose?: () => void;
 }
@@ -275,6 +392,10 @@ export default function MaidDialogue({ onClose }: MaidDialogueProps) {
   const successFlag = maidGraph.meta.success_flag;
   const hasObjective = successFlag ? flags.has(successFlag) : false;
   const keyRecorded = useRef(false);
+  const [showKeyAnimation, setShowKeyAnimation] = useState(false);
+  const [keyAnimationComplete, setKeyAnimationComplete] = useState(false);
+  const keyAnimationPlayed = useRef(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const speakerName = node.speaker === "maid"
     ? "Maid"
@@ -284,6 +405,29 @@ export default function MaidDialogue({ onClose }: MaidDialogueProps) {
 
   // Check if we're on the final node with "Close" label
   const isCloseButton = node.options.yes.label === "Close";
+
+  // Play key animation when objective is unlocked
+  useEffect(() => {
+    if (hasObjective && !keyAnimationPlayed.current) {
+      keyAnimationPlayed.current = true;
+      
+      // Play alert sound
+      if (!audioRef.current) {
+        audioRef.current = new Audio('/sounds/success-gum-claim.mp3');
+        audioRef.current.volume = 0.6;
+      }
+      audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+      
+      // Show animation
+      setShowKeyAnimation(true);
+      
+      // Hide animation after 3 seconds
+      setTimeout(() => {
+        setShowKeyAnimation(false);
+        setKeyAnimationComplete(true);
+      }, 3000);
+    }
+  }, [hasObjective]);
 
   // Record key obtainment when objective is unlocked
   useEffect(() => {
@@ -302,6 +446,8 @@ export default function MaidDialogue({ onClose }: MaidDialogueProps) {
           const data = await response.json();
           if (data.success) {
             console.log('✅ Room 7 key recorded successfully');
+            // Dispatch event to update locker
+            window.dispatchEvent(new Event('room7KeyObtained'));
           } else {
             console.error('❌ Failed to record key:', data.error);
           }
@@ -327,38 +473,48 @@ export default function MaidDialogue({ onClose }: MaidDialogueProps) {
   };
 
   return (
-    <Overlay>
-      {maidGraph.meta.location && <Meta>{maidGraph.meta.location}</Meta>}
-      <Speaker>{speakerName}</Speaker>
-      <DialogueText>{node.text}</DialogueText>
-      <Choices>
-        <ChoiceButton onClick={() => handleChoice("yes")}>
-          {node.options.yes.label}
-        </ChoiceButton>
-        {!isCloseButton && (
-          <>
-            <ChoiceButton onClick={() => handleChoice("no")}>
-              {node.options.no.label}
-            </ChoiceButton>
-            <SecondaryButton onClick={restart}>Restart</SecondaryButton>
-          </>
+    <>
+      {/* Fullscreen Key Animation Overlay */}
+      <KeyAnimationOverlay $isVisible={showKeyAnimation}>
+        <KeyAnimationContainer $isAnimating={showKeyAnimation}>
+          <KeyAnimationImage 
+            src="/images/locations/paradise motel/key.png" 
+            alt="Room 7 Key"
+          />
+          <KeyAnimationText>
+            Room 7 Key<br/>Obtained!
+          </KeyAnimationText>
+        </KeyAnimationContainer>
+      </KeyAnimationOverlay>
+
+      {/* Main Dialogue Box */}
+      <Overlay>
+        {maidGraph.meta.location && <Meta>{maidGraph.meta.location}</Meta>}
+        <Speaker>{speakerName}</Speaker>
+        <DialogueText>{node.text}</DialogueText>
+        <Choices>
+          <ChoiceButton onClick={() => handleChoice("yes")}>
+            {node.options.yes.label}
+          </ChoiceButton>
+          {!isCloseButton && (
+            <>
+              <ChoiceButton onClick={() => handleChoice("no")}>
+                {node.options.no.label}
+              </ChoiceButton>
+              <SecondaryButton onClick={restart}>Restart</SecondaryButton>
+            </>
+          )}
+        </Choices>
+        {node.tags?.includes("dead_end") && (
+          <DeadEnd>Dead end. Try a different approach.</DeadEnd>
         )}
-      </Choices>
-      {node.tags?.includes("dead_end") && (
-        <DeadEnd>Dead end. Try a different approach.</DeadEnd>
-      )}
-      {hasObjective && successFlag && (
-        <>
-          <KeyItem>
-            <KeyIcon>🔑</KeyIcon>
-            <KeyText>Room 7 Key Obtained</KeyText>
-            <KeySubtext>Return after dark to access Room 7</KeySubtext>
-          </KeyItem>
+        {/* Only show this after animation completes */}
+        {hasObjective && successFlag && keyAnimationComplete && (
           <FlagNotice>
             🎯 New objective: Return to Room 7 at night
           </FlagNotice>
-        </>
-      )}
-    </Overlay>
+        )}
+      </Overlay>
+    </>
   );
 }

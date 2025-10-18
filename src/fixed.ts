@@ -117,7 +117,7 @@ export const WINDOW_IDS = {
   
   // Paradise Motel rooms
   PARADISE_MOTEL_LOBBY: "paradise_motel_lobby",
-  PARADISE_MOTEL_ROOM_1: "paradise_motel_room_1",
+  PARADISE_MOTEL_TIKI_BAR: "paradise_motel_tiki_bar",
   PARADISE_MOTEL_ROOM_2: "paradise_motel_room_2",
   PARADISE_MOTEL_ROOM_6: "paradise_motel_room_6",
   PARADISE_MOTEL_ROOM_7: "paradise_motel_room_7",

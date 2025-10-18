@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { useUnifiedWallet } from '../contexts/UnifiedWalletContext';
 import { getObjectivesStatus, getChapter2ObjectivesStatus, getChapter3ObjectivesStatus, getChapter4ObjectivesStatus, getChapter5ObjectivesStatus, type ChapterObjective, type ObjectiveStatus, calculateObjectiveProgress } from '../utils/weeklyObjectives';
 
 interface WeeklyObjectivesProps {
@@ -9,6 +10,7 @@ interface WeeklyObjectivesProps {
 
 const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete }) => {
   const { primaryWallet } = useDynamicContext();
+  const { address: unifiedAddress } = useUnifiedWallet();
   const [objectivesStatus, setObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [chapter2ObjectivesStatus, setChapter2ObjectivesStatus] = useState<ObjectiveStatus | null>(null);
   const [chapter3ObjectivesStatus, setChapter3ObjectivesStatus] = useState<ObjectiveStatus | null>(null);
@@ -26,23 +28,23 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                               objectivesStatus;
 
   const loadObjectives = async (forceRefresh = false) => {
-    if (!primaryWallet?.address) {
+    if (!unifiedAddress) {
       return;
     }
     
     setLoading(true);
     try {
       if (forceRefresh) {
-        console.log('🔄 Force refreshing objectives for wallet:', primaryWallet.address.slice(0, 10) + '...');
+        console.log('🔄 Force refreshing objectives for wallet:', unifiedAddress.slice(0, 10) + '...');
       }
       
       // Load Chapter 1, Chapter 2, Chapter 3, Chapter 4, and Chapter 5 objectives
       const [status, chapter2Status, chapter3Status, chapter4Status, chapter5Status] = await Promise.all([
-        getObjectivesStatus(primaryWallet.address),
-        getChapter2ObjectivesStatus(primaryWallet.address),
-        getChapter3ObjectivesStatus(primaryWallet.address),
-        getChapter4ObjectivesStatus(primaryWallet.address),
-        getChapter5ObjectivesStatus(primaryWallet.address)
+        getObjectivesStatus(unifiedAddress),
+        getChapter2ObjectivesStatus(unifiedAddress),
+        getChapter3ObjectivesStatus(unifiedAddress),
+        getChapter4ObjectivesStatus(unifiedAddress),
+        getChapter5ObjectivesStatus(unifiedAddress)
       ]);
       
       setObjectivesStatus(status);
@@ -66,13 +68,13 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
 
   useEffect(() => {
     // Reset state when wallet changes
-    if (primaryWallet?.address !== lastWallet) {
+    if (unifiedAddress !== lastWallet) {
       setObjectivesStatus(null);
       setChapter2ObjectivesStatus(null);
       setChapter3ObjectivesStatus(null);
       setChapter4ObjectivesStatus(null);
       setChapter5ObjectivesStatus(null);
-      setLastWallet(primaryWallet?.address || null);
+      setLastWallet(unifiedAddress || null);
     }
     
     // Clear previous state when wallet changes
@@ -111,9 +113,9 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
       window.removeEventListener('codeAccessed', handleObjectiveUpdate);
       window.removeEventListener('pictureVoteComplete', handleObjectiveUpdate);
     };
-  }, [primaryWallet?.address, lastWallet]);
+  }, [unifiedAddress, lastWallet]);
 
-  if (!primaryWallet?.address) {
+  if (!unifiedAddress) {
     return null;
   }
 

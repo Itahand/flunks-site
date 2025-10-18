@@ -21,7 +21,7 @@
     "@dynamic-labs/flow": "^3.9.13",
     "@dynamic-labs/sdk-api": "^0.0.715",
     "@dynamic-labs/sdk-react-core": "^3.9.13",
-    "@onflow/fcl": "^1.20.1",
+    "@onflow/fcl": "^1.20.2",
     "@onflow/types": "^1.4.2",
     "@react-spring/web": "^9.7.3",
     "@react-three/drei": "^9.105.6",

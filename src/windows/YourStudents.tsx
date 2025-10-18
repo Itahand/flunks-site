@@ -5,6 +5,7 @@ import {
   DynamicConnectButton,
   useDynamicContext,
 } from "@dynamic-labs/sdk-react-core";
+import UnifiedConnectButton from "../components/UnifiedConnectButton";
 import ItemsGrid from "components/YourItems/ItemsGrid";
 import BootScreen from "components/BootScreen";
 import { useState } from "react";
@@ -74,11 +75,11 @@ const WelcomeCard = styled.div`
 `;
 
 const YourStudents: React.FC = () => {
-  const { user } = useDynamicContext();
+  const { user, primaryWallet } = useDynamicContext();
   const { closeWindow, openWindow } = useWindowsContext();
   const [bootComplete, setBootComplete] = useState(false);
 
-  if (!user) {
+  if (!primaryWallet) {
     return (
       <DraggableResizeableWindow
         offSetHeight={44}
@@ -194,7 +195,7 @@ const YourStudents: React.FC = () => {
               </div>
               
               <div className="flex flex-col gap-3 w-full">
-                <DynamicConnectButton>
+                <UnifiedConnectButton>
                   <Button 
                     className="w-full" 
                     size="lg" 
@@ -209,7 +210,7 @@ const YourStudents: React.FC = () => {
                   >
                     🔗 CONNECT WALLET
                   </Button>
-                </DynamicConnectButton>
+                </UnifiedConnectButton>
                 
                 <Button 
                   onClick={() => closeWindow(WINDOW_IDS.YOUR_STUDENTS)}

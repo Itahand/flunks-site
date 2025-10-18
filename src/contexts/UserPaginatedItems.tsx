@@ -7,6 +7,7 @@ import React, {
   ReactNode,
 } from "react";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useUnifiedWallet } from "./UnifiedWalletContext";
 import { getOwnerTokenIdsWhale } from "web3/script-get-owner-token-ids-whale";
 import { getOwnerTokenStakeInfoWhale } from "web3/script-get-owner-token-stake-info-whale";
 import useSWR from "swr";
@@ -41,9 +42,10 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { primaryWallet } = useDynamicContext();
+  const { address: unifiedAddress } = useUnifiedWallet();
   
-  // Use real wallet only - no trial mode
-  const walletAddress = primaryWallet?.address || null;
+  // Use unified wallet address
+  const walletAddress = unifiedAddress || null;
   
   // Mobile data override states
   const [mobileDataOverride, setMobileDataOverride] = useState<{

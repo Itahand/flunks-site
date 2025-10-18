@@ -4,6 +4,7 @@ import { WINDOW_IDS } from 'fixed';
 import { useWindowsContext } from '../contexts/WindowsContext';
 import { useLockerInfo, useLockerAssignment } from '../hooks/useLocker';
 import { useDynamicContext, DynamicConnectButton } from '@dynamic-labs/sdk-react-core';
+import UnifiedConnectButton from '../components/UnifiedConnectButton';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import RPGProfileForm from '../components/UserProfile/RPGProfileForm';
 import { GumDisplay } from '../components/GumDisplay';
@@ -457,7 +458,7 @@ const UserProfile: React.FC = () => {
             </button>
 
             <div style={{ marginBottom: '10px' }}>
-              <DynamicConnectButton>
+              <UnifiedConnectButton>
                 <div style={{
                   background: '#2ecc71',
                   color: 'white',
@@ -470,9 +471,9 @@ const UserProfile: React.FC = () => {
                   boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
                   textAlign: 'center'
                 }}>
-                  🌊 Alternative: Direct Connect
+                  🔗 Connect Wallet
                 </div>
-              </DynamicConnectButton>
+              </UnifiedConnectButton>
             </div>
 
             {process.env.NODE_ENV === 'development' && (

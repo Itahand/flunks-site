@@ -1,6 +1,5 @@
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { useUsersControllerGetUserNftsByWalletAddress } from "generated/api/users/users";
-import { NftDtoMetadata } from "generated/models";
+import { useUnifiedWallet } from "./UnifiedWalletContext";
 import React, { useContext, createContext, useState, useEffect } from "react";
 import { getGumBalance } from "web3/script-get-gum-balance";
 import { getPendingRewardsAll } from "web3/script-pending-reward-all";
@@ -98,7 +97,8 @@ interface ProviderProps {
 const StakingProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
   const { primaryWallet } = useDynamicContext();
-  const walletAddress = primaryWallet?.address || null;
+  const { address: unifiedAddress } = useUnifiedWallet();
+  const walletAddress = unifiedAddress || null;
   const [gumBalance, setGumBalance] = useState(0);
   const [pendingRewards, setPendingRewards] = useState(0);
   const { allItems, refresh } = usePaginatedItems();
