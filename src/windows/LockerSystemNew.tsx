@@ -31,6 +31,7 @@ const LockerSystemNew: React.FC = () => {
   const [streak, setStreak] = useState<number>(0);
   const [canClaimDaily, setCanClaimDaily] = useState(false);
   const [hasRoom7Key, setHasRoom7Key] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Jacket options (now using jersey assets)
@@ -436,6 +437,27 @@ const LockerSystemNew: React.FC = () => {
           60% { transform: scale(1.05) skew(1deg); }
           80% { transform: scale(1.02) skew(-1deg); }
           100% { transform: scale(1) skew(0deg); }
+        }
+
+        /* Item Detail Modal Animations */
+        @keyframes itemFloat {
+          0%, 100% { 
+            transform: translateY(0px) translateX(0px); 
+          }
+          25% { 
+            transform: translateY(-8px) translateX(4px); 
+          }
+          50% { 
+            transform: translateY(0px) translateX(8px); 
+          }
+          75% { 
+            transform: translateY(-8px) translateX(4px); 
+          }
+        }
+
+        @keyframes fadeIn {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
         }
       `}</style>
       <div style={{
@@ -1288,6 +1310,7 @@ const LockerSystemNew: React.FC = () => {
                                 `;
                               }}
                               title="Room 7 Key - Return after dark to access Room 7"
+                              onClick={() => setSelectedItem('room7Key')}
                               >
                                 <img 
                                   src="/images/locations/paradise motel/key.png"
@@ -1314,21 +1337,51 @@ const LockerSystemNew: React.FC = () => {
                               </div>
                             )}
                             
-                            {/* Empty state when no items */}
+                            {/* Mystery box when no items - shows there's something to find! */}
                             {!hasRoom7Key && (
                               <div style={{
-                                gridColumn: '1 / -1',
-                                textAlign: 'center',
-                                padding: '20px',
-                                color: '#6495ED',
-                                fontFamily: '"Courier New", monospace',
-                                fontSize: '11px',
-                                opacity: 0.7
-                              }}>
-                                No special items yet...<br/>
-                                <span style={{ fontSize: '9px', opacity: 0.8 }}>
-                                  Explore the world to find collectibles!
-                                </span>
+                                background: 'linear-gradient(180deg, #666 0%, #333 100%)',
+                                border: '3px solid #999',
+                                borderRadius: 0,
+                                padding: '8px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'default',
+                                boxShadow: `
+                                  0 4px 0 #222,
+                                  0 0 10px rgba(0, 0, 0, 0.5),
+                                  inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                                `,
+                                position: 'relative',
+                                minHeight: '90px',
+                                opacity: 0.6
+                              }}
+                              title="Undiscovered item - Explore the world to find it!"
+                              >
+                                {/* Mystery Question Mark */}
+                                <div style={{
+                                  fontFamily: '"Press Start 2P", "Courier New", monospace',
+                                  fontSize: '48px',
+                                  color: '#fff',
+                                  textShadow: '3px 3px 0 #000, 0 0 10px rgba(255, 255, 255, 0.3)',
+                                  lineHeight: '1',
+                                  filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.5))'
+                                }}>
+                                  ?
+                                </div>
+                                <div style={{
+                                  fontFamily: '"Press Start 2P", "Courier New", monospace',
+                                  fontSize: '7px',
+                                  color: '#ccc',
+                                  textShadow: '1px 1px 0 #000',
+                                  marginTop: '8px',
+                                  textAlign: 'center',
+                                  lineHeight: '1.4'
+                                }}>
+                                  ???<br/>???
+                                </div>
                               </div>
                             )}
                           </div>
@@ -1757,6 +1810,193 @@ const LockerSystemNew: React.FC = () => {
             fontWeight: 'bold'
           }}>
             DEV MODE
+          </div>
+        )}
+
+        {/* Item Detail Modal - Classic Video Game Style */}
+        {selectedItem === 'room7Key' && (
+          <div 
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.85)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10000,
+              animation: 'fadeIn 0.2s ease-in-out'
+            }}
+            onClick={() => setSelectedItem(null)}
+          >
+            <div 
+              style={{
+                background: '#000033',
+                border: '4px solid #ff6600',
+                borderRadius: 0,
+                padding: '24px',
+                maxWidth: '600px',
+                width: '90%',
+                position: 'relative',
+                boxShadow: `
+                  0 0 0 2px #0066cc,
+                  0 0 0 6px #ff6600,
+                  0 8px 0 6px #000,
+                  0 12px 30px rgba(0, 0, 0, 0.9)
+                `,
+                imageRendering: 'pixelated'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedItem(null)}
+                style={{
+                  position: 'absolute',
+                  top: '8px',
+                  right: '8px',
+                  background: 'linear-gradient(180deg, #ff4444 0%, #cc0000 100%)',
+                  border: '2px solid #ff6666',
+                  borderRadius: 0,
+                  color: 'white',
+                  fontFamily: '"Press Start 2P", "Courier New", monospace',
+                  fontSize: '12px',
+                  padding: '8px 12px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 0 #880000',
+                  transition: 'all 0.1s'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(2px)';
+                  e.currentTarget.style.boxShadow = '0 2px 0 #880000';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 0 #880000';
+                }}
+              >
+                ✕
+              </button>
+
+              {/* Header */}
+              <div style={{
+                fontFamily: '"Press Start 2P", "Courier New", monospace',
+                fontSize: '10px',
+                color: '#00ccff',
+                textTransform: 'uppercase',
+                textShadow: '2px 2px 0 #003366',
+                marginBottom: '16px',
+                textAlign: 'center',
+                letterSpacing: '2px'
+              }}>
+                Paradise Motel - 'Round Back
+              </div>
+
+              {/* Main Content Area */}
+              <div style={{
+                display: 'flex',
+                flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+                gap: '24px',
+                alignItems: 'center'
+              }}>
+                {/* Left: Animated Key Image */}
+                <div style={{
+                  flex: '0 0 auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: '#001166',
+                  border: '3px solid #0066cc',
+                  borderRadius: 0,
+                  padding: '24px',
+                  boxShadow: 'inset 2px 2px 0 rgba(0, 0, 0, 0.5)',
+                  minWidth: '180px',
+                  minHeight: '180px'
+                }}>
+                  <img 
+                    src="/images/locations/paradise motel/key.png"
+                    alt="Room 7 Key"
+                    style={{
+                      width: '120px',
+                      height: '120px',
+                      objectFit: 'contain',
+                      imageRendering: 'pixelated',
+                      filter: 'drop-shadow(0 0 20px rgba(255, 204, 0, 1))',
+                      animation: 'itemFloat 3s ease-in-out infinite'
+                    }}
+                  />
+                </div>
+
+                {/* Right: Item Description */}
+                <div style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px'
+                }}>
+                  {/* Item Name */}
+                  <div style={{
+                    fontFamily: '"Press Start 2P", "Courier New", monospace',
+                    fontSize: '18px',
+                    color: '#ffcc00',
+                    textShadow: '3px 3px 0 #000, 0 0 10px rgba(255, 204, 0, 0.8)',
+                    lineHeight: '1.5'
+                  }}>
+                    Room 7 Key
+                  </div>
+
+                  {/* Item Category */}
+                  <div style={{
+                    fontFamily: '"Courier New", monospace',
+                    fontSize: '12px',
+                    color: '#ff9933',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}>
+                    ★ Special Item ★
+                  </div>
+
+                  {/* Description Box */}
+                  <div style={{
+                    background: '#001166',
+                    border: '2px solid #0066cc',
+                    borderRadius: 0,
+                    padding: '12px',
+                    boxShadow: 'inset 2px 2px 0 rgba(0, 0, 0, 0.5)'
+                  }}>
+                    <div style={{
+                      fontFamily: '"Courier New", monospace',
+                      fontSize: '13px',
+                      color: '#ffffff',
+                      lineHeight: '1.6',
+                      whiteSpace: 'pre-wrap'
+                    }}>
+                      A rusty brass key given to you by the maid at Paradise Motel. 
+                      
+                      She warned you to be careful sneaking around after dark. 
+                      
+                      This key grants access to Room 7 during nighttime hours.
+                    </div>
+                  </div>
+
+                  {/* Usage Hint */}
+                  <div style={{
+                    background: 'linear-gradient(180deg, #ff8833 0%, #ff6600 100%)',
+                    border: '2px solid #ffcc00',
+                    borderRadius: 0,
+                    padding: '10px',
+                    boxShadow: '0 4px 0 #cc5200',
+                    fontFamily: '"Press Start 2P", "Courier New", monospace',
+                    fontSize: '9px',
+                    color: '#fff',
+                    textShadow: '1px 1px 0 #000',
+                    textAlign: 'center',
+                    lineHeight: '1.6'
+                  }}>
+                    💡 Return to Paradise Motel<br/>after dark to use this key
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
