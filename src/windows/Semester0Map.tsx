@@ -230,7 +230,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
     setHovered(null);
   };
 
-  // Mobile two-tap functionality: first tap shows hover, second tap enters
+  //Mobile two-tap functionality: first tap shows hover, second tap enters
   const handleTouchEnter = (key: string) => {
     if (touchedLocation === key) {
       // Second tap - DO NOT clear the state here, let onClick handler detect it first
@@ -250,6 +250,18 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
   
   const handleTouchLeave = () => {
     // Don't clear on touch leave to maintain the first-tap state
+  };
+
+  // Handle touch-based clicking for mobile
+  const handleMobileTap = (locationKey: string, openFn: () => void) => {
+    if (!isMobile) return; // Only for mobile
+    
+    if (touchedLocation === locationKey) {
+      // Second tap - open the location
+      setTouchedLocation(null);
+      setHovered(null);
+      handleLocationAccess(locationKey, openFn);
+    }
   };
 
   // Clear touched location when clicking elsewhere on mobile
@@ -744,7 +756,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   }}
                   onMouseEnter={() => setHovered('treehouse')}
                   onMouseLeave={() => setHovered(null)}
-                  onTouchStart={() => user && handleTouchEnter('treehouse')}
+                  onTouchStart={() => handleTouchEnter('treehouse')}
                   onTouchEnd={handleTouchLeave}
                 />
                 <DynamicHouseIcon
@@ -788,7 +800,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   }}
                   onMouseEnter={() => setHovered('snack-shack')}
                   onMouseLeave={() => setHovered(null)}
-                  onTouchStart={() => user && handleTouchEnter('snack-shack')}
+                  onTouchStart={() => handleTouchEnter('snack-shack')}
                   onTouchEnd={handleTouchLeave}
                 />
                 <DynamicHouseIcon
@@ -832,7 +844,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   }}
                   onMouseEnter={() => setHovered('four-thieves-bar')}
                   onMouseLeave={() => setHovered(null)}
-                  onTouchStart={() => user && handleTouchEnter('four-thieves-bar')}
+                  onTouchStart={() => handleTouchEnter('four-thieves-bar')}
                   onTouchEnd={handleTouchLeave}
                 />
                 <DynamicHouseIcon
@@ -876,7 +888,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   }}
                   onMouseEnter={() => setHovered('flunk-fm')}
                   onMouseLeave={() => setHovered(null)}
-                  onTouchStart={() => user && handleTouchEnter('flunk-fm')}
+                  onTouchStart={() => handleTouchEnter('flunk-fm')}
                   onTouchEnd={handleTouchLeave}
                 />
                 <DynamicHouseIcon
@@ -920,7 +932,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   }}
                   onMouseEnter={() => setHovered('police-station')}
                   onMouseLeave={() => setHovered(null)}
-                  onTouchStart={() => user && handleTouchEnter('police-station')}
+                  onTouchStart={() => handleTouchEnter('police-station')}
                   onTouchEnd={handleTouchLeave}
                 />
                 <DynamicHouseIcon
@@ -964,7 +976,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   }}
                   onMouseEnter={() => setHovered('shed')}
                   onMouseLeave={() => setHovered(null)}
-                  onTouchStart={() => user && handleTouchEnter('shed')}
+                  onTouchStart={() => handleTouchEnter('shed')}
                   onTouchEnd={handleTouchLeave}
                 />
                 <DynamicHouseIcon
@@ -1008,7 +1020,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   }}
                   onMouseEnter={() => setHovered('junkyard')}
                   onMouseLeave={() => setHovered(null)}
-                  onTouchStart={() => user && handleTouchEnter('junkyard')}
+                  onTouchStart={() => handleTouchEnter('junkyard')}
                   onTouchEnd={handleTouchLeave}
                 />
               </>
@@ -1017,29 +1029,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               houseId="high-school"
               className={`${styles["nav-icon"]} ${styles['high-school-nav']}`}
               onClick={() => {
-                // On mobile, if this is the second tap, proceed with opening
-                if (isMobile && touchedLocation === 'high-school') {
-                  setTouchedLocation(null);
-                  setHovered(null);
-                  handleLocationAccess('high-school', () => 
-                    openWindow({
-                      key: WINDOW_IDS.HIGH_SCHOOL_MAIN,
-                      window: (
-                        <DraggableResizeableWindow
-                          windowsId={WINDOW_IDS.HIGH_SCHOOL_MAIN}
-                          headerTitle="High School"
-                          onClose={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_MAIN)}
-                          initialWidth="70vw"
-                          initialHeight="70vh"
-                          resizable={true}
-                        >
-                          <HighSchoolMain />
-                        </DraggableResizeableWindow>
-                      ),
-                    })
-                  );
-                } else if (!isMobile) {
-                  // Desktop behavior - immediate open
+                // Desktop behavior - immediate open
+                if (!isMobile) {
                   handleLocationAccess('high-school', () => 
                     openWindow({
                       key: WINDOW_IDS.HIGH_SCHOOL_MAIN,
@@ -1058,7 +1049,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                     })
                   );
                 }
-                // First tap on mobile is handled by handleTouchEnter
+                // Mobile handled in onTouchEnd
               }}
               onMouseEnter={() => {
                 setHovered('high-school');
@@ -1066,8 +1057,26 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               onMouseLeave={() => {
                 setHovered(null);
               }}
-              onTouchStart={() => user && handleTouchEnter('high-school')}
-              onTouchEnd={handleTouchLeave}
+              onTouchStart={() => handleTouchEnter('high-school')}
+              onTouchEnd={() => {
+                handleMobileTap('high-school', () => 
+                  openWindow({
+                    key: WINDOW_IDS.HIGH_SCHOOL_MAIN,
+                    window: (
+                      <DraggableResizeableWindow
+                        windowsId={WINDOW_IDS.HIGH_SCHOOL_MAIN}
+                        headerTitle="High School"
+                        onClose={() => closeWindow(WINDOW_IDS.HIGH_SCHOOL_MAIN)}
+                        initialWidth="70vw"
+                        initialHeight="70vh"
+                        resizable={true}
+                      >
+                        <HighSchoolMain />
+                      </DraggableResizeableWindow>
+                    ),
+                  })
+                );
+              }}
             >
             </DynamicHouseIcon>
             
@@ -1123,7 +1132,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               onMouseLeave={() => {
                 setHovered(null);
               }}
-              onTouchStart={() => user && handleTouchEnter('arcade')}
+              onTouchStart={() => handleTouchEnter('arcade')}
               onTouchEnd={handleTouchLeave}
             >
             </DynamicHouseIcon>
@@ -1181,7 +1190,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                 onMouseLeave={() => {
                   setHovered(null);
                 }}
-                onTouchStart={() => user && handleTouchEnter('football-field')}
+                onTouchStart={() => handleTouchEnter('football-field')}
                 onTouchEnd={handleTouchLeave}
               >
               </DynamicHouseIcon>
@@ -1240,7 +1249,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                 onMouseLeave={() => {
                   setHovered(null);
                 }}
-                onTouchStart={() => user && handleTouchEnter('rug-doctor')}
+                onTouchStart={() => handleTouchEnter('rug-doctor')}
                 onTouchEnd={handleTouchLeave}
               >
               </DynamicHouseIcon>
@@ -1300,7 +1309,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                 onMouseLeave={() => {
                   setHovered(null);
                 }}
-                onTouchStart={() => user && handleTouchEnter('paradise-motel')}
+                onTouchStart={() => handleTouchEnter('paradise-motel')}
                 onTouchEnd={handleTouchLeave}
               >
               </DynamicHouseIcon>
@@ -1358,7 +1367,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                 onMouseLeave={() => {
                   setHovered(null);
                 }}
-                onTouchStart={() => user && handleTouchEnter('wishing-tree')}
+                onTouchStart={() => handleTouchEnter('wishing-tree')}
                 onTouchEnd={handleTouchLeave}
               >
               </DynamicHouseIcon>
@@ -1416,7 +1425,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                 onMouseLeave={() => {
                   setHovered(null);
                 }}
-                onTouchStart={() => user && handleTouchEnter('frenship')}
+                onTouchStart={() => handleTouchEnter('frenship')}
                 onTouchEnd={handleTouchLeave}
               >
               </DynamicHouseIcon>
@@ -1479,7 +1488,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               onMouseLeave={() => {
                 setHovered(null);
               }}
-              onTouchStart={() => user && handleTouchEnter('jocks-house')}
+              onTouchStart={() => handleTouchEnter('jocks-house')}
               onTouchEnd={handleTouchLeave}
             >
             </DynamicHouseIcon>
@@ -1536,7 +1545,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               onMouseLeave={() => {
                 setHovered(null);
               }}
-              onTouchStart={() => user && handleTouchEnter('freaks-house')}
+              onTouchStart={() => handleTouchEnter('freaks-house')}
               onTouchEnd={handleTouchLeave}
             >
             </DynamicHouseIcon>
@@ -1593,7 +1602,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               onMouseLeave={() => {
                 setHovered(null);
               }}
-              onTouchStart={() => user && handleTouchEnter('geeks-house')}
+              onTouchStart={() => handleTouchEnter('geeks-house')}
               onTouchEnd={handleTouchLeave}
             >
             </DynamicHouseIcon>
@@ -1650,7 +1659,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               onMouseLeave={() => {
                 setHovered(null);
               }}
-              onTouchStart={() => user && handleTouchEnter('preps-house')}
+              onTouchStart={() => handleTouchEnter('preps-house')}
               onTouchEnd={handleTouchLeave}
             >
             </DynamicHouseIcon>
