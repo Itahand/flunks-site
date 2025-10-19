@@ -233,9 +233,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
   // Mobile two-tap functionality: first tap shows hover, second tap enters
   const handleTouchEnter = (key: string) => {
     if (touchedLocation === key) {
-      // Second tap - clear the hover and proceed with click
-      setTouchedLocation(null);
-      setHovered(null);
+      // Second tap - DO NOT clear the state here, let onClick handler detect it first
+      // The onClick handler will clear it
       return; // Let the onClick handler take over
     } else {
       // First tap - show hover effect
