@@ -207,16 +207,16 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
 
       {/* Level Select Menu */}
       <div style={{
-        padding: '20px',
+        padding: 'clamp(12px, 3vw, 20px)',
         background: 'linear-gradient(180deg, rgba(0, 34, 68, 0.9) 0%, rgba(0, 17, 34, 0.9) 100%)'
       }}>
         {/* Chapter Selection Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-          gap: '16px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100px, 100%), 1fr))',
+          gap: 'clamp(8px, 2vw, 16px)',
           marginBottom: '20px',
-          padding: '16px',
+          padding: 'clamp(10px, 3vw, 16px)',
           background: 'rgba(0, 0, 0, 0.3)',
           border: '2px solid #FFD700',
           borderRadius: '8px'
@@ -244,30 +244,35 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                   border: '3px solid ' + (isSelected ? '#FFFFFF' : isComplete ? '#00FF00' : '#87CEEB'),
                   borderRadius: '8px',
                   color: isSelected ? '#001122' : '#FFFFFF',
-                  padding: '12px 8px',
-                  fontSize: '14px',
+                  padding: 'clamp(8px, 2vw, 12px) clamp(4px, 1vw, 8px)',
+                  fontSize: 'clamp(10px, 2.5vw, 14px)',
                   fontWeight: 'bold',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   textShadow: isSelected ? '1px 1px 0px #FFFFFF' : '1px 1px 2px #000000',
                   animation: isSelected ? 'levelFloat 2s ease-in-out infinite' : isComplete ? 'powerUp 3s ease-in-out infinite' : 'none',
                   position: 'relative',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  minHeight: 'clamp(70px, 15vw, 100px)'
                 }}
               >
                 <div style={{
-                  fontSize: '18px',
+                  fontSize: 'clamp(14px, 3.5vw, 18px)',
                   marginBottom: '4px'
                 }}>
                   {isComplete ? '👑' : chapter === 1 ? '🏫' : chapter === 2 ? '🏀' : chapter === 3 ? '📸' : chapter === 4 ? '💃' : '🏨'}
                 </div>
-                <div>CHAPTER {chapter}</div>
                 <div style={{
-                  fontSize: '10px',
+                  fontSize: 'clamp(9px, 2vw, 14px)',
+                  wordBreak: 'break-word'
+                }}>CHAPTER {chapter}</div>
+                <div style={{
+                  fontSize: 'clamp(7px, 1.5vw, 10px)',
                   marginTop: '4px',
-                  opacity: 0.8
+                  opacity: 0.8,
+                  wordBreak: 'break-word'
                 }}>
-                  {chapterProgress}% COMPLETE
+                  {chapterProgress}%
                 </div>
                 {isComplete && (
                   <div style={{
@@ -298,17 +303,19 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
           background: 'linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%)',
           border: '2px solid #FFD700',
           borderRadius: '8px',
-          padding: '16px',
+          padding: 'clamp(10px, 3vw, 16px)',
           marginBottom: '20px',
           textAlign: 'center'
         }}>
           <div style={{
-            fontSize: '18px',
+            fontSize: 'clamp(12px, 3.5vw, 18px)',
             fontWeight: 'bold',
             color: '#FFD700',
             marginBottom: '8px',
             textShadow: '2px 2px 4px #000000',
-            animation: 'titlePulse 2s ease-in-out infinite'
+            animation: 'titlePulse 2s ease-in-out infinite',
+            lineHeight: '1.3',
+            wordBreak: 'break-word'
           }}>
             {currentWeek === 1 ? '🏫 CHAPTER 1: THE BEGINNING' :
              currentWeek === 2 ? '🏀 CHAPTER 2: JOCKS HOUSE' :
@@ -317,7 +324,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
              '🏨 CHAPTER 5: PARADISE MOTEL'}
           </div>
           <div style={{
-            fontSize: '14px',
+            fontSize: 'clamp(11px, 2.5vw, 14px)',
             color: '#FFFFFF',
             marginBottom: '12px'
           }}>
@@ -329,7 +336,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
             background: '#001122',
             border: '2px solid #FFD700',
             borderRadius: '20px',
-            height: '20px',
+            height: 'clamp(18px, 4vw, 20px)',
             overflow: 'hidden',
             position: 'relative',
             boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)'
@@ -360,15 +367,17 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
             </div>
             <div style={{
               position: 'absolute',
-              top: '2px',
+              top: '0',
               left: '0',
               right: '0',
               bottom: '0',
               color: '#FFFFFF',
-              fontSize: '12px',
+              fontSize: 'clamp(10px, 2.5vw, 12px)',
               fontWeight: 'bold',
               textAlign: 'center',
-              lineHeight: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               textShadow: '1px 1px 2px #000000'
             }}>
               {progress}%
@@ -380,7 +389,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px'
+          gap: 'clamp(8px, 2vw, 12px)'
         }}>
           {currentObjectivesData.completedObjectives.map((objective, index) => (
             <div
@@ -393,50 +402,65 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                   ? '2px solid #32CD32' 
                   : '2px solid #4169E1',
                 borderRadius: '8px',
-                padding: '16px',
+                padding: 'clamp(10px, 3vw, 16px)',
                 display: 'flex',
-                alignItems: 'center',
+                flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+                alignItems: window.innerWidth < 768 ? 'stretch' : 'center',
                 justifyContent: 'space-between',
                 transition: 'all 0.5s ease',
                 position: 'relative',
                 overflow: 'hidden',
+                gap: window.innerWidth < 768 ? '10px' : '0',
                 animation: objective.completed ? 'missionComplete 3s ease-in-out infinite' : 'levelFloat 4s ease-in-out infinite',
                 animationDelay: `${index * 0.2}s`
               }}
             >
-              <div style={{ flex: 1 }}>
+              <div style={{ 
+                flex: 1,
+                minWidth: 0
+              }}>
                 <div style={{
-                  fontSize: '16px',
+                  fontSize: 'clamp(12px, 3vw, 16px)',
                   fontWeight: 'bold',
                   color: objective.completed ? '#32CD32' : '#FFFFFF',
                   marginBottom: '8px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  textShadow: '1px 1px 2px #000000'
+                  gap: 'clamp(6px, 2vw, 12px)',
+                  textShadow: '1px 1px 2px #000000',
+                  flexWrap: 'wrap',
+                  wordBreak: 'break-word'
                 }}>
                   <span style={{
-                    fontSize: '20px',
-                    animation: objective.completed ? 'starTwinkle 1s ease-in-out infinite' : 'none'
+                    fontSize: 'clamp(16px, 4vw, 20px)',
+                    animation: objective.completed ? 'starTwinkle 1s ease-in-out infinite' : 'none',
+                    flexShrink: 0
                   }}>
                     {objective.completed ? '🏆' : '⚡'}
                   </span>
-                  MISSION {index + 1}: {objective.title.toUpperCase()}
+                  <span style={{ 
+                    flex: 1,
+                    minWidth: 0,
+                    lineHeight: '1.3'
+                  }}>MISSION {index + 1}: {objective.title.toUpperCase()}</span>
                 </div>
                 <div style={{
-                  fontSize: '12px',
+                  fontSize: 'clamp(10px, 2.5vw, 12px)',
                   color: '#CCCCCC',
                   marginBottom: '8px',
-                  lineHeight: '1.4'
+                  lineHeight: '1.5',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'normal'
                 }}>
                   {objective.description}
                 </div>
                 {objective.reward && (
                   <div style={{
-                    fontSize: '12px',
+                    fontSize: 'clamp(10px, 2.5vw, 12px)',
                     color: '#FFD700',
                     fontWeight: 'bold',
-                    textShadow: '1px 1px 2px #000000'
+                    textShadow: '1px 1px 2px #000000',
+                    wordBreak: 'break-word'
                   }}>
                     🍬 REWARD: +{objective.reward} GUM POWER
                   </div>
@@ -448,15 +472,17 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                   background: 'linear-gradient(45deg, #FFD700, #32CD32)',
                   border: '2px solid #FFFFFF',
                   borderRadius: '50%',
-                  width: '50px',
-                  height: '50px',
+                  width: window.innerWidth < 768 ? '40px' : '50px',
+                  height: window.innerWidth < 768 ? '40px' : '50px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '24px',
+                  fontSize: window.innerWidth < 768 ? '20px' : '24px',
                   animation: 'powerUp 2s ease-in-out infinite',
                   color: '#001122',
-                  textShadow: 'none'
+                  textShadow: 'none',
+                  flexShrink: 0,
+                  alignSelf: window.innerWidth < 768 ? 'center' : 'auto'
                 }}>
                   ✓
                 </div>
@@ -471,7 +497,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
             background: 'linear-gradient(45deg, rgba(255, 215, 0, 0.4), rgba(50, 205, 50, 0.4))',
             border: '3px solid #FFD700',
             borderRadius: '12px',
-            padding: '16px 14px',
+            padding: 'clamp(12px, 3vw, 16px) clamp(10px, 2.5vw, 14px)',
             marginTop: '20px',
             textAlign: 'center',
             animation: 'completionFanfare 2s ease-in-out infinite alternate',
@@ -486,32 +512,33 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '4px',
+              gap: 'clamp(8px, 2vw, 12px)',
               position: 'relative',
               zIndex: 10
             }}>
               <div style={{
-                fontSize: 'clamp(14px, 5vw, 22px)',
+                fontSize: 'clamp(14px, 4vw, 22px)',
                 fontWeight: 'bold',
                 color: '#FFD700',
                 textShadow: '2px 2px 4px #000000',
                 animation: 'titlePulse 1s ease-in-out infinite',
                 fontFamily: '"Press Start 2P", "Courier New", monospace',
-                letterSpacing: '1px',
-                lineHeight: 1.2,
-                wordBreak: 'break-word'
-              }}>🎉 CHAPTER<br/>COMPLETE! 🎉</div>
+                letterSpacing: 'clamp(0px, 0.5vw, 1px)',
+                lineHeight: 1.3,
+                wordBreak: 'break-word',
+                maxWidth: '100%'
+              }}>🎉 CHAPTER COMPLETE! 🎉</div>
               <div style={{
-                fontSize: 'clamp(10px, 4vw, 16px)',
+                fontSize: 'clamp(9px, 2.5vw, 16px)',
                 color: '#32CD32',
                 fontWeight: 'bold',
                 textShadow: '1px 1px 2px #000000',
                 fontFamily: '"Press Start 2P", "Courier New", monospace',
-                letterSpacing: '1px',
-                lineHeight: 1.25,
+                letterSpacing: 'clamp(0px, 0.3vw, 1px)',
+                lineHeight: 1.4,
                 wordBreak: 'break-word',
-                maxWidth: '95%'
-              }}>READY FOR<br/>NEXT ADVENTURE!</div>
+                maxWidth: '100%'
+              }}>READY FOR NEXT ADVENTURE!</div>
             </div>
             {/* Celebration Particles */}
             {[...Array(5)].map((_, i) => (
@@ -538,9 +565,9 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
         <div style={{
           display: 'flex',
           justifyContent: 'center',
-          gap: '12px',
+          gap: 'clamp(8px, 2vw, 12px)',
           marginTop: '20px',
-          padding: '16px',
+          padding: 'clamp(10px, 3vw, 16px)',
           background: 'rgba(0, 0, 0, 0.5)',
           border: '2px solid #4169E1',
           borderRadius: '8px'
@@ -555,16 +582,18 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
               border: '2px solid #FFFFFF',
               borderRadius: '6px',
               color: '#FFFFFF',
-              padding: '10px 20px',
-              fontSize: '14px',
+              padding: 'clamp(8px, 2vw, 10px) clamp(12px, 3vw, 20px)',
+              fontSize: 'clamp(10px, 2.5vw, 14px)',
               fontWeight: 'bold',
               cursor: loading ? 'not-allowed' : 'pointer',
               textShadow: '1px 1px 2px #000000',
               animation: loading ? 'none' : 'levelFloat 3s ease-in-out infinite',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              whiteSpace: 'nowrap',
+              wordBreak: 'keep-all'
             }}
           >
-            {loading ? '⏳ LOADING...' : '🔄 REFRESH MISSIONS'}
+            {loading ? '⏳ LOADING...' : '🔄 REFRESH'}
           </button>
         </div>
       </div>

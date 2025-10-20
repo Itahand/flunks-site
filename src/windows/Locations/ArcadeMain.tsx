@@ -466,7 +466,7 @@ const ArcadeMain = () => {
           right: '0',
           backgroundColor: '#000000',
           padding: 'clamp(10px, 3vw, 20px)',
-          paddingTop: 'clamp(80px, 15vw, 100px)',
+          paddingTop: 'clamp(120px, 25vw, 150px)',
           borderTop: '3px solid #FFD700',
           boxShadow: '0 -5px 20px rgba(0,0,0,0.8)'
         }}>
