@@ -376,15 +376,16 @@ interface OnlineUser {
 }
 
 const FlunksMessenger: React.FC = () => {
-  const { user, setShowAuthFlow } = useDynamicContext();
+  const { user, setShowAuthFlow, primaryWallet } = useDynamicContext();
   
   // Add debugging for user state
   useEffect(() => {
     console.log('🔍 FlunksMessenger - Dynamic context update:', { 
-      user: user ? { id: user.userId, email: user.email } : null, 
+      user: user ? { id: user.userId, email: user.email } : null,
+      hasWallet: !!primaryWallet,
       timestamp: new Date().toISOString()
     });
-  }, [user]);
+  }, [user, primaryWallet]);
 
   const { closeWindow } = useWindowsContext();
   const { profile, hasProfile } = useUserProfile();
@@ -396,14 +397,23 @@ const FlunksMessenger: React.FC = () => {
   const [tempUsername, setTempUsername] = useState('');
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
-  // Handle initial auth check with a small delay to allow Dynamic context to populate
+  // Handle initial auth check - wait for Dynamic context to fully load
+  // A user is authenticated if they have EITHER a user object OR a connected wallet
   useEffect(() => {
-    const timer = setTimeout(() => {
+    // If we have a user OR wallet, we're authenticated and done checking
+    if (user || primaryWallet) {
+      console.log('🔍 Auth check complete - user authenticated:', { user: !!user, wallet: !!primaryWallet });
       setIsCheckingAuth(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    } else {
+      // Still waiting for Dynamic context to load, set a timeout as a failsafe
+      const timer = setTimeout(() => {
+        console.log('🔍 Auth check timeout reached - assuming not authenticated');
+        setIsCheckingAuth(false);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [user, primaryWallet]);
 
   const [currentMessage, setCurrentMessage] = useState('');
   const [selectedContact, setSelectedContact] = useState<string>('💬 General Chat');
@@ -749,7 +759,8 @@ const FlunksMessenger: React.FC = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  if (!user && isCheckingAuth) {
+  // Still checking if user is authenticated
+  if (isCheckingAuth) {
     return (
       <UserSetup>
         <h2>⏳ Checking authentication...</h2>
@@ -758,7 +769,8 @@ const FlunksMessenger: React.FC = () => {
     );
   }
 
-  if (!user) {
+  // User is definitely not authenticated (no user object and no wallet) and we're done checking
+  if (!user && !primaryWallet) {
     return (
       <UserSetup>
         {/* Retro NES styled warning box */}
