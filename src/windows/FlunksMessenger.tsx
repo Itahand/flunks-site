@@ -36,14 +36,10 @@ const MessengerContainer = styled.div`
 `;
 
 const ContactList = styled.div`
-  width: 250px; /* Increased from 200px to 250px for better visibility */
+  width: 200px;
   border-right: 2px inset #c0c0c0;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Prevent content from overflowing the container */
-  z-index: 1; /* Ensure proper layering */
-  position: relative; /* Ensure proper positioning context */
-  max-height: 100%; /* Ensure it doesn't exceed container height */
   
   @media (max-width: 768px) {
     width: 100%;
@@ -65,9 +61,6 @@ const ContactList = styled.div`
 const OnlineUsersSection = styled.div`
   border-top: 1px inset #c0c0c0;
   background: #f0f0f0;
-  flex: 1; /* Take remaining space */
-  overflow: auto; /* Allow scrolling if too many users */
-  min-height: 0; /* Allow shrinking */
   
   @media (max-width: 768px) {
     display: none; /* Hide online users on mobile to save space */
@@ -131,17 +124,12 @@ const ContactListHeader = styled.div`
 const ContactItem = styled.div<{ online?: boolean; isSelected?: boolean }>`
   display: flex;
   align-items: center;
-  padding: 8px 12px; /* Increased padding for better clickability */
+  padding: 6px 12px;
   cursor: pointer;
   font-size: 11px;
   background: ${props => props.isSelected ? '#316ac5' : 'transparent'};
   color: ${props => props.isSelected ? 'white' : 'black'};
   border-left: ${props => props.isSelected ? '3px solid #fff' : '3px solid transparent'};
-  min-height: 28px; /* Ensure minimum height for easy clicking */
-  width: 100%; /* Ensure full width clickability */
-  box-sizing: border-box; /* Include padding in width calculation */
-  position: relative; /* Ensure proper positioning */
-  z-index: 2; /* Ensure click events work */
   
   &:hover {
     background: ${props => props.isSelected ? '#316ac5' : '#e0e0e0'};
@@ -156,7 +144,6 @@ const ContactItem = styled.div<{ online?: boolean; isSelected?: boolean }>`
     margin-right: 8px;
     border: 1px solid #333;
     box-shadow: 0 0 3px rgba(0,0,0,0.3);
-    flex-shrink: 0; /* Prevent indicator from shrinking */
   }
   
   @media (max-width: 768px) {
@@ -376,16 +363,20 @@ interface OnlineUser {
 }
 
 const FlunksMessenger: React.FC = () => {
-  const { user, setShowAuthFlow, primaryWallet } = useDynamicContext();
+  const { user, primaryWallet } = useDynamicContext();
+  
+  // Check if user is actually authenticated (either user OR primaryWallet exists)
+  const isUserAuthenticated = !!(user || primaryWallet);
   
   // Add debugging for user state
   useEffect(() => {
     console.log('🔍 FlunksMessenger - Dynamic context update:', { 
       user: user ? { id: user.userId, email: user.email } : null,
-      hasWallet: !!primaryWallet,
+      primaryWallet: primaryWallet?.address ? primaryWallet.address.slice(0, 10) + '...' : null,
+      isUserAuthenticated,
       timestamp: new Date().toISOString()
     });
-  }, [user, primaryWallet]);
+  }, [user, primaryWallet, isUserAuthenticated]);
 
   const { closeWindow } = useWindowsContext();
   const { profile, hasProfile } = useUserProfile();
@@ -397,23 +388,14 @@ const FlunksMessenger: React.FC = () => {
   const [tempUsername, setTempUsername] = useState('');
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
-  // Handle initial auth check - wait for Dynamic context to fully load
-  // A user is authenticated if they have EITHER a user object OR a connected wallet
+  // Handle initial auth check with a small delay to allow Dynamic context to populate
   useEffect(() => {
-    // If we have a user OR wallet, we're authenticated and done checking
-    if (user || primaryWallet) {
-      console.log('🔍 Auth check complete - user authenticated:', { user: !!user, wallet: !!primaryWallet });
+    const timer = setTimeout(() => {
       setIsCheckingAuth(false);
-    } else {
-      // Still waiting for Dynamic context to load, set a timeout as a failsafe
-      const timer = setTimeout(() => {
-        console.log('🔍 Auth check timeout reached - assuming not authenticated');
-        setIsCheckingAuth(false);
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [user, primaryWallet]);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const [currentMessage, setCurrentMessage] = useState('');
   const [selectedContact, setSelectedContact] = useState<string>('💬 General Chat');
@@ -437,12 +419,13 @@ const FlunksMessenger: React.FC = () => {
       { username: 'Gonzo420', walletAddress: '0x9876...1234' },
     ];
 
-    // Add current user if they're logged in
-    if (user?.userId) {
-      const currentUserName = username || user.email?.split('@')[0] || `User-${user.userId.slice(-4)}`;
+    // Add current user if they're logged in (check both user and primaryWallet)
+    const userIdentifier = user?.userId || primaryWallet?.address;
+    if (userIdentifier) {
+      const currentUserName = username || user?.email?.split('@')[0] || `User-${userIdentifier.slice(-4)}`;
       mockUsers.unshift({
         username: currentUserName,
-        walletAddress: user.userId,
+        walletAddress: userIdentifier,
         profileIcon: profile?.profile_icon,
         isCurrentUser: true
       });
@@ -476,7 +459,7 @@ const FlunksMessenger: React.FC = () => {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [user, username, soundsEnabled]);
+  }, [user, primaryWallet, username, soundsEnabled, profile]);
 
   // Chat rooms - AI agents get their own dedicated rooms
   const [chatRooms] = useState<Contact[]>([
@@ -759,7 +742,7 @@ const FlunksMessenger: React.FC = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Still checking if user is authenticated
+  // Check authentication more reliably - wait for context to load
   if (isCheckingAuth) {
     return (
       <UserSetup>
@@ -769,99 +752,15 @@ const FlunksMessenger: React.FC = () => {
     );
   }
 
-  // User is definitely not authenticated (no user object and no wallet) and we're done checking
-  if (!user && !primaryWallet) {
+  // If not authenticated after loading, show connect prompt
+  if (!isUserAuthenticated) {
     return (
       <UserSetup>
-        {/* Retro NES styled warning box */}
-        <div style={{
-          background: 'linear-gradient(45deg, #1e1e1e, #2d2d30, #1e1e1e)',
-          border: '3px solid #FFD700',
-          padding: '20px',
-          borderRadius: '4px',
-          marginBottom: '20px',
-          position: 'relative',
-          boxShadow: '0 0 20px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 6px 0 #8B7500',
-          maxWidth: '400px'
-        }}>
-          {/* Retro scanlines */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'repeating-linear-gradient(0deg, rgba(255, 215, 0, 0.05) 0pxthe, rgba(255, 215, 0, 0.05) 1px, transparent 1px, transparent 2px)',
-            pointerEvents: 'none',
-            borderRadius: '4px'
-          }} />
-          
-          <div style={{ 
-            fontSize: '32px', 
-            marginBottom: '12px',
-            filter: 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))'
-          }}>💬</div>
-          <div style={{ 
-            fontSize: '14px', 
-            fontWeight: 'bold',
-            color: '#FFD700',
-            textShadow: '0 0 10px rgba(255, 215, 0, 0.7), 2px 2px 0px #000',
-            fontFamily: "'Press Start 2P', monospace",
-            marginBottom: '10px',
-            letterSpacing: '1px',
-            lineHeight: '1.6'
-          }}>
-            CONNECT YOUR WALLET
-          </div>
-          <div style={{ 
-            fontSize: '10px', 
-            marginTop: '8px',
-            color: '#00ffff',
-            textShadow: '0 0 5px rgba(0, 255, 255, 0.5)',
-            fontFamily: "'Press Start 2P', monospace",
-            lineHeight: '1.6'
-          }}>
-            ACCESS FLUNKS MESSENGER
-          </div>
+        <h2>🔒 Connect Wallet to Chat</h2>
+        <p>Please connect your wallet to access Flunks Messenger</p>
+        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+          <DynamicWidget />
         </div>
-
-        <button style={{
-          background: 'linear-gradient(180deg, #00ffff 0%, #0088ff 100%)',
-          color: '#000',
-          border: '3px solid #fff',
-          padding: '14px 28px',
-          borderRadius: '4px',
-          fontSize: '12px',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          fontFamily: "'Press Start 2P', monospace",
-          boxShadow: '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)',
-          textShadow: '1px 1px 0px rgba(255, 255, 255, 0.5)',
-          transition: 'all 0.1s',
-          letterSpacing: '1px'
-        }}
-        onMouseDown={(e) => {
-          e.currentTarget.style.transform = 'translateY(3px)';
-          e.currentTarget.style.boxShadow = '0 3px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
-        }}
-        onMouseUp={(e) => {
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 6px 0 #004488, 0 0 20px rgba(0, 255, 255, 0.5)';
-        }}
-        onClick={() => {
-          // Trigger Dynamic wallet authentication
-          console.log('🔗 Opening Dynamic wallet login...');
-          setShowAuthFlow(true);
-        }}
-        >
-          🔗 LOG IN OR SIGN UP
-        </button>
-        
-        {/* No need for hidden DynamicWidget - using setShowAuthFlow instead */}
       </UserSetup>
     );
   }
@@ -924,11 +823,7 @@ const FlunksMessenger: React.FC = () => {
           Chat Rooms ({chatRooms.filter(r => r.online).length} active)
         </ContactListHeader>
         <MenuList className="react95-menu-list" style={{ 
-          overflow: 'auto', /* Allow scrolling when needed */
-          maxHeight: '200px', /* Set reasonable max height to prevent overflow */
-          position: 'relative', /* Ensure proper positioning */
-          zIndex: 1, /* Ensure proper layering */
-          flex: '0 0 auto', /* Don't grow, don't shrink, use content size */
+          overflow: 'hidden',
           '@media (max-width: 768px)': {
             maxHeight: '80px',
             overflowY: 'auto',
