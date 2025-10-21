@@ -388,14 +388,21 @@ const FlunksMessenger: React.FC = () => {
   const [tempUsername, setTempUsername] = useState('');
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
-  // Handle initial auth check with a small delay to allow Dynamic context to populate
+  // Handle initial auth check - skip delay if already authenticated
   useEffect(() => {
+    // If already authenticated, no need to wait
+    if (isUserAuthenticated) {
+      setIsCheckingAuth(false);
+      return;
+    }
+    
+    // Otherwise, wait briefly for Dynamic context to populate
     const timer = setTimeout(() => {
       setIsCheckingAuth(false);
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [isUserAuthenticated]);
 
   const [currentMessage, setCurrentMessage] = useState('');
   const [selectedContact, setSelectedContact] = useState<string>('💬 General Chat');

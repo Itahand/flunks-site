@@ -1,7 +1,10 @@
 # Chat Authentication Fix V2 - October 2025
 
-## Problem
+## Problem 1 (FIXED)
 Users were unable to access FlunksMessenger after logging in. The chat would show "Connect Wallet to Chat" even after successfully connecting their Flow wallet through Dynamic Labs.
+
+## Problem 2 (FIXED)
+Users who logged in BEFORE opening FlunksMessenger had to wait 1 second for "Checking authentication..." even though they were already authenticated.
 
 ## Root Cause
 **FlunksMessenger was only checking `user` from `useDynamicContext()`, but NOT checking `primaryWallet`.**
@@ -35,6 +38,25 @@ To:
 if (!isUserAuthenticated) {
   return <ConnectWalletPrompt />
 }
+```
+
+### 3. **Smart Loading Check**
+Skip the 1-second loading delay if user is already authenticated:
+```tsx
+useEffect(() => {
+  // If already authenticated, no need to wait
+  if (isUserAuthenticated) {
+    setIsCheckingAuth(false);
+    return;
+  }
+  
+  // Otherwise, wait briefly for Dynamic context to populate
+  const timer = setTimeout(() => {
+    setIsCheckingAuth(false);
+  }, 1000);
+  
+  return () => clearTimeout(timer);
+}, [isUserAuthenticated]);
 ```
 
 ### 3. **Improved User Identification**
@@ -115,13 +137,22 @@ if (userIdentifier) {
 
 ## Testing Steps
 
-1. **Clear browser cache/localStorage** (to simulate fresh login)
+### Test Case 1: Login THEN Open Messenger
+1. **Connect wallet** first (anywhere on site)
 2. **Open FlunksMessenger** from desktop
-3. **Connect wallet** using any Flow wallet (Lilico, Dapper, etc.)
-4. **Verify behavior**:
-   - Should show "⏳ Checking authentication..." briefly (1 second)
-   - Then show chat interface with username setup
-   - Should NOT show "🔒 Connect Wallet to Chat" after authentication
+3. **Verify behavior**:
+   - Should show chat interface IMMEDIATELY ✅
+   - Should NOT show "⏳ Checking authentication..." ✅
+   - Should NOT show "🔒 Connect Wallet to Chat" ✅
+
+### Test Case 2: Open Messenger THEN Login
+1. **Open FlunksMessenger** first (not logged in)
+2. **Should show "⏳ Checking authentication..."** for 1 second
+3. **Then show "🔒 Connect Wallet to Chat"**
+4. **Connect wallet** using any Flow wallet
+5. **Verify behavior**:
+   - Chat interface appears after connection ✅
+   - Username setup screen shows ✅
 
 ## Expected Console Output
 ```
