@@ -1481,7 +1481,7 @@ const LockerSystemNew: React.FC = () => {
                           }} />
                         </div>
 
-                        {/* Halloween GumDrop - REMOVED FOR NOW (will re-implement with proper contract) */}
+                        {/* Halloween GumDrop - HIDDEN until production FlunksGumDrop contract is deployed */}
                         {false && halloweenDropActive && !halloweenClaimed && flunkCount > 0 && (
                           <div style={{
                             background: 'linear-gradient(145deg, #ff6b00, #ff4500)',
@@ -1600,51 +1600,22 @@ const LockerSystemNew: React.FC = () => {
                                     
                                     console.log('🎃 Submitting GumDrop claim transaction...');
                                     
-                                    // Submit blockchain transaction
+                                    // Submit blockchain transaction - SIMPLIFIED (no UserProfile needed)
                                     const transactionId = await fcl.mutate({
                                       cadence: `
-                                        import FlunksGumDrop from 0xFlunksGumDrop
+                                        import TestPumpkinDrop420 from 0xTestPumpkinDrop420
 
-                                        transaction(username: String, timezoneOffset: Int) {
-                                          prepare(signer: auth(Storage, Capabilities) &Account) {
-                                            // Check if user already has profile
-                                            let profileExists = signer.storage.borrow<&FlunksGumDrop.UserProfile>(
-                                              from: FlunksGumDrop.UserProfileStoragePath
-                                            ) != nil
-                                            
-                                            // If no profile, create one (first time claiming)
-                                            if !profileExists {
-                                              let profile <- FlunksGumDrop.createUserProfile(
-                                                username: username,
-                                                timezone: timezoneOffset
-                                              )
-                                              
-                                              // Save to storage
-                                              signer.storage.save(<-profile, to: FlunksGumDrop.UserProfileStoragePath)
-                                              
-                                              // Link public capability
-                                              let cap = signer.capabilities.storage.issue<&FlunksGumDrop.UserProfile>(
-                                                FlunksGumDrop.UserProfileStoragePath
-                                              )
-                                              signer.capabilities.publish(cap, at: FlunksGumDrop.UserProfilePublicPath)
-                                            }
-                                            
-                                            // Verify eligibility
-                                            assert(
-                                              FlunksGumDrop.isEligibleForGumDrop(user: signer.address),
-                                              message: "You are not eligible for the active GumDrop or have already claimed"
-                                            )
+                                        transaction() {
+                                          prepare(signer: &Account) {
+                                            // Record claim on blockchain
+                                            TestPumpkinDrop420.claimGumDrop(user: signer.address)
                                           }
                                           
                                           execute {
-                                            log("GumDrop claim initiated - backend will mark as claimed and add GUM to Supabase")
+                                            log("GumDrop claimed on blockchain - backend will credit GUM")
                                           }
                                         }
                                       `,
-                                      args: (arg: any, t: any) => [
-                                        arg(username, t.String),
-                                        arg(timezoneOffset, t.Int)
-                                      ],
                                       proposer: fcl.authz,
                                       payer: fcl.authz,
                                       authorizations: [fcl.authz],
@@ -1697,7 +1668,7 @@ const LockerSystemNew: React.FC = () => {
                           </div>
                         )}
                         
-                        {/* Already claimed message - REMOVED FOR NOW */}
+                        {/* Already claimed message - HIDDEN */}
                         {false && halloweenDropActive && halloweenClaimed && (
                           <div style={{
                             background: 'rgba(102, 102, 102, 0.5)',

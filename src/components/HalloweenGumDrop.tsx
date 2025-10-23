@@ -66,10 +66,10 @@ export default function HalloweenGumDrop() {
     try {
       const response = await fcl.query({
         cadence: `
-          import TestPumpkinDrop420 from 0x807c3d470888cc48
+          import FlunksGumDrop from 0x807c3d470888cc48
           
           access(all) fun main(): {String: AnyStruct}? {
-            return TestPumpkinDrop420.getGumDropInfo()
+            return FlunksGumDrop.getGumDropInfo()
           }
         `,
       });
@@ -88,10 +88,10 @@ export default function HalloweenGumDrop() {
     try {
       const eligible = await fcl.query({
         cadence: `
-          import TestPumpkinDrop420 from 0x807c3d470888cc48
+          import FlunksGumDrop from 0x807c3d470888cc48
           
           access(all) fun main(user: Address): Bool {
-            return TestPumpkinDrop420.isEligibleForGumDrop(user: user)
+            return FlunksGumDrop.isEligibleForGumDrop(user: user)
           }
         `,
         args: (arg: any, t: any) => [arg(primaryWallet.address, t.Address)],
@@ -101,10 +101,10 @@ export default function HalloweenGumDrop() {
 
       const claimed = await fcl.query({
         cadence: `
-          import TestPumpkinDrop420 from 0x807c3d470888cc48
+          import FlunksGumDrop from 0x807c3d470888cc48
           
           access(all) fun main(user: Address): Bool {
-            return TestPumpkinDrop420.hasClaimedGumDrop(user: user)
+            return FlunksGumDrop.hasClaimedGumDrop(user: user)
           }
         `,
         args: (arg: any, t: any) => [arg(primaryWallet.address, t.Address)],
@@ -158,13 +158,13 @@ export default function HalloweenGumDrop() {
       // Step 2: Mark as claimed on blockchain
       const transactionId = await fcl.mutate({
         cadence: `
-          import TestPumpkinDrop420 from 0x807c3d470888cc48
+          import FlunksGumDrop from 0x807c3d470888cc48
           
           transaction(flunkCount: Int) {
-            let adminRef: &TestPumpkinDrop420.Admin
+            let adminRef: &FlunksGumDrop.Admin
             
             prepare(signer: AuthAccount) {
-              self.adminRef = signer.borrow<&TestPumpkinDrop420.Admin>(from: TestPumpkinDrop420.AdminStoragePath)
+              self.adminRef = signer.borrow<&FlunksGumDrop.Admin>(from: FlunksGumDrop.AdminStoragePath)
                 ?? panic("Could not borrow Admin reference")
             }
             

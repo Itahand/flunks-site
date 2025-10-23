@@ -25,6 +25,7 @@ config({
   
   // TestPumpkinDrop420 contract (mainnet test deployment)
   "0xTestPumpkinDrop420": "0x807c3d470888cc48",
+  "0xFlunksGumDrop": "0x807c3d470888cc48",
 });
 
 // Log final configuration
