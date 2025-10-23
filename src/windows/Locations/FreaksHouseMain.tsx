@@ -5,6 +5,7 @@ import { useTimeBasedImage } from "utils/timeBasedImages";
 import CellarDoorDigitalLock from "components/CellarDoorDigitalLock";
 import { getCliqueColors, getCliqueIcon } from "utils/cliqueColors";
 import { getFontStyle } from "utils/fontConfig";
+import HiddenRiffWindow from "windows/Games/HiddenRiffWindow";
 
 const FreaksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -107,6 +108,84 @@ const FreaksHouseMain = () => {
     });
   };
 
+  const openBedroom = () => {
+    openWindow({
+      key: WINDOW_IDS.FREAKS_HOUSE_BEDROOM,
+      window: (
+        <DraggableResizeableWindow
+          windowsId={WINDOW_IDS.FREAKS_HOUSE_BEDROOM}
+          headerTitle="Freak's Bedroom"
+          onClose={() => closeWindow(WINDOW_IDS.FREAKS_HOUSE_BEDROOM)}
+          initialWidth="90vw"
+          initialHeight="90vh"
+          resizable={true}
+        >
+          <div className="w-full h-full bg-[#1a1a1a] text-white overflow-auto flex flex-col">
+            {/* Image Section - Takes up most of the space */}
+            <div className="relative flex-1 min-h-[400px] bg-black">
+              <img
+                src="/images/locations/freaks-bedroom.png"
+                alt="Freak's Bedroom Interior"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/backdrops/BLANK.png";
+                }}
+              />
+            </div>
+            
+            {/* Description and Buttons Section - Below the image */}
+            <div className="bg-black bg-opacity-90 p-4 sm:p-6 border-t border-gray-600">
+              <h1 className="text-xl sm:text-2xl mb-2 sm:mb-3 font-bold text-center">🖤 Freak's Bedroom</h1>
+              <p className="text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3 text-center">
+                Black curtains block out the light. Band posters and dark artwork cover every inch of the walls.
+                The air smells faintly of incense and rebellion.
+              </p>
+              <p className="text-xs text-gray-300 mb-4 text-center">
+                Explore different areas of the bedroom to discover hidden secrets and artistic chaos.
+              </p>
+              
+              {/* Interactive Buttons */}
+              <div className="max-w-lg mx-auto">
+                {/* Three buttons in a row with responsive grid */}
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-4">
+                  <button
+                    onClick={() => {
+                      openWindow({
+                        key: WINDOW_IDS.HIDDEN_RIFF,
+                        window: <HiddenRiffWindow />,
+                      });
+                    }}
+                    className="bg-amber-700 hover:bg-amber-800 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
+                  >
+                    🎸 Guitar
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      alert('� TV interaction coming soon!');
+                    }}
+                    className="bg-blue-700 hover:bg-blue-800 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
+                  >
+                    📺 TV
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      alert('🖊️ Desk interaction coming soon!');
+                    }}
+                    className="bg-gray-700 hover:bg-gray-800 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
+                  >
+                    🖊️ Desk
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
   const openCellarDoorLock = () => {
     openWindow({
       key: WINDOW_IDS.FREAKS_HOUSE_CELLAR_DOOR_LOCK,
@@ -168,13 +247,7 @@ const FreaksHouseMain = () => {
         <div className="flex gap-4 flex-wrap justify-center max-w-4xl mx-auto">
           {/* Bedroom */}
           <button
-            onClick={() =>
-              openRoom(
-                WINDOW_IDS.FREAKS_HOUSE_BEDROOM,
-                "Bedroom",
-                "Black curtains block out the light. Band posters and dark artwork cover every inch of the walls."
-              )
-            }
+            onClick={openBedroom}
             className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
           >
             🖤 Bedroom

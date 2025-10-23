@@ -22,6 +22,7 @@ import AccessGate from "components/AccessGate";
 import FlappyFlunkWindow from "windows/Games/FlappyFlunkWindow";
 import FlunkyUppyArcadeWindow from "windows/Games/FlunkyUppyArcadeWindow";
 import FlunkJumpWindow from "windows/Games/FlunkJumpWindow";
+import HiddenRiffWindow from "windows/Games/HiddenRiffWindow";
 import RadioPlayer from "components/RadioPlayer";
 import FHSSchool from "windows/FHSSchool";
 import MyPlace from "windows/MyPlace";
@@ -548,6 +549,19 @@ const windowsMemod = useMemo(() => (
         />
 
         {/* 14. Flappy Flunk - MOVED TO ARCADE */}
+
+        {/* 14b. Hidden Riff */}
+        <ConditionalAppIcon
+          appId="hidden-riff"
+          title="Hidden Riff"
+          icon="/images/icons/controller-bg.png"
+          onDoubleClick={() =>
+            openWindow({
+              key: WINDOW_IDS.HIDDEN_RIFF,
+              window: <HiddenRiffWindow />,
+            })
+          }
+        />
         
         {/* 15. Report Card */}
         <ConditionalAppIcon

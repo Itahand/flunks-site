@@ -114,6 +114,13 @@ export const APP_PERMISSIONS: AppPermission[] = [
     buildModeFeature: 'showFlappyFlunk'
   },
   {
+    id: 'hidden-riff',
+    title: 'Hidden Riff',
+    requiredLevel: ['ADMIN', 'BETA', 'COMMUNITY'],
+    description: 'Find the clue sequence and strum the chords in time',
+    buildModeFeature: 'showHiddenRiff'
+  },
+  {
     id: 'pocket-juniors',
     title: 'Pocket Juniors',
     requiredLevel: ['ADMIN'],

@@ -18,6 +18,7 @@ export interface BuildModeConfig {
   showMyPlace: boolean;
   showFlappyFlunk: boolean;
   showFlunkyUppy: boolean;
+  showHiddenRiff: boolean;
   showGameManual: boolean;
   showTerminal: boolean;
   showCliqueAccess: boolean;
@@ -66,6 +67,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showMyPlace: true,
     showFlappyFlunk: true,
     showFlunkyUppy: true,
+  showHiddenRiff: true,
     showGameManual: true,
     showTerminal: true,
     showCliqueAccess: true,
@@ -112,6 +114,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showMyPlace: true,
     showFlappyFlunk: true,
     showFlunkyUppy: true,
+  showHiddenRiff: true,
     showGameManual: true,
     showTerminal: true,
     showCliqueAccess: true,

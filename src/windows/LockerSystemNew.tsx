@@ -1550,7 +1550,7 @@ const LockerSystemNew: React.FC = () => {
                               lineHeight: '1.6'
                             }}>
                               Special 72-hour event!<br/>
-                              Claim 10 GUM per Flunk NFT owned
+                              Claim 100 GUM - Halloween Special! 🎃
                             </div>
                             
                             <div style={{
@@ -1564,7 +1564,7 @@ const LockerSystemNew: React.FC = () => {
                                 Your Flunks: <strong>{flunkCount}</strong>
                               </div>
                               <div style={{ fontSize: '16px', color: '#00ff88', fontWeight: 'bold' }}>
-                                Reward: {flunkCount * 10} GUM
+                                Reward: 100 GUM
                               </div>
                               <div style={{ fontSize: '11px', color: '#FFE4B5', marginTop: '6px' }}>
                                 ⏰ Time left: {halloweenTimeLeft}
@@ -1697,7 +1697,7 @@ const LockerSystemNew: React.FC = () => {
                                     console.log('✅ Transaction sealed:', result);
                                     
                                     // Call backend API to add GUM to Supabase
-                                    const gumAmount = flunkCount * 10;
+                                    const gumAmount = 100; // Halloween GumDrop: 100 GUM flat reward
                                     const response = await fetch('/api/claim-halloween-gum', {
                                       method: 'POST',
                                       headers: { 'Content-Type': 'application/json' },
@@ -1712,7 +1712,7 @@ const LockerSystemNew: React.FC = () => {
                                     const data = await response.json();
                                     
                                     if (data.success) {
-                                      alert(`🎃 Halloween GumDrop Claimed!\n\n+${gumAmount} GUM added to your account!\n\nYou claimed ${flunkCount} × 10 GUM 🍬\n\nTransaction: ${transactionId}`);
+                                      alert(`🎃 Halloween GumDrop Claimed!\n\n+${gumAmount} GUM added to your account!\n\n🍬 Special Halloween Reward!\n\nTransaction: ${transactionId}`);
                                       
                                       // Refresh everything
                                       setHalloweenClaimed(true);
@@ -1730,7 +1730,7 @@ const LockerSystemNew: React.FC = () => {
                                   }
                                 }}
                               >
-                                {claimingHalloween ? '⏳ Claiming...' : `🎃 Claim ${flunkCount * 10} GUM`}
+                                {claimingHalloween ? '⏳ Claiming...' : '🎃 Claim 100 GUM'}
                               </button>
                             </div>
                           </div>
