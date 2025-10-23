@@ -844,45 +844,6 @@ const LockerSystemNew: React.FC = () => {
                       {isMobileDevice() ? '↑↓: Switch jackets in section 2' : '←→: Switch jackets in section 2'}
                     </div>
 
-                    {/* Navigation Controls */}
-                    <div style={{
-                      position: 'fixed',
-                      bottom: '100px',
-                      right: '20px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px',
-                      zIndex: 1000
-                    }}>
-                      {/* Section Navigation */}
-                      {[1, 2, 3].map((section) => (
-                        <button
-                          key={section}
-                          onClick={() => scrollToSection(section as 1 | 2 | 3)}
-                          style={{
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: '50%',
-                            border: 'none',
-                            background: currentSection === section 
-                              ? 'linear-gradient(145deg, #40a9ff, #1890ff)'
-                              : 'rgba(255,255,255,0.2)',
-                            color: currentSection === section ? 'white' : '#666',
-                            fontSize: '14px',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                            backdropFilter: 'blur(10px)',
-                            boxShadow: currentSection === section 
-                              ? '0 4px 15px rgba(64, 169, 255, 0.4)'
-                              : '0 2px 8px rgba(0,0,0,0.2)'
-                          }}
-                        >
-                          {section === 1 ? '🏠' : section === 2 ? '👕' : '🍬'}
-                        </button>
-                      ))}
-                    </div>
-
                     {/* Section 1: Top - My Locker Front Image */}
                     <div className="locker-section" style={{
                       height: '80vh',
@@ -1520,8 +1481,8 @@ const LockerSystemNew: React.FC = () => {
                           }} />
                         </div>
 
-                        {/* Halloween GumDrop - Shows ABOVE daily check-in during 72-hour window */}
-                        {halloweenDropActive && !halloweenClaimed && flunkCount > 0 && (
+                        {/* Halloween GumDrop - REMOVED FOR NOW (will re-implement with proper contract) */}
+                        {false && halloweenDropActive && !halloweenClaimed && flunkCount > 0 && (
                           <div style={{
                             background: 'linear-gradient(145deg, #ff6b00, #ff4500)',
                             border: '4px solid #FFD700',
@@ -1736,8 +1697,8 @@ const LockerSystemNew: React.FC = () => {
                           </div>
                         )}
                         
-                        {/* Already claimed message */}
-                        {halloweenDropActive && halloweenClaimed && (
+                        {/* Already claimed message - REMOVED FOR NOW */}
+                        {false && halloweenDropActive && halloweenClaimed && (
                           <div style={{
                             background: 'rgba(102, 102, 102, 0.5)',
                             border: '3px solid #666',
