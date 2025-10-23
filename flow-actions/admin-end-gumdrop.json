@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "name": "End GumDrop Event",
+  "description": "Admin action to manually end the current GumDrop event",
+  "icon": "🛑",
+  "metadata": {
+    "author": "Flunks Community",
+    "website": "https://flunks.net",
+    "category": "admin",
+    "requiresAdmin": true
+  },
+  "cadence": {
+    "type": "transaction",
+    "network": "mainnet",
+    "code": "import FlunksGumDrop from 0xFLUNKS_CONTRACT_ADDRESS\n\ntransaction() {\n  prepare(signer: &Account) {\n    let admin = signer.storage.borrow<&FlunksGumDrop.Admin>(\n      from: FlunksGumDrop.AdminStoragePath\n    ) ?? panic(\"No admin resource found - must be contract owner\")\n    \n    admin.endDrop()\n  }\n  \n  execute {\n    log(\"GumDrop event ended successfully!\")\n  }\n}"
+  },
+  "arguments": [],
+  "messages": {
+    "title": "End GumDrop Event",
+    "description": "This will immediately deactivate the current GumDrop event. No more claims will be possible.",
+    "confirmButton": "End Event",
+    "successTitle": "Event Ended",
+    "successDescription": "The GumDrop event has been deactivated.",
+    "errorTitle": "Failed to End",
+    "errorDescription": "Unable to end the event. Check that you are the contract owner."
+  }
+}

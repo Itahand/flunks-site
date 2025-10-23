@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "name": "Claim Halloween GumDrop",
+  "description": "Claim your special GUM reward during limited-time events. Flunk holders only!",
+  "icon": "🎃",
+  "metadata": {
+    "author": "Flunks Community",
+    "website": "https://flunks.net",
+    "category": "reward"
+  },
+  "cadence": {
+    "type": "transaction",
+    "network": "mainnet",
+    "code": "import FlunksGumDrop from 0xFLUNKS_CONTRACT_ADDRESS\n\ntransaction() {\n  prepare(signer: &Account) {\n    FlunksGumDrop.claimGumDrop(user: signer.address)\n  }\n  \n  execute {\n    log(\"GumDrop claimed successfully!\")\n  }\n}"
+  },
+  "arguments": [],
+  "messages": {
+    "title": "Claim GumDrop Reward",
+    "description": "This will record your claim on the blockchain. After confirmation, you'll receive GUM in your account.",
+    "confirmButton": "Claim My GUM! 🎃",
+    "successTitle": "Claimed!",
+    "successDescription": "Your GumDrop has been claimed! Check your GUM balance.",
+    "errorTitle": "Claim Failed",
+    "errorDescription": "Unable to claim. You may have already claimed or the drop may be inactive."
+  }
+}

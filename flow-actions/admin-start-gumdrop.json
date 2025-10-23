@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "name": "Start GumDrop Event",
+  "description": "Admin action to start a new GumDrop reward event with custom timeframe and reward amount",
+  "icon": "⚙️",
+  "metadata": {
+    "author": "Flunks Community",
+    "website": "https://flunks.net",
+    "category": "admin",
+    "requiresAdmin": true
+  },
+  "cadence": {
+    "type": "transaction",
+    "network": "mainnet",
+    "code": "import FlunksGumDrop from 0xFLUNKS_CONTRACT_ADDRESS\n\ntransaction(startTime: UFix64, endTime: UFix64, gumPerFlunk: UInt64) {\n  prepare(signer: &Account) {\n    let admin = signer.storage.borrow<&FlunksGumDrop.Admin>(\n      from: FlunksGumDrop.AdminStoragePath\n    ) ?? panic(\"No admin resource found - must be contract owner\")\n    \n    admin.startDrop(\n      startTime: startTime,\n      endTime: endTime,\n      gumPerFlunk: gumPerFlunk\n    )\n  }\n  \n  execute {\n    log(\"GumDrop event started successfully!\")\n  }\n}"
+  },
+  "arguments": [
+    {
+      "name": "startTime",
+      "type": "UFix64",
+      "label": "Start Time (Unix timestamp)",
+      "description": "When the drop becomes active (e.g., 1729713600.0)",
+      "placeholder": "1729713600.0",
+      "required": true
+    },
+    {
+      "name": "endTime",
+      "type": "UFix64",
+      "label": "End Time (Unix timestamp)",
+      "description": "When the drop expires (e.g., 1729972800.0 for 72 hours later)",
+      "placeholder": "1729972800.0",
+      "required": true
+    },
+    {
+      "name": "gumPerFlunk",
+      "type": "UInt64",
+      "label": "GUM Reward Amount",
+      "description": "How much GUM each Flunk holder can claim",
+      "placeholder": "100",
+      "default": "100",
+      "required": true
+    }
+  ],
+  "messages": {
+    "title": "Start GumDrop Event",
+    "description": "This will activate a new GumDrop event. All eligible Flunk holders will be able to claim during the specified time window.",
+    "confirmButton": "Start Event",
+    "successTitle": "Event Started!",
+    "successDescription": "The GumDrop event is now active. Users can claim their rewards.",
+    "errorTitle": "Failed to Start",
+    "errorDescription": "Unable to start the event. Check that you are the contract owner and parameters are valid."
+  }
+}

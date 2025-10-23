@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "name": "Check GumDrop Status",
+  "description": "View the current GumDrop event status and remaining time",
+  "icon": "📊",
+  "metadata": {
+    "author": "Flunks Community",
+    "website": "https://flunks.net",
+    "category": "query"
+  },
+  "cadence": {
+    "type": "script",
+    "network": "mainnet",
+    "code": "import FlunksGumDrop from 0xFLUNKS_CONTRACT_ADDRESS\n\naccess(all) fun main(): {String: AnyStruct} {\n  return FlunksGumDrop.getGumDropInfo()\n}"
+  },
+  "arguments": [],
+  "messages": {
+    "title": "GumDrop Status",
+    "description": "Query the blockchain for current event information"
+  },
+  "displayFormat": {
+    "type": "structured",
+    "fields": [
+      {
+        "key": "isActive",
+        "label": "Status",
+        "format": "boolean",
+        "activeText": "🟢 Active",
+        "inactiveText": "🔴 Inactive"
+      },
+      {
+        "key": "timeRemaining",
+        "label": "Time Remaining",
+        "format": "duration",
+        "suffix": "seconds"
+      },
+      {
+        "key": "gumPerFlunk",
+        "label": "Reward Amount",
+        "format": "number",
+        "suffix": "GUM"
+      },
+      {
+        "key": "startTime",
+        "label": "Start Time",
+        "format": "timestamp"
+      },
+      {
+        "key": "endTime",
+        "label": "End Time",
+        "format": "timestamp"
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "name": "Check My Claim Status",
+  "description": "Check if you've already claimed the current GumDrop",
+  "icon": "🔍",
+  "metadata": {
+    "author": "Flunks Community",
+    "website": "https://flunks.net",
+    "category": "query"
+  },
+  "cadence": {
+    "type": "script",
+    "network": "mainnet",
+    "code": "import FlunksGumDrop from 0xFLUNKS_CONTRACT_ADDRESS\n\naccess(all) fun main(userAddress: Address): {String: AnyStruct} {\n  let isEligible = FlunksGumDrop.isEligibleForGumDrop(user: userAddress)\n  let claimTime = FlunksGumDrop.getUserClaimTime(user: userAddress)\n  let dropInfo = FlunksGumDrop.getGumDropInfo()\n  \n  return {\n    \"eligible\": isEligible,\n    \"hasClaimed\": claimTime != nil,\n    \"claimTime\": claimTime,\n    \"dropActive\": dropInfo[\"isActive\"]!\n  }\n}"
+  },
+  "arguments": [
+    {
+      "name": "userAddress",
+      "type": "Address",
+      "label": "Wallet Address",
+      "description": "The Flow address to check",
+      "placeholder": "0x...",
+      "required": true,
+      "useConnectedWallet": true
+    }
+  ],
+  "messages": {
+    "title": "Claim Status",
+    "description": "Check your eligibility for the current GumDrop"
+  },
+  "displayFormat": {
+    "type": "structured",
+    "fields": [
+      {
+        "key": "dropActive",
+        "label": "Event Status",
+        "format": "boolean",
+        "activeText": "🟢 Active Drop",
+        "inactiveText": "🔴 No Active Drop"
+      },
+      {
+        "key": "eligible",
+        "label": "Can Claim?",
+        "format": "boolean",
+        "activeText": "✅ Yes, you can claim!",
+        "inactiveText": "❌ Already claimed or ineligible"
+      },
+      {
+        "key": "hasClaimed",
+        "label": "Already Claimed?",
+        "format": "boolean",
+        "activeText": "Yes",
+        "inactiveText": "No"
+      },
+      {
+        "key": "claimTime",
+        "label": "Claimed At",
+        "format": "timestamp",
+        "hideIfNull": true
+      }
+    ]
+  }
+}
