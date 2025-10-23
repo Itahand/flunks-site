@@ -8,6 +8,7 @@ import { useLockerInfo, useLockerAssignment } from '../hooks/useLocker';
 import { useDynamicContext, DynamicConnectButton } from '@dynamic-labs/sdk-react-core';
 import { useUnifiedWallet } from '../contexts/UnifiedWalletContext';
 import UnifiedConnectButton from '../components/UnifiedConnectButton';
+import * as fcl from '@onflow/fcl';
 import { getUserGumBalance, getUserGumTransactions } from '../utils/gumAPI';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { useGum } from '../contexts/GumContext';
@@ -23,7 +24,6 @@ const LockerSystemNew: React.FC = () => {
   const { isConnected, address: unifiedAddress, walletType, disconnect } = useUnifiedWallet();
   const { hasProfile, profile } = useUserProfile();
   const { balance, stats } = useGum();
-  const [devBypass, setDevBypass] = useState(false);
   const [currentSection, setCurrentSection] = useState<1 | 2 | 3>(1);
   const [gumBalance, setGumBalance] = useState<number>(0);
   const [selectedJacket, setSelectedJacket] = useState<number>(0); // 0 or 1 for jacket options
@@ -33,6 +33,13 @@ const LockerSystemNew: React.FC = () => {
   const [hasRoom7Key, setHasRoom7Key] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Halloween GumDrop state
+  const [halloweenDropActive, setHalloweenDropActive] = useState(false);
+  const [halloweenClaimed, setHalloweenClaimed] = useState(false);
+  const [flunkCount, setFlunkCount] = useState(0);
+  const [halloweenTimeLeft, setHalloweenTimeLeft] = useState('');
+  const [claimingHalloween, setClaimingHalloween] = useState(false);
 
   // Jacket options (now using jersey assets)
   const jacketOptions = [
@@ -63,6 +70,7 @@ const LockerSystemNew: React.FC = () => {
       loadGumBalance();
       loadGumTrackingData();
       checkRoom7Key();
+      checkHalloweenDrop(); // Check Halloween GumDrop status
     }
   }, [unifiedAddress]);
 
@@ -184,6 +192,69 @@ const LockerSystemNew: React.FC = () => {
     }
   };
 
+  // Check Halloween GumDrop status
+  const checkHalloweenDrop = async () => {
+    console.log('🎃 checkHalloweenDrop called, unifiedAddress:', unifiedAddress);
+    if (!unifiedAddress) {
+      console.log('❌ No unifiedAddress, exiting early');
+      return;
+    }
+    
+    try {
+      // PRIORITY 1: Check blockchain for active GumDrop
+      console.log('🔗 Querying TestPumpkinDrop420 contract on mainnet...');
+      const dropInfo = await fcl.query({
+        cadence: `
+          import TestPumpkinDrop420 from 0xTestPumpkinDrop420
+          
+          access(all) fun main(): {String: AnyStruct}? {
+            return TestPumpkinDrop420.getGumDropInfo()
+          }
+        `
+      });
+      
+      console.log('📦 GumDrop info from contract:', dropInfo);
+      
+      if (dropInfo && dropInfo.isActive) {
+        setHalloweenDropActive(true);
+        const timeRemaining = dropInfo.timeRemaining || 0;
+        setHalloweenTimeLeft(`${Math.floor(timeRemaining / 3600)}h ${Math.floor((timeRemaining % 3600) / 60)}m`);
+        
+        // Check if user is eligible (not already claimed on-chain)
+        const isEligible = await fcl.query({
+          cadence: `
+            import TestPumpkinDrop420 from 0xTestPumpkinDrop420
+
+            access(all) fun main(user: Address): Bool {
+              return TestPumpkinDrop420.isEligibleForGumDrop(user: user)
+            }
+          `,
+          args: (arg: any, t: any) => [arg(unifiedAddress, t.Address)]
+        });
+        
+        console.log('✅ User eligible:', isEligible);
+        setHalloweenClaimed(!isEligible);
+        
+        // Get Flunk count (mock for now)
+        const flunkResponse = await fetch(`/api/get-flunk-count?address=${unifiedAddress}`);
+        const flunkData = await flunkResponse.json();
+        console.log('🎨 Flunk count:', flunkData);
+        setFlunkCount(1); // MOCK: 100 GUM per claim
+        console.log('� Final state - active:', true, 'claimed:', !isEligible, 'flunkCount:', flunkData.flunkCount);
+        return;
+      }
+      
+      // If no active drop, disable button
+      console.log('❌ No active GumDrop found on blockchain');
+      setHalloweenDropActive(false);
+      
+    } catch (error) {
+      console.error('❌ Error checking Halloween drop:', error);
+      // Fallback to showing inactive if blockchain query fails
+      setHalloweenDropActive(false);
+    }
+  };
+
   // Load real gum tracking data
   const loadGumTrackingData = async () => {
     if (!unifiedAddress) {
@@ -274,13 +345,6 @@ const LockerSystemNew: React.FC = () => {
         setTodayGum(0);
         setStreak(0);
       }
-    }
-  };
-
-  // Toggle dev bypass mode
-  const toggleDevBypass = () => {
-    if (unifiedAddress === "0xe327216d843357f1") {
-      setDevBypass(!devBypass);
     }
   };
 
@@ -544,21 +608,6 @@ const LockerSystemNew: React.FC = () => {
             </button>
           </div>
         )}
-
-        {/* DEV BYPASS TOGGLE - Hidden click area */}
-        <div 
-          onClick={toggleDevBypass}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '50px',
-            height: '50px',
-            opacity: 0,
-            cursor: 'pointer',
-            zIndex: 1000
-          }}
-        />
 
         {/* Loading State */}
         {loading && (
@@ -1471,10 +1520,255 @@ const LockerSystemNew: React.FC = () => {
                           }} />
                         </div>
 
+                        {/* Halloween GumDrop - Shows ABOVE daily check-in during 72-hour window */}
+                        {halloweenDropActive && !halloweenClaimed && flunkCount > 0 && (
+                          <div style={{
+                            background: 'linear-gradient(145deg, #ff6b00, #ff4500)',
+                            border: '4px solid #FFD700',
+                            borderRadius: '16px',
+                            padding: '20px',
+                            boxShadow: '0 8px 24px rgba(255, 107, 0, 0.6), inset 0 -6px 0 rgba(0,0,0,0.3)',
+                            marginTop: '24px'
+                          }}>
+                            <div style={{
+                              fontSize: '18px',
+                              fontWeight: 'bold',
+                              fontFamily: '"Press Start 2P", "Courier New", monospace',
+                              color: '#FFD700',
+                              textShadow: '3px 3px 0px #000',
+                              textAlign: 'center',
+                              marginBottom: '12px'
+                            }}>
+                              🎃 HALLOWEEN GUMDROP
+                            </div>
+                            
+                            <div style={{
+                              fontSize: '12px',
+                              color: '#FFE4B5',
+                              textAlign: 'center',
+                              marginBottom: '16px',
+                              lineHeight: '1.6'
+                            }}>
+                              Special 72-hour event!<br/>
+                              Claim 10 GUM per Flunk NFT owned
+                            </div>
+                            
+                            <div style={{
+                              background: 'rgba(0, 0, 0, 0.3)',
+                              borderRadius: '8px',
+                              padding: '12px',
+                              marginBottom: '16px',
+                              textAlign: 'center'
+                            }}>
+                              <div style={{ fontSize: '13px', color: '#FFD700', marginBottom: '6px' }}>
+                                Your Flunks: <strong>{flunkCount}</strong>
+                              </div>
+                              <div style={{ fontSize: '16px', color: '#00ff88', fontWeight: 'bold' }}>
+                                Reward: {flunkCount * 10} GUM
+                              </div>
+                              <div style={{ fontSize: '11px', color: '#FFE4B5', marginTop: '6px' }}>
+                                ⏰ Time left: {halloweenTimeLeft}
+                              </div>
+                            </div>
+                            
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                              <button
+                                disabled={claimingHalloween}
+                                style={{
+                                  background: claimingHalloween
+                                    ? 'linear-gradient(145deg, #555, #333)'
+                                    : 'linear-gradient(145deg, #32cd32, #228b22)',
+                                  color: 'white',
+                                  border: '3px solid #FFD700',
+                                  padding: '12px 24px',
+                                  borderRadius: '8px',
+                                  fontSize: '13px',
+                                  fontWeight: 'bold',
+                                  fontFamily: '"Press Start 2P", "Courier New", monospace',
+                                  cursor: claimingHalloween ? 'not-allowed' : 'pointer',
+                                  boxShadow: '0 4px 12px rgba(50,205,50,0.5), inset 0 -4px 0 rgba(0,0,0,0.3)',
+                                  transition: 'all 0.15s ease',
+                                  textShadow: '2px 2px 0px #000',
+                                  opacity: claimingHalloween ? 0.6 : 1
+                                }}
+                                onMouseOver={(e) => {
+                                  if (!claimingHalloween) {
+                                    e.currentTarget.style.transform = 'translateY(-3px)';
+                                    e.currentTarget.style.boxShadow = '0 6px 18px rgba(50,205,50,0.7), inset 0 -4px 0 rgba(0,0,0,0.3)';
+                                  }
+                                }}
+                                onMouseOut={(e) => {
+                                  if (!claimingHalloween) {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(50,205,50,0.5), inset 0 -4px 0 rgba(0,0,0,0.3)';
+                                  }
+                                }}
+                                onClick={async () => {
+                                  if (claimingHalloween) return;
+                                  
+                                  // Check if user is authenticated with FCL
+                                  if (!unifiedAddress) {
+                                    alert('⚠️ Please connect your wallet first!\n\nUse Lilico or Dapper from the wallet connection menu.');
+                                    return;
+                                  }
+                                  
+                                  setClaimingHalloween(true);
+                                  
+                                  try {
+                                    // Play bubble sound
+                                    if (typeof window !== 'undefined' && typeof Audio !== 'undefined') {
+                                      const anyWindow = window as any;
+                                      if (!anyWindow.__bubbleClaimSound) {
+                                        anyWindow.__bubbleClaimSound = new Audio('/sounds/bubble.mp3');
+                                        anyWindow.__bubbleClaimSound.volume = 0.5;
+                                      }
+                                      const now = Date.now();
+                                      if (!anyWindow.__lastBubblePlay || now - anyWindow.__lastBubblePlay > 300) {
+                                        anyWindow.__bubbleClaimSound.currentTime = 0;
+                                        anyWindow.__bubbleClaimSound.play().catch(() => {});
+                                        anyWindow.__lastBubblePlay = now;
+                                      }
+                                    }
+                                    
+                                    // Get timezone offset
+                                    const offsetMinutes = new Date().getTimezoneOffset();
+                                    const timezoneOffset = Math.round(offsetMinutes / -60);
+                                    
+                                    // Get username from lockerInfo or use truncated address
+                                    const username = lockerInfo?.username || unifiedAddress?.slice(0, 10) || 'Flunk';
+                                    
+                                    console.log('🎃 Submitting GumDrop claim transaction...');
+                                    
+                                    // Submit blockchain transaction
+                                    const transactionId = await fcl.mutate({
+                                      cadence: `
+                                        import TestPumpkinDrop420 from 0xTestPumpkinDrop420
+
+                                        transaction(username: String, timezoneOffset: Int) {
+                                          prepare(signer: auth(Storage, Capabilities) &Account) {
+                                            // Check if user already has profile
+                                            let profileExists = signer.storage.borrow<&TestPumpkinDrop420.UserProfile>(
+                                              from: TestPumpkinDrop420.UserProfileStoragePath
+                                            ) != nil
+                                            
+                                            // If no profile, create one (first time claiming)
+                                            if !profileExists {
+                                              let profile <- TestPumpkinDrop420.createUserProfile(
+                                                username: username,
+                                                timezone: timezoneOffset
+                                              )
+                                              
+                                              // Save to storage
+                                              signer.storage.save(<-profile, to: TestPumpkinDrop420.UserProfileStoragePath)
+                                              
+                                              // Link public capability
+                                              let cap = signer.capabilities.storage.issue<&TestPumpkinDrop420.UserProfile>(
+                                                TestPumpkinDrop420.UserProfileStoragePath
+                                              )
+                                              signer.capabilities.publish(cap, at: TestPumpkinDrop420.UserProfilePublicPath)
+                                            }
+                                            
+                                            // Verify eligibility
+                                            assert(
+                                              TestPumpkinDrop420.isEligibleForGumDrop(user: signer.address),
+                                              message: "You are not eligible for the active GumDrop or have already claimed"
+                                            )
+                                          }
+                                          
+                                          execute {
+                                            log("GumDrop claim initiated - backend will mark as claimed and add GUM to Supabase")
+                                          }
+                                        }
+                                      `,
+                                      args: (arg: any, t: any) => [
+                                        arg(username, t.String),
+                                        arg(timezoneOffset, t.Int)
+                                      ],
+                                      proposer: fcl.authz,
+                                      payer: fcl.authz,
+                                      authorizations: [fcl.authz],
+                                      limit: 9999
+                                    });
+
+                                    console.log('📝 Transaction submitted:', transactionId);
+                                    
+                                    // Wait for transaction to seal
+                                    const result = await fcl.tx(transactionId).onceSealed();
+                                    console.log('✅ Transaction sealed:', result);
+                                    
+                                    // Call backend API to add GUM to Supabase
+                                    const gumAmount = flunkCount * 10;
+                                    const response = await fetch('/api/claim-halloween-gum', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({
+                                        walletAddress: unifiedAddress,
+                                        flunkCount,
+                                        gumAmount,
+                                        transactionId
+                                      })
+                                    });
+                                    
+                                    const data = await response.json();
+                                    
+                                    if (data.success) {
+                                      alert(`🎃 Halloween GumDrop Claimed!\n\n+${gumAmount} GUM added to your account!\n\nYou claimed ${flunkCount} × 10 GUM 🍬\n\nTransaction: ${transactionId}`);
+                                      
+                                      // Refresh everything
+                                      setHalloweenClaimed(true);
+                                      loadGumBalance();
+                                      loadGumTrackingData();
+                                      refetch();
+                                    } else {
+                                      alert(`❌ ${data.error || 'Failed to add GUM to your account'}`);
+                                    }
+                                  } catch (error: any) {
+                                    console.error('Error claiming Halloween GUM:', error);
+                                    alert(`❌ Transaction failed: ${error.message || 'Please try again'}`);
+                                  } finally {
+                                    setClaimingHalloween(false);
+                                  }
+                                }}
+                              >
+                                {claimingHalloween ? '⏳ Claiming...' : `🎃 Claim ${flunkCount * 10} GUM`}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Already claimed message */}
+                        {halloweenDropActive && halloweenClaimed && (
+                          <div style={{
+                            background: 'rgba(102, 102, 102, 0.5)',
+                            border: '3px solid #666',
+                            borderRadius: '16px',
+                            padding: '16px',
+                            textAlign: 'center',
+                            marginTop: '24px'
+                          }}>
+                            <div style={{
+                              fontSize: '14px',
+                              color: '#999',
+                              fontWeight: 'bold',
+                              fontFamily: '"Press Start 2P", "Courier New", monospace'
+                            }}>
+                              🎃 Halloween GumDrop Already Claimed
+                            </div>
+                            <div style={{
+                              fontSize: '11px',
+                              color: '#666',
+                              marginTop: '8px'
+                            }}>
+                              You've already claimed your Halloween bonus!
+                            </div>
+                          </div>
+                        )}
+
                         {/* Daily Check-in Section - Power-Up Box Style */}
                         <div style={{
                           background: 'linear-gradient(135deg, rgba(30, 60, 114, 0.8) 0%, rgba(42, 82, 152, 0.8) 100%)',
                           borderRadius: '12px',
+                          marginTop: '24px',
                           padding: '18px',
                           marginBottom: '20px',
                           border: '3px solid rgba(100, 149, 237, 0.6)',
@@ -1658,20 +1952,6 @@ const LockerSystemNew: React.FC = () => {
                         backdropFilter: 'blur(14px)',
                         overflow: 'visible'
                       }}>
-                        
-                        {/* Debug: Confirm this section renders */}
-                        <div style={{
-                          background: 'rgba(255, 0, 0, 0.2)',
-                          padding: '10px',
-                          marginBottom: '20px',
-                          border: '2px solid red',
-                          color: 'white',
-                          fontFamily: 'monospace',
-                          fontSize: '12px'
-                        }}>
-                          DEBUG: Section 4 Rendered | Locker: {lockerInfo?.locker_number} | Connected: {isConnected ? 'YES' : 'NO'}
-                        </div>
-                        
                         {/* Main Content Container */}
                         <WeeklyObjectives />
                       </div>
@@ -1793,23 +2073,6 @@ const LockerSystemNew: React.FC = () => {
               {gumBalance.toLocaleString()}
             </div>
             <span style={{ fontSize: '10px', color: '#333' }}>GUM</span>
-          </div>
-        )}
-
-        {/* DEV BYPASS INDICATOR */}
-        {devBypass && (
-          <div style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            background: 'rgba(220, 53, 69, 0.9)',
-            color: 'white',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '10px',
-            fontWeight: 'bold'
-          }}>
-            DEV MODE
           </div>
         )}
 

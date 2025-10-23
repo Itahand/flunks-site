@@ -157,35 +157,18 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                       // CRITICAL: Disable auto-reconnect - user must explicitly connect
                       initialAuthenticationMode: 'connect-only',
                       
-                      // Restore v3.x mobile wallet configuration
+                      // Show ALL Flow wallets - let Dynamic/FCL handle mobile detection
                       walletsFilter: (wallets) => {
                         console.log('🔍 Dynamic walletsFilter - Available wallets:', wallets.map(w => ({ 
                           key: w?.key || 'unknown', 
-                          name: w?.name || 'unknown'
+                          name: w?.name || 'unknown',
+                          walletConnector: w?.walletConnector || 'unknown'
                         })));
                         
                         if (!Array.isArray(wallets)) return [];
                         
-                        // Check if we're on mobile
-                        const isMobile = typeof window !== 'undefined' && (
-                          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                          window.innerWidth <= 768
-                        );
-                        
-                        if (isMobile) {
-                          // On mobile: prioritize Dapper and Blocto (the working combo)
-                          const mobileWallets = wallets.filter(w => 
-                            w.key?.includes('dapper') || 
-                            w.key?.includes('blocto') ||
-                            w.key === 'dapper' ||
-                            w.key === 'blocto'
-                          );
-                          
-                          console.log('📱 Mobile detected - filtered wallets:', mobileWallets.map(w => w.key));
-                          return mobileWallets.length > 0 ? mobileWallets : wallets;
-                        }
-                        
-                        // Desktop: return all wallets
+                        // Return ALL wallets - FCL's WalletConnect config will handle mobile properly
+                        console.log('✅ Returning all wallets - FCL WalletConnect will handle mobile');
                         return wallets;
                       }
                     }}
