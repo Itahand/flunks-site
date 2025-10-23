@@ -10,10 +10,14 @@ import HiddenRiffWindow from "windows/Games/HiddenRiffWindow";
 const FreaksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   
-  // Use your uploaded day/night images for Freaks House
+  // Use day/night images for Freaks House
   const dayImage = "/images/icons/freaks-house-day.png";
   const nightImage = "/images/icons/freaks-house-night.png";
   const timeBasedInfo = useTimeBasedImage(dayImage, nightImage);
+
+  const getCurrentBackground = () => {
+    return timeBasedInfo.currentImage;
+  };
 
   const openRoom = (roomKey: string, title: string, content: string) => {
     const cliqueColors = getCliqueColors('FREAK');
@@ -216,55 +220,44 @@ const FreaksHouseMain = () => {
 
   return (
     <div className="relative w-full h-full flex flex-col">
-      {/* Image Section */}
-      <div className="relative flex-1">
+      {/* Image Container - Full screen, no constraints */}
+      <div className="relative w-full" style={{ height: 'calc(100vh - 280px)', minHeight: '400px' }}>
         <img
-          src={timeBasedInfo.currentImage}
+          src={getCurrentBackground()}
           alt={`Freak's House Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
-          className="absolute inset-0 w-full h-full object-contain z-0 transition-opacity duration-500"
+          className="w-full h-full object-cover"
           onError={(e) => {
             e.currentTarget.src = "/images/backdrops/BLANK.png";
           }}
         />
-
-        {/* Day/Night Atmospheric Overlay */}
-        <div 
-          className={`absolute inset-0 z-1 transition-all duration-500 ${
-            !timeBasedInfo.isDay 
-              ? 'bg-purple-900 bg-opacity-30' 
-              : 'bg-red-100 bg-opacity-10'
-          }`}
-        />
-
-        {/* Time Info Display */}
-        <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm z-20">
-          {timeBasedInfo.currentTime}
-        </div>
       </div>
 
-      {/* Room Buttons Section */}
-      <div className="bg-gray-800 p-4 border-t border-gray-600">
-        <div className="flex gap-4 flex-wrap justify-center max-w-4xl mx-auto">
+      {/* Bottom Buttons - BELOW the image */}
+      <div className="w-full bg-gradient-to-r from-purple-900 via-gray-900 to-black p-3 border-t-4 border-purple-600 shadow-2xl">
+        {/* Four room buttons in one horizontal line */}
+        <div className="grid grid-cols-4 gap-3 w-full mx-auto mb-3">
           {/* Bedroom */}
           <button
             onClick={openBedroom}
-            className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+            className="bg-gradient-to-br from-gray-800 to-gray-950 hover:from-gray-700 hover:to-gray-900 text-white px-3 py-2 rounded-lg border-3 border-gray-600 hover:border-gray-500 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
+            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
           >
             🖤 Bedroom
           </button>
 
-          {/* Basement */}
+          {/* Living Room */}
           <button
             onClick={() =>
               openRoom(
                 WINDOW_IDS.FREAKS_HOUSE_BASEMENT,
-                "Basement",
+                "Living Room",
                 "A makeshift recording studio with amplifiers and instruments scattered around. 8-tracks line the floor and cassettes are stacked to the ceiling."
               )
             }
-            className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+            className="bg-gradient-to-br from-red-900 to-red-950 hover:from-red-800 hover:to-red-900 text-white px-3 py-2 rounded-lg border-3 border-red-700 hover:border-red-600 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
+            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
           >
-            🎸 Basement
+            🎸 Living Room
           </button>
 
           {/* Attic */}
@@ -276,7 +269,8 @@ const FreaksHouseMain = () => {
                 "Dusty old books about the occult and conspiracy theories line makeshift shelves."
               )
             }
-            className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+            className="bg-gradient-to-br from-indigo-900 to-indigo-950 hover:from-indigo-800 hover:to-indigo-900 text-white px-3 py-2 rounded-lg border-3 border-indigo-700 hover:border-indigo-600 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
+            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
           >
             📚 Attic
           </button>
@@ -290,23 +284,24 @@ const FreaksHouseMain = () => {
                 "Energy drinks and instant noodles stack the counter. A coffee pot that never gets cleaned."
               )
             }
-            className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 min-w-[120px] text-center"
+            className="bg-gradient-to-br from-green-900 to-green-950 hover:from-green-800 hover:to-green-900 text-white px-3 py-2 rounded-lg border-3 border-green-700 hover:border-green-600 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
+            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
           >
             ☕ Kitchen
           </button>
         </div>
 
-        {/* Cellar Door Button - Ominous */}
-        <div className="flex justify-center mt-4">
+        {/* Cellar Door Button - Bigger and centered below the row */}
+        <div className="flex justify-center">
           <button
             onClick={openCellarDoorLock}
-            className="bg-gradient-to-b from-purple-900 to-black text-purple-200 px-8 py-3 rounded-lg hover:from-purple-800 hover:to-gray-900 hover:text-purple-100 transition-all duration-300 hover:scale-105 min-w-[200px] text-center shadow-lg border-2 border-purple-800 hover:border-purple-600"
+            className="bg-gradient-to-br from-purple-900 to-black hover:from-purple-800 hover:to-gray-900 text-purple-200 hover:text-purple-100 px-10 py-3 rounded-xl border-4 border-purple-700 hover:border-purple-500 transition-all duration-300 hover:scale-105 min-w-[280px] text-center shadow-xl hover:shadow-2xl"
             style={{
               fontFamily: 'serif',
               fontSize: '18px',
               fontWeight: 'bold',
               textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-              letterSpacing: '2px'
+              letterSpacing: '3px'
             }}
           >
             🚪 CELLAR DOOR

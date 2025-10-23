@@ -34,7 +34,7 @@ import { GumDisplay } from "components/GumDisplay";
 import UserProfilePrompt from "components/UserProfile/UserProfilePrompt";
 import AutoWalletAccessGrant from "components/AutoWalletAccessGrant";
 import ErrorBoundary from "components/ErrorBoundary";
-import { AmbientSoundPlayer } from "components/AmbientSoundPlayer";
+// Removed all mobile wallet override components for clean Dynamic Labs behavior
 
 const ThemeWrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { theme } = useThemeSettings();
@@ -159,7 +159,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                       
                       // Show ALL Flow wallets - let Dynamic/FCL handle mobile detection
                       walletsFilter: (wallets) => {
-                        console.log('🔍 Dynamic walletsFilter - Available wallets:', wallets.map(w => ({
+                        console.log('🔍 Dynamic walletsFilter - Available wallets:', wallets.map(w => ({ 
                           key: w?.key || 'unknown', 
                           name: w?.name || 'unknown',
                           walletConnector: w?.walletConnector || 'unknown'
@@ -178,14 +178,13 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                       <PaginatedItemsProvider>
                         <AuthProvider>
                             <GumProvider autoRefreshInterval={300000}> {/* 5 minutes - very conservative */}
-                                <div className="app-container min-h-screen w-full overflow-hidden">
+                              <div className="app-container min-h-screen w-full overflow-hidden">
                                 <Component {...pageProps} />
                               </div>
                               <Analytics />
                               <AutoWalletAccessGrant />
                               <UserProfilePrompt autoShow={false} showToast={false} />
                               <DynamicUserProfile />
-                              <AmbientSoundPlayer />
                             </GumProvider>
                         </AuthProvider>
                       </PaginatedItemsProvider>

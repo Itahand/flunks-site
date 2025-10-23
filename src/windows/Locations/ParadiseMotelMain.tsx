@@ -7,6 +7,143 @@ import RetroTextBox from "components/RetroTextBox";
 import { useState, useEffect, useRef } from "react";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
+// Room 1 Bell Component
+interface Room1BellComponentProps {
+  onClose: () => void;
+  wallet?: string;
+}
+
+const Room1BellComponent: React.FC<Room1BellComponentProps> = ({ onClose, wallet }) => {
+  const [ringCount, setRingCount] = useState(0);
+  const [claiming, setClaiming] = useState(false);
+  const [claimed, setClaimed] = useState(false);
+  const [claimMessage, setClaimMessage] = useState("");
+  const bellAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Initialize bell sound
+    bellAudioRef.current = new Audio('/sounds/ding.mp3');
+    return () => {
+      if (bellAudioRef.current) {
+        bellAudioRef.current.pause();
+        bellAudioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+
+  const handleBellRing = () => {
+    // Play bell sound
+    if (bellAudioRef.current) {
+      bellAudioRef.current.currentTime = 0;
+      bellAudioRef.current.play().catch(console.log);
+    }
+    setRingCount(prev => prev + 1);
+  };
+
+  const handleClaimGum = async () => {
+    if (!wallet || claiming || claimed) return;
+
+    setClaiming(true);
+    try {
+      const response = await fetch('/api/claim-room-1-bell', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setClaimed(true);
+        setClaimMessage(`🎉 ${data.message || 'You claimed 100 GUM!'}`);
+      } else {
+        setClaimMessage(`⚠️ ${data.message || 'Already claimed or cooldown active'}`);
+      }
+    } catch (error) {
+      console.error('Error claiming GUM:', error);
+      setClaimMessage('❌ Error claiming GUM. Please try again.');
+    } finally {
+      setClaiming(false);
+    }
+  };
+
+  const getMessage = () => {
+    if (ringCount === 0) return "There's a bell on the desk. Maybe you should ring it?";
+    if (ringCount >= 1 && ringCount <= 3) return "Please ring only once, thanks management";
+    if (ringCount >= 4 && ringCount <= 9) return "Seriously, stop";
+    if (ringCount >= 10) return "Fine! Here's your reward. Happy now?";
+    return "";
+  };
+
+  return (
+    <DraggableResizeableWindow
+      windowsId={WINDOW_IDS.PARADISE_MOTEL_ROOM_1}
+      headerTitle="Paradise Motel - Room 1"
+      onClose={onClose}
+      initialWidth="450px"
+      initialHeight="600px"
+      resizable={false}
+    >
+      <div className="w-full h-full bg-gradient-to-br from-amber-900 via-orange-900 to-red-900 p-3 flex flex-col items-center justify-between overflow-hidden">
+        {/* Room Description */}
+        <div className="bg-black bg-opacity-50 p-3 rounded-lg max-w-full flex-shrink-0">
+          <p className="text-amber-100 text-center text-sm font-serif leading-snug">
+            {getMessage()}
+          </p>
+        </div>
+
+        {/* Bell Display */}
+        <div className="text-7xl my-2 animate-bounce flex-shrink-0">
+          🔔
+        </div>
+
+        {/* Ring Bell Button */}
+        {!claimed && (
+          <button
+            onClick={handleBellRing}
+            className="bg-gradient-to-br from-amber-500 to-orange-700 hover:from-amber-400 hover:to-orange-600 text-white px-6 py-3 rounded-lg border-3 border-amber-300 hover:border-amber-200 transition-all duration-300 hover:scale-110 text-lg font-black shadow-2xl flex-shrink-0"
+            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+          >
+            🔔 Ring Bell
+          </button>
+        )}
+
+        {/* Claim GUM Button - Shows at 10 rings */}
+        {ringCount >= 10 && !claimed && (
+          <button
+            onClick={handleClaimGum}
+            disabled={claiming || !wallet}
+            className={`bg-gradient-to-br from-green-500 to-emerald-700 hover:from-green-400 hover:to-emerald-600 text-white px-6 py-3 rounded-lg border-3 border-green-300 hover:border-green-200 transition-all duration-300 hover:scale-110 text-lg font-black shadow-2xl flex-shrink-0 ${
+              claiming || !wallet ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+          >
+            {claiming ? '⏳ Claiming...' : '💰 Claim 100 GUM'}
+          </button>
+        )}
+
+        {/* Claim Message */}
+        {claimMessage && (
+          <div className="bg-black bg-opacity-70 px-4 py-2 rounded-lg flex-shrink-0">
+            <p className="text-yellow-300 text-sm font-bold text-center">
+              {claimMessage}
+            </p>
+          </div>
+        )}
+
+        {/* Wallet Warning */}
+        {ringCount >= 10 && !wallet && !claimed && (
+          <div className="bg-red-900 bg-opacity-70 px-4 py-2 rounded-lg border-2 border-red-500 flex-shrink-0">
+            <p className="text-red-200 text-xs font-bold text-center">
+              ⚠️ Please connect your wallet to claim GUM
+            </p>
+          </div>
+        )}
+      </div>
+    </DraggableResizeableWindow>
+  );
+};
+
 const ParadiseMotelMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   const { primaryWallet } = useDynamicContext();
@@ -93,8 +230,68 @@ const ParadiseMotelMain = () => {
     return timeBasedInfo.currentImage;
   };
 
-  // Function to open Room 6 - always accessible
+  // Function to open Room 1 - locked, needs key
+  const openRoom1 = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    const isDay = hour >= 6 && hour < 18;
+    const roomImage = isDay 
+      ? "/images/locations/paradise motel/room-1-day.png"
+      : "/images/locations/paradise motel/room-1-night.png";
+
+    openWindow({
+      key: WINDOW_IDS.PARADISE_MOTEL_ROOM_1,
+      window: (
+        <DraggableResizeableWindow
+          windowsId={WINDOW_IDS.PARADISE_MOTEL_ROOM_1}
+          headerTitle="Paradise Motel - Room 1"
+          onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_ROOM_1)}
+          initialWidth="80vw"
+          initialHeight="80vh"
+          resizable={true}
+        >
+          <div className="relative w-full h-full flex flex-col bg-black">
+            <div className="relative flex-1 flex items-center justify-center min-h-0">
+              <img
+                src={roomImage}
+                alt={`Paradise Motel Room 1 - ${isDay ? 'Day' : 'Night'}`}
+                className="max-w-full max-h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/backdrops/BLANK.png";
+                }}
+              />
+            </div>
+            
+            {/* Lost Key Button */}
+            <div className="bg-gradient-to-r from-purple-900 to-pink-800 p-4 border-t-4 border-purple-400 flex-shrink-0">
+              <div className="max-w-md mx-auto">
+                <button
+                  onClick={() => {
+                    // TODO: Wire this to key check logic
+                    alert('🔑 This feature is coming soon! You\'ll need to find the lost key...');
+                  }}
+                  className="w-full bg-gradient-to-br from-amber-600 to-orange-800 hover:from-amber-500 hover:to-orange-700 text-white px-6 py-4 rounded-lg border-3 border-amber-400 hover:border-amber-300 transition-all duration-300 hover:scale-105 text-center text-lg font-black shadow-lg"
+                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+                >
+                  🔑 Do you have the lost key?
+                </button>
+              </div>
+            </div>
+          </div>
+        </DraggableResizeableWindow>
+      ),
+    });
+  };
+
+  // Function to open Room 6 - locked, needs key
   const openRoom6 = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    const isDay = hour >= 6 && hour < 18;
+    const roomImage = isDay 
+      ? "/images/locations/paradise motel/room-6-day.png"
+      : "/images/locations/paradise motel/room-6-night.png";
+
     openWindow({
       key: WINDOW_IDS.PARADISE_MOTEL_ROOM_6,
       window: (
@@ -106,15 +303,33 @@ const ParadiseMotelMain = () => {
           initialHeight="80vh"
           resizable={true}
         >
-          <div className="relative w-full h-full flex items-center justify-center bg-black">
-            <img
-              src="/images/locations/paradise motel/room-6.png"
-              alt="Paradise Motel Room 6"
-              className="max-w-full max-h-full object-contain"
-              onError={(e) => {
-                e.currentTarget.src = "/images/backdrops/BLANK.png";
-              }}
-            />
+          <div className="relative w-full h-full flex flex-col bg-black">
+            <div className="relative flex-1 flex items-center justify-center min-h-0">
+              <img
+                src={roomImage}
+                alt={`Paradise Motel Room 6 - ${isDay ? 'Day' : 'Night'}`}
+                className="max-w-full max-h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/backdrops/BLANK.png";
+                }}
+              />
+            </div>
+            
+            {/* Lost Key Button */}
+            <div className="bg-gradient-to-r from-purple-900 to-pink-800 p-4 border-t-4 border-purple-400 flex-shrink-0">
+              <div className="max-w-md mx-auto">
+                <button
+                  onClick={() => {
+                    // TODO: Wire this to key check logic
+                    alert('🔑 This feature is coming soon! You\'ll need to find the lost key...');
+                  }}
+                  className="w-full bg-gradient-to-br from-amber-600 to-orange-800 hover:from-amber-500 hover:to-orange-700 text-white px-6 py-4 rounded-lg border-3 border-amber-400 hover:border-amber-300 transition-all duration-300 hover:scale-105 text-center text-lg font-black shadow-lg"
+                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+                >
+                  🔑 Do you have the lost key?
+                </button>
+              </div>
+            </div>
           </div>
         </DraggableResizeableWindow>
       ),
@@ -296,13 +511,17 @@ const ParadiseMotelMain = () => {
     }
   };
 
-  // Function to ring the bell
+  // Function to ring the bell - Opens interactive bell component
   const ringBell = () => {
-    openRoom(
-      "paradise-motel-ring-bell",
-      "Front Desk Bell",
-      "*DING DING* ... Nobody answers. The bell echoes through the empty lobby."
-    );
+    openWindow({
+      key: WINDOW_IDS.PARADISE_MOTEL_ROOM_1,
+      window: (
+        <Room1BellComponent 
+          onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_ROOM_1)}
+          wallet={primaryWallet?.address}
+        />
+      ),
+    });
   };
 
   // Function to open Lobby with 4 new buttons
@@ -334,28 +553,22 @@ const ParadiseMotelMain = () => {
             {/* 4 Buttons Below Image - Compact */}
             <div className="w-full bg-gradient-to-r from-purple-900 to-pink-800 p-4 border-t-4 border-purple-400 shadow-2xl flex-shrink-0">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
-                {/* Tiki Bar */}
+                {/* Room 1 */}
                 <button
-                  onClick={() =>
-                    openRoom(
-                      WINDOW_IDS.PARADISE_MOTEL_TIKI_BAR,
-                      "Tiki Bar",
-                      "A small tropical-themed bar with bamboo walls and tiki torches. The bartender isn't here, but there's a faint smell of rum and coconut in the air."
-                    )
-                  }
+                  onClick={openRoom1}
                   className="bg-gradient-to-br from-amber-600 to-orange-800 hover:from-amber-500 hover:to-orange-700 text-white px-3 py-3 rounded-lg border-3 border-amber-400 hover:border-amber-300 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg whitespace-nowrap"
                   style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
                 >
-                  🍹 Tiki Bar
+                  🚪 Room 1
                 </button>
 
-                {/* Room 6 - Always Accessible */}
+                {/* Room 6 */}
                 <button
                   onClick={openRoom6}
                   className="bg-gradient-to-br from-blue-700 to-indigo-900 hover:from-blue-600 hover:to-indigo-800 text-white px-3 py-3 rounded-lg border-3 border-blue-500 hover:border-blue-400 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg whitespace-nowrap"
                   style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
                 >
-                  🚪 Room 6
+                  � Room 6
                 </button>
 
                 {/* Room 7 - Day/Night Behavior */}

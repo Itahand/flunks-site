@@ -6,121 +6,150 @@ const LockContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #2d1b3d 0%, #0d0d0d 100%);
-  color: #fff;
+  padding: 30px;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      rgba(139, 90, 43, 0.1) 0px,
+      transparent 2px,
+      transparent 4px,
+      rgba(139, 90, 43, 0.1) 6px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(139, 90, 43, 0.1) 0px,
+      transparent 2px,
+      transparent 4px,
+      rgba(139, 90, 43, 0.1) 6px
+    ),
+    linear-gradient(145deg, #3d2817 0%, #1a0f08 100%);
+  color: #d4a574;
   height: 100%;
   overflow-y: auto;
-  background-image: radial-gradient(circle at 20% 50%, rgba(120, 50, 120, 0.3) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 20%, rgba(80, 20, 80, 0.3) 0%, transparent 50%),
-                    radial-gradient(circle at 40% 80%, rgba(60, 10, 60, 0.3) 0%, transparent 50%);
-  background-size: 30px 30px;
-`;
-
-const PadlockFrame = styled.div`
-  width: 200px;
-  height: 150px;
-  background: linear-gradient(145deg, #c9b037 0%, #8b7914 100%);
-  border: 4px solid #333;
-  border-radius: 12px;
-  position: relative;
-  margin-bottom: 30px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.3);
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 30px;
-    border: 8px solid #888;
-    border-bottom: none;
-    border-radius: 30px 30px 0 0;
-    background: transparent;
-  }
-`;
-
-const LockDisplay = styled.div<{ $status?: 'locked' | 'unlocked' | 'checking' }>`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #000;
-  color: ${props => 
-    props.$status === 'locked' ? '#ff6666' :
-    props.$status === 'unlocked' ? '#66ff66' : '#ffaa66'
-  };
-  padding: 8px 12px;
-  border-radius: 4px;
   font-family: 'Courier New', monospace;
-  font-size: 12px;
+`;
+
+const CellarDoorTitle = styled.div`
+  font-size: 18px;
   font-weight: bold;
+  color: #8b5a2b;
   text-align: center;
-  border: 2px solid ${props => 
-    props.$status === 'locked' ? '#ff3333' :
-    props.$status === 'unlocked' ? '#33ff33' : '#ffaa33'
-  };
-  box-shadow: 0 0 10px currentColor;
-  min-width: 100px;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 2px;
+`;
+
+const PadlockSVG = styled.div`
+  margin-bottom: 30px;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.7));
+`;
+
+const NumberDisplay = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+  justify-content: center;
+`;
+
+const NumberSlot = styled.div`
+  width: 50px;
+  height: 70px;
+  background: linear-gradient(145deg, #1a1410 0%, #0d0a08 100%);
+  border: 4px solid #3d2817;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: #8b5a2b;
+  font-family: 'Courier New', monospace;
+  box-shadow: 
+    inset 0 4px 8px rgba(0, 0, 0, 0.8),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 10px rgba(139, 90, 43, 0.5);
 `;
 
 const KeypadGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin: 15px 0;
+  gap: 12px;
+  margin: 20px 0;
+  max-width: 250px;
 `;
 
 const KeypadButton = styled.button<{ $disabled?: boolean }>`
-  background: linear-gradient(145deg, #4a1a4a 0%, #2a0a2a 100%);
-  color: #fff;
-  border: 2px solid #6a2a6a;
-  border-radius: 8px;
-  padding: 15px;
-  font-size: 18px;
-  font-weight: bold;
+  background: linear-gradient(145deg, #654321 0%, #4a2511 100%);
+  color: #d4a574;
+  border: 3px solid #3d2817;
+  border-radius: 4px;
+  padding: 18px;
+  font-size: 24px;
+  font-weight: 900;
+  font-family: 'Courier New', monospace;
   cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   opacity: ${props => props.$disabled ? 0.5 : 1};
+  box-shadow: 
+    0 4px 0 #2a1810,
+    0 6px 12px rgba(0, 0, 0, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   
   &:hover:not(:disabled) {
-    background: linear-gradient(145deg, #5a2a5a 0%, #3a1a3a 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(120, 50, 120, 0.3);
+    background: linear-gradient(145deg, #8b5a2b 0%, #654321 100%);
+    transform: translateY(-1px);
+    filter: brightness(1.1);
   }
   
   &:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(2px);
+    box-shadow: 
+      0 2px 0 #2a1810,
+      0 3px 6px rgba(0, 0, 0, 0.5);
   }
 `;
 
-const ActionButton = styled.button<{ $variant?: 'clear' | 'cancel' }>`
+const ActionButton = styled.button<{ $variant?: 'clear' | 'enter' | 'cancel' }>`
   background: ${props => 
     props.$variant === 'clear' ? 
       'linear-gradient(145deg, #cc7700 0%, #884400 100%)' :
+    props.$variant === 'enter' ? 
+      'linear-gradient(145deg, #4a7c59 0%, #2d5a3d 100%)' :
     props.$variant === 'cancel' ? 
       'linear-gradient(145deg, #666 0%, #333 100%)' :
-      'linear-gradient(145deg, #4a1a4a 0%, #2a0a2a 100%)'
+      'linear-gradient(145deg, #654321 0%, #4a2511 100%)'
   };
-  color: white;
-  border: 2px solid ${props => 
-    props.$variant === 'clear' ? '#cc7700' :
-    props.$variant === 'cancel' ? '#777' :
-    '#6a2a6a'
+  color: #fff;
+  border: 3px solid ${props => 
+    props.$variant === 'clear' ? '#884400' :
+    props.$variant === 'enter' ? '#2d5a3d' :
+    props.$variant === 'cancel' ? '#444' :
+    '#3d2817'
   };
-  border-radius: 8px;
-  padding: 12px 20px;
-  font-size: 14px;
-  font-weight: bold;
+  border-radius: 4px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 900;
+  font-family: 'Courier New', monospace;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin: 0 5px;
+  transition: all 0.15s ease;
+  margin: 0 6px;
+  box-shadow: 
+    0 4px 0 #2a1810,
+    0 6px 12px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+  }
+  
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 
+      0 2px 0 #2a1810,
+      0 3px 6px rgba(0, 0, 0, 0.5);
   }
 `;
 
@@ -190,14 +219,14 @@ const CellarDoorDigitalLock: React.FC<CellarDoorDigitalLockProps> = ({ onUnlock,
       return;
     }
 
-    if (inputCode.length < 4) {
+    if (inputCode.length < 3) {
       setInputCode(prev => prev + key);
       createBeep(600, 0.1, 'success');
     }
   };
 
   const handleSubmit = () => {
-    if (inputCode.length !== 4 || isLocked) return;
+    if (inputCode.length !== 3 || isLocked) return;
 
     setStatus('checking');
     setDisplayMessage('VERIFYING...');
@@ -253,47 +282,62 @@ const CellarDoorDigitalLock: React.FC<CellarDoorDigitalLockProps> = ({ onUnlock,
 
   return (
     <LockContainer>
-      <h2 style={{ 
-        color: '#b377d9', 
-        marginBottom: '20px', 
-        textAlign: 'center',
-        textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-        fontFamily: 'serif',
-        letterSpacing: '2px'
-      }}>
-        🚪 CELLAR DOOR - FORBIDDEN ACCESS
-      </h2>
+      <CellarDoorTitle>
+        🚪 OLD FARMHOUSE CELLAR DOOR
+      </CellarDoorTitle>
       
-      <PadlockFrame>
-        <div style={{
-          position: 'absolute',
-          top: '10px',
-          left: '10px',
-          background: 'rgba(0,0,0,0.8)',
-          color: '#b377d9',
-          padding: '3px 8px',
-          borderRadius: '4px',
-          fontSize: '10px',
-          fontWeight: 'bold'
-        }}>
-          ⚠️ CURSED SEAL
-        </div>
-        
-        <LockDisplay $status={status}>
-          {displayMessage}
-        </LockDisplay>
-      </PadlockFrame>
+      {/* Vintage Padlock SVG */}
+      <PadlockSVG>
+        <svg width="180" height="200" viewBox="0 0 180 200">
+          {/* Shackle (U-shaped top part) */}
+          <rect x="55" y="20" width="70" height="50" rx="35" fill="none" stroke="#5a5a5a" strokeWidth="16"/>
+          <rect x="55" y="20" width="70" height="35" fill="#3d2817"/>
+          
+          {/* Lock Body */}
+          <rect x="30" y="60" width="120" height="130" rx="8" fill="url(#brassGradient)"/>
+          <rect x="36" y="66" width="108" height="118" rx="6" fill="#8b7914" opacity="0.3"/>
+          
+          {/* Keyhole */}
+          <circle cx="90" cy="120" r="12" fill="#2a1810"/>
+          <rect x="84" y="120" width="12" height="30" fill="#2a1810"/>
+          
+          {/* Rivets */}
+          <circle cx="50" cy="80" r="4" fill="#6b5d1a" stroke="#4a3d0a" strokeWidth="1"/>
+          <circle cx="130" cy="80" r="4" fill="#6b5d1a" stroke="#4a3d0a" strokeWidth="1"/>
+          <circle cx="50" cy="170" r="4" fill="#6b5d1a" stroke="#4a3d0a" strokeWidth="1"/>
+          <circle cx="130" cy="170" r="4" fill="#6b5d1a" stroke="#4a3d0a" strokeWidth="1"/>
+          
+          {/* Gradient Definition */}
+          <defs>
+            <linearGradient id="brassGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#c9b037"/>
+              <stop offset="50%" stopColor="#b8a130"/>
+              <stop offset="100%" stopColor="#8b7914"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </PadlockSVG>
 
+      {/* Status Message */}
       <div style={{ 
         textAlign: 'center', 
-        marginBottom: '15px', 
-        fontFamily: 'monospace',
-        fontSize: '20px',
-        color: '#b377d9',
-        textShadow: '0 0 8px currentColor'
+        marginBottom: '20px', 
+        fontFamily: 'Courier New, monospace',
+        fontSize: '14px',
+        color: status === 'locked' ? '#ff6b6b' : status === 'unlocked' ? '#51cf66' : '#8b5a2b',
+        textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)',
+        fontWeight: 'bold',
+        letterSpacing: '1px'
       }}>
-        {'●'.repeat(inputCode.length)}{'○'.repeat(4 - inputCode.length)}
+        {displayMessage}
       </div>
+
+      {/* 3-Number Display */}
+      <NumberDisplay>
+        <NumberSlot>{inputCode[0] || '-'}</NumberSlot>
+        <NumberSlot>{inputCode[1] || '-'}</NumberSlot>
+        <NumberSlot>{inputCode[2] || '-'}</NumberSlot>
+      </NumberDisplay>
 
       <KeypadGrid>
         {keypadNumbers.flat().map((key) => (
@@ -307,15 +351,15 @@ const CellarDoorDigitalLock: React.FC<CellarDoorDigitalLockProps> = ({ onUnlock,
         ))}
       </KeypadGrid>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
-        <ActionButton onClick={handleSubmit} disabled={inputCode.length !== 4 || isLocked}>
-          SUBMIT
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', flexWrap: 'wrap', gap: '8px' }}>
+        <ActionButton $variant="enter" onClick={handleSubmit} disabled={inputCode.length !== 3 || isLocked}>
+          ✓ UNLOCK
         </ActionButton>
         <ActionButton $variant="clear" onClick={clearCode} disabled={isLocked}>
-          CLEAR
+          ✗ CLEAR
         </ActionButton>
         <ActionButton $variant="cancel" onClick={onCancel}>
-          ESCAPE
+          ← BACK
         </ActionButton>
       </div>
 

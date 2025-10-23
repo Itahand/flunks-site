@@ -1509,8 +1509,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                         windowsId={WINDOW_IDS.FREAKS_HOUSE_MAIN}
                         headerTitle="Freak's House"
                         onClose={() => closeWindow(WINDOW_IDS.FREAKS_HOUSE_MAIN)}
-                        initialWidth="70vw"
-                        initialHeight="70vh"
+                        initialWidth="min(68vw, 560px)"
+                        initialHeight="auto"
                         resizable={true}
                       >
                         <FreaksHouseMain />
@@ -1528,8 +1528,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                         windowsId={WINDOW_IDS.FREAKS_HOUSE_MAIN}
                         headerTitle="Freak's House"
                         onClose={() => closeWindow(WINDOW_IDS.FREAKS_HOUSE_MAIN)}
-                        initialWidth="70vw"
-                        initialHeight="70vh"
+                        initialWidth="min(56vw, 720px)"
+                        initialHeight="auto"
                         resizable={true}
                       >
                         <FreaksHouseMain />
