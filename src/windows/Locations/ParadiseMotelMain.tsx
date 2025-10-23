@@ -235,9 +235,7 @@ const ParadiseMotelMain = () => {
     const now = new Date();
     const hour = now.getHours();
     const isDay = hour >= 6 && hour < 18;
-    const roomImage = isDay 
-      ? "/images/locations/paradise motel/room-1-day.png"
-      : "/images/locations/paradise motel/room-1-night.png";
+    const roomImage = "/images/locations/paradise motel/room-1.png";
 
     openWindow({
       key: WINDOW_IDS.PARADISE_MOTEL_ROOM_1,
@@ -288,9 +286,7 @@ const ParadiseMotelMain = () => {
     const now = new Date();
     const hour = now.getHours();
     const isDay = hour >= 6 && hour < 18;
-    const roomImage = isDay 
-      ? "/images/locations/paradise motel/room-6-day.png"
-      : "/images/locations/paradise motel/room-6-night.png";
+    const roomImage = "/images/locations/paradise motel/room-6.png";
 
     openWindow({
       key: WINDOW_IDS.PARADISE_MOTEL_ROOM_6,
