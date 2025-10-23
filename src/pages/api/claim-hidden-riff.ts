@@ -1,5 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { awardGum } from '../../utils/gumAPI';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 type ResponseData = {
   success: boolean;
@@ -41,6 +47,22 @@ export default async function handler(
     });
 
     if (result.success && result.earned > 0) {
+      // Mark Chapter 5 Overachiever as complete by inserting access code discovery
+      // This is how the locker system tracks completion
+      const accessCodeResult = await supabase
+        .from('access_code_discoveries')
+        .insert({
+          wallet_address: wallet,
+          code_entered: 'CGAF', // Chapter 5 Overachiever code (C, G, A, F)
+          success: true,
+          discovered_at: new Date().toISOString(),
+        });
+
+      if (accessCodeResult.error) {
+        console.error('Error inserting access code discovery:', accessCodeResult.error);
+        // Don't fail the request, GUM was already awarded
+      }
+
       return res.status(200).json({
         success: true,
         gumEarned: result.earned,

@@ -4,6 +4,7 @@ import { checkCafeteriaButtonClicked } from './cafeteriaButtonTracking';
 import { checkFlunkoClicked } from './flunkoClickTracking';
 import { checkParadiseMotelEntered } from './paradiseMotelTracking';
 import { checkParadiseMotelRoom7NightVisit } from './paradiseMotelRoom7Tracking';
+import { checkHiddenRiffCompletion } from './hiddenRiffTracking';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -351,7 +352,9 @@ export const getChapter5ObjectivesStatus = async (walletAddress: string): Promis
   
   // Check if user visited Room 7 at night (Slacker objective)
   const slackerObjectiveCompleted = await checkParadiseMotelRoom7NightVisit(walletAddress);
-  const overachieverObjectiveCompleted = false; // TODO: Define Chapter 5 Overachiever objective
+  
+  // Check if user completed Hidden Riff guitar sequence (Overachiever objective)
+  const overachieverObjectiveCompleted = await checkHiddenRiffCompletion(walletAddress);
 
   console.log('📊 [CHAPTER5] Objectives status:', { 
     slackerObjectiveCompleted, 
@@ -371,7 +374,7 @@ export const getChapter5ObjectivesStatus = async (walletAddress: string): Promis
     {
       id: 'overachiever_chapter5',
       title: 'The Overachiever',
-      description: '???',
+      description: 'Complete the Hidden Riff guitar sequence (C, G, A, F)',
       type: 'custom',
       completed: overachieverObjectiveCompleted,
       reward: 100
