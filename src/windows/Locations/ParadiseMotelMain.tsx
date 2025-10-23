@@ -1,6 +1,7 @@
 import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import MaidDialogue from "components/MaidDialogue";
+import StoryManual from "components/StoryManual";
 import { WINDOW_IDS } from "fixed";
 import { useTimeBasedImage } from "utils/timeBasedImages";
 import RetroTextBox from "components/RetroTextBox";
@@ -476,31 +477,22 @@ const ParadiseMotelMain = () => {
         }
       }
       
+      // Open the Paradise Motel cutscene from Story Manual
       openWindow({
-        key: WINDOW_IDS.PARADISE_MOTEL_ROOM_7,
+        key: WINDOW_IDS.STORY_MANUAL,
         window: (
           <DraggableResizeableWindow
-            windowsId={WINDOW_IDS.PARADISE_MOTEL_ROOM_7}
-            headerTitle="Paradise Motel - Room 7 🌙"
-            onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_ROOM_7)}
-            initialWidth="80vw"
-            initialHeight="80vh"
-            resizable={true}
+            windowsId={WINDOW_IDS.STORY_MANUAL}
+            onClose={() => closeWindow(WINDOW_IDS.STORY_MANUAL)}
+            initialWidth="100vw"
+            initialHeight="100vh"
+            resizable={false}
+            headerTitle="Story Mode"
           >
-            <div className="relative w-full h-full flex items-center justify-center bg-black">
-              <img
-                src="/images/locations/paradise motel/room-7.png"
-                alt="Paradise Motel Room 7 (Night)"
-                className="max-w-full max-h-full object-contain"
-                onError={(e) => {
-                  e.currentTarget.src = "/images/backdrops/BLANK.png";
-                }}
-              />
-              {/* Success message overlay */}
-              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-xl font-bold animate-bounce z-10">
-                🎉 +50 GUM! Slacker Objective Complete!
-              </div>
-            </div>
+            <StoryManual 
+              onClose={() => closeWindow(WINDOW_IDS.STORY_MANUAL)} 
+              autoPlayChapterId="paradise-motel"
+            />
           </DraggableResizeableWindow>
         ),
       });

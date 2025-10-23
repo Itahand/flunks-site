@@ -21,6 +21,7 @@ interface Chapter {
 
 interface StoryManualProps {
   onClose: () => void;
+  autoPlayChapterId?: string; // Auto-play a specific chapter on open
 }
 
 const ChapterGrid = styled.div`
@@ -362,10 +363,42 @@ const sampleChapters: Chapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'paradise-motel',
+    title: 'Paradise Motel 🏨',
+    subtitle: 'Room 7... The night is waiting.',
+    unlocked: true,
+    thumbnail: '/images/cutscenes/paradise-motel/room-7-thumbnail.png',
+    scenes: [
+      // Placeholder scenes - you'll add the actual story and images
+      {
+        id: 'room-7-night-1',
+        image: '/images/cutscenes/paradise-motel/scene-1.png',
+        lines: [
+          'The key turns in the lock. The door swings open...'
+        ],
+        music: '/music/night.mp3'
+      },
+      {
+        id: 'room-7-night-2',
+        image: '/images/cutscenes/paradise-motel/scene-2.png',
+        lines: [
+          '[Add your story text here]'
+        ]
+      },
+      {
+        id: 'room-7-night-3',
+        image: '/images/cutscenes/paradise-motel/scene-3.png',
+        lines: [
+          '[Add your story text here]'
+        ]
+      }
+    ]
   }
 ];
 
-const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
+const StoryManual: React.FC<StoryManualProps> = ({ onClose, autoPlayChapterId }) => {
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [playingCutscene, setPlayingCutscene] = useState(false);
   
@@ -377,6 +410,17 @@ const StoryManual: React.FC<StoryManualProps> = ({ onClose }) => {
     }
     return true; // Show all other chapters including "The Story So Far"
   });
+
+  // Auto-play specific chapter if provided
+  React.useEffect(() => {
+    if (autoPlayChapterId) {
+      const chapter = sampleChapters.find(ch => ch.id === autoPlayChapterId);
+      if (chapter && chapter.unlocked) {
+        setSelectedChapter(chapter);
+        setPlayingCutscene(true);
+      }
+    }
+  }, [autoPlayChapterId]);
 
   const handleChapterClick = (chapter: Chapter) => {
     if (!chapter.unlocked) return;
