@@ -202,13 +202,13 @@ const LockerSystemNew: React.FC = () => {
     
     try {
       // PRIORITY 1: Check blockchain for active GumDrop
-      console.log('🔗 Querying TestPumpkinDrop420 contract on mainnet...');
+      console.log('🔗 Querying FlunksGumDrop contract on mainnet...');
       const dropInfo = await fcl.query({
         cadence: `
-          import TestPumpkinDrop420 from 0xTestPumpkinDrop420
+          import FlunksGumDrop from 0xFlunksGumDrop
           
           access(all) fun main(): {String: AnyStruct}? {
-            return TestPumpkinDrop420.getGumDropInfo()
+            return FlunksGumDrop.getGumDropInfo()
           }
         `
       });
@@ -223,10 +223,10 @@ const LockerSystemNew: React.FC = () => {
         // Check if user is eligible (not already claimed on-chain)
         const isEligible = await fcl.query({
           cadence: `
-            import TestPumpkinDrop420 from 0xTestPumpkinDrop420
+            import FlunksGumDrop from 0xFlunksGumDrop
 
             access(all) fun main(user: Address): Bool {
-              return TestPumpkinDrop420.isEligibleForGumDrop(user: user)
+              return FlunksGumDrop.isEligibleForGumDrop(user: user)
             }
           `,
           args: (arg: any, t: any) => [arg(unifiedAddress, t.Address)]
@@ -1603,35 +1603,35 @@ const LockerSystemNew: React.FC = () => {
                                     // Submit blockchain transaction
                                     const transactionId = await fcl.mutate({
                                       cadence: `
-                                        import TestPumpkinDrop420 from 0xTestPumpkinDrop420
+                                        import FlunksGumDrop from 0xFlunksGumDrop
 
                                         transaction(username: String, timezoneOffset: Int) {
                                           prepare(signer: auth(Storage, Capabilities) &Account) {
                                             // Check if user already has profile
-                                            let profileExists = signer.storage.borrow<&TestPumpkinDrop420.UserProfile>(
-                                              from: TestPumpkinDrop420.UserProfileStoragePath
+                                            let profileExists = signer.storage.borrow<&FlunksGumDrop.UserProfile>(
+                                              from: FlunksGumDrop.UserProfileStoragePath
                                             ) != nil
                                             
                                             // If no profile, create one (first time claiming)
                                             if !profileExists {
-                                              let profile <- TestPumpkinDrop420.createUserProfile(
+                                              let profile <- FlunksGumDrop.createUserProfile(
                                                 username: username,
                                                 timezone: timezoneOffset
                                               )
                                               
                                               // Save to storage
-                                              signer.storage.save(<-profile, to: TestPumpkinDrop420.UserProfileStoragePath)
+                                              signer.storage.save(<-profile, to: FlunksGumDrop.UserProfileStoragePath)
                                               
                                               // Link public capability
-                                              let cap = signer.capabilities.storage.issue<&TestPumpkinDrop420.UserProfile>(
-                                                TestPumpkinDrop420.UserProfileStoragePath
+                                              let cap = signer.capabilities.storage.issue<&FlunksGumDrop.UserProfile>(
+                                                FlunksGumDrop.UserProfileStoragePath
                                               )
-                                              signer.capabilities.publish(cap, at: TestPumpkinDrop420.UserProfilePublicPath)
+                                              signer.capabilities.publish(cap, at: FlunksGumDrop.UserProfilePublicPath)
                                             }
                                             
                                             // Verify eligibility
                                             assert(
-                                              TestPumpkinDrop420.isEligibleForGumDrop(user: signer.address),
+                                              FlunksGumDrop.isEligibleForGumDrop(user: signer.address),
                                               message: "You are not eligible for the active GumDrop or have already claimed"
                                             )
                                           }
