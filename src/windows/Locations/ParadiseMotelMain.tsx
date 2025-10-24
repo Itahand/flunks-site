@@ -415,11 +415,31 @@ const ParadiseMotelMain = () => {
     } else {
       // NIGHT TIME: Check if user has the key from the maid first
       if (!primaryWallet?.address) {
-        openRoom(
-          "no-wallet",
-          "Access Denied",
-          "You need to connect your wallet first."
-        );
+        // No wallet - show day image with police tape (locked)
+        openWindow({
+          key: WINDOW_IDS.PARADISE_MOTEL_ROOM_7,
+          window: (
+            <DraggableResizeableWindow
+              windowsId={WINDOW_IDS.PARADISE_MOTEL_ROOM_7}
+              headerTitle="Paradise Motel - Room 7"
+              onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_ROOM_7)}
+              initialWidth="80vw"
+              initialHeight="80vh"
+              resizable={true}
+            >
+              <div className="relative w-full h-full flex items-center justify-center bg-black">
+                <img
+                  src="/images/locations/paradise motel/room-7-day.png"
+                  alt="Paradise Motel Room 7 (Locked)"
+                  className="max-w-full max-h-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/backdrops/BLANK.png";
+                  }}
+                />
+              </div>
+            </DraggableResizeableWindow>
+          ),
+        });
         return;
       }
 
@@ -429,12 +449,31 @@ const ParadiseMotelMain = () => {
         const data = await response.json();
         
         if (!data.success || !data.hasKey) {
-          // User doesn't have the key - show locked message
-          openRoom(
-            "room-7-locked",
-            "Room 7 - Locked",
-            "The door is locked. Maybe someone around back during the day could help you get in..."
-          );
+          // User doesn't have the key - show day image with police tape (locked)
+          openWindow({
+            key: WINDOW_IDS.PARADISE_MOTEL_ROOM_7,
+            window: (
+              <DraggableResizeableWindow
+                windowsId={WINDOW_IDS.PARADISE_MOTEL_ROOM_7}
+                headerTitle="Paradise Motel - Room 7"
+                onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_ROOM_7)}
+                initialWidth="80vw"
+                initialHeight="80vh"
+                resizable={true}
+              >
+                <div className="relative w-full h-full flex items-center justify-center bg-black">
+                  <img
+                    src="/images/locations/paradise motel/room-7-day.png"
+                    alt="Paradise Motel Room 7 (Locked)"
+                    className="max-w-full max-h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.src = "/images/backdrops/BLANK.png";
+                    }}
+                  />
+                </div>
+              </DraggableResizeableWindow>
+            ),
+          });
           return;
         }
 
@@ -442,11 +481,31 @@ const ParadiseMotelMain = () => {
         
       } catch (error) {
         console.error('❌ Failed to check Room 7 key:', error);
-        openRoom(
-          "room-7-error",
-          "Error",
-          "Something went wrong checking your access. Please try again."
-        );
+        // On error, show day image with police tape
+        openWindow({
+          key: WINDOW_IDS.PARADISE_MOTEL_ROOM_7,
+          window: (
+            <DraggableResizeableWindow
+              windowsId={WINDOW_IDS.PARADISE_MOTEL_ROOM_7}
+              headerTitle="Paradise Motel - Room 7"
+              onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_ROOM_7)}
+              initialWidth="80vw"
+              initialHeight="80vh"
+              resizable={true}
+            >
+              <div className="relative w-full h-full flex items-center justify-center bg-black">
+                <img
+                  src="/images/locations/paradise motel/room-7-day.png"
+                  alt="Paradise Motel Room 7 (Locked)"
+                  className="max-w-full max-h-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/backdrops/BLANK.png";
+                  }}
+                />
+              </div>
+            </DraggableResizeableWindow>
+          ),
+        });
         return;
       }
 

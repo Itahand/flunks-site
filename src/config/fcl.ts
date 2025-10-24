@@ -9,11 +9,11 @@ console.log('ðŸ“± WalletConnect Project ID:', WALLETCONNECT_PROJECT_ID ? 'Set âœ
 
 config({
   "accessNode.api": FLOW_ACCESS_NODE,
-  "discovery.wallet": "https://fcl-discovery.onflow.org/authn", // Mainnet wallet discovery
+  "discovery.wallet": "https://fcl-discovery.onflow.org/mainnet/authn", // Mainnet wallet discovery (updated to match FCL demo)
   "app.detail.title": "Flunks", // App name for wallet approval
   "app.detail.icon": "https://flunks.net/flunks-logo.png", // App icon
   "app.detail.url": "https://flunks.net",
-  "challenge.handshake": "https://fcl-discovery.onflow.org/authn", // Mainnet wallet handshake
+  "challenge.handshake": "https://fcl-discovery.onflow.org/mainnet/authn", // Mainnet wallet handshake (updated to match FCL demo)
   "flow.network": "mainnet", // Important for mobile wallet detection
   "walletconnect.projectId": WALLETCONNECT_PROJECT_ID, // CRITICAL for mobile WalletConnect
   
@@ -21,7 +21,7 @@ config({
   "discovery.wallet.method": "POP/RPC", // Use popup method which triggers WalletConnect on mobile
   
   // Enable ALL wallets from discovery service (don't filter)
-  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/authn",
+  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/mainnet/authn", // Updated to match FCL demo
   
   // TestPumpkinDrop420 contract (mainnet test deployment)
   "0xTestPumpkinDrop420": "0x807c3d470888cc48",

@@ -67,7 +67,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showMyPlace: true,
     showFlappyFlunk: true,
     showFlunkyUppy: true,
-  showHiddenRiff: true,
+    showHiddenRiff: false, // Hidden on public site - build mode only
     showGameManual: true,
     showTerminal: true,
     showCliqueAccess: true,

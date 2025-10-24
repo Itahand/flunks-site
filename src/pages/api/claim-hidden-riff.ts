@@ -30,10 +30,10 @@ export default async function handler(
       return res.status(400).json({ success: false, message: 'Wallet address required' });
     }
 
-    // Verify the sequence is correct (C, G, A, F)
-    const correctSequence = ['C', 'G', 'A', 'F'];
-    const isCorrect = sequence?.length === 4 && 
-                     sequence.every((chord: string, i: number) => chord === correctSequence[i]);
+    // Verify the sequence is correct (F, A, D, G)
+    const correctSequence = ['F', 'A', 'D', 'G'];
+    const isCorrect = sequence.length === 4 && 
+      sequence.every((chord, i) => chord === correctSequence[i]);
 
     if (!isCorrect) {
       return res.status(400).json({ success: false, message: 'Incorrect sequence' });
@@ -53,7 +53,7 @@ export default async function handler(
         .from('access_code_discoveries')
         .insert({
           wallet_address: wallet,
-          code_entered: 'CGAF', // Chapter 5 Overachiever code (C, G, A, F)
+          code_entered: 'FADG', // Chapter 5 Overachiever code (F, A, D, G)
           success: true,
           discovered_at: new Date().toISOString(),
         });

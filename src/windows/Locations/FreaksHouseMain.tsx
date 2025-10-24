@@ -6,6 +6,10 @@ import CellarDoorDigitalLock from "components/CellarDoorDigitalLock";
 import { getCliqueColors, getCliqueIcon } from "utils/cliqueColors";
 import { getFontStyle } from "utils/fontConfig";
 import HiddenRiffWindow from "windows/Games/HiddenRiffWindow";
+import { isFeatureEnabled } from "utils/buildMode";
+import FreaksHouseLivingRoom from "./FreaksHouseLivingRoom";
+import FreaksHouseAttic from "./FreaksHouseAttic";
+import FreaksHouseKitchen from "./FreaksHouseKitchen";
 
 const FreaksHouseMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
@@ -152,21 +156,24 @@ const FreaksHouseMain = () => {
               <div className="max-w-lg mx-auto">
                 {/* Three buttons in a row with responsive grid */}
                 <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-4">
-                  <button
-                    onClick={() => {
-                      openWindow({
-                        key: WINDOW_IDS.HIDDEN_RIFF,
-                        window: <HiddenRiffWindow />,
-                      });
-                    }}
-                    className="bg-amber-700 hover:bg-amber-800 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
-                  >
-                    🎸 Guitar
-                  </button>
+                  {/* Hidden Riff - BUILD MODE ONLY */}
+                  {isFeatureEnabled('showHiddenRiff') && (
+                    <button
+                      onClick={() => {
+                        openWindow({
+                          key: WINDOW_IDS.HIDDEN_RIFF,
+                          window: <HiddenRiffWindow />,
+                        });
+                      }}
+                      className="bg-amber-700 hover:bg-amber-800 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
+                    >
+                      🎸 Guitar
+                    </button>
+                  )}
                   
                   <button
                     onClick={() => {
-                      alert('� TV interaction coming soon!');
+                      alert('📺 TV interaction coming soon!');
                     }}
                     className="bg-blue-700 hover:bg-blue-800 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
                   >
@@ -248,11 +255,10 @@ const FreaksHouseMain = () => {
           {/* Living Room */}
           <button
             onClick={() =>
-              openRoom(
-                WINDOW_IDS.FREAKS_HOUSE_BASEMENT,
-                "Living Room",
-                "A makeshift recording studio with amplifiers and instruments scattered around. 8-tracks line the floor and cassettes are stacked to the ceiling."
-              )
+              openWindow({
+                key: WINDOW_IDS.FREAKS_HOUSE_BASEMENT,
+                window: <FreaksHouseLivingRoom />,
+              })
             }
             className="bg-gradient-to-br from-red-900 to-red-950 hover:from-red-800 hover:to-red-900 text-white px-3 py-2 rounded-lg border-3 border-red-700 hover:border-red-600 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
             style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
@@ -263,11 +269,10 @@ const FreaksHouseMain = () => {
           {/* Attic */}
           <button
             onClick={() =>
-              openRoom(
-                WINDOW_IDS.FREAKS_HOUSE_ATTIC,
-                "Attic",
-                "Dusty old books about the occult and conspiracy theories line makeshift shelves."
-              )
+              openWindow({
+                key: WINDOW_IDS.FREAKS_HOUSE_ATTIC,
+                window: <FreaksHouseAttic />,
+              })
             }
             className="bg-gradient-to-br from-indigo-900 to-indigo-950 hover:from-indigo-800 hover:to-indigo-900 text-white px-3 py-2 rounded-lg border-3 border-indigo-700 hover:border-indigo-600 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
             style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
@@ -278,11 +283,10 @@ const FreaksHouseMain = () => {
           {/* Kitchen */}
           <button
             onClick={() =>
-              openRoom(
-                WINDOW_IDS.FREAKS_HOUSE_KITCHEN,
-                "Kitchen",
-                "Energy drinks and instant noodles stack the counter. A coffee pot that never gets cleaned."
-              )
+              openWindow({
+                key: WINDOW_IDS.FREAKS_HOUSE_KITCHEN,
+                window: <FreaksHouseKitchen />,
+              })
             }
             className="bg-gradient-to-br from-green-900 to-green-950 hover:from-green-800 hover:to-green-900 text-white px-3 py-2 rounded-lg border-3 border-green-700 hover:border-green-600 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
             style={{ fontFamily: 'Cooper Black, Georgia, serif' }}

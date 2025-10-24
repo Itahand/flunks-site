@@ -550,18 +550,20 @@ const windowsMemod = useMemo(() => (
 
         {/* 14. Flappy Flunk - MOVED TO ARCADE */}
 
-        {/* 14b. Hidden Riff */}
-        <ConditionalAppIcon
-          appId="hidden-riff"
-          title="Hidden Riff"
-          icon="/images/icons/controller-bg.png"
-          onDoubleClick={() =>
-            openWindow({
-              key: WINDOW_IDS.HIDDEN_RIFF,
-              window: <HiddenRiffWindow />,
-            })
-          }
-        />
+        {/* 14b. Hidden Riff - REMOVED FROM DESKTOP - Access via dev tools only */}
+        {/* {isFeatureEnabled('showHiddenRiff') && (
+          <ConditionalAppIcon
+            appId="hidden-riff"
+            title="Hidden Riff"
+            icon="/images/icons/controller-bg.png"
+            onDoubleClick={() =>
+              openWindow({
+                key: WINDOW_IDS.HIDDEN_RIFF,
+                window: <HiddenRiffWindow />,
+              })
+            }
+          />
+        )} */}
         
         {/* 15. Report Card */}
         <ConditionalAppIcon

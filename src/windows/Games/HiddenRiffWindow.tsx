@@ -2,17 +2,12 @@ import { useMemo, useState } from "react";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import HiddenRiff from "components/HiddenRiff";
 import { WINDOW_IDS } from "fixed";
-import { HIDDEN_RIFF_PRESETS, HiddenRiffPreset } from "lib/hiddenRiffPresets";
+import { HIDDEN_RIFF_PRESETS } from "lib/hiddenRiffPresets";
 import { useWindowsContext } from "contexts/WindowsContext";
-
-const PRESET_OPTIONS = Object.entries(HIDDEN_RIFF_PRESETS) as [
-  keyof typeof HIDDEN_RIFF_PRESETS,
-  HiddenRiffPreset
-][];
 
 const HiddenRiffWindow = () => {
   const { closeWindow } = useWindowsContext();
-  const [presetKey, setPresetKey] = useState<keyof typeof HIDDEN_RIFF_PRESETS>("easy");
+  // Locked to mystery preset only - no difficulty selection
   const [lastResult, setLastResult] = useState<{
     presetId: string;
     perfect: boolean;
@@ -21,7 +16,7 @@ const HiddenRiffWindow = () => {
   } | null>(null);
   const [useToneSynth, setUseToneSynth] = useState(true);
 
-  const activePreset = useMemo(() => HIDDEN_RIFF_PRESETS[presetKey], [presetKey]);
+  const activePreset = useMemo(() => HIDDEN_RIFF_PRESETS.mystery, []);
 
   return (
     <DraggableResizeableWindow
@@ -35,27 +30,6 @@ const HiddenRiffWindow = () => {
     >
       <div className="flex flex-col gap-6 text-zinc-100">
         <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <div>
-            <label htmlFor="hidden-riff-preset" className="block text-sm uppercase tracking-wide text-zinc-400">
-              Challenge
-            </label>
-            <select
-              id="hidden-riff-preset"
-              className="mt-1 w-full rounded bg-zinc-900 border border-zinc-700 px-3 py-2 text-zinc-100"
-              value={presetKey}
-              onChange={(event) => {
-                const value = event.target.value as keyof typeof HIDDEN_RIFF_PRESETS;
-                setPresetKey(value);
-                setLastResult(null);
-              }}
-            >
-              {PRESET_OPTIONS.map(([key]) => (
-                <option key={key} value={key}>
-                  {`Hidden Riff – ${key.charAt(0).toUpperCase()}${key.slice(1)}`}
-                </option>
-              ))}
-            </select>
-          </div>
           <div className="flex-1 text-sm leading-relaxed text-zinc-300">
             {activePreset.hints?.length ? (
               <div>

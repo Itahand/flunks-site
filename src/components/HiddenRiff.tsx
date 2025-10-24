@@ -180,8 +180,8 @@ const MAJOR_CHORD_NOTES: Record<MajorChord, string[]> = {
 };
 
 const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
-  // The secret sequence: "Let It Be" progression (C, G, A, F)
-  const correctSequence: MajorChord[] = ['C', 'G', 'A', 'F'];
+  // The secret sequence (updated - no longer revealed publicly)
+  const correctSequence: MajorChord[] = ['F', 'A', 'D', 'G'];
 
   // All 7 possible chords always visible
   const allChords: MajorChord[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
@@ -220,28 +220,32 @@ const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
   }, []);
 
   const playChord = async (chord: MajorChord) => {
-    const Tone = await import('tone');
-    
-    // Start Tone.js audio context on first interaction
-    if (!audioStarted) {
-      await Tone.start();
-      setAudioStarted(true);
-      console.log('Audio context started');
+    try {
+      const Tone = await import('tone');
+      
+      // Start Tone.js audio context on first interaction
+      if (!audioStarted) {
+        await Tone.start();
+        setAudioStarted(true);
+        console.log('Audio context started');
+      }
+      
+      const notes = MAJOR_CHORD_NOTES[chord];
+      if (!notes || !polySynth) {
+        console.log('Missing notes or synth', { notes, polySynth });
+        return;
+      }
+      
+      console.log('Playing chord:', chord, notes);
+      polySynth.triggerAttackRelease(notes, "8n");
+    } catch (err) {
+      console.error('Error playing chord:', err);
     }
-    
-    const notes = MAJOR_CHORD_NOTES[chord];
-    if (!notes || !polySynth) {
-      console.log('Missing notes or synth', { notes, polySynth });
-      return;
-    }
-    
-    console.log('Playing chord:', chord, notes);
-    polySynth.triggerAttackRelease(notes, "8n");
   };
 
   const handleChordClick = (chord: MajorChord) => {
     // Play the sound
-    playChord(chord).catch(err => console.error('Error playing chord:', err));
+    playChord(chord);
     
     // Add to sequence if less than 4
     if (userSequence.length < 4) {

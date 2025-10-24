@@ -374,7 +374,7 @@ export const getChapter5ObjectivesStatus = async (walletAddress: string): Promis
     {
       id: 'overachiever_chapter5',
       title: 'The Overachiever',
-      description: 'Complete the Hidden Riff guitar sequence (C, G, A, F)',
+      description: 'Complete the Hidden Riff guitar sequence',
       type: 'custom',
       completed: overachieverObjectiveCompleted,
       reward: 100
