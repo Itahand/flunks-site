@@ -267,7 +267,7 @@ const ParadiseMotelMain = () => {
                 <button
                   onClick={() => {
                     // TODO: Wire this to key check logic
-                    alert('🔑 This feature is coming soon! You\'ll need to find the lost key...');
+                    alert('🔑 Maybe you should go look around a bit. Maybe. Maybe not though.');
                   }}
                   className="w-full bg-gradient-to-br from-amber-600 to-orange-800 hover:from-amber-500 hover:to-orange-700 text-white px-6 py-4 rounded-lg border-3 border-amber-400 hover:border-amber-300 transition-all duration-300 hover:scale-105 text-center text-lg font-black shadow-lg"
                   style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
