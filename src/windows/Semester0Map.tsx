@@ -77,8 +77,10 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
   const isDevelopment = process.env.NODE_ENV === 'development';
   const isLocalhost = typeof window !== 'undefined' && 
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const isBuildSite = typeof window !== 'undefined' && window.location.hostname.includes('vercel.app');
   const buildMode = getCurrentBuildMode();
   const walletBypassEnabled = isFeatureEnabled('enableWalletBypass') && isDevelopment && isLocalhost;
+  const houseAccessBypassEnabled = isLocalhost || isBuildSite; // Skip house ownership checks on localhost and build site
   
   // Override authentication for development
   const effectiveAuth = walletBypassEnabled ? {
@@ -123,9 +125,9 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
       return;
     }
 
-    // In development bypass mode, skip clique access checks
-    if (walletBypassEnabled) {
-      console.log(`🔧 DEV BYPASS: Accessing ${houseName} without clique verification`);
+    // In development/build bypass mode, skip clique access checks
+    if (houseAccessBypassEnabled) {
+      console.log(`🔧 BYPASS MODE: Accessing ${houseName} without clique verification`);
       openWindow({
         key: windowId,
         window: component,
