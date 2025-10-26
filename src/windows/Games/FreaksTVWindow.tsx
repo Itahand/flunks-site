@@ -123,7 +123,7 @@ const FreaksTVWindow = () => {
   // Paths to your media files
   const videoPath = "/videos/tv/content.mp4";
   const audioPath = "/music/tvaudio.mp3";
-  const framePath = "/images/freakbedroomtv.png"; // Transparent PNG frame overlay
+  const framePath = "/images/locations/freaks-bedroom-tv.png"; // Transparent PNG frame overlay
 
   useEffect(() => {
     // Play audio when component mounts
