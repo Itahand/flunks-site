@@ -202,31 +202,61 @@ const LockerSystemNew: React.FC = () => {
     
     try {
       // PRIORITY 1: Check blockchain for active GumDrop
-      console.log('🔗 Querying FlunksGumDrop contract on mainnet...');
-      const dropInfo = await fcl.query({
+      console.log('🔗 Querying SemesterZero contract on mainnet...');
+      const isActive = await fcl.query({
         cadence: `
-          import FlunksGumDrop from 0xFlunksGumDrop
+          import SemesterZero from 0x807c3d470888cc48
           
-          access(all) fun main(): {String: AnyStruct}? {
-            return FlunksGumDrop.getGumDropInfo()
+          access(all) fun main(): Bool {
+            if SemesterZero.activeGumDrop == nil {
+              return false
+            }
+            
+            let drop = SemesterZero.activeGumDrop!
+            let now = getCurrentBlock().timestamp
+            return now >= drop.startTime && now <= drop.endTime
           }
         `
       });
       
-      console.log('📦 GumDrop info from contract:', dropInfo);
+      console.log('📦 GumDrop active status:', isActive);
       
-      if (dropInfo && dropInfo.isActive) {
+      if (isActive) {
         setHalloweenDropActive(true);
-        const timeRemaining = dropInfo.timeRemaining || 0;
-        setHalloweenTimeLeft(`${Math.floor(timeRemaining / 3600)}h ${Math.floor((timeRemaining % 3600) / 60)}m`);
+        
+        // Get drop details for time remaining
+        const dropInfo = await fcl.query({
+          cadence: `
+            import SemesterZero from 0x807c3d470888cc48
+            
+            access(all) fun main(): {String: AnyStruct}? {
+              if SemesterZero.activeGumDrop == nil {
+                return nil
+              }
+              
+              let drop = SemesterZero.activeGumDrop!
+              let now = getCurrentBlock().timestamp
+              return {
+                "startTime": drop.startTime,
+                "endTime": drop.endTime,
+                "timeRemaining": drop.endTime > now ? drop.endTime - now : 0.0
+              }
+            }
+          `
+        });
+        
+        if (dropInfo) {
+          const timeRemaining = dropInfo.timeRemaining || 0;
+          setHalloweenTimeLeft(`${Math.floor(timeRemaining / 3600)}h ${Math.floor((timeRemaining % 3600) / 60)}m`);
+        }
         
         // Check if user is eligible (not already claimed on-chain)
         const isEligible = await fcl.query({
           cadence: `
-            import FlunksGumDrop from 0xFlunksGumDrop
+            import SemesterZero from 0x807c3d470888cc48
 
             access(all) fun main(user: Address): Bool {
-              return FlunksGumDrop.isEligibleForGumDrop(user: user)
+              return SemesterZero.isEligibleForGumDrop(user: user)
             }
           `,
           args: (arg: any, t: any) => [arg(unifiedAddress, t.Address)]
@@ -1481,8 +1511,8 @@ const LockerSystemNew: React.FC = () => {
                           }} />
                         </div>
 
-                        {/* Halloween GumDrop - HIDDEN until production FlunksGumDrop contract is deployed */}
-                        {false && halloweenDropActive && !halloweenClaimed && flunkCount > 0 && (
+                        {/* Halloween GumDrop - Now using FlunksGumDrop mainnet contract */}
+                        {halloweenDropActive && !halloweenClaimed && flunkCount > 0 && (
                           <div style={{
                             background: 'linear-gradient(145deg, #ff6b00, #ff4500)',
                             border: '4px solid #FFD700',
@@ -1600,33 +1630,49 @@ const LockerSystemNew: React.FC = () => {
                                     
                                     console.log('🎃 Submitting GumDrop claim transaction...');
                                     
-                                    // Submit blockchain transaction - SIMPLIFIED (no UserProfile needed)
-                                    const transactionId = await fcl.mutate({
-                                      cadence: `
-                                        import TestPumpkinDrop420 from 0xTestPumpkinDrop420
-
-                                        transaction() {
-                                          prepare(signer: &Account) {
-                                            // Record claim on blockchain
-                                            TestPumpkinDrop420.claimGumDrop(user: signer.address)
-                                          }
-                                          
-                                          execute {
-                                            log("GumDrop claimed on blockchain - backend will credit GUM")
-                                          }
-                                        }
-                                      `,
-                                      proposer: fcl.authz,
-                                      payer: fcl.authz,
-                                      authorizations: [fcl.authz],
-                                      limit: 9999
-                                    });
-
-                                    console.log('📝 Transaction submitted:', transactionId);
+                                    // TEST MODE: Skip blockchain transaction on localhost
+                                    const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+                                    let transactionId = 'test-' + Date.now();
                                     
-                                    // Wait for transaction to seal
-                                    const result = await fcl.tx(transactionId).onceSealed();
-                                    console.log('✅ Transaction sealed:', result);
+                                    if (!isLocalhost) {
+                                      // Submit blockchain transaction with timezone and username (PRODUCTION ONLY)
+                                      transactionId = await fcl.mutate({
+                                        cadence: `
+                                          import SemesterZero from 0x807c3d470888cc48
+
+                                          transaction(username: String, timezoneOffset: Int) {
+                                            prepare(signer: &Account) {
+                                              // Record claim on blockchain with user context
+                                              SemesterZero.claimGumDrop(user: signer.address)
+                                              
+                                              // Log timezone context for analytics
+                                              log("User: ".concat(username))
+                                              log("Timezone offset: ".concat(timezoneOffset.toString()))
+                                            }
+                                            
+                                            execute {
+                                              log("GumDrop claimed on blockchain - backend will credit GUM")
+                                            }
+                                          }
+                                        `,
+                                        args: (arg: any, t: any) => [
+                                          arg(username, t.String),
+                                          arg(timezoneOffset, t.Int)
+                                        ],
+                                        proposer: fcl.authz,
+                                        payer: fcl.authz,
+                                        authorizations: [fcl.authz],
+                                        limit: 9999
+                                      });
+
+                                      console.log('📝 Transaction submitted:', transactionId);
+                                      
+                                      // Wait for transaction to seal
+                                      const result = await fcl.tx(transactionId).onceSealed();
+                                      console.log('✅ Transaction sealed:', result);
+                                    } else {
+                                      console.log('🧪 TEST MODE: Skipping blockchain transaction on localhost');
+                                    }
                                     
                                     // Call backend API to add GUM to Supabase
                                     const gumAmount = 100; // Halloween GumDrop: 100 GUM flat reward

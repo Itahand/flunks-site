@@ -2,6 +2,7 @@ import DraggableResizeableWindow from "components/DraggableResizeableWindow";
 import { WINDOW_IDS } from "fixed";
 import { useWindowsContext } from "contexts/WindowsContext";
 import styled from "styled-components";
+import { useEffect, useRef } from "react";
 
 const TVShell = styled.div`
   background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 100%);
@@ -117,10 +118,29 @@ const Knob = styled.div`
 
 const FreaksTVWindow = () => {
   const { closeWindow } = useWindowsContext();
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   // Paths to your media files
   const videoPath = "/videos/tv/content.mp4";
-  const framePath = "/images/tv/frame.png"; // Transparent PNG frame overlay
+  const audioPath = "/music/tvaudio.mp3";
+  const framePath = "/images/freakbedroomtv.png"; // Transparent PNG frame overlay
+
+  useEffect(() => {
+    // Play audio when component mounts
+    if (audioRef.current) {
+      audioRef.current.play().catch(err => {
+        console.log("Audio autoplay prevented:", err);
+      });
+    }
+
+    // Cleanup: pause audio when component unmounts
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
 
   return (
     <DraggableResizeableWindow
@@ -146,6 +166,11 @@ const FreaksTVWindow = () => {
             alt="TV Frame"
           />
         </Screen>
+        
+        {/* Hidden audio element that plays in the background */}
+        <audio ref={audioRef} loop>
+          <source src={audioPath} type="audio/mpeg" />
+        </audio>
         
         <TVControls>
           <Knob title="Volume" />

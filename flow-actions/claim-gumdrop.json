@@ -11,9 +11,20 @@
   "cadence": {
     "type": "transaction",
     "network": "mainnet",
-    "code": "import FlunksGumDrop from 0xFLUNKS_CONTRACT_ADDRESS\n\ntransaction() {\n  prepare(signer: &Account) {\n    FlunksGumDrop.claimGumDrop(user: signer.address)\n  }\n  \n  execute {\n    log(\"GumDrop claimed successfully!\")\n  }\n}"
+    "code": "import SemesterZero from 0x807c3d470888cc48\n\ntransaction(username: String, timezoneOffset: Int) {\n  prepare(signer: &Account) {\n    SemesterZero.claimGumDrop(user: signer.address)\n    log(\"User: \".concat(username))\n    log(\"Timezone offset: \".concat(timezoneOffset.toString()))\n  }\n  \n  execute {\n    log(\"GumDrop claimed successfully!\")\n  }\n}"
   },
-  "arguments": [],
+  "arguments": [
+    {
+      "name": "username",
+      "type": "String",
+      "description": "Your display name"
+    },
+    {
+      "name": "timezoneOffset",
+      "type": "Int",
+      "description": "Your timezone offset in hours"
+    }
+  ],
   "messages": {
     "title": "Claim GumDrop Reward",
     "description": "This will record your claim on the blockchain. After confirmation, you'll receive GUM in your account.",

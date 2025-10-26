@@ -23,9 +23,8 @@ config({
   // Enable ALL wallets from discovery service (don't filter)
   "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/mainnet/authn", // Updated to match FCL demo
   
-  // TestPumpkinDrop420 contract (mainnet test deployment)
-  "0xTestPumpkinDrop420": "0x807c3d470888cc48",
-  "0xFlunksGumDrop": "0x807c3d470888cc48",
+  // SemesterZero contract (mainnet deployment)
+  "0xSemesterZero": "0x807c3d470888cc48",
 });
 
 // Log final configuration

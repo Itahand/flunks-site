@@ -538,7 +538,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                 lineHeight: 1.4,
                 wordBreak: 'break-word',
                 maxWidth: '100%'
-              }}>READY FOR NEXT ADVENTURE!</div>
+              }}>AIRDROP ELIGIBLE!</div>
             </div>
             {/* Celebration Particles */}
             {[...Array(5)].map((_, i) => (
