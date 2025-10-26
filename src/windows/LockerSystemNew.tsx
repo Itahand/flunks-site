@@ -1628,51 +1628,11 @@ const LockerSystemNew: React.FC = () => {
                                     // Get username from lockerInfo or use truncated address
                                     const username = lockerInfo?.username || unifiedAddress?.slice(0, 10) || 'Flunk';
                                     
-                                    console.log('🎃 Submitting GumDrop claim transaction...');
+                                    console.log('🎃 Claiming Halloween GumDrop...');
                                     
-                                    // TEST MODE: Skip blockchain transaction on localhost
-                                    const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-                                    let transactionId = 'test-' + Date.now();
-                                    
-                                    if (!isLocalhost) {
-                                      // Submit blockchain transaction with timezone and username (PRODUCTION ONLY)
-                                      transactionId = await fcl.mutate({
-                                        cadence: `
-                                          import SemesterZero from 0x807c3d470888cc48
-
-                                          transaction(username: String, timezoneOffset: Int) {
-                                            prepare(signer: &Account) {
-                                              // Record claim on blockchain with user context
-                                              SemesterZero.claimGumDrop(user: signer.address)
-                                              
-                                              // Log timezone context for analytics
-                                              log("User: ".concat(username))
-                                              log("Timezone offset: ".concat(timezoneOffset.toString()))
-                                            }
-                                            
-                                            execute {
-                                              log("GumDrop claimed on blockchain - backend will credit GUM")
-                                            }
-                                          }
-                                        `,
-                                        args: (arg: any, t: any) => [
-                                          arg(username, t.String),
-                                          arg(timezoneOffset, t.Int)
-                                        ],
-                                        proposer: fcl.authz,
-                                        payer: fcl.authz,
-                                        authorizations: [fcl.authz],
-                                        limit: 9999
-                                      });
-
-                                      console.log('📝 Transaction submitted:', transactionId);
-                                      
-                                      // Wait for transaction to seal
-                                      const result = await fcl.tx(transactionId).onceSealed();
-                                      console.log('✅ Transaction sealed:', result);
-                                    } else {
-                                      console.log('🧪 TEST MODE: Skipping blockchain transaction on localhost');
-                                    }
+                                    // Note: No blockchain transaction needed - admin controls GumDrop claims via markClaimed()
+                                    // We just award the GUM via backend and let admin mark it on-chain later
+                                    const transactionId = 'halloween-' + Date.now();
                                     
                                     // Call backend API to add GUM to Supabase
                                     const gumAmount = 100; // Halloween GumDrop: 100 GUM flat reward
