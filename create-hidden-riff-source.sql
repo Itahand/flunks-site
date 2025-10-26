@@ -21,3 +21,4 @@ DO UPDATE SET
   base_reward = EXCLUDED.base_reward,
   description = EXCLUDED.description,
   is_active = EXCLUDED.is_active;
+  

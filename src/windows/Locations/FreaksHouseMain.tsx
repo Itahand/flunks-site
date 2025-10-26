@@ -6,6 +6,7 @@ import CellarDoorDigitalLock from "components/CellarDoorDigitalLock";
 import { getCliqueColors, getCliqueIcon } from "utils/cliqueColors";
 import { getFontStyle } from "utils/fontConfig";
 import HiddenRiffWindow from "windows/Games/HiddenRiffWindow";
+import FreaksTVWindow from "windows/Games/FreaksTVWindow";
 import { isFeatureEnabled } from "utils/buildMode";
 import FreaksHouseLivingRoom from "./FreaksHouseLivingRoom";
 import FreaksHouseAttic from "./FreaksHouseAttic";
@@ -173,7 +174,10 @@ const FreaksHouseMain = () => {
                   
                   <button
                     onClick={() => {
-                      alert('📺 TV interaction coming soon!');
+                      openWindow({
+                        key: WINDOW_IDS.FREAKS_TV,
+                        window: <FreaksTVWindow />,
+                      });
                     }}
                     className="bg-blue-700 hover:bg-blue-800 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base min-h-[44px]"
                   >

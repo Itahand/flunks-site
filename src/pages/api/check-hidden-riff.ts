@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .from('gum_transactions')
       .select('*')
       .eq('wallet_address', walletAddress)
-      .eq('source_name', 'hidden_riff')
+      .eq('source', 'hidden_riff')
       .limit(1);
 
     if (error) {

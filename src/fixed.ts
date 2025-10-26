@@ -148,6 +148,7 @@ export const WINDOW_IDS = {
   FREAKS_HOUSE_ATTIC: "freaks_house_attic",
   FREAKS_HOUSE_KITCHEN: "freaks_house_kitchen",
   FREAKS_HOUSE_CELLAR_DOOR: "freaks_house_cellar_door",
+  FREAKS_TV: "freaks_tv",
   FREAKS_HOUSE_CELLAR_DOOR_LOCK: "freaks_house_cellar_door_lock",
   
   // Geek's House rooms

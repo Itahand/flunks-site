@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import type { HiddenRiffPreset, MajorChord } from "lib/hiddenRiffPresets";
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
 const Shell = styled.div`
   display: flex;
@@ -10,6 +11,33 @@ const Shell = styled.div`
   gap: 20px;
   max-width: 600px;
   margin: 0 auto;
+  padding: 30px;
+  border-radius: 16px;
+  
+  /* Retro vibes background */
+  background: 
+    linear-gradient(135deg, rgba(255, 107, 107, 0.05) 0%, rgba(255, 204, 0, 0.05) 100%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 3px
+    ),
+    radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(156, 39, 176, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #1a1410 0%, #0d0a08 100%);
+  
+  box-shadow: 
+    0 0 60px rgba(255, 193, 7, 0.15),
+    inset 0 0 80px rgba(0, 0, 0, 0.3);
 
   @media (max-width: 768px) {
     transform: scale(0.92);
@@ -18,7 +46,7 @@ const Shell = styled.div`
 `;
 
 const AmpShell = styled.div`
-  background: linear-gradient(145deg, #2a1810 0%, #1a0f08 100%);
+  background: linear-gradient(145deg, rgba(42, 24, 16, 0.95) 0%, rgba(26, 15, 8, 0.98) 100%);
   border: 4px solid #100a06;
   border-radius: 8px;
   padding: 32px 24px;
@@ -179,71 +207,114 @@ const MAJOR_CHORD_NOTES: Record<MajorChord, string[]> = {
   G: ["G3", "B3", "D4"],
 };
 
-const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
-  // The secret sequence (updated - no longer revealed publicly)
-  const correctSequence: MajorChord[] = ['F', 'A', 'D', 'G'];
+// Minor chord notes (lowered 3rd)
+const MINOR_CHORD_NOTES: Record<string, string[]> = {
+  Am: ["A3", "C4", "E4"],
+  Bm: ["B3", "D4", "F#4"],
+  Cm: ["C3", "D#3", "G3"],
+  Dm: ["D3", "F3", "A3"],
+  Em: ["E3", "G3", "B3"],
+  Fm: ["F3", "G#3", "C4"],
+  Gm: ["G3", "A#3", "D4"],
+};
 
-  // All 7 possible chords always visible
-  const allChords: MajorChord[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
+  // Get wallet address from Dynamic context
+  const { primaryWallet } = useDynamicContext();
+  const walletAddress = primaryWallet?.address;
+
+  // The secret sequence (updated - no longer revealed publicly)
+  const correctSequence: string[] = ['C', 'G', 'Am', 'F'];
+
+  // All chords available (majors + minors)
+  const allChords: string[] = ['A', 'Am', 'B', 'Bm', 'C', 'Cm', 'D', 'Dm', 'E', 'Em', 'F', 'Fm', 'G', 'Gm'];
   
-  const [userSequence, setUserSequence] = useState<MajorChord[]>([]);
-  const [polySynth, setPolySynth] = useState<any>(null);
+  const [userSequence, setUserSequence] = useState<string[]>([]);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [audioStarted, setAudioStarted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Initialize Tone.js synthesizer
+  // Initialize Web Audio API context (simpler than Tone.js)
   useEffect(() => {
-    let synth: any = null;
-    
-    const initSynth = async () => {
-      const Tone = await import('tone');
-      synth = new Tone.PolySynth(Tone.Synth).toDestination();
-      synth.set({
-        volume: -6,
-        envelope: {
-          attack: 0.02,
-          decay: 0.2,
-          sustain: 0.6,
-          release: 0.8,
-        },
-      });
-      setPolySynth(synth);
-    };
-    
-    initSynth();
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    setAudioContext(ctx);
     
     return () => {
-      if (synth) {
-        synth.dispose();
+      if (ctx.state !== 'closed') {
+        ctx.close();
       }
     };
   }, []);
 
-  const playChord = async (chord: MajorChord) => {
+  // Play chord using Web Audio API
+  const playChord = async (chord: string) => {
+    if (!audioContext) {
+      console.log('Audio context not initialized');
+      return;
+    }
+
     try {
-      const Tone = await import('tone');
-      
-      // Start Tone.js audio context on first interaction
-      if (!audioStarted) {
-        await Tone.start();
+      // Resume audio context on first interaction (required by browsers)
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
         setAudioStarted(true);
-        console.log('Audio context started');
       }
-      
-      const notes = MAJOR_CHORD_NOTES[chord];
-      if (!notes || !polySynth) {
-        console.log('Missing notes or synth', { notes, polySynth });
+
+      // Get the notes for the chord
+      const notes = MINOR_CHORD_NOTES[chord] || MAJOR_CHORD_NOTES[chord as MajorChord];
+      if (!notes) {
+        console.log('Missing notes for chord', chord);
         return;
       }
-      
+
       console.log('Playing chord:', chord, notes);
-      polySynth.triggerAttackRelease(notes, "8n");
+
+      // Convert note names to frequencies and play them
+      const noteFrequencies = notes.map(note => noteToFrequency(note));
+      
+      noteFrequencies.forEach(freq => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.value = freq;
+        
+        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 1);
+      });
     } catch (err) {
       console.error('Error playing chord:', err);
     }
   };
 
-  const handleChordClick = (chord: MajorChord) => {
+  // Convert note name (e.g., "A3") to frequency in Hz
+  const noteToFrequency = (note: string): number => {
+    const noteMap: Record<string, number> = {
+      'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5,
+      'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11
+    };
+    
+    const match = note.match(/^([A-G]#?)(\d)$/);
+    if (!match) return 440;
+    
+    const [, noteName, octaveStr] = match;
+    const octave = parseInt(octaveStr);
+    const noteIndex = noteMap[noteName];
+    
+    // A4 = 440 Hz
+    const a4 = 440;
+    const semitonesFromA4 = (octave - 4) * 12 + (noteIndex - 9);
+    
+    return a4 * Math.pow(2, semitonesFromA4 / 12);
+  };
+
+  const handleChordClick = (chord: string) => {
     // Play the sound
     playChord(chord);
     
@@ -271,13 +342,29 @@ const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
       
       try {
         // Call API to award GUM and achievement
+        const headers: HeadersInit = { 'Content-Type': 'application/json' };
+        if (walletAddress) {
+          headers['x-wallet-address'] = walletAddress;
+        }
+
         const response = await fetch('/api/claim-hidden-riff', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({ sequence: userSequence }),
         });
 
-        const data = await response.json();
+        const responseText = await response.text();
+        console.log('API Response:', responseText);
+        
+        let data;
+        try {
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('Failed to parse response as JSON:', parseError);
+          console.error('Response text:', responseText);
+          alert('Error: Invalid response from server');
+          return;
+        }
 
         if (data.success) {
           alert(`🎸 Correct sequence! You unlocked the Overachiever achievement and earned ${data.gumEarned} GUM!`);

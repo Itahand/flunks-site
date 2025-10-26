@@ -21,8 +21,7 @@ const HiddenRiffWindow = () => {
   return (
     <DraggableResizeableWindow
       windowsId={WINDOW_IDS.HIDDEN_RIFF}
-      headerTitle="Hidden Riff"
-      headerIcon="/images/icons/controller-bg.png"
+      headerTitle="🎸 Hidden Riff"
       onClose={() => closeWindow(WINDOW_IDS.HIDDEN_RIFF)}
       initialWidth="980px"
       initialHeight="720px"
@@ -53,15 +52,6 @@ const HiddenRiffWindow = () => {
             />
             <span className="font-semibold">Use generated tones</span>
           </label>
-          {lastResult && (
-            <div className="rounded border border-emerald-500/60 bg-emerald-500/10 px-4 py-3 text-sm">
-              <div className="font-semibold text-emerald-300">Last run complete</div>
-              <div className="mt-1 text-emerald-100">
-                {lastResult.perfect ? "Perfect performance!" : `${lastResult.misses} misses recorded.`}
-              </div>
-              <div className="text-emerald-200">Time: {(lastResult.ms / 1000).toFixed(2)}s</div>
-            </div>
-          )}
         </div>
 
         <HiddenRiff

@@ -26,17 +26,22 @@ export default async function handler(
     const { sequence } = req.body;
     const wallet = req.headers['x-wallet-address'] as string;
 
-    if (!wallet) {
-      return res.status(400).json({ success: false, message: 'Wallet address required' });
-    }
-
-    // Verify the sequence is correct (F, A, D, G)
-    const correctSequence = ['F', 'A', 'D', 'G'];
+    // Verify the sequence is correct (C, G, Am, F - Let It Be)
+    const correctSequence = ['C', 'G', 'Am', 'F'];
     const isCorrect = sequence.length === 4 && 
       sequence.every((chord, i) => chord === correctSequence[i]);
 
     if (!isCorrect) {
       return res.status(400).json({ success: false, message: 'Incorrect sequence' });
+    }
+
+    // If no wallet (test mode), just confirm the sequence is correct
+    if (!wallet) {
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Correct sequence! (Test mode - no GUM awarded)',
+        gumEarned: 0
+      });
     }
 
     // Award GUM using the 'hidden_riff' source
@@ -53,7 +58,7 @@ export default async function handler(
         .from('access_code_discoveries')
         .insert({
           wallet_address: wallet,
-          code_entered: 'FADG', // Chapter 5 Overachiever code (F, A, D, G)
+          code_entered: 'CGAF', // Chapter 5 Overachiever code (C, G, A, F - Let It Be)
           success: true,
           discovered_at: new Date().toISOString(),
         });
