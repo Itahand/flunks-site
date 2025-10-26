@@ -1630,11 +1630,12 @@ const LockerSystemNew: React.FC = () => {
                                     
                                     console.log('🎃 Submitting GumDrop claim transaction...');
                                     
-                                    // TEST MODE: Skip blockchain transaction on localhost
-                                    const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+                                    // TEST MODE: Skip blockchain transaction on localhost or build sites
+                                    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+                                    const isTestMode = hostname === 'localhost' || hostname.includes('vercel.app');
                                     let transactionId = 'test-' + Date.now();
                                     
-                                    if (!isLocalhost) {
+                                    if (!isTestMode) {
                                       // Submit blockchain transaction with timezone and username (PRODUCTION ONLY)
                                       transactionId = await fcl.mutate({
                                         cadence: `
@@ -1671,7 +1672,7 @@ const LockerSystemNew: React.FC = () => {
                                       const result = await fcl.tx(transactionId).onceSealed();
                                       console.log('✅ Transaction sealed:', result);
                                     } else {
-                                      console.log('🧪 TEST MODE: Skipping blockchain transaction on localhost');
+                                      console.log('🧪 TEST MODE: Skipping blockchain transaction on ' + hostname);
                                     }
                                     
                                     // Call backend API to add GUM to Supabase
