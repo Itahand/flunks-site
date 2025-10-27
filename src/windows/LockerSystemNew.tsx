@@ -200,12 +200,6 @@ const LockerSystemNew: React.FC = () => {
       return;
     }
     
-    // TEST WALLETS: Always eligible for testing (currently empty - testing real blockchain flow)
-    const testWallets: string[] = [];
-    const isTestWallet = testWallets.some(w => 
-      unifiedAddress.toLowerCase() === w.toLowerCase()
-    );
-    
     try {
       // PRIORITY 1: Check blockchain for active GumDrop
       console.log('🔗 Querying SemesterZero contract on mainnet...');
@@ -257,26 +251,12 @@ const LockerSystemNew: React.FC = () => {
         }
         
         // Check if user is eligible (not already claimed on-chain)
-        let isEligible = false;
+        // NOTE: We skip the blockchain eligibility check because we want EVERYONE to be eligible
+        // The contract's isEligibleForGumDrop checks an allowlist, but we're opening this to all
+        let isEligible = true; // Everyone is eligible!
         
-        if (isTestWallet) {
-          console.log('🧪 TEST WALLET: Bypassing blockchain eligibility check');
-          isEligible = true;
-        } else {
-          isEligible = await fcl.query({
-            cadence: `
-              import SemesterZero from 0x807c3d470888cc48
-
-              access(all) fun main(user: Address): Bool {
-                return SemesterZero.isEligibleForGumDrop(user: user)
-              }
-            `,
-            args: (arg: any, t: any) => [arg(unifiedAddress, t.Address)]
-          });
-        }
-        
-        console.log('✅ User eligible:', isEligible);
-        setHalloweenClaimed(!isEligible);
+        console.log('✅ User eligible (open to all):', isEligible);
+        setHalloweenClaimed(false); // Never mark as claimed based on blockchain
         
         // Get Flunk count (mock for now)
         const flunkResponse = await fetch(`/api/get-flunk-count?address=${unifiedAddress}`);
@@ -1643,15 +1623,10 @@ const LockerSystemNew: React.FC = () => {
                                     
                                     console.log('🎃 Claiming Halloween GumDrop...');
                                     
-                                    // Check if this is localhost (test wallet removed - testing real blockchain flow)
-                                    const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-                                    const skipBlockchain = isLocalhost;
-                                    
                                     let profileTxId = 'test-' + Date.now();
                                     
-                                    if (!skipBlockchain) {
-                                      // Step 1: Create profile + collection and verify eligibility on-chain
-                                      console.log('📝 Submitting GumDrop claim transaction...');
+                                    // Step 1: Create profile + collection and verify eligibility on-chain
+                                    console.log('📝 Submitting GumDrop claim transaction...');
                                       profileTxId = await fcl.mutate({
                                         cadence: `
                                           import SemesterZero from 0x807c3d470888cc48
@@ -1691,11 +1666,7 @@ const LockerSystemNew: React.FC = () => {
                                                 signer.capabilities.publish(nftCap, at: SemesterZero.Chapter5CollectionPublicPath)
                                               }
                                               
-                                              // Verify user is eligible for active GumDrop
-                                              assert(
-                                                SemesterZero.isEligibleForGumDrop(user: signer.address),
-                                                message: "Not eligible or already claimed"
-                                              )
+                                              // Halloween GumDrop open to everyone - no eligibility check required
                                             }
                                             
                                             execute {
@@ -1716,9 +1687,6 @@ const LockerSystemNew: React.FC = () => {
                                       console.log('📝 Transaction submitted:', profileTxId);
                                       await fcl.tx(profileTxId).onceSealed();
                                       console.log('✅ Profile, collection, and eligibility verified!');
-                                    } else {
-                                      console.log('🧪 TEST MODE: Skipping blockchain transaction for', isLocalhost ? 'localhost' : 'test wallet');
-                                    }
                                     
                                     // Step 2: Award GUM via backend
                                     const transactionId = profileTxId;

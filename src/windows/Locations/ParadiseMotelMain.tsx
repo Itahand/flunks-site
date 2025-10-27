@@ -125,7 +125,7 @@ const Room1BellComponent: React.FC<Room1BellComponentProps> = ({ onClose, wallet
 
         {/* Claim Message */}
         {claimMessage && (
-          <div className="bg-black bg-opacity-70 px-4 py-2 rounded-lg flex-shrink-0">
+          <div className="bg-black bg-opacity-70 px-4 py-2 rounded-lg flex-shrink-0">i'm
             <p className="text-yellow-300 text-sm font-bold text-center">
               {claimMessage}
             </p>
@@ -153,18 +153,33 @@ const ParadiseMotelMain = () => {
   const dayImage = "/images/locations/paradise motel/paradise-motel-day.png";
   const nightImage = "/images/locations/paradise motel/paradise-motel-night.png";
   const timeBasedInfo = useTimeBasedImage(dayImage, nightImage);
+  const isDay = timeBasedInfo.isDay;
 
   // Background music state
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [room7SlackerCompleted, setRoom7SlackerCompleted] = useState(false);
+  const [currentMusicTrack, setCurrentMusicTrack] = useState<string>('');
+
+  // Determine day/night for music selection
+  const isCurrentlyDay = () => {
+    if (typeof window === 'undefined') return true;
+    const isFlunksBuild = window.location.hostname === 'flunks-build.vercel.app';
+    if (isFlunksBuild) return true;
+    
+    const hour = new Date().getHours();
+    return hour >= 6 && hour < 18; // 6 AM - 6 PM is daytime
+  };
 
   // Initialize background music when component mounts
   useEffect(() => {
+    const musicTrack = isCurrentlyDay() ? '/music/paradisemotel.mp3' : '/music/night.mp3';
+    
     if (!audioRef.current) {
-      audioRef.current = new Audio('/music/paradisemotel.mp3');
+      audioRef.current = new Audio(musicTrack);
       audioRef.current.loop = true;
       audioRef.current.volume = 0.3; // Set to 30% volume
+      setCurrentMusicTrack(musicTrack);
     }
 
     const playMusic = async () => {
@@ -187,6 +202,45 @@ const ParadiseMotelMain = () => {
       }
     };
   }, []);
+
+  // Switch music when day/night changes
+  useEffect(() => {
+    const musicTrack = isCurrentlyDay() ? '/music/paradisemotel.mp3' : '/music/night.mp3';
+    
+    if (audioRef.current && musicTrack !== currentMusicTrack) {
+      const wasPlaying = !audioRef.current.paused;
+      const currentVolume = audioRef.current.volume;
+      
+      audioRef.current.pause();
+      audioRef.current.src = musicTrack;
+      audioRef.current.volume = currentVolume;
+      setCurrentMusicTrack(musicTrack);
+      
+      if (wasPlaying && !isMuted) {
+        audioRef.current.play().catch(console.log);
+      }
+    }
+    
+    // Check every minute for day/night changes
+    const interval = setInterval(() => {
+      const newTrack = isCurrentlyDay() ? '/music/paradisemotel.mp3' : '/music/night.mp3';
+      if (newTrack !== currentMusicTrack && audioRef.current) {
+        const wasPlaying = !audioRef.current.paused;
+        const currentVolume = audioRef.current.volume;
+        
+        audioRef.current.pause();
+        audioRef.current.src = newTrack;
+        audioRef.current.volume = currentVolume;
+        setCurrentMusicTrack(newTrack);
+        
+        if (wasPlaying && !isMuted) {
+          audioRef.current.play().catch(console.log);
+        }
+      }
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
+  }, [currentMusicTrack, isMuted]);
 
   // Handle mute/unmute
   useEffect(() => {
@@ -228,7 +282,7 @@ const ParadiseMotelMain = () => {
   };
 
   const getCurrentBackground = () => {
-    return timeBasedInfo.currentImage;
+    return isDay ? dayImage : nightImage;
   };
 
   // Function to open Room 1 - locked, needs key
@@ -339,14 +393,11 @@ const ParadiseMotelMain = () => {
     const now = new Date();
     const hour = now.getHours(); // Gets hour in user's local timezone (0-23)
     
-    // FLUNKS-BUILD BYPASS: Force daytime mode for testing
-    const isFlunksBuild = typeof window !== 'undefined' && window.location.hostname === 'flunks-build.vercel.app';
-    
     // Day time is 6 AM (06:00) to 6 PM (18:00) in user's LOCAL timezone
-    const isDay = isFlunksBuild ? true : (hour >= 6 && hour < 18);
-    const isNightTime = !isDay;
+    const isDayTime = hour >= 6 && hour < 18;
+    const isNightTime = !isDayTime;
     
-    if (isDay) {
+    if (isDayTime) {
       // During day: show room-7-day.png with peephole button
       openWindow({
         key: WINDOW_IDS.PARADISE_MOTEL_ROOM_7,
@@ -539,6 +590,9 @@ const ParadiseMotelMain = () => {
         }
       }
       
+      // TEMPORARILY DISABLED: Story cutscenes not ready yet
+      // Will re-enable when cutscene images are uploaded
+      /*
       // Open the Paradise Motel cutscene from Story Manual
       openWindow({
         key: WINDOW_IDS.STORY_MANUAL,
@@ -558,6 +612,7 @@ const ParadiseMotelMain = () => {
           </DraggableResizeableWindow>
         ),
       });
+      */
     }
   };
 
@@ -627,7 +682,7 @@ const ParadiseMotelMain = () => {
                   className="bg-gradient-to-br from-purple-800 to-pink-900 hover:from-purple-700 hover:to-pink-800 text-white px-3 py-3 rounded-lg border-3 border-purple-500 hover:border-purple-400 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg whitespace-nowrap"
                   style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
                 >
-                  {timeBasedInfo.isDay ? '🌞' : '🌙'} Room 7
+                  {isDay ? '🌞' : '🌙'} Room 7
                 </button>
 
                 {/* Ring Bell */}
@@ -729,7 +784,7 @@ const ParadiseMotelMain = () => {
       <div className="relative flex-1 flex items-center justify-center min-h-0 px-0">
         <img
           src={getCurrentBackground()}
-          alt={`Paradise Motel Background - ${timeBasedInfo.isDay ? 'Day' : 'Night'}`}
+          alt={`Paradise Motel Background - ${isDay ? 'Day' : 'Night'}`}
           className="w-full h-full object-cover"
           onError={(e) => {
             e.currentTarget.src = "/images/backdrops/BLANK.png";

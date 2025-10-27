@@ -4,16 +4,22 @@ import { config } from "@onflow/fcl";
 const FLOW_ACCESS_NODE = process.env.NEXT_PUBLIC_FLOW_ACCESS_NODE || "https://rest-mainnet.onflow.org";
 const WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "9b70cfa398b2355a5eb9b1cf99f4a981";
 
+// Use current hostname for WalletConnect metadata
+const APP_URL = typeof window !== 'undefined' 
+  ? window.location.origin 
+  : "https://flunks.net";
+
 console.log('🌊 Configuring FCL with access node:', FLOW_ACCESS_NODE);
 console.log('📱 WalletConnect Project ID:', WALLETCONNECT_PROJECT_ID ? 'Set ✅' : 'Missing ❌');
+console.log('🌐 App URL:', APP_URL);
 
 config({
   "accessNode.api": FLOW_ACCESS_NODE,
-  "discovery.wallet": "https://fcl-discovery.onflow.org/mainnet/authn", // Mainnet wallet discovery (updated to match FCL demo)
+  "discovery.wallet": "https://fcl-discovery.onflow.org/mainnet/authn", // Mainnet wallet discovery
   "app.detail.title": "Flunks", // App name for wallet approval
   "app.detail.icon": "https://flunks.net/flunks-logo.png", // App icon
-  "app.detail.url": "https://flunks.net",
-  "challenge.handshake": "https://fcl-discovery.onflow.org/mainnet/authn", // Mainnet wallet handshake (updated to match FCL demo)
+  "app.detail.url": APP_URL, // Use current origin to avoid WalletConnect mismatch
+  "challenge.handshake": "https://fcl-discovery.onflow.org/mainnet/authn", // Mainnet wallet handshake
   "flow.network": "mainnet", // Important for mobile wallet detection
   "walletconnect.projectId": WALLETCONNECT_PROJECT_ID, // CRITICAL for mobile WalletConnect
   
