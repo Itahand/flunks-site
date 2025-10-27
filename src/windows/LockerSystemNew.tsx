@@ -1504,8 +1504,8 @@ const LockerSystemNew: React.FC = () => {
                           }} />
                         </div>
 
-                        {/* Halloween GumDrop - Now using FlunksGumDrop mainnet contract */}
-                        {halloweenDropActive && !halloweenClaimed && flunkCount > 0 && (
+                        {/* Halloween GumDrop - Open to EVERYONE! */}
+                        {halloweenDropActive && !halloweenClaimed && (
                           <div style={{
                             background: 'linear-gradient(145deg, #ff6b00, #ff4500)',
                             border: '4px solid #FFD700',
