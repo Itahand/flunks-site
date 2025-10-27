@@ -339,8 +339,11 @@ const ParadiseMotelMain = () => {
     const now = new Date();
     const hour = now.getHours(); // Gets hour in user's local timezone (0-23)
     
+    // FLUNKS-BUILD BYPASS: Force daytime mode for testing
+    const isFlunksBuild = typeof window !== 'undefined' && window.location.hostname === 'flunks-build.vercel.app';
+    
     // Day time is 6 AM (06:00) to 6 PM (18:00) in user's LOCAL timezone
-    const isDay = hour >= 6 && hour < 18;
+    const isDay = isFlunksBuild ? true : (hour >= 6 && hour < 18);
     const isNightTime = !isDay;
     
     if (isDay) {
