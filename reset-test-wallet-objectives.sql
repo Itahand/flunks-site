@@ -9,14 +9,11 @@ WHERE wallet_address = '0x50b39b127236f46a';
 DELETE FROM paradise_motel_room7_keys
 WHERE wallet_address = '0x50b39b127236f46a';
 
--- Reset achievement tracking tables
+-- Reset achievement tracking tables (only ones that exist)
 DELETE FROM digital_lock_attempts
 WHERE wallet_address = '0x50b39b127236f46a';
 
-DELETE FROM friday_night_lights_tracking
-WHERE wallet_address = '0x50b39b127236f46a';
-
-DELETE FROM homecoming_dance_attendance
+DELETE FROM picture_day_votes
 WHERE wallet_address = '0x50b39b127236f46a';
 
 -- Verify reset
@@ -32,10 +29,6 @@ SELECT 'Digital lock attempts:', COUNT(*)
 FROM digital_lock_attempts
 WHERE wallet_address = '0x50b39b127236f46a'
 UNION ALL
-SELECT 'Friday Night Lights:', COUNT(*)
-FROM friday_night_lights_tracking
-WHERE wallet_address = '0x50b39b127236f46a'
-UNION ALL
-SELECT 'Homecoming attendance:', COUNT(*)
-FROM homecoming_dance_attendance
+SELECT 'Picture day votes:', COUNT(*)
+FROM picture_day_votes
 WHERE wallet_address = '0x50b39b127236f46a';
