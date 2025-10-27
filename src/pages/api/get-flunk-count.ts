@@ -19,6 +19,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Wallet address is required' });
   }
 
+  // FLUNKS-BUILD BYPASS: Return mock count without blockchain query
+  const isFlunksBuild = req.headers.host?.includes('flunks-build.vercel.app');
+  if (isFlunksBuild) {
+    return res.status(200).json({
+      success: true,
+      flunkCount: 3,
+      address,
+      testMode: true,
+    });
+  }
+
   try {
     // Query Flunks NFT collection
     // TODO: Replace with actual Flunks NFT contract address
