@@ -282,8 +282,8 @@ const LockerSystemNew: React.FC = () => {
         const flunkResponse = await fetch(`/api/get-flunk-count?address=${unifiedAddress}`);
         const flunkData = await flunkResponse.json();
         console.log('🎨 Flunk count:', flunkData);
-        setFlunkCount(1); // MOCK: 100 GUM per claim
-        console.log('� Final state - active:', true, 'claimed:', !isEligible, 'flunkCount:', flunkData.flunkCount);
+        setFlunkCount(flunkData.flunkCount || 0);
+        console.log('📊 Final state - active:', true, 'claimed:', !isEligible, 'flunkCount:', flunkData.flunkCount);
         return;
       }
       
