@@ -200,6 +200,14 @@ const LockerSystemNew: React.FC = () => {
       return;
     }
     
+    // TEST WALLETS: Always eligible for testing
+    const testWallets = [
+      '0x50b39b127236f46a',
+    ];
+    const isTestWallet = testWallets.some(w => 
+      unifiedAddress.toLowerCase() === w.toLowerCase()
+    );
+    
     try {
       // PRIORITY 1: Check blockchain for active GumDrop
       console.log('🔗 Querying SemesterZero contract on mainnet...');
@@ -251,16 +259,23 @@ const LockerSystemNew: React.FC = () => {
         }
         
         // Check if user is eligible (not already claimed on-chain)
-        const isEligible = await fcl.query({
-          cadence: `
-            import SemesterZero from 0x807c3d470888cc48
+        let isEligible = false;
+        
+        if (isTestWallet) {
+          console.log('🧪 TEST WALLET: Bypassing blockchain eligibility check');
+          isEligible = true;
+        } else {
+          isEligible = await fcl.query({
+            cadence: `
+              import SemesterZero from 0x807c3d470888cc48
 
-            access(all) fun main(user: Address): Bool {
-              return SemesterZero.isEligibleForGumDrop(user: user)
-            }
-          `,
-          args: (arg: any, t: any) => [arg(unifiedAddress, t.Address)]
-        });
+              access(all) fun main(user: Address): Bool {
+                return SemesterZero.isEligibleForGumDrop(user: user)
+              }
+            `,
+            args: (arg: any, t: any) => [arg(unifiedAddress, t.Address)]
+          });
+        }
         
         console.log('✅ User eligible:', isEligible);
         setHalloweenClaimed(!isEligible);
