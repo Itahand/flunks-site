@@ -5,13 +5,18 @@
 DELETE FROM paradise_motel_room7_visits 
 WHERE wallet_address = '0x50b39b127236f46a';
 
--- Reset Overachiever - delete completed objectives
-DELETE FROM weekly_objectives
-WHERE wallet_address = '0x50b39b127236f46a'
-AND completed = true;
-
--- Also reset Room 7 key
+-- Reset Room 7 key
 DELETE FROM paradise_motel_room7_keys
+WHERE wallet_address = '0x50b39b127236f46a';
+
+-- Reset achievement tracking tables
+DELETE FROM digital_lock_attempts
+WHERE wallet_address = '0x50b39b127236f46a';
+
+DELETE FROM friday_night_lights_tracking
+WHERE wallet_address = '0x50b39b127236f46a';
+
+DELETE FROM homecoming_dance_attendance
 WHERE wallet_address = '0x50b39b127236f46a';
 
 -- Verify reset
@@ -19,10 +24,18 @@ SELECT 'Room 7 visits:' as check, COUNT(*) as count
 FROM paradise_motel_room7_visits 
 WHERE wallet_address = '0x50b39b127236f46a'
 UNION ALL
-SELECT 'Completed objectives:', COUNT(*) 
-FROM weekly_objectives
-WHERE wallet_address = '0x50b39b127236f46a' AND completed = true
-UNION ALL
 SELECT 'Room 7 keys:', COUNT(*)
 FROM paradise_motel_room7_keys
+WHERE wallet_address = '0x50b39b127236f46a'
+UNION ALL
+SELECT 'Digital lock attempts:', COUNT(*)
+FROM digital_lock_attempts
+WHERE wallet_address = '0x50b39b127236f46a'
+UNION ALL
+SELECT 'Friday Night Lights:', COUNT(*)
+FROM friday_night_lights_tracking
+WHERE wallet_address = '0x50b39b127236f46a'
+UNION ALL
+SELECT 'Homecoming attendance:', COUNT(*)
+FROM homecoming_dance_attendance
 WHERE wallet_address = '0x50b39b127236f46a';
