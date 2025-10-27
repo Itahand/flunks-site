@@ -1645,9 +1645,66 @@ const LockerSystemNew: React.FC = () => {
                                     
                                     console.log('🎃 Claiming Halloween GumDrop...');
                                     
-                                    // Note: No blockchain transaction needed - admin controls GumDrop claims via markClaimed()
-                                    // We just award the GUM via backend and let admin mark it on-chain later
-                                    const transactionId = 'halloween-' + Date.now();
+                                    // Step 1: Create user profile and NFT collection on-chain
+                                    console.log('📝 Creating SemesterZero profile and collection...');
+                                    const profileTxId = await fcl.mutate({
+                                      cadence: `
+                                        import SemesterZero from 0x807c3d470888cc48
+
+                                        transaction(username: String, timezoneOffset: Int) {
+                                          prepare(signer: &Account) {
+                                            // Check if user already has a profile
+                                            let profilePath = /storage/SemesterZeroProfile
+                                            let publicProfilePath = /public/SemesterZeroProfile
+                                            
+                                            if signer.storage.borrow<&SemesterZero.UserProfile>(from: profilePath) == nil {
+                                              // Create new profile
+                                              let profile <- SemesterZero.createUserProfile(username: username, timezone: timezoneOffset)
+                                              signer.storage.save(<-profile, to: profilePath)
+                                              
+                                              let cap = signer.capabilities.storage.issue<&SemesterZero.UserProfile>(profilePath)
+                                              signer.capabilities.publish(cap, at: publicProfilePath)
+                                              
+                                              log("✅ Created profile for: ".concat(username))
+                                            }
+                                            
+                                            // Check if user already has Chapter 5 collection
+                                            let collectionPath = /storage/Chapter5Collection
+                                            let publicCollectionPath = /public/Chapter5Collection
+                                            
+                                            if signer.storage.borrow<&SemesterZero.Chapter5Collection>(from: collectionPath) == nil {
+                                              // Create collection
+                                              let collection <- SemesterZero.createEmptyChapter5Collection()
+                                              signer.storage.save(<-collection, to: collectionPath)
+                                              
+                                              let cap = signer.capabilities.storage.issue<&SemesterZero.Chapter5Collection>(collectionPath)
+                                              signer.capabilities.publish(cap, at: publicCollectionPath)
+                                              
+                                              log("✅ Created Chapter 5 collection")
+                                            }
+                                          }
+                                          
+                                          execute {
+                                            log("🎃 Profile and collection ready!")
+                                          }
+                                        }
+                                      `,
+                                      args: (arg: any, t: any) => [
+                                        arg(username, t.String),
+                                        arg(timezoneOffset, t.Int)
+                                      ],
+                                      proposer: fcl.authz,
+                                      payer: fcl.authz,
+                                      authorizations: [fcl.authz],
+                                      limit: 9999
+                                    });
+                                    
+                                    console.log('📝 Profile transaction submitted:', profileTxId);
+                                    await fcl.tx(profileTxId).onceSealed();
+                                    console.log('✅ Profile and collection created!');
+                                    
+                                    // Step 2: Award GUM via backend
+                                    const transactionId = profileTxId;
                                     
                                     // Call backend API to add GUM to Supabase
                                     const gumAmount = 100; // Halloween GumDrop: 100 GUM flat reward
@@ -1658,7 +1715,9 @@ const LockerSystemNew: React.FC = () => {
                                         walletAddress: unifiedAddress,
                                         flunkCount,
                                         gumAmount,
-                                        transactionId
+                                        transactionId,
+                                        username,
+                                        timezoneOffset
                                       })
                                     });
                                     
