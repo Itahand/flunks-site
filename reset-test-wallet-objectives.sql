@@ -14,7 +14,7 @@ DELETE FROM digital_lock_attempts
 WHERE wallet_address = '0x50b39b127236f46a';
 
 DELETE FROM picture_day_votes
-WHERE wallet_address = '0x50b39b127236f46a';
+WHERE user_wallet = '0x50b39b127236f46a';
 
 -- Verify reset
 SELECT 'Room 7 visits:' as check, COUNT(*) as count 
@@ -31,4 +31,4 @@ WHERE wallet_address = '0x50b39b127236f46a'
 UNION ALL
 SELECT 'Picture day votes:', COUNT(*)
 FROM picture_day_votes
-WHERE wallet_address = '0x50b39b127236f46a';
+WHERE user_wallet = '0x50b39b127236f46a';
