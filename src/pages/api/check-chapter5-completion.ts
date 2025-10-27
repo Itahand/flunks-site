@@ -43,10 +43,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Check 2: Overachiever - Hidden Riff completion (which unlocks Picture Day voting)
     // The Overachiever objective requires completing the Hidden Riff guitar game
+    // This is tracked in gum_transactions with source='hidden_riff'
     const { data: hiddenRiffData, error: hiddenRiffError } = await supabase
-      .from('hidden_riff_completions')
+      .from('gum_transactions')
       .select('*')
       .eq('wallet_address', address)
+      .eq('source', 'hidden_riff')
       .limit(1);
 
     if (hiddenRiffError) {

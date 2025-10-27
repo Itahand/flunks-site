@@ -16,14 +16,15 @@ WHERE wallet_address = '0xe327216d843357f1';
 DELETE FROM picture_day_votes
 WHERE user_wallet = '0xe327216d843357f1';
 
--- Reset Hidden Riff completion (Overachiever objective)
-DELETE FROM hidden_riff_completions
-WHERE wallet_address = '0xe327216d843357f1';
-
 -- Clear Halloween GumDrop cooldown
 DELETE FROM gum_transactions 
 WHERE wallet_address = '0xe327216d843357f1' 
 AND source = 'halloween_pumpkin_button';
+
+-- Reset Hidden Riff completion (Overachiever objective)
+DELETE FROM gum_transactions
+WHERE wallet_address = '0xe327216d843357f1'
+AND source = 'hidden_riff';
 
 -- Verify reset
 SELECT 'Room 7 visits:' as check, COUNT(*) as count 
@@ -43,8 +44,9 @@ FROM picture_day_votes
 WHERE user_wallet = '0xe327216d843357f1'
 UNION ALL
 SELECT 'Hidden Riff completions:', COUNT(*)
-FROM hidden_riff_completions
+FROM gum_transactions
 WHERE wallet_address = '0xe327216d843357f1'
+AND source = 'hidden_riff'
 UNION ALL
 SELECT 'Halloween claims:', COUNT(*)
 FROM gum_transactions
