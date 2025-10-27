@@ -200,10 +200,8 @@ const LockerSystemNew: React.FC = () => {
       return;
     }
     
-    // TEST WALLETS: Always eligible for testing
-    const testWallets = [
-      '0x50b39b127236f46a',
-    ];
+    // TEST WALLETS: Always eligible for testing (currently empty - testing real blockchain flow)
+    const testWallets: string[] = [];
     const isTestWallet = testWallets.some(w => 
       unifiedAddress.toLowerCase() === w.toLowerCase()
     );
@@ -1645,11 +1643,9 @@ const LockerSystemNew: React.FC = () => {
                                     
                                     console.log('🎃 Claiming Halloween GumDrop...');
                                     
-                                    // Check if this is localhost or test wallet
+                                    // Check if this is localhost (test wallet removed - testing real blockchain flow)
                                     const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-                                    const testWallet = '0x50b39b127236f46a';
-                                    const isTestWallet = unifiedAddress?.toLowerCase() === testWallet.toLowerCase();
-                                    const skipBlockchain = isLocalhost || isTestWallet;
+                                    const skipBlockchain = isLocalhost;
                                     
                                     let profileTxId = 'test-' + Date.now();
                                     
