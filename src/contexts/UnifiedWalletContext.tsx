@@ -24,23 +24,6 @@ export const UnifiedWalletProvider: React.FC<{ children: React.ReactNode }> = ({
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const [fclUser, setFclUser] = useState<any>(null);
   const [fclAddress, setFclAddress] = useState<string | null>(null);
-  const [testWalletOverride, setTestWalletOverride] = useState<string | null>(null);
-
-  // Check for test wallet override (flunks-build only)
-  useEffect(() => {
-    const checkTestWallet = () => {
-      if (typeof window !== 'undefined' && window.location.hostname === 'flunks-build.vercel.app') {
-        const override = localStorage.getItem('test_wallet_override');
-        setTestWalletOverride(override);
-      }
-    };
-
-    checkTestWallet();
-
-    // Listen for test wallet changes
-    window.addEventListener('test-wallet-changed', checkTestWallet);
-    return () => window.removeEventListener('test-wallet-changed', checkTestWallet);
-  }, []);
 
   // Disable FCL auto-connect and event polling to prevent auto-login
   useEffect(() => {
@@ -96,10 +79,9 @@ export const UnifiedWalletProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [primaryWallet, fclUser, handleLogOut]);
 
   // Determine which wallet is connected and the unified address
-  // TEST MODE: Override with test wallet on flunks-build
-  const walletType = testWalletOverride ? 'dynamic' : (primaryWallet ? 'dynamic' : (fclAddress ? 'fcl' : null));
-  const address = testWalletOverride || primaryWallet?.address || fclAddress;
-  const isConnected = !!(testWalletOverride || primaryWallet || fclAddress);
+  const walletType = primaryWallet ? 'dynamic' : (fclAddress ? 'fcl' : null);
+  const address = primaryWallet?.address || fclAddress;
+  const isConnected = !!(primaryWallet || fclAddress);
 
   const value: UnifiedWalletContextType = {
     isConnected,

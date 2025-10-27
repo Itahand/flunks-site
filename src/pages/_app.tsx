@@ -28,7 +28,6 @@ import { AudioProvider } from "contexts/AudioContext";
 import { RadioProvider } from "contexts/RadioContext";
 import { GumProvider } from "contexts/GumContext";
 import { AuthProvider } from "contexts/AuthContext";
-import { TestWalletOverride } from '../components/TestWalletOverride';
 import { MusicProvider } from "contexts/MusicContext";
 import { UnifiedWalletProvider } from "contexts/UnifiedWalletContext";
 import { GumDisplay } from "components/GumDisplay";
@@ -187,7 +186,6 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                               <UserProfilePrompt autoShow={false} showToast={false} />
                               <DynamicUserProfile />
                               <AmbientSoundPlayer />
-                              <TestWalletOverride />
                             </GumProvider>
                         </AuthProvider>
                       </PaginatedItemsProvider>
