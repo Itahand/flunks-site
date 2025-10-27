@@ -1645,47 +1645,56 @@ const LockerSystemNew: React.FC = () => {
                                     
                                     console.log('🎃 Claiming Halloween GumDrop...');
                                     
-                                    // Step 1: Create user profile and NFT collection on-chain
-                                    console.log('📝 Creating SemesterZero profile and collection...');
+                                    // Step 1: Create profile + collection and verify eligibility on-chain
+                                    console.log('📝 Submitting GumDrop claim transaction...');
                                     const profileTxId = await fcl.mutate({
                                       cadence: `
                                         import SemesterZero from 0x807c3d470888cc48
+                                        import NonFungibleToken from 0x1d7e57aa55817448
 
                                         transaction(username: String, timezoneOffset: Int) {
-                                          prepare(signer: &Account) {
-                                            // Check if user already has a profile
-                                            let profilePath = /storage/SemesterZeroProfile
-                                            let publicProfilePath = /public/SemesterZeroProfile
+                                          prepare(signer: auth(Storage, Capabilities) &Account) {
+                                            // Check if user already has profile
+                                            let profileExists = signer.storage.borrow<&SemesterZero.UserProfile>(
+                                              from: SemesterZero.UserProfileStoragePath
+                                            ) != nil
                                             
-                                            if signer.storage.borrow<&SemesterZero.UserProfile>(from: profilePath) == nil {
-                                              // Create new profile
-                                              let profile <- SemesterZero.createUserProfile(username: username, timezone: timezoneOffset)
-                                              signer.storage.save(<-profile, to: profilePath)
-                                              
-                                              let cap = signer.capabilities.storage.issue<&SemesterZero.UserProfile>(profilePath)
-                                              signer.capabilities.publish(cap, at: publicProfilePath)
-                                              
-                                              log("✅ Created profile for: ".concat(username))
+                                            // If no profile, create one (first time claiming)
+                                            if !profileExists {
+                                              let profile <- SemesterZero.createUserProfile(
+                                                username: username,
+                                                timezone: timezoneOffset
+                                              )
+                                              signer.storage.save(<-profile, to: SemesterZero.UserProfileStoragePath)
+                                              let cap = signer.capabilities.storage.issue<&SemesterZero.UserProfile>(
+                                                SemesterZero.UserProfileStoragePath
+                                              )
+                                              signer.capabilities.publish(cap, at: SemesterZero.UserProfilePublicPath)
                                             }
                                             
-                                            // Check if user already has Chapter 5 collection
-                                            let collectionPath = /storage/Chapter5Collection
-                                            let publicCollectionPath = /public/Chapter5Collection
+                                            // Setup Chapter 5 NFT collection if they don't have one yet
+                                            let collectionExists = signer.storage.borrow<&SemesterZero.Chapter5Collection>(
+                                              from: SemesterZero.Chapter5CollectionStoragePath
+                                            ) != nil
                                             
-                                            if signer.storage.borrow<&SemesterZero.Chapter5Collection>(from: collectionPath) == nil {
-                                              // Create collection
+                                            if !collectionExists {
                                               let collection <- SemesterZero.createEmptyChapter5Collection()
-                                              signer.storage.save(<-collection, to: collectionPath)
-                                              
-                                              let cap = signer.capabilities.storage.issue<&SemesterZero.Chapter5Collection>(collectionPath)
-                                              signer.capabilities.publish(cap, at: publicCollectionPath)
-                                              
-                                              log("✅ Created Chapter 5 collection")
+                                              signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
+                                              let nftCap = signer.capabilities.storage.issue<&{NonFungibleToken.Receiver}>(
+                                                SemesterZero.Chapter5CollectionStoragePath
+                                              )
+                                              signer.capabilities.publish(nftCap, at: SemesterZero.Chapter5CollectionPublicPath)
                                             }
+                                            
+                                            // Verify user is eligible for active GumDrop
+                                            assert(
+                                              SemesterZero.isEligibleForGumDrop(user: signer.address),
+                                              message: "Not eligible or already claimed"
+                                            )
                                           }
                                           
                                           execute {
-                                            log("🎃 Profile and collection ready!")
+                                            log("GumDrop claim initiated - backend will add GUM")
                                           }
                                         }
                                       `,
@@ -1699,9 +1708,9 @@ const LockerSystemNew: React.FC = () => {
                                       limit: 9999
                                     });
                                     
-                                    console.log('📝 Profile transaction submitted:', profileTxId);
+                                    console.log('📝 Transaction submitted:', profileTxId);
                                     await fcl.tx(profileTxId).onceSealed();
-                                    console.log('✅ Profile and collection created!');
+                                    console.log('✅ Profile, collection, and eligibility verified!');
                                     
                                     // Step 2: Award GUM via backend
                                     const transactionId = profileTxId;
