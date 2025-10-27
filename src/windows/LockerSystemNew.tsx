@@ -1622,74 +1622,13 @@ const LockerSystemNew: React.FC = () => {
                                     const username = lockerInfo?.username || unifiedAddress?.slice(0, 10) || 'Flunk';
                                     
                                     console.log('🎃 Claiming Halloween GumDrop...');
+                                    console.log('� User timezone offset:', timezoneOffset, 'hours from UTC');
                                     
-                                    let profileTxId = 'test-' + Date.now();
+                                    // Skip blockchain transaction for now - just award GUM and save timezone
+                                    // Backend will store timezone in Supabase user_profiles table
                                     
-                                    // Step 1: Create profile + collection and verify eligibility on-chain
-                                    console.log('📝 Submitting GumDrop claim transaction...');
-                                      profileTxId = await fcl.mutate({
-                                        cadence: `
-                                          import SemesterZero from 0x807c3d470888cc48
-                                          import NonFungibleToken from 0x1d7e57aa55817448
-
-                                          transaction(username: String, timezoneOffset: Int) {
-                                            prepare(signer: auth(Storage, Capabilities) &Account) {
-                                              // Check if user already has profile
-                                              let profileExists = signer.storage.borrow<&SemesterZero.UserProfile>(
-                                                from: SemesterZero.UserProfileStoragePath
-                                              ) != nil
-                                              
-                                              // If no profile, create one (first time claiming)
-                                              if !profileExists {
-                                                let profile <- SemesterZero.createUserProfile(
-                                                  username: username,
-                                                  timezone: timezoneOffset
-                                                )
-                                                signer.storage.save(<-profile, to: SemesterZero.UserProfileStoragePath)
-                                                let cap = signer.capabilities.storage.issue<&SemesterZero.UserProfile>(
-                                                  SemesterZero.UserProfileStoragePath
-                                                )
-                                                signer.capabilities.publish(cap, at: SemesterZero.UserProfilePublicPath)
-                                              }
-                                              
-                                              // Setup Chapter 5 NFT collection if they don't have one yet
-                                              let collectionExists = signer.storage.borrow<&SemesterZero.Chapter5Collection>(
-                                                from: SemesterZero.Chapter5CollectionStoragePath
-                                              ) != nil
-                                              
-                                              if !collectionExists {
-                                                let collection <- SemesterZero.createEmptyChapter5Collection()
-                                                signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
-                                                let nftCap = signer.capabilities.storage.issue<&{NonFungibleToken.Receiver}>(
-                                                  SemesterZero.Chapter5CollectionStoragePath
-                                                )
-                                                signer.capabilities.publish(nftCap, at: SemesterZero.Chapter5CollectionPublicPath)
-                                              }
-                                              
-                                              // Halloween GumDrop open to everyone - no eligibility check required
-                                            }
-                                            
-                                            execute {
-                                              log("GumDrop claim initiated - backend will add GUM")
-                                            }
-                                          }
-                                        `,
-                                        args: (arg: any, t: any) => [
-                                          arg(username, t.String),
-                                          arg(timezoneOffset, t.Int)
-                                        ],
-                                        proposer: fcl.authz,
-                                        payer: fcl.authz,
-                                        authorizations: [fcl.authz],
-                                        limit: 9999
-                                      });
-                                      
-                                      console.log('📝 Transaction submitted:', profileTxId);
-                                      await fcl.tx(profileTxId).onceSealed();
-                                      console.log('✅ Profile, collection, and eligibility verified!');
-                                    
-                                    // Step 2: Award GUM via backend
-                                    const transactionId = profileTxId;
+                                    // Award GUM via backend
+                                    const transactionId = 'supabase-' + Date.now();
                                     
                                     // Call backend API to add GUM to Supabase
                                     const gumAmount = 100; // Halloween GumDrop: 100 GUM flat reward
