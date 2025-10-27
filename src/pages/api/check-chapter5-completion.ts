@@ -41,22 +41,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const slackerComplete = room7Visits && room7Visits.length > 0;
 
-    // Check 2: Overachiever - All objectives complete
-    // TODO: Add your actual weekly objectives completion check
-    // For now, checking if user has completed at least 5 objectives
-    const { data: objectives, error: objectivesError } = await supabase
-      .from('weekly_objectives')
+    // Check 2: Overachiever - Hidden Riff completion (which unlocks Picture Day voting)
+    // The Overachiever objective requires completing the Hidden Riff guitar game
+    const { data: hiddenRiffData, error: hiddenRiffError } = await supabase
+      .from('hidden_riff_completions')
       .select('*')
       .eq('wallet_address', address)
-      .eq('completed', true);
+      .limit(1);
 
-    if (objectivesError) {
-      throw objectivesError;
+    if (hiddenRiffError) {
+      console.error('Error checking Hidden Riff:', hiddenRiffError);
+      // Don't throw - just mark as incomplete
     }
 
-    // Overachiever requires ALL objectives complete
-    // Adjust this logic based on your actual requirements
-    const overachieverComplete = objectives && objectives.length >= 5;
+    const overachieverComplete = hiddenRiffData && hiddenRiffData.length > 0;
 
     return res.status(200).json({
       success: true,
@@ -65,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       isFullyComplete: slackerComplete && overachieverComplete,
       details: {
         room7Visits: room7Visits?.length || 0,
-        objectivesCompleted: objectives?.length || 0,
+        hiddenRiffCompleted: hiddenRiffData?.length || 0,
       },
     });
   } catch (error: any) {
