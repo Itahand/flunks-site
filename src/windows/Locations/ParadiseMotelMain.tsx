@@ -7,6 +7,7 @@ import { useTimeBasedImage } from "utils/timeBasedImages";
 import RetroTextBox from "components/RetroTextBox";
 import { useState, useEffect, useRef } from "react";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import * as fcl from '@onflow/fcl';
 
 // Room 1 Bell Component
 interface Room1BellComponentProps {
@@ -629,6 +630,82 @@ const ParadiseMotelMain = () => {
     });
   };
 
+  // Function to setup Chapter 5 NFT collection
+  const setupChapter5Collection = async () => {
+    if (!primaryWallet?.address) {
+      alert('Please connect your wallet first');
+      return;
+    }
+
+    try {
+      console.log('🏆 Setting up Flunks: Semester Zero collection...');
+
+      // Check if collection already exists
+      const hasCollection = await fcl.query({
+        cadence: `
+          import SemesterZero from 0x807c3d470888cc48
+          import NonFungibleToken from 0x1d7e57aa55817448
+          
+          access(all) fun main(address: Address): Bool {
+            return getAccount(address)
+              .capabilities.get<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionPublicPath)
+              .check()
+          }
+        `,
+        args: (arg, t) => [arg(primaryWallet.address, t.Address)],
+      });
+
+      if (hasCollection) {
+        alert('✅ You already have Flunks: Semester Zero enabled!');
+        return;
+      }
+
+      // Create collection transaction (UserProfile is now managed in Supabase)
+      const transactionId = await fcl.mutate({
+        cadence: `
+          import SemesterZero from 0x807c3d470888cc48
+          import NonFungibleToken from 0x1d7e57aa55817448
+          
+          transaction() {
+            prepare(signer: auth(Storage, Capabilities) &Account) {
+              // Check if user already has Chapter 5 collection
+              if signer.storage.borrow<&SemesterZero.Chapter5Collection>(from: SemesterZero.Chapter5CollectionStoragePath) == nil {
+                // Create collection
+                let collection <- SemesterZero.createEmptyChapter5Collection()
+                signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
+                
+                // Link public capability
+                let nftCap = signer.capabilities.storage.issue<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionStoragePath)
+                signer.capabilities.publish(nftCap, at: SemesterZero.Chapter5CollectionPublicPath)
+              }
+            }
+            
+            execute {
+              log("🎃 Chapter 5 collection setup complete!")
+            }
+          }
+        `,
+        args: (arg, t) => [],
+        payer: fcl.currentUser,
+        proposer: fcl.currentUser,
+        authorizations: [fcl.currentUser],
+        limit: 9999,
+      });
+
+      console.log('Transaction sent:', transactionId);
+      alert('⏳ Setting up your Flunks: Semester Zero collection...');
+
+      await fcl.tx(transactionId).onceSealed();
+
+      console.log('✅ Flunks: Semester Zero collection created!');
+      alert('🎉 Flunks: Semester Zero enabled! You\'re ready to receive NFTs!');
+
+    } catch (error) {
+      console.error('Error setting up collection:', error);
+      alert('❌ Failed to setup collection. Please try again.');
+    }
+  };
+
   // Function to open Lobby with 4 new buttons
   const openLobby = () => {
     openWindow({
@@ -655,9 +732,9 @@ const ParadiseMotelMain = () => {
               />
             </div>
             
-            {/* 4 Buttons Below Image - Compact */}
+            {/* 5 Buttons Below Image - Compact */}
             <div className="w-full bg-gradient-to-r from-purple-900 to-pink-800 p-4 border-t-4 border-purple-400 shadow-2xl flex-shrink-0">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
                 {/* Room 1 */}
                 <button
                   onClick={openRoom1}
@@ -692,6 +769,15 @@ const ParadiseMotelMain = () => {
                   style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
                 >
                   🔔 Ring Bell
+                </button>
+
+                {/* Enable Collection */}
+                <button
+                  onClick={setupChapter5Collection}
+                  className="bg-gradient-to-br from-green-700 to-teal-900 hover:from-green-600 hover:to-teal-800 text-white px-3 py-3 rounded-lg border-3 border-green-500 hover:border-green-400 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg whitespace-nowrap"
+                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+                >
+                  👁️ Flunks: Semester Zero Collection
                 </button>
               </div>
             </div>

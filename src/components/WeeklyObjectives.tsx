@@ -462,7 +462,7 @@ const WeeklyObjectives: React.FC<WeeklyObjectivesProps> = ({ onObjectiveComplete
                     textShadow: '1px 1px 2px #000000',
                     wordBreak: 'break-word'
                   }}>
-                    🍬 REWARD: +{objective.reward} GUM POWER
+                    🍬 REWARD: +{objective.reward} GUM
                   </div>
                 )}
               </div>

@@ -1,0 +1,60 @@
+{
+  "contractName": "SemesterZero",
+  "contractAddress": "0x807c3d470888cc48",
+  "nftType": {
+    "typeID": "A.807c3d470888cc48.SemesterZero.Chapter5NFT"
+  },
+  "collectionData": {
+    "storagePath": {
+      "identifier": "Chapter5Collection"
+    },
+    "publicPath": {
+      "identifier": "Chapter5Collection"
+    },
+    "publicLinkedType": {
+      "type": "",
+      "kind": "Restriction",
+      "typeID": "",
+      "restrictions": [
+        {
+          "type": "",
+          "kind": "ResourceInterface",
+          "typeID": "A.1d7e57aa55817448.NonFungibleToken.Receiver",
+          "fields": []
+        },
+        {
+          "type": "",
+          "kind": "ResourceInterface",
+          "typeID": "A.1d7e57aa55817448.NonFungibleToken.CollectionPublic",
+          "fields": []
+        }
+      ]
+    },
+    "publicCollectionName": "SemesterZero Chapter 5 Collection",
+    "externalURL": "https://www.flunks.net",
+    "squareImage": "https://www.flunks.net/images/logo.png",
+    "bannerImage": "https://www.flunks.net/images/banner.png"
+  },
+  "collectionDisplay": {
+    "name": "Flunks: Semester Zero",
+    "description": "Chapter 5 NFTs from Flunks: Semester Zero. Awarded to users who complete Paradise Motel objectives.",
+    "externalURL": {
+      "url": "https://www.flunks.net"
+    },
+    "squareImage": {
+      "file": {
+        "url": "https://www.flunks.net/images/logo.png"
+      }
+    },
+    "bannerImage": {
+      "file": {
+        "url": "https://www.flunks.net/images/banner.png"
+      }
+    },
+    "socials": {
+      "twitter": {
+        "url": "https://twitter.com/flunksnft"
+      }
+    }
+  }
+}
