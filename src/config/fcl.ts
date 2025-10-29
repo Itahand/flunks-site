@@ -15,20 +15,21 @@ console.log('🌐 App URL:', APP_URL);
 
 config({
   "accessNode.api": FLOW_ACCESS_NODE,
-  "discovery.wallet": "https://fcl-discovery.onflow.org/authn", // MAINNET wallet discovery (no /mainnet prefix!)
-  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/authn", // MAINNET API endpoint (no /mainnet prefix!)
-  "app.detail.title": "Flunks", // App name for wallet approval
-  "app.detail.icon": "https://flunks.net/flunks-logo.png", // App icon
-  "app.detail.url": APP_URL, // Use current origin to avoid WalletConnect mismatch
-  "challenge.handshake": "https://fcl-discovery.onflow.org/authn", // MAINNET wallet handshake
-  "flow.network": "mainnet", // Important for mobile wallet detection
-  "walletconnect.projectId": WALLETCONNECT_PROJECT_ID, // CRITICAL for mobile WalletConnect
+  "discovery.wallet": "https://fcl-discovery.onflow.org/authn",
+  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/authn",
+  "app.detail.title": "Flunks",
+  "app.detail.icon": "https://flunks.net/flunks-logo.png",
+  "app.detail.url": APP_URL,
+  "challenge.handshake": "https://fcl-discovery.onflow.org/authn",
+  "flow.network": "mainnet",
+  "walletconnect.projectId": WALLETCONNECT_PROJECT_ID,
   
   // MOBILE SPECIFIC: Force WalletConnect on mobile devices
-  "discovery.wallet.method": "POP/RPC", // Use popup method which triggers WalletConnect on mobile
+  "discovery.wallet.method": "POP/RPC",
   
-  // SemesterZero contract (mainnet deployment)
+  // Contract addresses (mainnet deployment)
   "0xSemesterZero": "0x807c3d470888cc48",
+  "0xFlunks": "0x807c3d470888cc48",
 });
 
 // Log final configuration

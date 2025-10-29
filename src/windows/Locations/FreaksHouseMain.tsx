@@ -125,7 +125,7 @@ const FreaksHouseMain = () => {
           windowsId={WINDOW_IDS.FREAKS_HOUSE_BEDROOM}
           headerTitle="Freak's Bedroom"
           onClose={() => closeWindow(WINDOW_IDS.FREAKS_HOUSE_BEDROOM)}
-          initialWidth="90vw"
+          initialWidth="min(75vw, 900px)"
           initialHeight="90vh"
           resizable={true}
         >
