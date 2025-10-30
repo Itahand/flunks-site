@@ -250,8 +250,12 @@ const FreaksHouseMain = () => {
           {/* Bedroom */}
           <button
             onClick={openBedroom}
-            className="bg-gradient-to-br from-gray-800 to-gray-950 hover:from-gray-700 hover:to-gray-900 text-white px-3 py-2 rounded-lg border-3 border-gray-600 hover:border-gray-500 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
-            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+            className="bg-gradient-to-br from-gray-800 to-gray-950 hover:from-gray-700 hover:to-gray-900 text-white px-3 py-3 sm:py-2 rounded-lg border-3 border-gray-600 hover:border-gray-500 transition-all duration-300 hover:scale-105 text-center text-sm sm:text-sm font-bold shadow-lg hover:shadow-xl min-h-[48px] active:scale-95"
+            style={{ 
+              fontFamily: 'Cooper Black, Georgia, serif',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent'
+            }}
           >
             🖤 Bedroom
           </button>
@@ -264,8 +268,12 @@ const FreaksHouseMain = () => {
                 window: <FreaksHouseLivingRoom />,
               })
             }
-            className="bg-gradient-to-br from-red-900 to-red-950 hover:from-red-800 hover:to-red-900 text-white px-3 py-2 rounded-lg border-3 border-red-700 hover:border-red-600 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
-            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+            className="bg-gradient-to-br from-red-900 to-red-950 hover:from-red-800 hover:to-red-900 text-white px-3 py-3 sm:py-2 rounded-lg border-3 border-red-700 hover:border-red-600 transition-all duration-300 hover:scale-105 text-center text-sm sm:text-sm font-bold shadow-lg hover:shadow-xl min-h-[48px] active:scale-95"
+            style={{ 
+              fontFamily: 'Cooper Black, Georgia, serif',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent'
+            }}
           >
             🎸 Living Room
           </button>
@@ -278,8 +286,12 @@ const FreaksHouseMain = () => {
                 window: <FreaksHouseAttic />,
               })
             }
-            className="bg-gradient-to-br from-indigo-900 to-indigo-950 hover:from-indigo-800 hover:to-indigo-900 text-white px-3 py-2 rounded-lg border-3 border-indigo-700 hover:border-indigo-600 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
-            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+            className="bg-gradient-to-br from-indigo-900 to-indigo-950 hover:from-indigo-800 hover:to-indigo-900 text-white px-3 py-3 sm:py-2 rounded-lg border-3 border-indigo-700 hover:border-indigo-600 transition-all duration-300 hover:scale-105 text-center text-sm sm:text-sm font-bold shadow-lg hover:shadow-xl min-h-[48px] active:scale-95"
+            style={{ 
+              fontFamily: 'Cooper Black, Georgia, serif',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent'
+            }}
           >
             📚 Attic
           </button>
@@ -292,8 +304,12 @@ const FreaksHouseMain = () => {
                 window: <FreaksHouseKitchen />,
               })
             }
-            className="bg-gradient-to-br from-green-900 to-green-950 hover:from-green-800 hover:to-green-900 text-white px-3 py-2 rounded-lg border-3 border-green-700 hover:border-green-600 transition-all duration-300 hover:scale-105 text-center text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl"
-            style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+            className="bg-gradient-to-br from-green-900 to-green-950 hover:from-green-800 hover:to-green-900 text-white px-3 py-3 sm:py-2 rounded-lg border-3 border-green-700 hover:border-green-600 transition-all duration-300 hover:scale-105 text-center text-sm sm:text-sm font-bold shadow-lg hover:shadow-xl min-h-[48px] active:scale-95"
+            style={{ 
+              fontFamily: 'Cooper Black, Georgia, serif',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent'
+            }}
           >
             ☕ Kitchen
           </button>
