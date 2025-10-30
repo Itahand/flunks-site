@@ -732,9 +732,10 @@ const ParadiseMotelMain = () => {
               />
             </div>
             
-            {/* 5 Buttons Below Image - Compact */}
+            {/* Buttons Below Image - 4 in grid, 1 full width below */}
             <div className="w-full bg-gradient-to-r from-purple-900 to-pink-800 p-4 border-t-4 border-purple-400 shadow-2xl flex-shrink-0">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
+              {/* Top row: 4 buttons in grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto mb-3">
                 {/* Room 1 */}
                 <button
                   onClick={openRoom1}
@@ -770,11 +771,13 @@ const ParadiseMotelMain = () => {
                 >
                   🔔 Ring Bell
                 </button>
+              </div>
 
-                {/* Enable Collection */}
+              {/* Bottom row: Full width Semester Zero button */}
+              <div className="max-w-4xl mx-auto">
                 <button
                   onClick={setupChapter5Collection}
-                  className="bg-gradient-to-br from-green-700 to-teal-900 hover:from-green-600 hover:to-teal-800 text-white px-3 py-3 rounded-lg border-3 border-green-500 hover:border-green-400 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg whitespace-nowrap"
+                  className="w-full bg-gradient-to-br from-green-700 to-teal-900 hover:from-green-600 hover:to-teal-800 text-white px-4 py-3 rounded-lg border-3 border-green-500 hover:border-green-400 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg"
                   style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
                 >
                   👁️ Flunks: Semester Zero Collection
