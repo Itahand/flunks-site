@@ -140,9 +140,27 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
           }).catch((error) => {
             console.error('❌ UserPaginatedItems: Error loading flunks metadata:', error);
             console.error('❌ This is likely due to lightweight trait optimization changes');
-            console.log('🔧 Creating minimal trait structure to preserve authentication...');
+            console.log('🔧 Creating minimal NFT objects without trait data...');
             
-            setFlunksMetadata([]);
+            // CRITICAL FIX: Create minimal NFT objects even when metadata fails
+            // This allows OnlyFlunks/MyPlace to show NFTs even if trait data is unavailable
+            const minimalFlunksPages = tokenDataPage.flunks.map((pageTokenIds) =>
+              pageTokenIds.map((tokenId: string, index: number) => ({
+                owner: walletAddress,
+                tokenID: tokenId,
+                MetadataViewsDisplay: {
+                  name: `Flunk #${tokenId}`,
+                  description: '',
+                  thumbnail: { url: '' }
+                },
+                traits: { traits: [] }, // Empty traits, but structure exists
+                serialNumber: index.toString(),
+                stakingInfo: null,
+                collection: 'Flunks',
+                rewards: 0
+              }))
+            );
+            setFlunksMetadata(minimalFlunksPages);
           });
 
           Promise.all(allBackpacksMetadata).then((backpacksMetadata) => {
@@ -151,9 +169,26 @@ export const PaginatedItemsProvider: React.FC<{ children: ReactNode }> = ({
           }).catch((error) => {
             console.error('❌ UserPaginatedItems: Error loading backpacks metadata:', error);
             console.error('❌ This is likely due to lightweight trait optimization changes');
-            console.log('🔧 Creating minimal trait structure to preserve authentication...');
+            console.log('🔧 Creating minimal Backpack objects without trait data...');
             
-            setBackpacksMetadata([]);
+            // CRITICAL FIX: Create minimal NFT objects even when metadata fails
+            const minimalBackpackPages = tokenDataPage.backpack.map((pageTokenIds) =>
+              pageTokenIds.map((tokenId: string, index: number) => ({
+                owner: walletAddress,
+                tokenID: tokenId,
+                MetadataViewsDisplay: {
+                  name: `Backpack #${tokenId}`,
+                  description: '',
+                  thumbnail: { url: '' }
+                },
+                traits: { traits: [] }, // Empty traits, but structure exists
+                serialNumber: index.toString(),
+                stakingInfo: null,
+                collection: 'Backpack',
+                rewards: 0
+              }))
+            );
+            setBackpacksMetadata(minimalBackpackPages);
           });
         } catch (error) {
           console.error('❌ UserPaginatedItems: Error in onSuccess handler:', error);

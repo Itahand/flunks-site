@@ -80,7 +80,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
   const isBuildSite = typeof window !== 'undefined' && window.location.hostname.includes('vercel.app');
   const buildMode = getCurrentBuildMode();
   const walletBypassEnabled = isFeatureEnabled('enableWalletBypass') && isDevelopment && isLocalhost;
-  const houseAccessBypassEnabled = isLocalhost || isBuildSite; // Skip house ownership checks on localhost and build site
+  const houseAccessBypassEnabled = true; // ⚠️ CHANGED: Always allow access to clique houses (no clique requirement)
   const flunkBypassEnabled = isLocalhost || isBuildSite; // Skip Flunk NFT requirement on localhost and build site
   
   // Override authentication for development
