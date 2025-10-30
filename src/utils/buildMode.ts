@@ -67,7 +67,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showMyPlace: true,
     showFlappyFlunk: true,
     showFlunkyUppy: true,
-    showHiddenRiff: false, // Hidden on public site - build mode only
+    showHiddenRiff: true, // 🎸 Freak's Guitar - Hidden Riff Challenge LIVE!
     showGameManual: true,
     showTerminal: true,
     showCliqueAccess: true,

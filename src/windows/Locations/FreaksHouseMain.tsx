@@ -144,12 +144,12 @@ const FreaksHouseMain = () => {
             
             {/* Description and Buttons Section - Below the image */}
             <div className="bg-black bg-opacity-90 p-4 sm:p-6 border-t border-gray-600">
-              <h1 className="text-xl sm:text-2xl mb-2 sm:mb-3 font-bold text-center">🖤 Freak's Bedroom</h1>
-              <p className="text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3 text-center">
+              <h1 className="text-xl sm:text-2xl mb-2 sm:mb-3 font-bold text-center" style={{ fontFamily: "'ms_sans_serif', 'Courier New', monospace" }}>🖤 Freak's Bedroom</h1>
+              <p className="text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3 text-center" style={{ fontFamily: "'ms_sans_serif', 'Courier New', monospace" }}>
                 Black curtains block out the light. Band posters and dark artwork cover every inch of the walls.
                 The air smells faintly of incense and rebellion.
               </p>
-              <p className="text-xs text-gray-300 mb-4 text-center">
+              <p className="text-xs text-gray-300 mb-4 text-center" style={{ fontFamily: "'ms_sans_serif', 'Courier New', monospace" }}>
                 Explore different areas of the bedroom to discover hidden secrets and artistic chaos.
               </p>
               
