@@ -297,6 +297,51 @@ const WalletStatus = styled.div`
   }
 `;
 
+const ErrorMessage = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 0, 0, 0.9);
+  border: 3px solid #ff0000;
+  border-radius: 12px;
+  padding: 30px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  max-width: 80%;
+  z-index: 100;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+  
+  @media (max-width: 768px) {
+    font-size: 10px;
+    padding: 20px;
+  }
+`;
+
+const LoadingMessage = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 255, 255, 0.2);
+  border: 3px solid #00ffff;
+  border-radius: 12px;
+  padding: 30px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #00ffff;
+  text-align: center;
+  z-index: 100;
+  
+  @media (max-width: 768px) {
+    font-size: 10px;
+    padding: 20px;
+  }
+`;
+
+
 const ParticleField = styled.div`
   position: absolute;
   top: 0;
@@ -456,8 +501,8 @@ const characterSlots = [
 
 const MyPlace = () => {
   const { closeWindow, openWindow, windowApps, windows } = useWindowsContext();
-  const { user } = useDynamicContext();
-  const { hasAccess } = useCliqueAccess();
+  const { user, primaryWallet } = useDynamicContext();
+  const { hasAccess, loading: cliqueLoading, error: cliqueError } = useCliqueAccess();
   const { stopAllMusic } = useMusicContext();
 
   // Generate retro sound effects
@@ -636,44 +681,66 @@ const MyPlace = () => {
           <ScanLine />
           
           <WalletStatus>
-            Wallet: {user ? "Connected" : "Not connected"}
+            Wallet: {primaryWallet?.address ? `${primaryWallet.address.slice(0, 8)}...` : "Not connected"}
           </WalletStatus>
           
-          <Header>
-            <HeaderText>SELECT YOUR PROFILE</HeaderText>
-          </Header>
+          {/* Show error message if there's an error */}
+          {cliqueError && !cliqueLoading && (
+            <ErrorMessage>
+              ⚠️ ERROR<br /><br />
+              {cliqueError}<br /><br />
+              Please try refreshing the page
+            </ErrorMessage>
+          )}
           
-          <CharacterGrid>
-            {characterSlots.map((character) => {
-              const locked = !userHasTrait(character.clique);
-              return (
-                <CharacterSlot
-                  key={character.clique}
-                  locked={locked}
-                  onClick={() => handleCharacterClick(character)}
-                  onMouseEnter={() => !locked && playRetroSound('hover')}
-                  title={locked ? `Requires ${character.label} NFT` : `Enter ${character.label} profile`}
-                >
-                  <CharacterImage>
-                    <Image
-                      src={`/${character.imageId}.png`}
-                      alt={character.label}
-                      fill
-                      style={{ objectFit: 'contain' }}
-                    />
-                  </CharacterImage>
-                  <CharacterLabel locked={locked}>
-                    {character.label}
-                  </CharacterLabel>
-                  {locked && (
-                    <LockOverlay>
-                      LOCKED
-                    </LockOverlay>
-                  )}
-                </CharacterSlot>
-              );
-            })}
-          </CharacterGrid>
+          {/* Show loading state */}
+          {cliqueLoading && (
+            <LoadingMessage>
+              ⏳ LOADING...<br /><br />
+              Checking NFT access...
+            </LoadingMessage>
+          )}
+          
+          {/* Show main content when not loading and no errors */}
+          {!cliqueLoading && !cliqueError && (
+            <>
+              <Header>
+                <HeaderText>SELECT YOUR PROFILE</HeaderText>
+              </Header>
+              
+              <CharacterGrid>
+                {characterSlots.map((character) => {
+                  const locked = !userHasTrait(character.clique);
+                  return (
+                    <CharacterSlot
+                      key={character.clique}
+                      locked={locked}
+                      onClick={() => handleCharacterClick(character)}
+                      onMouseEnter={() => !locked && playRetroSound('hover')}
+                      title={locked ? `Requires ${character.label} NFT` : `Enter ${character.label} profile`}
+                    >
+                      <CharacterImage>
+                        <Image
+                          src={`/${character.imageId}.png`}
+                          alt={character.label}
+                          fill
+                          style={{ objectFit: 'contain' }}
+                        />
+                      </CharacterImage>
+                      <CharacterLabel locked={locked}>
+                        {character.label}
+                      </CharacterLabel>
+                      {locked && (
+                        <LockOverlay>
+                          LOCKED
+                        </LockOverlay>
+                      )}
+                    </CharacterSlot>
+                  );
+                })}
+              </CharacterGrid>
+            </>
+          )}
         </Container>
       </DraggableResizeableWindow>
     </TiltedGridLoader>

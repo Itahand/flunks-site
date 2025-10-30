@@ -27,9 +27,13 @@ export const UnifiedWalletProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Disable FCL auto-connect and event polling to prevent auto-login
   useEffect(() => {
-    // Configure FCL to NOT auto-connect
+    // FORCE mainnet configuration - ensure it's NEVER testnet
     fcl.config()
+      .put('flow.network', 'mainnet') // CRITICAL: Force mainnet
+      .put('accessNode.api', process.env.NEXT_PUBLIC_FLOW_ACCESS_NODE || 'https://rest-mainnet.onflow.org')
       .put('fcl.eventPollRate', 0); // Disable automatic event polling
+    
+    console.log('🌊 UnifiedWalletContext: FCL forced to MAINNET');
     
     // Subscribe to FCL auth changes ONLY (won't trigger automatically)
     const unsubscribe = fcl.currentUser.subscribe((user: any) => {
