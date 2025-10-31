@@ -80,7 +80,7 @@ const Room1BellComponent: React.FC<Room1BellComponentProps> = ({ onClose, wallet
   return (
     <DraggableResizeableWindow
       windowsId={WINDOW_IDS.PARADISE_MOTEL_ROOM_1}
-      headerTitle="Paradise Motel - Room 1"
+      headerTitle="Paradise Motel - Lobby"
       onClose={onClose}
       initialWidth="450px"
       initialHeight="600px"
@@ -298,7 +298,7 @@ const ParadiseMotelMain = () => {
       window: (
         <DraggableResizeableWindow
           windowsId={WINDOW_IDS.PARADISE_MOTEL_ROOM_1}
-          headerTitle="Paradise Motel - Room 1"
+          headerTitle="Paradise Motel - Lobby"
           onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_ROOM_1)}
           initialWidth="80vw"
           initialHeight="80vh"

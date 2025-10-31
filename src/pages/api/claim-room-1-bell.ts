@@ -29,12 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         message: `Bell reward claimed: +${result.earned} GUM!`
       });
     } else if (result.cooldown_remaining_minutes && result.cooldown_remaining_minutes > 0) {
-      const hours = Math.floor(result.cooldown_remaining_minutes / 60);
-      const minutes = Math.floor(result.cooldown_remaining_minutes % 60);
-      
       return res.status(200).json({
         success: false,
-        message: `Already claimed! Come back in ${hours}h ${minutes}m`
+        message: `Already claimed! This is a one-time reward.`
       });
     } else {
       return res.status(200).json({
