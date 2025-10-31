@@ -1262,52 +1262,51 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
               </DynamicHouseIcon>
             )}
             
-            {/* Paradise Motel - Build Mode Only */}
-            {buildMode === 'build' && (
-              <DynamicHouseIcon
-                houseId="paradise-motel"
-                className={`${styles["nav-icon"]} ${styles['paradise-motel-nav']}`}
-                onClick={() => {
-                  // On mobile, if this is the second tap, proceed with opening
-                  if (isMobile && touchedLocation === 'paradise-motel') {
-                    setTouchedLocation(null);
-                    setHovered(null);
-                    handleLocationAccess('paradise-motel', () => 
-                      openWindow({
-                        key: WINDOW_IDS.PARADISE_MOTEL_MAIN,
-                        window: (
-                          <DraggableResizeableWindow
-                            windowsId={WINDOW_IDS.PARADISE_MOTEL_MAIN}
-                            headerTitle="Paradise Motel"
-                            onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_MAIN)}
-                            initialWidth="900px"
-                            initialHeight="75vh"
-                            resizable={true}
-                          >
-                            <ParadiseMotelMain />
-                          </DraggableResizeableWindow>
-                        ),
-                      })
-                    );
-                  } else if (!isMobile) {
-                    // Desktop behavior - immediate open
-                    handleLocationAccess('paradise-motel', () => 
-                      openWindow({
-                        key: WINDOW_IDS.PARADISE_MOTEL_MAIN,
-                        window: (
-                          <DraggableResizeableWindow
-                            windowsId={WINDOW_IDS.PARADISE_MOTEL_MAIN}
-                            headerTitle="Paradise Motel"
-                            onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_MAIN)}
-                            initialWidth="900px"
-                            initialHeight="75vh"
-                            resizable={true}
-                          >
-                            <ParadiseMotelMain />
-                          </DraggableResizeableWindow>
-                        ),
-                      })
-                    );
+            {/* Paradise Motel - NOW LIVE ON PUBLIC SITE! 🏨 */}
+            <DynamicHouseIcon
+              houseId="paradise-motel"
+              className={`${styles["nav-icon"]} ${styles['paradise-motel-nav']}`}
+              onClick={() => {
+                // On mobile, if this is the second tap, proceed with opening
+                if (isMobile && touchedLocation === 'paradise-motel') {
+                  setTouchedLocation(null);
+                  setHovered(null);
+                  handleLocationAccess('paradise-motel', () => 
+                    openWindow({
+                      key: WINDOW_IDS.PARADISE_MOTEL_MAIN,
+                      window: (
+                        <DraggableResizeableWindow
+                          windowsId={WINDOW_IDS.PARADISE_MOTEL_MAIN}
+                          headerTitle="Paradise Motel"
+                          onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_MAIN)}
+                          initialWidth="900px"
+                          initialHeight="75vh"
+                          resizable={true}
+                        >
+                          <ParadiseMotelMain />
+                        </DraggableResizeableWindow>
+                      ),
+                    })
+                  );
+                } else if (!isMobile) {
+                  // Desktop behavior - immediate open
+                  handleLocationAccess('paradise-motel', () => 
+                    openWindow({
+                      key: WINDOW_IDS.PARADISE_MOTEL_MAIN,
+                      window: (
+                        <DraggableResizeableWindow
+                          windowsId={WINDOW_IDS.PARADISE_MOTEL_MAIN}
+                          headerTitle="Paradise Motel"
+                          onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_MAIN)}
+                          initialWidth="900px"
+                          initialHeight="75vh"
+                          resizable={true}
+                        >
+                          <ParadiseMotelMain />
+                        </DraggableResizeableWindow>
+                      ),
+                    })
+                  );
                   }
                 }}
                 onMouseEnter={() => {
@@ -1320,7 +1319,6 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                 onTouchEnd={handleTouchLeave}
               >
               </DynamicHouseIcon>
-            )}
             
             {/* Wishing Tree - Build Mode Only */}
             {buildMode === 'build' && (

@@ -305,14 +305,14 @@ const KeyAnimationContainer = styled.div<{ $isAnimating: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 20px;
-  animation: ${props => props.$isAnimating ? 'keyReveal' : 'none'} 3s ease-in-out;
+  animation: ${props => props.$isAnimating ? 'keyReveal' : 'none'} 5s ease-in-out;
   
   @keyframes keyReveal {
     0% {
       transform: scale(0.3) rotate(-180deg);
       opacity: 0;
     }
-    50% {
+    40% {
       transform: scale(1.1) rotate(10deg);
       opacity: 1;
     }
@@ -421,11 +421,11 @@ export default function MaidDialogue({ onClose }: MaidDialogueProps) {
       // Show animation
       setShowKeyAnimation(true);
       
-      // Hide animation after 3 seconds
+      // Hide animation after 5 seconds (extended for better visibility)
       setTimeout(() => {
         setShowKeyAnimation(false);
         setKeyAnimationComplete(true);
-      }, 3000);
+      }, 5000);
     }
   }, [hasObjective]);
 
