@@ -14,6 +14,7 @@ interface CutsceneScene {
     right?: string;
     width?: string;
   };
+  customStyle?: string;
 }
 
 interface VCREffectsConfig {
@@ -232,7 +233,7 @@ const TextBox = styled.div`
   bottom: 10vh;
   width: min(900px, 92vw);
   padding: 16px 20px;
-  background: rgba(10, 10, 14, 0.85);
+  background: rgba(10, 10, 14, 0.4);
   border: 5px solid #f5a2d3;
   color: #fff;
   border-radius: 8px;
@@ -268,6 +269,41 @@ const TextContent = styled.p`
     min-height: 3em;
     line-height: 1.4;
     margin: 0 0 8px 0;
+  }
+`;
+
+const PixelGradientTextBox = styled(TextBox)`
+  background: 
+    linear-gradient(45deg, 
+      #FFB347 0%, #FFB347 25%, 
+      #87CEEB 25%, #87CEEB 50%, 
+      #FFB347 50%, #FFB347 75%, 
+      #87CEEB 75%, #87CEEB 100%
+    );
+  background-size: 8px 8px;
+  border: 3px solid #FF6B9D;
+  color: #2C1810;
+  font-weight: bold;
+  text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+  box-shadow: 
+    0 0 0 6px rgba(255, 107, 157, 0.4),
+    inset 0 0 0 2px rgba(255,255,255,0.3);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      repeating-linear-gradient(0deg, 
+        transparent 0px, transparent 1px, 
+        rgba(0,0,0,0.1) 1px, rgba(0,0,0,0.1) 2px
+      ),
+      repeating-linear-gradient(90deg, 
+        transparent 0px, transparent 1px, 
+        rgba(0,0,0,0.1) 1px, rgba(0,0,0,0.1) 2px
+      );
+    pointer-events: none;
+    border-radius: 8px;
   }
 `;
 
@@ -542,11 +578,38 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
     // Handle music
     if (scene.music && bgmRef.current) {
       bgmRef.current.src = scene.music;
+      // Start at 50% volume
+      bgmRef.current.volume = 0.5;
+      
       // For mobile, set up audio but don't auto-play unless user has interacted
       if (!muted) {
         const playPromise = bgmRef.current.play();
         if (playPromise !== undefined) {
-          playPromise.catch((error) => {
+          playPromise.then(() => {
+            // Volume fade-in from 50% to 75% over 5 seconds
+            const startVolume = 0.5;
+            const endVolume = 0.75;
+            const duration = 5000; // 5 seconds
+            const steps = 50; // Number of volume adjustment steps
+            const stepDuration = duration / steps;
+            const volumeIncrement = (endVolume - startVolume) / steps;
+            
+            let currentStep = 0;
+            const fadeInterval = setInterval(() => {
+              if (bgmRef.current && currentStep < steps) {
+                currentStep++;
+                const newVolume = startVolume + (volumeIncrement * currentStep);
+                bgmRef.current.volume = Math.min(newVolume, endVolume);
+                
+                if (currentStep >= steps) {
+                  clearInterval(fadeInterval);
+                }
+              } else {
+                clearInterval(fadeInterval);
+              }
+            }, stepDuration);
+            
+          }).catch((error) => {
             console.warn('Audio autoplay was prevented:', error);
             // Audio autoplay was prevented, but don't show error to user
             // The mute/unmute button will work once user interacts
@@ -716,28 +779,68 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
             {!windowed && <LetterboxBottom />}
 
             {/* Text box - adjust positioning for windowed mode */}
-            <TextBox role="dialog" aria-live="polite" aria-atomic="true" style={{
-              position: 'absolute',
-              // Use custom positioning if available, otherwise use defaults
-              ...(currentSceneData?.textPosition ? {
-                top: currentSceneData.textPosition.top,
-                bottom: currentSceneData.textPosition.bottom,
-                left: currentSceneData.textPosition.left,
-                right: currentSceneData.textPosition.right,
-                width: currentSceneData.textPosition.width,
-                transform: currentSceneData.textPosition.left || currentSceneData.textPosition.right ? 'none' : 'translateX(-50%)'
-              } : {
-                bottom: windowed ? '80px' : '10vh',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: windowed ? 'calc(100% - 40px)' : 'min(900px, 92vw)',
-                maxWidth: windowed ? '800px' : 'min(900px, 92vw)'
-              }),
-              pointerEvents: 'auto',
-              zIndex: 20
-            }}>
-              <TextContent>{displayText}</TextContent>
-            </TextBox>
+            {currentSceneData?.customStyle === 'pixel-gradient' ? (
+              <PixelGradientTextBox role="dialog" aria-live="polite" aria-atomic="true" style={{
+                position: 'absolute',
+                // Use custom positioning if available, otherwise use defaults
+                ...(currentSceneData?.textPosition ? {
+                  top: currentSceneData.textPosition.top,
+                  bottom: currentSceneData.textPosition.bottom,
+                  left: currentSceneData.textPosition.left,
+                  right: currentSceneData.textPosition.right,
+                  width: currentSceneData.textPosition.width,
+                  height: 'auto',
+                  maxHeight: '40vh',
+                  transform: currentSceneData.textPosition.left || currentSceneData.textPosition.right ? 'none' : 'translateX(-50%)'
+                } : {
+                  bottom: windowed ? '80px' : '10vh',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: windowed ? 'calc(100% - 40px)' : 'min(900px, 92vw)',
+                  maxWidth: windowed ? '800px' : 'min(900px, 92vw)'
+                }),
+                pointerEvents: 'auto',
+                zIndex: 20
+              }}>
+                <TextContent style={{ 
+                  minHeight: currentSceneData?.textPosition ? 'auto' : '4em',
+                  overflow: currentSceneData?.textPosition ? 'hidden' : 'visible',
+                  wordWrap: 'break-word',
+                  hyphens: 'auto'
+                }}>{displayText}</TextContent>
+              </PixelGradientTextBox>
+            ) : (
+              <TextBox role="dialog" aria-live="polite" aria-atomic="true" style={{
+                position: 'absolute',
+                // Use custom positioning if available, otherwise use defaults
+                ...(currentSceneData?.textPosition ? {
+                  top: currentSceneData.textPosition.top,
+                  bottom: currentSceneData.textPosition.bottom,
+                  left: currentSceneData.textPosition.left,
+                  right: currentSceneData.textPosition.right,
+                  width: currentSceneData.textPosition.width,
+                  height: 'auto',
+                  maxHeight: '40vh',
+                  overflow: 'hidden',
+                  transform: currentSceneData.textPosition.left || currentSceneData.textPosition.right ? 'none' : 'translateX(-50%)'
+                } : {
+                  bottom: windowed ? '80px' : '10vh',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: windowed ? 'calc(100% - 40px)' : 'min(900px, 92vw)',
+                  maxWidth: windowed ? '800px' : 'min(900px, 92vw)'
+                }),
+                pointerEvents: 'auto',
+                zIndex: 20
+              }}>
+                <TextContent style={{ 
+                  minHeight: currentSceneData?.textPosition ? 'auto' : '4em',
+                  overflow: currentSceneData?.textPosition ? 'hidden' : 'visible',
+                  wordWrap: 'break-word',
+                  hyphens: 'auto'
+                }}>{displayText}</TextContent>
+              </TextBox>
+            )}
 
             {/* Controls positioned in bottom right - ensure visible in both modes */}
             <Controls style={{ 

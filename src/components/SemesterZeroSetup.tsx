@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import * as fcl from '@onflow/fcl';
-import '../../config/fcl';
+import '../config/fcl';
 
 interface SemesterZeroSetupProps {
   onClose?: () => void;

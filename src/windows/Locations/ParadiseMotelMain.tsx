@@ -152,6 +152,14 @@ const ParadiseMotelMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   const { primaryWallet } = useDynamicContext();
   
+  // 🚀 LOCALHOST DEVELOPMENT BYPASS
+  const isDevelopment = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  
+  // Create mock wallet for localhost development
+  const mockWallet = isDevelopment ? { address: 'dev-wallet-bypass' } : null;
+  const effectiveWallet = isDevelopment ? mockWallet : primaryWallet;
+  
   // Use day/night images for Paradise Motel
   const dayImage = "/images/locations/paradise motel/paradise-motel-day.png";
   const nightImage = "/images/locations/paradise motel/paradise-motel-night.png";
@@ -471,7 +479,7 @@ const ParadiseMotelMain = () => {
       });
     } else {
       // NIGHT TIME: Check if user has the key from the maid first
-      if (!primaryWallet?.address) {
+      if (!effectiveWallet?.address) {
         // No wallet - show day image with police tape (locked)
         openWindow({
           key: WINDOW_IDS.PARADISE_MOTEL_ROOM_7,
@@ -501,11 +509,17 @@ const ParadiseMotelMain = () => {
       }
 
       // Check if user has obtained the Room 7 key
+      let hasKey = false;
+      
       try {
-        const response = await fetch(`/api/check-room7-key?walletAddress=${primaryWallet.address}`);
+        const response = await fetch(`/api/check-room7-key?walletAddress=${effectiveWallet.address}`);
         const data = await response.json();
+        hasKey = data.success && data.hasKey;
+      } catch (error) {
+        console.error('Failed to check Room 7 key:', error);
+      }
         
-        if (!data.success || !data.hasKey) {
+      if (!hasKey) {
           // User doesn't have the key - show day image with police tape (locked)
           openWindow({
             key: WINDOW_IDS.PARADISE_MOTEL_ROOM_7,
@@ -535,32 +549,14 @@ const ParadiseMotelMain = () => {
         }
 
         console.log('✅ User has Room 7 key, granting access');
-        
-      } catch (error) {
-        console.error('❌ Failed to check Room 7 key:', error);
-        // On error, show day image with police tape
+        // User has the key! Open the cutscene
         openWindow({
-          key: WINDOW_IDS.PARADISE_MOTEL_ROOM_7,
+          key: WINDOW_IDS.STORY_MANUAL,
           window: (
-            <DraggableResizeableWindow
-              windowsId={WINDOW_IDS.PARADISE_MOTEL_ROOM_7}
-              headerTitle="Paradise Motel - Room 7"
-              onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_ROOM_7)}
-              initialWidth="80vw"
-              initialHeight="80vh"
-              resizable={true}
-            >
-              <div className="relative w-full h-full flex items-center justify-center bg-black">
-                <img
-                  src="/images/locations/paradise motel/room-7-day.png"
-                  alt="Paradise Motel Room 7 (Locked)"
-                  className="max-w-full max-h-full object-contain"
-                  onError={(e) => {
-                    e.currentTarget.src = "/images/backdrops/BLANK.png";
-                  }}
-                />
-              </div>
-            </DraggableResizeableWindow>
+            <StoryManual 
+              autoPlayChapterId="paradise-motel" 
+              onClose={() => closeWindow(WINDOW_IDS.STORY_MANUAL)}
+            />
           ),
         });
         return;
@@ -622,7 +618,7 @@ const ParadiseMotelMain = () => {
       window: (
         <Room1BellComponent 
           onClose={() => closeWindow(WINDOW_IDS.PARADISE_MOTEL_ROOM_1)}
-          wallet={primaryWallet?.address}
+          wallet={effectiveWallet?.address}
         />
       ),
     });
@@ -630,31 +626,36 @@ const ParadiseMotelMain = () => {
 
   // Function to setup Chapter 5 NFT collection
   const setupChapter5Collection = async () => {
-    if (!primaryWallet?.address) {
+    if (!effectiveWallet?.address) {
       alert('Please connect your wallet first');
       return;
     }
 
     // Check if wallet is on allowlist
-    try {
-      const allowlistResponse = await fetch(`/api/semester-zero-allowlist?wallet_address=${primaryWallet.address}`);
-      const allowlistData = await allowlistResponse.json();
-      
-      if (!allowlistData.success || !allowlistData.data?.allowed) {
-        alert('🔒 You need special access to setup Semester Zero collections. Complete more objectives to gain access!');
+    if (isDevelopment) {
+      // 🚀 DEVELOPMENT BYPASS: Skip allowlist check on localhost
+      console.log('🚀 DEV MODE: Bypassing allowlist check');
+    } else {
+      try {
+        const allowlistResponse = await fetch(`/api/semester-zero-allowlist?wallet_address=${effectiveWallet.address}`);
+        const allowlistData = await allowlistResponse.json();
+        
+        if (!allowlistData.success || !allowlistData.data?.allowed) {
+          alert('🔒 You need special access to setup Semester Zero collections. Complete more objectives to gain access!');
+          return;
+        }
+        
+        console.log('✅ Access verified, proceeding with setup...');
+      } catch (error) {
+        console.error('Error checking access:', error);
+        alert('❌ Unable to verify access status. Please try again later.');
         return;
       }
-      
-      console.log('✅ Access verified, proceeding with setup...');
-    } catch (error) {
-      console.error('Error checking access:', error);
-      alert('❌ Unable to verify access status. Please try again later.');
-      return;
     }
 
     try {
       console.log('🏆 Setting up Flunks: Semester Zero collection...');
-      console.log('📡 Using wallet address:', primaryWallet.address);
+      console.log('📡 Using wallet address:', effectiveWallet.address);
       console.log('🌐 Network configuration:', {
         network: 'mainnet',
         accessNode: 'https://access-mainnet-beta.onflow.org',
@@ -674,7 +675,7 @@ const ParadiseMotelMain = () => {
               .check()
           }
         `,
-        args: (arg, t) => [arg(primaryWallet.address, t.Address)],
+        args: (arg, t) => [arg(effectiveWallet.address, t.Address)],
       });
 
       if (hasCollection) {
@@ -927,6 +928,7 @@ transaction() {
     }
   };
 
+  // Main component render
   return (
     <div className="relative w-full h-full flex flex-col overflow-hidden">
       {/* Image Container - Expanded to fill more width */}

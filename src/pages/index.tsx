@@ -48,6 +48,7 @@ import { BACKGROUND_CONFIG } from "config/backgroundConfig";
 import useThemeSettings from "store/useThemeSettings";
 import { getTimeBasedDesktopBackground } from "utils/timeBasedDesktopBackground";
 import RPGProfileForm from "components/UserProfile/RPGProfileForm";
+import DevBypass from "components/DevBypass";
 import { useUserProfile } from "contexts/UserProfileContext";
 import WalletStatusBar from "components/WalletStatusBar";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
