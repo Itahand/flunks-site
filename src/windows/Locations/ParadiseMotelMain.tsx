@@ -8,6 +8,8 @@ import RetroTextBox from "components/RetroTextBox";
 import { useState, useEffect, useRef } from "react";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import * as fcl from '@onflow/fcl';
+// Ensure FCL is properly configured for mainnet
+import '../../config/fcl';
 
 // Room 1 Bell Component
 interface Room1BellComponentProps {
@@ -639,8 +641,15 @@ const ParadiseMotelMain = () => {
 
     try {
       console.log('🏆 Setting up Flunks: Semester Zero collection...');
+      console.log('📡 Using wallet address:', primaryWallet.address);
+      console.log('🌐 Network configuration:', {
+        network: 'mainnet',
+        accessNode: 'https://access-mainnet-beta.onflow.org',
+        contractAddress: '0x807c3d470888cc48'
+      });
 
       // Check if collection already exists
+      console.log('🔍 Checking existing collection...');
       const hasCollection = await fcl.query({
         cadence: `
           import SemesterZero from 0x807c3d470888cc48
@@ -656,35 +665,48 @@ const ParadiseMotelMain = () => {
       });
 
       if (hasCollection) {
+        console.log('ℹ️ Collection already exists');
         alert('✅ You already have Flunks: Semester Zero enabled!');
         return;
       }
 
-      // Create collection transaction (UserProfile is now managed in Supabase)
+      console.log('📝 Creating collection transaction...');
+      
+      // Use the separate Cadence file content for consistency
+      const createCollectionCadence = `
+// Create Chapter5 NFT collection only
+// UserProfile is managed in Supabase
+
+import SemesterZero from 0x807c3d470888cc48
+import NonFungibleToken from 0x1d7e57aa55817448
+
+transaction() {
+  prepare(signer: auth(Storage, Capabilities) &Account) {
+    // Check if user already has Chapter 5 collection
+    if signer.storage.borrow<&SemesterZero.Chapter5Collection>(from: SemesterZero.Chapter5CollectionStoragePath) == nil {
+      // Create collection
+      let collection <- SemesterZero.createEmptyChapter5Collection()
+      signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
+      
+      // Link public capability
+      let nftCap = signer.capabilities.storage.issue<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionStoragePath)
+      signer.capabilities.publish(nftCap, at: SemesterZero.Chapter5CollectionPublicPath)
+      
+      log("✅ Created Chapter 5 NFT collection")
+    } else {
+      log("ℹ️ Collection already exists")
+    }
+  }
+  
+  execute {
+    log("🎃 Ready to receive Chapter 5 NFTs!")
+  }
+}
+      `;
+
+      // Send the transaction
       const transactionId = await fcl.mutate({
-        cadence: `
-          import SemesterZero from 0x807c3d470888cc48
-          import NonFungibleToken from 0x1d7e57aa55817448
-          
-          transaction() {
-            prepare(signer: auth(Storage, Capabilities) &Account) {
-              // Check if user already has Chapter 5 collection
-              if signer.storage.borrow<&SemesterZero.Chapter5Collection>(from: SemesterZero.Chapter5CollectionStoragePath) == nil {
-                // Create collection
-                let collection <- SemesterZero.createEmptyChapter5Collection()
-                signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
-                
-                // Link public capability
-                let nftCap = signer.capabilities.storage.issue<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionStoragePath)
-                signer.capabilities.publish(nftCap, at: SemesterZero.Chapter5CollectionPublicPath)
-              }
-            }
-            
-            execute {
-              log("🎃 Chapter 5 collection setup complete!")
-            }
-          }
-        `,
+        cadence: createCollectionCadence,
         args: (arg, t) => [],
         payer: fcl.currentUser,
         proposer: fcl.currentUser,
@@ -692,17 +714,42 @@ const ParadiseMotelMain = () => {
         limit: 9999,
       });
 
-      console.log('Transaction sent:', transactionId);
+      console.log('📤 Transaction sent:', transactionId);
       alert('⏳ Setting up your Flunks: Semester Zero collection...');
 
-      await fcl.tx(transactionId).onceSealed();
-
-      console.log('✅ Flunks: Semester Zero collection created!');
+      // Wait for transaction to be sealed
+      console.log('⏳ Waiting for transaction to be sealed...');
+      const result = await fcl.tx(transactionId).onceSealed();
+      
+      console.log('✅ Transaction sealed successfully:', result);
+      console.log('🎉 Flunks: Semester Zero collection created!');
       alert('🎉 Flunks: Semester Zero enabled! You\'re ready to receive NFTs!');
 
     } catch (error) {
-      console.error('Error setting up collection:', error);
-      alert('❌ Failed to setup collection. Please try again.');
+      console.error('💥 Error setting up collection:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = '❌ Failed to setup collection. ';
+      
+      if (error.message && error.message.includes('ErrInvalidRequest')) {
+        errorMessage += 'The transaction is not supported. This might be a wallet or network issue.';
+      } else if (error.message && error.message.includes('declined')) {
+        errorMessage += 'Transaction was declined by user.';
+      } else if (error.message && error.message.includes('timeout')) {
+        errorMessage += 'Transaction timed out. Please try again.';
+      } else if (error.message && error.message.includes('insufficient')) {
+        errorMessage += 'Insufficient account balance for transaction fees.';
+      } else {
+        errorMessage += 'Please check your wallet connection and try again.';
+      }
+      
+      console.log('🔍 Error details:', {
+        message: error.message,
+        code: error.code || 'Unknown',
+        stack: error.stack
+      });
+      
+      alert(errorMessage);
     }
   };
 
