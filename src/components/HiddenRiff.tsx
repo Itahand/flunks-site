@@ -227,7 +227,7 @@ const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
   const correctSequence: string[] = ['C', 'G', 'Am', 'F'];
 
   // All chords available (majors + minors)
-  const allChords: string[] = ['A', 'Am', 'B', 'Bm', 'C', 'Cm', 'D', 'Dm', 'E', 'Em', 'F', 'Fm', 'G', 'Gm'];
+  const allChords: string[] = ['A', 'Am', 'B', 'Bm', 'C', 'Cm', 'D', 'Dm', 'E', 'Em', 'F', 'G'];
   
   const [userSequence, setUserSequence] = useState<string[]>([]);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
