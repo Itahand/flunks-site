@@ -593,9 +593,6 @@ const ParadiseMotelMain = () => {
         }
       }
       
-      // TEMPORARILY DISABLED: Story cutscenes not ready yet
-      // Will re-enable when cutscene images are uploaded
-      /*
       // Open the Paradise Motel cutscene from Story Manual
       openWindow({
         key: WINDOW_IDS.STORY_MANUAL,
@@ -615,7 +612,6 @@ const ParadiseMotelMain = () => {
           </DraggableResizeableWindow>
         ),
       });
-      */
     }
   };
 
@@ -636,6 +632,23 @@ const ParadiseMotelMain = () => {
   const setupChapter5Collection = async () => {
     if (!primaryWallet?.address) {
       alert('Please connect your wallet first');
+      return;
+    }
+
+    // Check if wallet is on allowlist
+    try {
+      const allowlistResponse = await fetch(`/api/semester-zero-allowlist?wallet_address=${primaryWallet.address}`);
+      const allowlistData = await allowlistResponse.json();
+      
+      if (!allowlistData.success || !allowlistData.data?.allowed) {
+        alert('🔒 You need special access to setup Semester Zero collections. Complete more objectives to gain access!');
+        return;
+      }
+      
+      console.log('✅ Access verified, proceeding with setup...');
+    } catch (error) {
+      console.error('Error checking access:', error);
+      alert('❌ Unable to verify access status. Please try again later.');
       return;
     }
 

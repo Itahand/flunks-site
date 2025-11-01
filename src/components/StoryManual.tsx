@@ -14,6 +14,13 @@ interface Chapter {
     image: string;
     lines: string[];
     music?: string;
+    textPosition?: {
+      top?: string;
+      bottom?: string;
+      left?: string;
+      right?: string;
+      width?: string;
+    };
   }>;
   unlocked: boolean;
   thumbnail?: string;
@@ -369,29 +376,126 @@ const sampleChapters: Chapter[] = [
     title: 'Paradise Motel 🏨',
     subtitle: 'Room 7... The night is waiting.',
     unlocked: true,
-    thumbnail: '/images/cutscenes/paradise-motel/room-7-thumbnail.png',
+    thumbnail: '/images/locations/paradise motel/thumbnail.png',
     scenes: [
-      // Placeholder scenes - you'll add the actual story and images
       {
         id: 'room-7-night-1',
-        image: '/images/cutscenes/paradise-motel/scene-1.png',
+        image: '/images/locations/paradise motel/1.png',
         lines: [
-          'The key turns in the lock. The door swings open...'
+          'You know that feeling when your heart is racing and your head is on a swivel..',
+          'hoping, praying no one sees you?',
+          '',
+          'Imagine that, but with the fear of the unknown of what they were about to find built in.'
         ],
-        music: '/music/night.mp3'
+        music: '/music/room7.mp3'
       },
       {
         id: 'room-7-night-2',
-        image: '/images/cutscenes/paradise-motel/scene-2.png',
+        image: '/images/locations/paradise motel/2.png',
         lines: [
-          '[Add your story text here]'
+          'He WAS here. At some point, he was here.',
+          'His glasses broken, his hat on the ground beside them.'
+        ]
+      },
+      {
+        id: 'room-7-night-2b',
+        image: '/images/locations/paradise motel/2.png',
+        lines: [
+          'After searching through his bag, the crew didn\'t find anything other than clothes and snacks.',
+          '',
+          'What was he planning on doing with his hiking backpack?'
         ]
       },
       {
         id: 'room-7-night-3',
-        image: '/images/cutscenes/paradise-motel/scene-3.png',
+        image: '/images/locations/paradise motel/3.png',
         lines: [
-          '[Add your story text here]'
+          'The bedside table was adorned with local pamphlets and maps.'
+        ],
+        textPosition: {
+          top: '10%',
+          right: '5%',
+          width: '20%'
+        }
+      },
+      {
+        id: 'room-7-night-3b',
+        image: '/images/locations/paradise motel/3.png',
+        lines: [
+          'Crystal Springs, the local camping and lake area, has long been an area where the youths grew up, explored and escaped to when life became too heavy.'
+        ],
+        textPosition: {
+          top: '10%',
+          right: '5%',
+          width: '20%'
+        }
+      },
+      {
+        id: 'room-7-night-3c',
+        image: '/images/locations/paradise motel/3.png',
+        lines: [
+          'The snack shack, where Flunko had worked a few summers ago.',
+          'It was on the outside of town as you were heading toward Crystal Springs.'
+        ],
+        textPosition: {
+          top: '10%',
+          right: '5%',
+          width: '20%'
+        }
+      },
+      {
+        id: 'room-7-night-4',
+        image: '/images/locations/paradise motel/4.png',
+        lines: [
+          'His gameboy case. He never went anywhere without it.',
+          'But it was open and there was no sign of it anywhere.',
+          '',
+          'Did he take it with him? Where is he...'
+        ],
+        textPosition: {
+          top: '10%',
+          right: '5%',
+          width: '20%'
+        }
+      },
+      {
+        id: 'room-7-night-4b',
+        image: '/images/locations/paradise motel/4.png',
+        lines: [
+          'The crew had to be careful. This was still an active crime scene.',
+          '',
+          'They just snuck through police tape and at any moment they could be implicated in the search.'
+        ],
+        textPosition: {
+          top: '10%',
+          right: '5%',
+          width: '20%'
+        }
+      },
+      {
+        id: 'room-7-night-5',
+        image: '/images/locations/paradise motel/5.png',
+        lines: [
+          'A floorboard creaks behind you.',
+          '',
+          'You turn, but the room is empty.',
+          'Just shadows dancing in the moonlight.',
+          '',
+          'Yet somehow, you feel less alone than when you entered.',
+          'The truth is out there. And you\'re going to find it.'
+        ]
+      },
+      {
+        id: 'room-7-night-6',
+        image: '/images/locations/paradise motel/6.png',
+        lines: [
+          'As you step back into the night, one thought echoes:',
+          '',
+          'This isn\'t the end of your story.',
+          'It\'s just the beginning.',
+          '',
+          '★ Chapter 5 Complete ★',
+          'You are now ready for what comes next...'
         ]
       }
     ]

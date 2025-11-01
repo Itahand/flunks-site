@@ -7,6 +7,13 @@ interface CutsceneScene {
   lines: string[];
   music?: string;
   duration?: number; // Optional auto-advance timer
+  textPosition?: {
+    top?: string;
+    bottom?: string;
+    left?: string;
+    right?: string;
+    width?: string;
+  };
 }
 
 interface VCREffectsConfig {
@@ -711,11 +718,21 @@ const CutscenePlayer: React.FC<CutscenePlayerProps> = ({
             {/* Text box - adjust positioning for windowed mode */}
             <TextBox role="dialog" aria-live="polite" aria-atomic="true" style={{
               position: 'absolute',
-              bottom: windowed ? '80px' : '10vh',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: windowed ? 'calc(100% - 40px)' : 'min(900px, 92vw)',
-              maxWidth: windowed ? '800px' : 'min(900px, 92vw)',
+              // Use custom positioning if available, otherwise use defaults
+              ...(currentSceneData?.textPosition ? {
+                top: currentSceneData.textPosition.top,
+                bottom: currentSceneData.textPosition.bottom,
+                left: currentSceneData.textPosition.left,
+                right: currentSceneData.textPosition.right,
+                width: currentSceneData.textPosition.width,
+                transform: currentSceneData.textPosition.left || currentSceneData.textPosition.right ? 'none' : 'translateX(-50%)'
+              } : {
+                bottom: windowed ? '80px' : '10vh',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: windowed ? 'calc(100% - 40px)' : 'min(900px, 92vw)',
+                maxWidth: windowed ? '800px' : 'min(900px, 92vw)'
+              }),
               pointerEvents: 'auto',
               zIndex: 20
             }}>

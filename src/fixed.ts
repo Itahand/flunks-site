@@ -181,6 +181,9 @@ export const WINDOW_IDS = {
   
   // DeLorean Tracker
   BUY_ME_A_DELOREAN: "buy_me_a_delorean",
+  
+  // Semester Zero Setup
+  SEMESTER_ZERO_SETUP: "semester_zero_setup",
 };
 
 export const WINDOW_APP_INFO_TO_WINDOW_ID = {

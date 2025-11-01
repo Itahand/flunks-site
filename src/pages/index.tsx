@@ -55,6 +55,7 @@ import LoadingScreenPreview from "windows/LoadingScreenPreview";
 
 import { GumAdminPanel } from "components/GumAdminPanel";
 import { TimeConfigAdmin } from "components/DayNightHouse";
+import SemesterZeroSetup from "components/SemesterZeroSetup";
 
 const FullScreenLoader = () => {
   const [percent, setPercent] = useState(0);
@@ -626,7 +627,32 @@ const windowsMemod = useMemo(() => (
           }
         />
 
-        {/* 19. Picture Day - Build Mode Only */}
+        {/* 19. Semester Zero Collection */}
+        <ConditionalAppIcon
+          appId="semester-zero-setup"
+          title="Semester Zero"
+          icon="🎓"
+          onDoubleClick={() =>
+            openWindow({
+              key: WINDOW_IDS.SEMESTER_ZERO_SETUP,
+              window: (
+                <DraggableResizeableWindow
+                  windowsId={WINDOW_IDS.SEMESTER_ZERO_SETUP}
+                  onClose={() => closeWindow(WINDOW_IDS.SEMESTER_ZERO_SETUP)}
+                  headerTitle="Flunks: Semester Zero"
+                  initialWidth="450px"
+                  initialHeight="600px"
+                  headerIcon="🎓"
+                  resizable={false}
+                >
+                  <SemesterZeroSetup onClose={() => closeWindow(WINDOW_IDS.SEMESTER_ZERO_SETUP)} />
+                </DraggableResizeableWindow>
+              ),
+            })
+          }
+        />
+
+        {/* 20. Picture Day - Build Mode Only */}
         <ConditionalAppIcon
           appId="picture-day"
           title="Picture Day"
