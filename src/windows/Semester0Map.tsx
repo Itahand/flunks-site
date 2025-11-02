@@ -19,7 +19,7 @@ import LakeTreeMain from "windows/Locations/LakeTreeMain";
 import RugDoctorMain from "windows/Locations/RugDoctorMain";
 import ShedMain from "windows/Locations/ShedMain";
 import HighSchoolMain from "windows/Locations/HighSchoolMain";
-import ParadiseMotelMain from "windows/Locations/ParadiseMotelMainSimple";
+import ParadiseMotelMain from "windows/Locations/ParadiseMotelMain";
 import WishingTreeMain from "windows/Locations/WishingTreeMain";
 import FrenshipMain from "windows/Locations/FrenshipMain";
 import DraggableResizeableWindow from 'components/DraggableResizeableWindow';
