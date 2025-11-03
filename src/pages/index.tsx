@@ -628,11 +628,11 @@ const windowsMemod = useMemo(() => (
           }
         />
 
-        {/* 19. Semester Zero Collection */}
+        {/* 19. Semester Zero NFT Collection */}
         <ConditionalAppIcon
           appId="semester-zero-setup"
-          title="Semester Zero"
-          icon="🎓"
+          title="Semester Zero NFT"
+          icon="/images/semester-zero-nft.png"
           onDoubleClick={() =>
             openWindow({
               key: WINDOW_IDS.SEMESTER_ZERO_SETUP,
@@ -640,10 +640,10 @@ const windowsMemod = useMemo(() => (
                 <DraggableResizeableWindow
                   windowsId={WINDOW_IDS.SEMESTER_ZERO_SETUP}
                   onClose={() => closeWindow(WINDOW_IDS.SEMESTER_ZERO_SETUP)}
-                  headerTitle="Flunks: Semester Zero"
+                  headerTitle="Flunks: Semester Zero NFT"
                   initialWidth="450px"
                   initialHeight="600px"
-                  headerIcon="🎓"
+                  headerIcon="/images/semester-zero-nft.png"
                   resizable={false}
                 >
                   <SemesterZeroSetup onClose={() => closeWindow(WINDOW_IDS.SEMESTER_ZERO_SETUP)} />
