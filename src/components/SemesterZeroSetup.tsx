@@ -28,10 +28,10 @@ const SemesterZeroSetup: React.FC<SemesterZeroSetupProps> = ({ onClose, compact 
     try {
       setIsLoading(true);
 
-      // Check if wallet is on allowlist
-      const allowlistResponse = await fetch(`/api/semester-zero-allowlist?wallet_address=${primaryWallet.address}`);
-      const allowlistData = await allowlistResponse.json();
-      setIsAllowed(allowlistData.success && allowlistData.data?.allowed);
+      // Check if user has completed Chapter 5 requirements (slacker + overachiever)
+      const completionResponse = await fetch(`/api/check-chapter5-completion?address=${primaryWallet.address}`);
+      const completionData = await completionResponse.json();
+      setIsAllowed(completionData.success && completionData.isFullyComplete);
 
       // Check if collection already exists
       const collectionExists = await fcl.query({
@@ -61,6 +61,11 @@ const SemesterZeroSetup: React.FC<SemesterZeroSetupProps> = ({ onClose, compact 
   const setupCollection = async () => {
     if (!primaryWallet?.address) {
       setMessage('❌ Please connect your wallet first');
+      return;
+    }
+
+    if (!isAllowed) {
+      setMessage('🔒 Complete Chapter 5 Slacker & Overachiever objectives first!');
       return;
     }
 
@@ -155,10 +160,12 @@ transaction() {
     if (isLoading) return { text: '⏳ Checking...', color: '#666' };
     if (!primaryWallet?.address) return { text: '❌ Wallet not connected', color: '#ff6b6b' };
     if (hasCollection) return { text: '✅ Collection enabled', color: '#51cf66' };
-    return { text: '✅ Ready to setup', color: '#51cf66' };
+    if (isAllowed === false) return { text: '🔒 Complete Ch5 objectives', color: '#ff6b6b' };
+    if (isAllowed === true) return { text: '✅ Ready to setup', color: '#51cf66' };
+    return { text: '❓ Checking eligibility...', color: '#666' };
   };  
   
-  const canSetup = primaryWallet?.address && !hasCollection && !isLoading;
+  const canSetup = primaryWallet?.address && isAllowed && !hasCollection && !isLoading;
   const status = getStatusDisplay();
 
   if (compact) {
