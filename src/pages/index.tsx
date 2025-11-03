@@ -632,7 +632,7 @@ const windowsMemod = useMemo(() => (
         <ConditionalAppIcon
           appId="semester-zero-setup"
           title="Semester Zero NFT"
-          icon="/images/semester-zero-nft.png"
+          icon="/images/icons/semester-zero-nft.png"
           onDoubleClick={() =>
             openWindow({
               key: WINDOW_IDS.SEMESTER_ZERO_SETUP,
@@ -643,7 +643,7 @@ const windowsMemod = useMemo(() => (
                   headerTitle="Flunks: Semester Zero NFT"
                   initialWidth="450px"
                   initialHeight="600px"
-                  headerIcon="/images/semester-zero-nft.png"
+                  headerIcon="/images/icons/semester-zero-nft.png"
                   resizable={false}
                 >
                   <SemesterZeroSetup onClose={() => closeWindow(WINDOW_IDS.SEMESTER_ZERO_SETUP)} />
