@@ -57,6 +57,18 @@ export const UnifiedWalletProvider: React.FC<{ children: React.ReactNode }> = ({
   const connectFCL = useCallback(async () => {
     try {
       console.log('Explicitly connecting to Flow wallet...');
+      try {
+        const network = await fcl.config().get('flow.network');
+        const accessNode = await fcl.config().get('accessNode.api');
+        const discovery = await fcl.config().get('discovery.wallet');
+        console.log('🔧 FCL config before authenticate:', {
+          network,
+          accessNode,
+          discovery
+        });
+      } catch (configError) {
+        console.warn('⚠️ Unable to read FCL config before authenticate:', configError);
+      }
       await fcl.authenticate();
     } catch (error) {
       console.error('Error connecting to Flow wallet:', error);

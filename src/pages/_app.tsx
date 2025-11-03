@@ -17,6 +17,13 @@ import {
 } from "@dynamic-labs/sdk-react-core";
 import { SdkViewSectionType, SdkViewType } from "@dynamic-labs/sdk-api";
 import { FlowWalletConnectors } from "@dynamic-labs/flow";
+// Ensure Dynamic Flow connectors always use Flow MAINNET
+const MainnetFlowWalletConnectors = (props: any) => {
+  return FlowWalletConnectors({
+    ...props,
+    flowNetwork: 'mainnet',
+  });
+};
 import useThemeSettings from "store/useThemeSettings";
 import React from "react";
 import { Analytics } from "@vercel/analytics/react";
@@ -152,7 +159,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                       environmentId:
                         process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID ||
                         "53675303-5e80-4fe5-88a4-e6caae677432",
-                      walletConnectors: [FlowWalletConnectors],
+                      walletConnectors: [MainnetFlowWalletConnectors],
                       
                       // CRITICAL: Disable auto-reconnect - user must explicitly connect
                       initialAuthenticationMode: 'connect-only',
