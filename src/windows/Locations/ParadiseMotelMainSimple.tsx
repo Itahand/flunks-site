@@ -5,6 +5,9 @@ import MaidDialogue from "components/MaidDialogue";
 import StoryManual from "components/StoryManual";
 import { WINDOW_IDS } from "fixed";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import * as fcl from '@onflow/fcl';
+// Ensure FCL is properly configured for mainnet
+import '../../config/fcl';
 
 // Room 1 Bell Component
 interface Room1BellComponentProps {
@@ -320,6 +323,114 @@ const ParadiseMotelMainSimple = () => {
     });
   };
 
+  // Function to setup Chapter 5 NFT collection
+  const setupChapter5Collection = async () => {
+    if (!effectiveWallet?.address) {
+      alert('Please connect your wallet first');
+      return;
+    }
+
+    // Check if wallet is on allowlist (no dev bypass on production)
+    const isDevelopment = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+    
+    if (isDevelopment) {
+      console.log('🚀 DEV MODE: Bypassing allowlist check');
+    } else {
+      try {
+        const allowlistResponse = await fetch(`/api/semester-zero-allowlist?wallet_address=${effectiveWallet.address}`);
+        const allowlistData = await allowlistResponse.json();
+        
+        if (!allowlistData.success || !allowlistData.data?.allowed) {
+          alert('🔒 You need special access to setup Semester Zero collections. Complete more objectives to gain access!');
+          return;
+        }
+        
+        console.log('✅ Access verified, proceeding with setup...');
+      } catch (error) {
+        console.error('Error checking access:', error);
+        alert('❌ Unable to verify access status. Please try again later.');
+        return;
+      }
+    }
+
+    try {
+      console.log('🏆 Setting up Flunks: Semester Zero collection...');
+      console.log('📡 Using wallet address:', effectiveWallet.address);
+
+      // Check if collection already exists
+      console.log('🔍 Checking existing collection...');
+      const hasCollection = await fcl.query({
+        cadence: `
+          import SemesterZero from 0x807c3d470888cc48
+          import NonFungibleToken from 0x1d7e57aa55817448
+          
+          access(all) fun main(address: Address): Bool {
+            return getAccount(address)
+              .capabilities.get<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionPublicPath)
+              .check()
+          }
+        `,
+        args: (arg, t) => [arg(effectiveWallet.address, t.Address)],
+      });
+
+      if (hasCollection) {
+        console.log('ℹ️ Collection already exists');
+        alert('✅ You already have Flunks: Semester Zero enabled!');
+        return;
+      }
+
+      console.log('📝 Creating collection transaction...');
+      
+      const createCollectionCadence = `
+import SemesterZero from 0x807c3d470888cc48
+import NonFungibleToken from 0x1d7e57aa55817448
+
+transaction() {
+  prepare(signer: auth(Storage, Capabilities) &Account) {
+    if signer.storage.borrow<&SemesterZero.Chapter5Collection>(from: SemesterZero.Chapter5CollectionStoragePath) == nil {
+      let collection <- SemesterZero.createEmptyChapter5Collection()
+      signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
+      
+      let nftCap = signer.capabilities.storage.issue<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionStoragePath)
+      signer.capabilities.publish(nftCap, at: SemesterZero.Chapter5CollectionPublicPath)
+      
+      log("✅ Created Chapter 5 NFT collection")
+    } else {
+      log("ℹ️ Collection already exists")
+    }
+  }
+  
+  execute {
+    log("🎃 Ready to receive Chapter 5 NFTs!")
+  }
+}
+      `;
+
+      const txId = await fcl.mutate({
+        cadence: createCollectionCadence,
+        proposer: fcl.currentUser,
+        payer: fcl.currentUser,
+        authorizations: [fcl.currentUser],
+        limit: 9999,
+      });
+
+      console.log('⏳ Transaction submitted:', txId);
+      alert('⏳ Transaction submitted! Waiting for confirmation...');
+
+      const txStatus = await fcl.tx(txId).onceSealed();
+      console.log('✅ Transaction sealed:', txStatus);
+
+      if (txStatus.statusCode === 0) {
+        alert('✅ Success! Flunks: Semester Zero collection is now enabled in your wallet!');
+      } else {
+        throw new Error(`Transaction failed with status code: ${txStatus.statusCode}`);
+      }
+    } catch (error) {
+      console.error('❌ Error setting up collection:', error);
+      alert(`❌ Error: ${error.message || 'Failed to setup collection'}`);
+    }
+  };
+
   // Function to open Lobby
   const openLobby = () => {
     openWindow({
@@ -347,7 +458,8 @@ const ParadiseMotelMainSimple = () => {
 
             {/* Bottom Buttons */}
             <div className="w-full bg-gradient-to-r from-cyan-600 via-blue-700 to-orange-600 p-4 border-t-4 border-orange-400 shadow-2xl flex-shrink-0">
-              <div className="flex justify-center gap-4 flex-wrap">
+              {/* First row: Room buttons */}
+              <div className="flex justify-center gap-4 flex-wrap mb-3">
                 <button
                   onClick={openRoom1}
                   className="bg-gradient-to-br from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 text-white px-4 py-2 rounded-lg border-4 border-purple-300 hover:border-purple-200 transition-all duration-300 hover:scale-105 text-center text-base font-black shadow-lg"
@@ -375,6 +487,17 @@ const ParadiseMotelMainSimple = () => {
                   style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
                 >
                   🔔 Bell
+                </button>
+              </div>
+
+              {/* Second row: Full width Semester Zero button */}
+              <div className="max-w-4xl mx-auto">
+                <button
+                  onClick={setupChapter5Collection}
+                  className="w-full bg-gradient-to-br from-green-700 to-teal-900 hover:from-green-600 hover:to-teal-800 text-white px-4 py-3 rounded-lg border-3 border-green-500 hover:border-green-400 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg"
+                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+                >
+                  👁️ Flunks: Semester Zero Collection
                 </button>
               </div>
             </div>
