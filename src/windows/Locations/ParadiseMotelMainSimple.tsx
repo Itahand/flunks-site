@@ -330,29 +330,6 @@ const ParadiseMotelMainSimple = () => {
       return;
     }
 
-    // Check if wallet is on allowlist (no dev bypass on production)
-    const isDevelopment = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-    
-    if (isDevelopment) {
-      console.log('🚀 DEV MODE: Bypassing allowlist check');
-    } else {
-      try {
-        const allowlistResponse = await fetch(`/api/semester-zero-allowlist?wallet_address=${effectiveWallet.address}`);
-        const allowlistData = await allowlistResponse.json();
-        
-        if (!allowlistData.success || !allowlistData.data?.allowed) {
-          alert('🔒 You need special access to setup Semester Zero collections. Complete more objectives to gain access!');
-          return;
-        }
-        
-        console.log('✅ Access verified, proceeding with setup...');
-      } catch (error) {
-        console.error('Error checking access:', error);
-        alert('❌ Unable to verify access status. Please try again later.');
-        return;
-      }
-    }
-
     try {
       console.log('🏆 Setting up Flunks: Semester Zero collection...');
       console.log('📡 Using wallet address:', effectiveWallet.address);

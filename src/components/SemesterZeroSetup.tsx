@@ -64,11 +64,6 @@ const SemesterZeroSetup: React.FC<SemesterZeroSetupProps> = ({ onClose, compact 
       return;
     }
 
-    if (!isAllowed) {
-      setMessage('🔒 You need special access to setup Semester Zero collections');
-      return;
-    }
-
     if (hasCollection) {
       setMessage('✅ You already have Flunks: Semester Zero enabled!');
       return;
@@ -160,10 +155,10 @@ transaction() {
     if (isLoading) return { text: '⏳ Checking...', color: '#666' };
     if (!primaryWallet?.address) return { text: '❌ Wallet not connected', color: '#ff6b6b' };
     if (hasCollection) return { text: '✅ Collection enabled', color: '#51cf66' };
-    if (isAllowed === false) return { text: '🔒 Access required', color: '#ff6b6b' };
-    if (isAllowed === true) return { text: '✅ Ready to setup', color: '#51cf66' };
-    return { text: '❓ Checking access...', color: '#666' };
-  };  const canSetup = primaryWallet?.address && isAllowed && !hasCollection && !isLoading;
+    return { text: '✅ Ready to setup', color: '#51cf66' };
+  };  
+  
+  const canSetup = primaryWallet?.address && !hasCollection && !isLoading;
   const status = getStatusDisplay();
 
   if (compact) {
