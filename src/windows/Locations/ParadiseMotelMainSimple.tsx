@@ -8,6 +8,11 @@ import { WINDOW_IDS } from "fixed";
 const ParadiseMotelMainSimple = () => {
   const { openWindow, closeWindow } = useWindowsContext();
 
+  // Get current hour for day/night logic (6 AM - 6 PM is daytime)
+  const now = new Date();
+  const hour = now.getHours();
+  const isDayTime = hour >= 6 && hour < 18;
+
   // Function to open Lobby
   const openLobby = () => {
     openWindow({
@@ -21,15 +26,51 @@ const ParadiseMotelMainSimple = () => {
           initialHeight="80vh"
           resizable={true}
         >
-          <div className="relative w-full h-full flex items-center justify-center bg-black">
-            <img
-              src="/images/locations/paradise motel/lobby.png"
-              alt="Paradise Motel Lobby"
-              className="max-w-full max-h-full object-contain"
-              onError={(e) => {
-                e.currentTarget.src = "/images/backdrops/BLANK.png";
-              }}
-            />
+          <div className="relative w-full h-full flex flex-col bg-black">
+            <div className="relative flex-1 flex items-center justify-center min-h-0">
+              <img
+                src="/images/locations/paradise motel/lobby.png"
+                alt="Paradise Motel Lobby"
+                className="max-w-full max-h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/backdrops/BLANK.png";
+                }}
+              />
+            </div>
+
+            {/* Bottom Buttons */}
+            <div className="w-full bg-gradient-to-r from-cyan-600 via-blue-700 to-orange-600 p-4 border-t-4 border-orange-400 shadow-2xl flex-shrink-0">
+              <div className="flex justify-center gap-4 flex-wrap">
+                <button
+                  onClick={() => alert('🚪 Room 1 is locked. You need a key!')}
+                  className="bg-gradient-to-br from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 text-white px-4 py-2 rounded-lg border-4 border-purple-300 hover:border-purple-200 transition-all duration-300 hover:scale-105 text-center text-base font-black shadow-lg"
+                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+                >
+                  🚪 Room 1
+                </button>
+                <button
+                  onClick={() => alert('🚪 Room 6 is locked. You need a key!')}
+                  className="bg-gradient-to-br from-pink-600 to-pink-800 hover:from-pink-500 hover:to-pink-700 text-white px-4 py-2 rounded-lg border-4 border-pink-300 hover:border-pink-200 transition-all duration-300 hover:scale-105 text-center text-base font-black shadow-lg"
+                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+                >
+                  🚪 Room 6
+                </button>
+                <button
+                  onClick={() => alert('🚪 Room 7 access depends on time of day and having the key from the maid!')}
+                  className="bg-gradient-to-br from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white px-4 py-2 rounded-lg border-4 border-red-300 hover:border-red-200 transition-all duration-300 hover:scale-105 text-center text-base font-black shadow-lg"
+                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+                >
+                  🌙 Room 7
+                </button>
+                <button
+                  onClick={() => alert('🔔 Ring the bell to call the front desk... if anyone is there.')}
+                  className="bg-gradient-to-br from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 text-white px-4 py-2 rounded-lg border-4 border-yellow-300 hover:border-yellow-200 transition-all duration-300 hover:scale-105 text-center text-base font-black shadow-lg"
+                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+                >
+                  🔔 Bell
+                </button>
+              </div>
+            </div>
           </div>
         </DraggableResizeableWindow>
       ),
@@ -38,6 +79,10 @@ const ParadiseMotelMainSimple = () => {
 
   // Function to open Round Back (maid interaction)
   const openRoundBack = () => {
+    const roundBackImage = isDayTime 
+      ? "/images/locations/paradise motel/daytime-round-back.png"
+      : "/images/locations/paradise motel/night-round-back.png";
+
     openWindow({
       key: "paradise-motel-round-back",
       window: (
@@ -51,16 +96,18 @@ const ParadiseMotelMainSimple = () => {
         >
           <div className="relative w-full h-full flex items-center justify-center bg-black">
             <img
-              src="/images/locations/paradise motel/night-round-back.png"
+              src={roundBackImage}
               alt="Paradise Motel Round Back"
               className="max-w-full max-h-full object-contain"
               onError={(e) => {
                 e.currentTarget.src = "/images/backdrops/BLANK.png";
               }}
             />
-            <div className="absolute bottom-4 left-4 right-4">
-              <MaidDialogue onClose={() => closeWindow("paradise-motel-round-back")} />
-            </div>
+            {isDayTime && (
+              <div className="absolute bottom-4 left-4 right-4">
+                <MaidDialogue onClose={() => closeWindow("paradise-motel-round-back")} />
+              </div>
+            )}
           </div>
         </DraggableResizeableWindow>
       ),
@@ -79,7 +126,10 @@ const ParadiseMotelMainSimple = () => {
       <div className="relative w-full h-full flex flex-col overflow-hidden bg-black">
         <div className="relative flex-1 flex items-center justify-center min-h-0 px-0">
           <img
-            src="/images/locations/paradise motel/paradise-motel-day.png"
+            src={isDayTime 
+              ? "/images/locations/paradise motel/paradise-motel-day.png"
+              : "/images/locations/paradise motel/paradise-motel-night.png"
+            }
             alt="Paradise Motel"
             className="w-full h-full object-cover"
             onError={(e) => {
