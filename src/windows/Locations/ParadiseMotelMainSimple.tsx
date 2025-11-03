@@ -1,24 +1,11 @@
 import React from 'react';
 import { useWindowsContext } from "contexts/WindowsContext";
 import DraggableResizeableWindow from "components/DraggableResizeableWindow";
-import StoryManual from "components/StoryManual";
 import { WINDOW_IDS } from "fixed";
 
-// Temporary simplified Paradise Motel component for testing cutscenes
+// Simplified Paradise Motel component with proper buttons
 const ParadiseMotelMainSimple = () => {
-  const { openWindow, closeWindow } = useWindowsContext();
-
-  const openRoom7Cutscene = () => {
-    openWindow({
-      key: WINDOW_IDS.STORY_MANUAL,
-      window: (
-        <StoryManual 
-          autoPlayChapterId="paradise-motel" 
-          onClose={() => closeWindow(WINDOW_IDS.STORY_MANUAL)}
-        />
-      ),
-    });
-  };
+  const { closeWindow } = useWindowsContext();
 
   return (
     <DraggableResizeableWindow
@@ -42,13 +29,24 @@ const ParadiseMotelMainSimple = () => {
         </div>
         
         <div className="w-full bg-gradient-to-r from-cyan-600 via-blue-700 to-orange-600 p-4 border-t-4 border-orange-400 shadow-2xl">
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <button
-              onClick={openRoom7Cutscene}
-              className="bg-gradient-to-br from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 text-white px-8 py-4 rounded-xl border-4 border-purple-300 hover:border-purple-200 transition-all duration-300 hover:scale-105 text-center text-lg font-black shadow-lg hover:shadow-xl"
+              onClick={() => {
+                alert('🏨 Lobby feature coming soon! Check back later.');
+              }}
+              className="bg-gradient-to-br from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white px-6 py-3 rounded-xl border-4 border-blue-300 hover:border-blue-200 transition-all duration-300 hover:scale-105 text-center text-lg font-black shadow-lg hover:shadow-xl"
               style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
             >
-              🎬 Room 7 Cutscene (DEV)
+              � Lobby
+            </button>
+            <button
+              onClick={() => {
+                alert('🔄 Round Back feature coming soon! This is where you\'ll interact with the maid to get the Room 7 key.');
+              }}
+              className="bg-gradient-to-br from-green-600 to-green-800 hover:from-green-500 hover:to-green-700 text-white px-6 py-3 rounded-xl border-4 border-green-300 hover:border-green-200 transition-all duration-300 hover:scale-105 text-center text-lg font-black shadow-lg hover:shadow-xl"
+              style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
+            >
+              🔄 Round Back
             </button>
           </div>
         </div>
