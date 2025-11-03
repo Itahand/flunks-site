@@ -71,7 +71,43 @@ const SemesterZeroSetup: React.FC<SemesterZeroSetupProps> = ({ onClose, compact 
       console.log('🏆 Setting up Flunks: Semester Zero collection...');
       console.log('📡 Using wallet address:', primaryWallet.address);
 
-      const createCollectionCadence = `
+      // Detect if using Dapper wallet
+      const isDapper = primaryWallet.connector?.name?.toLowerCase().includes('dapper') || 
+                       primaryWallet.address?.startsWith('0x');
+
+      // Use Dapper-compatible transaction for Dapper wallets
+      const createCollectionCadence = isDapper ? `
+// Dapper-compatible Chapter5 NFT collection setup
+// Uses Cadence 0.42 AuthAccount syntax
+
+import SemesterZero from 0x807c3d470888cc48
+import NonFungibleToken from 0x1d7e57aa55817448
+
+transaction() {
+  prepare(signer: AuthAccount) {
+    // Check if user already has Chapter 5 collection
+    if signer.borrow<&SemesterZero.Chapter5Collection>(from: SemesterZero.Chapter5CollectionStoragePath) == nil {
+      // Create collection
+      let collection <- SemesterZero.createEmptyChapter5Collection()
+      signer.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
+      
+      // Link public capability (old syntax for Dapper)
+      signer.link<&{NonFungibleToken.Receiver}>(
+        SemesterZero.Chapter5CollectionPublicPath,
+        target: SemesterZero.Chapter5CollectionStoragePath
+      )
+      
+      log("✅ Created Chapter 5 NFT collection")
+    } else {
+      log("ℹ️ Collection already exists")
+    }
+  }
+  
+  execute {
+    log("🎃 Ready to receive Chapter 5 NFTs!")
+  }
+}
+      ` : `
 // Create Chapter5 NFT collection only
 // UserProfile is managed in Supabase
 
@@ -101,6 +137,8 @@ transaction() {
   }
 }
       `;
+
+      console.log(`Using ${isDapper ? 'Dapper-compatible' : 'Cadence 1.0'} transaction`);
 
       // Send the transaction
       const transactionId = await fcl.mutate({

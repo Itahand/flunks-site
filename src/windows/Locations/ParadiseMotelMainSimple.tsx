@@ -358,7 +358,36 @@ const ParadiseMotelMainSimple = () => {
 
       console.log('📝 Creating collection transaction...');
       
-      const createCollectionCadence = `
+      // Detect if using Dapper wallet - check connector or address format
+      const isDapper = effectiveWallet.connector?.name?.toLowerCase().includes('dapper') || 
+                       effectiveWallet.address?.startsWith('0x');
+      
+      const createCollectionCadence = isDapper ? `
+import SemesterZero from 0x807c3d470888cc48
+import NonFungibleToken from 0x1d7e57aa55817448
+
+transaction() {
+  prepare(signer: AuthAccount) {
+    if signer.borrow<&SemesterZero.Chapter5Collection>(from: SemesterZero.Chapter5CollectionStoragePath) == nil {
+      let collection <- SemesterZero.createEmptyChapter5Collection()
+      signer.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
+      
+      signer.link<&{NonFungibleToken.Receiver}>(
+        SemesterZero.Chapter5CollectionPublicPath,
+        target: SemesterZero.Chapter5CollectionStoragePath
+      )
+      
+      log("✅ Created Chapter 5 NFT collection")
+    } else {
+      log("ℹ️ Collection already exists")
+    }
+  }
+  
+  execute {
+    log("🎃 Ready to receive Chapter 5 NFTs!")
+  }
+}
+      ` : `
 import SemesterZero from 0x807c3d470888cc48
 import NonFungibleToken from 0x1d7e57aa55817448
 
@@ -382,6 +411,8 @@ transaction() {
   }
 }
       `;
+
+      console.log(`Using ${isDapper ? 'Dapper-compatible' : 'Cadence 1.0'} transaction`);
 
       const txId = await fcl.mutate({
         cadence: createCollectionCadence,
