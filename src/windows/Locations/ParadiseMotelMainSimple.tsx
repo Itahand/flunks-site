@@ -330,21 +330,6 @@ const ParadiseMotelMainSimple = () => {
       return;
     }
 
-    // Check if user has completed Chapter 5 requirements
-    try {
-      const completionResponse = await fetch(`/api/check-chapter5-completion?address=${effectiveWallet.address}`);
-      const completionData = await completionResponse.json();
-      
-      if (!completionData.success || !completionData.isFullyComplete) {
-        alert('🔒 You need to complete Chapter 5 Slacker & Overachiever objectives first!\n\nSlacker: Visit Paradise Motel Room 7 at night\nOverachiever: Complete the Hidden Riff guitar game');
-        return;
-      }
-    } catch (error) {
-      console.error('Error checking eligibility:', error);
-      alert('❌ Unable to verify eligibility. Please try again later.');
-      return;
-    }
-
     try {
       console.log('🏆 Setting up Flunks: Semester Zero collection...');
       console.log('📡 Using wallet address:', effectiveWallet.address);
