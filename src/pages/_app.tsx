@@ -19,9 +19,19 @@ import { SdkViewSectionType, SdkViewType } from "@dynamic-labs/sdk-api";
 import { FlowWalletConnectors } from "@dynamic-labs/flow";
 // Ensure Dynamic Flow connectors always use Flow MAINNET
 const MainnetFlowWalletConnectors = (props: any) => {
-  return FlowWalletConnectors({
-    ...props,
-    flowNetwork: 'mainnet',
+  const connectors = FlowWalletConnectors(props);
+  return connectors.map((ConnectorClass: any) => {
+    return class MainnetConnector extends ConnectorClass {
+      constructor(...args: any[]) {
+        super(...args);
+        this.network = 'mainnet';
+      }
+
+      async setupConfig(...setupArgs: any[]) {
+        this.network = 'mainnet';
+        return super.setupConfig(...setupArgs);
+      }
+    };
   });
 };
 import useThemeSettings from "store/useThemeSettings";
