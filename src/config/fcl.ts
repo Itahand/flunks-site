@@ -1,4 +1,5 @@
 import { config } from "@onflow/fcl";
+import "@onflow/fcl-wc";
 
 // CRITICAL: Clear any cached testnet configuration from localStorage
 // FCL caches config in localStorage, and old testnet settings can persist
@@ -33,12 +34,12 @@ console.log('🌐 App URL:', APP_URL);
 // FORCE mainnet configuration - override any cached settings
 config({
   "accessNode.api": FLOW_ACCESS_NODE,
-  "discovery.wallet": "https://fcl-discovery.onflow.org/authn",
-  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/authn",
+  "discovery.wallet": "https://fcl-discovery.onflow.org/mainnet/authn",
+  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/mainnet/authn",
   "app.detail.title": "Flunks",
   "app.detail.icon": "https://flunks.net/flunks-logo.png",
   "app.detail.url": APP_URL,
-  "challenge.handshake": "https://fcl-discovery.onflow.org/authn",
+  "challenge.handshake": "https://fcl-discovery.onflow.org/mainnet/authn",
   "flow.network": "mainnet",
   "walletconnect.projectId": WALLETCONNECT_PROJECT_ID,
   
@@ -55,15 +56,21 @@ if (typeof window !== 'undefined') {
   setTimeout(async () => {
     const actualAccessNode = await config().get('accessNode.api');
     const actualNetwork = await config().get('flow.network');
-    
+    const actualDiscoveryWallet = await config().get('discovery.wallet');
+    const actualDiscoveryAuthn = await config().get('discovery.authn.endpoint');
+    const actualHandshake = await config().get('challenge.handshake');
+
     console.log('✅ FCL Configuration verified:', {
       accessNode: actualAccessNode,
       network: actualNetwork,
       expectedAccessNode: FLOW_ACCESS_NODE,
       expectedNetwork: 'mainnet',
-      walletConnectConfigured: !!WALLETCONNECT_PROJECT_ID
+      walletConnectConfigured: !!WALLETCONNECT_PROJECT_ID,
+      discoveryWallet: actualDiscoveryWallet,
+      discoveryAuthn: actualDiscoveryAuthn,
+      handshake: actualHandshake
     });
-    
+
     // Alert if there's a mismatch (testnet detected)
     if (
       (typeof actualAccessNode === 'string' && actualAccessNode.includes('testnet')) || 
