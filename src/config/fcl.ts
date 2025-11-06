@@ -37,6 +37,7 @@ config({
   "accessNode.api": FLOW_ACCESS_NODE,
   "discovery.wallet": "https://fcl-discovery.onflow.org/mainnet/authn",
   "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/mainnet/authn",
+  "challenge.handshake": "https://fcl-discovery.onflow.org/api/mainnet/handshake",
   "app.detail.title": "Flunks",
   "app.detail.icon": "https://flunks.net/flunks-logo.png",
   "app.detail.url": APP_URL,
@@ -73,7 +74,8 @@ if (typeof window !== 'undefined') {
     // Alert if there's a mismatch (testnet detected)
     if (
       (typeof actualAccessNode === 'string' && actualAccessNode.includes('testnet')) || 
-      actualNetwork === 'testnet'
+      actualNetwork === 'testnet' ||
+      (typeof actualHandshake === 'string' && actualHandshake.includes('testnet'))
     ) {
       console.error('❌ TESTNET DETECTED! Configuration override failed. Clearing all FCL cache...');
       Object.keys(localStorage)
