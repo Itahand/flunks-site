@@ -109,8 +109,10 @@ access(all) contract SemesterZero {
             pre {
                 self.eligibleUsers[user] == true: "User not eligible for this drop"
                 self.claimedUsers[user] == nil: "User already claimed"
-                self.isActive(): "Drop window has expired"
             }
+            // Check if active (can't use in pre because getCurrentBlock() is impure)
+            assert(self.isActive(), message: "Drop window has expired")
+            
             self.claimedUsers[user] = ClaimRecord(
                 flunkCount: flunkCount,
                 gumAwarded: gumAwarded,
@@ -285,6 +287,50 @@ access(all) contract SemesterZero {
         
         access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection} {
             return <-SemesterZero.createEmptyChapter5Collection()
+        }
+        
+        /// Return the metadata views that this NFT implements
+        access(all) view fun getViews(): [Type] {
+            return [
+                Type<MetadataViews.Display>(),
+                Type<MetadataViews.ExternalURL>(),
+                Type<MetadataViews.NFTCollectionData>(),
+                Type<MetadataViews.NFTCollectionDisplay>(),
+                Type<MetadataViews.Royalties>(),
+                Type<MetadataViews.Serial>()
+            ]
+        }
+        
+        /// Resolve a metadata view for this NFT
+        access(all) fun resolveView(_ view: Type): AnyStruct? {
+            switch view {
+                case Type<MetadataViews.Display>():
+                    return MetadataViews.Display(
+                        name: self.metadata["name"] ?? "Chapter 5 NFT",
+                        description: self.metadata["description"] ?? "Flunks: Semester Zero achievement",
+                        thumbnail: MetadataViews.HTTPFile(
+                            url: self.metadata["image"] ?? "https://storage.googleapis.com/flunks_public/nfts/chapter5-completion.png"
+                        )
+                    )
+                    
+                case Type<MetadataViews.ExternalURL>():
+                    return MetadataViews.ExternalURL("https://www.flunks.net/semester-zero/chapter-5")
+                    
+                case Type<MetadataViews.NFTCollectionData>():
+                    return SemesterZero.resolveContractView(resourceType: Type<@SemesterZero.Chapter5NFT>(), viewType: Type<MetadataViews.NFTCollectionData>())
+                    
+                case Type<MetadataViews.NFTCollectionDisplay>():
+                    return SemesterZero.resolveContractView(resourceType: Type<@SemesterZero.Chapter5NFT>(), viewType: Type<MetadataViews.NFTCollectionDisplay>())
+                    
+                case Type<MetadataViews.Royalties>():
+                    // No royalties for Chapter 5 achievement NFTs
+                    return MetadataViews.Royalties([])
+                    
+                case Type<MetadataViews.Serial>():
+                    return MetadataViews.Serial(self.id)
+            }
+            
+            return nil
         }
     }
     
@@ -468,9 +514,8 @@ access(all) contract SemesterZero {
         
         /// Airdrop Chapter 5 NFT to eligible user (both objectives complete)
         access(all) fun airdropChapter5NFT(userAddress: Address) {
-            pre {
-                SemesterZero.isEligibleForChapter5NFT(userAddress): "User not eligible for Chapter 5 NFT"
-            }
+            // Check eligibility (can't use in pre because it calls getCurrentBlock indirectly)
+            assert(SemesterZero.isEligibleForChapter5NFT(userAddress: userAddress), message: "User not eligible for Chapter 5 NFT")
             
             // Get recipient's collection capability
             let recipientCap = getAccount(userAddress)
@@ -611,6 +656,61 @@ access(all) contract SemesterZero {
             "totalChapter5Completions": SemesterZero.totalChapter5Completions,
             "totalChapter5NFTs": SemesterZero.totalChapter5NFTs
         }
+    }
+    
+    // ========================================
+    // METADATA VIEWS (CONTRACT-LEVEL)
+    // ========================================
+    
+    /// Return the metadata views that this contract implements
+    access(all) view fun getContractViews(resourceType: Type?): [Type] {
+        return [
+            Type<MetadataViews.NFTCollectionData>(),
+            Type<MetadataViews.NFTCollectionDisplay>()
+        ]
+    }
+    
+    /// Resolve a metadata view for this contract
+    access(all) fun resolveContractView(resourceType: Type?, viewType: Type): AnyStruct? {
+        switch viewType {
+            case Type<MetadataViews.NFTCollectionData>():
+                return MetadataViews.NFTCollectionData(
+                    storagePath: self.Chapter5CollectionStoragePath,
+                    publicPath: self.Chapter5CollectionPublicPath,
+                    publicCollection: Type<&SemesterZero.Chapter5Collection>(),
+                    publicLinkedType: Type<&SemesterZero.Chapter5Collection>(),
+                    createEmptyCollectionFunction: (fun(): @{NonFungibleToken.Collection} {
+                        return <-SemesterZero.createEmptyChapter5Collection()
+                    })
+                )
+                
+            case Type<MetadataViews.NFTCollectionDisplay>():
+                let squareMedia = MetadataViews.Media(
+                    file: MetadataViews.HTTPFile(
+                        url: "https://storage.googleapis.com/flunks_public/images/semester-zero-logo.png"
+                    ),
+                    mediaType: "image/png"
+                )
+                let bannerMedia = MetadataViews.Media(
+                    file: MetadataViews.HTTPFile(
+                        url: "https://storage.googleapis.com/flunks_public/images/semester-zero-banner.png"
+                    ),
+                    mediaType: "image/png"
+                )
+                return MetadataViews.NFTCollectionDisplay(
+                    name: "Flunks: Semester Zero - Chapter 5",
+                    description: "Achievement NFTs from Flunks: Semester Zero. Awarded for completing Paradise Motel objectives including the Hidden Riff guitar game and night-time explorations.",
+                    externalURL: MetadataViews.ExternalURL("https://www.flunks.net/semester-zero"),
+                    squareImage: squareMedia,
+                    bannerImage: bannerMedia,
+                    socials: {
+                        "twitter": MetadataViews.ExternalURL("https://twitter.com/flunksnft"),
+                        "discord": MetadataViews.ExternalURL("https://discord.gg/flunks")
+                    }
+                )
+        }
+        
+        return nil
     }
     
     // ========================================

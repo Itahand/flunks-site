@@ -298,6 +298,30 @@ const ParadiseMotelMainSimple = () => {
     }
 
     console.log('✅ User has Room 7 key, granting access to cutscene');
+    
+    // Award GUM for completing the Slacker objective (first-time visit)
+    try {
+      const response = await fetch('/api/paradise-motel-room7', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: effectiveWallet.address,
+          username: 'Anonymous'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log('✅ Room 7 Slacker objective completed! +' + (data.gumAwarded || 50) + ' GUM');
+        window.dispatchEvent(new CustomEvent('gum-balance-updated'));
+      } else if (data.alreadyCompleted) {
+        console.log('ℹ️ Room 7 already visited, no new GUM awarded');
+      }
+    } catch (error) {
+      console.error('❌ Failed to award Room 7 Slacker GUM:', error);
+    }
+    
     // User has the key! Open the cutscene
     openWindow({
       key: WINDOW_IDS.STORY_MANUAL,
