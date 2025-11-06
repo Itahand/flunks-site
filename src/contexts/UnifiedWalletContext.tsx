@@ -25,21 +25,9 @@ export const UnifiedWalletProvider: React.FC<{ children: React.ReactNode }> = ({
   const [fclUser, setFclUser] = useState<any>(null);
   const [fclAddress, setFclAddress] = useState<string | null>(null);
 
-  // Configure FCL for mainnet following official Flow React SDK pattern
+  // Subscribe to FCL auth changes (config is already set in src/config/fcl.ts)
   useEffect(() => {
-    // Configure FCL for mainnet with proper discovery wallet
-    fcl.config()
-      .put('flow.network', 'mainnet')
-      .put('accessNode.api', 'https://rest-mainnet.onflow.org')
-      .put('discovery.wallet', 'https://fcl-discovery.onflow.org/mainnet/authn')
-      .put('discovery.authn.endpoint', 'https://fcl-discovery.onflow.org/api/mainnet/authn')
-      .put('fcl.eventPollRate', 0) // Disable automatic event polling
-      .put('app.detail.title', 'Flunks')
-      .put('app.detail.url', typeof window !== 'undefined' ? window.location.origin : '')
-      .put('app.detail.icon', typeof window !== 'undefined' ? `${window.location.origin}/images/logo.png` : '')
-      .put('app.detail.description', 'Flunks University - NFT Collection on Flow');
-    
-    console.log('🌊 UnifiedWalletContext: FCL configured for MAINNET with discovery wallet');
+    console.log('🌊 UnifiedWalletContext: Subscribing to FCL auth (mainnet config from fcl.ts)');
     
     // Subscribe to FCL auth changes ONLY (won't trigger automatically)
     const unsubscribe = fcl.currentUser.subscribe((user: any) => {

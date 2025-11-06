@@ -33,14 +33,13 @@ console.log('🌐 App URL:', APP_URL);
 
 // FORCE mainnet configuration - override any cached settings
 config({
+  "flow.network": "mainnet",
   "accessNode.api": FLOW_ACCESS_NODE,
   "discovery.wallet": "https://fcl-discovery.onflow.org/mainnet/authn",
   "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/mainnet/authn",
   "app.detail.title": "Flunks",
   "app.detail.icon": "https://flunks.net/flunks-logo.png",
   "app.detail.url": APP_URL,
-  "challenge.handshake": "https://fcl-discovery.onflow.org/mainnet/authn",
-  "flow.network": "mainnet",
   "walletconnect.projectId": WALLETCONNECT_PROJECT_ID,
   
   // MOBILE SPECIFIC: Force WalletConnect on mobile devices
