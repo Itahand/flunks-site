@@ -189,22 +189,22 @@ access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
             
             case Type<MetadataViews.NFTCollectionDisplay>():
                 let squareImage = MetadataViews.Media(
-                    file: MetadataViews.HTTPFile(url: "https://storage.googleapis.com/flunks_public/images/semester-zero-logo.png"),
+                    file: MetadataViews.HTTPFile(url: "https://storage.googleapis.com/flunks_public/images/semesterzero.png"),
                     mediaType: "image/png"
                 )
                 let bannerImage = MetadataViews.Media(
-                    file: MetadataViews.HTTPFile(url: "https://storage.googleapis.com/flunks_public/images/semester-zero-banner.png"),
+                    file: MetadataViews.HTTPFile(url: "https://storage.googleapis.com/flunks_public/images/banner.png"),
                     mediaType: "image/png"
                 )
                 
                 return MetadataViews.NFTCollectionDisplay(
-                    name: "Flunks: Semester Zero - Chapter 5",
-                    description: "Achievement NFTs from Flunks: Semester Zero. Awarded for completing Paradise Motel objectives including the Hidden Riff guitar game and night-time explorations.",
-                    externalURL: MetadataViews.ExternalURL("https://www.flunks.net/semester-zero"),
+                    name: "Flunks: Semester Zero",
+                    description: "Flunks: Semester Zero is a standalone collection that rewards users for exploring flunks.net and participating in events, challenges and completing objectives.",
+                    externalURL: MetadataViews.ExternalURL("https://flunks.net"),
                     squareImage: squareImage,
                     bannerImage: bannerImage,
                     socials: {
-                        "twitter": MetadataViews.ExternalURL("https://twitter.com/flunksnft"),
+                        "twitter": MetadataViews.ExternalURL("https://x.com/flunks_nft"),
                         "discord": MetadataViews.ExternalURL("https://discord.gg/flunks")
                     }
                 )

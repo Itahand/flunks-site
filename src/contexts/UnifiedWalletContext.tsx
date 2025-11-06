@@ -25,15 +25,21 @@ export const UnifiedWalletProvider: React.FC<{ children: React.ReactNode }> = ({
   const [fclUser, setFclUser] = useState<any>(null);
   const [fclAddress, setFclAddress] = useState<string | null>(null);
 
-  // Disable FCL auto-connect and event polling to prevent auto-login
+  // Configure FCL for mainnet following official Flow React SDK pattern
   useEffect(() => {
-    // FORCE mainnet configuration - ensure it's NEVER testnet
+    // Configure FCL for mainnet with proper discovery wallet
     fcl.config()
-      .put('flow.network', 'mainnet') // CRITICAL: Force mainnet
-      .put('accessNode.api', process.env.NEXT_PUBLIC_FLOW_ACCESS_NODE || 'https://rest-mainnet.onflow.org')
-      .put('fcl.eventPollRate', 0); // Disable automatic event polling
+      .put('flow.network', 'mainnet')
+      .put('accessNode.api', 'https://rest-mainnet.onflow.org')
+      .put('discovery.wallet', 'https://fcl-discovery.onflow.org/mainnet/authn')
+      .put('discovery.authn.endpoint', 'https://fcl-discovery.onflow.org/api/mainnet/authn')
+      .put('fcl.eventPollRate', 0) // Disable automatic event polling
+      .put('app.detail.title', 'Flunks')
+      .put('app.detail.url', typeof window !== 'undefined' ? window.location.origin : '')
+      .put('app.detail.icon', typeof window !== 'undefined' ? `${window.location.origin}/images/logo.png` : '')
+      .put('app.detail.description', 'Flunks University - NFT Collection on Flow');
     
-    console.log('🌊 UnifiedWalletContext: FCL forced to MAINNET');
+    console.log('🌊 UnifiedWalletContext: FCL configured for MAINNET with discovery wallet');
     
     // Subscribe to FCL auth changes ONLY (won't trigger automatically)
     const unsubscribe = fcl.currentUser.subscribe((user: any) => {
