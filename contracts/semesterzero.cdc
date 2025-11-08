@@ -43,6 +43,7 @@ access(all) contract SemesterZero {
     access(all) event Chapter5OverachieverCompleted(userAddress: Address, timestamp: UFix64)
     access(all) event Chapter5FullCompletion(userAddress: Address, timestamp: UFix64)
     access(all) event Chapter5NFTMinted(nftID: UInt64, recipient: Address, timestamp: UFix64)
+    access(all) event Chapter5NFTBurned(nftID: UInt64, owner: Address, timestamp: UFix64)
     
     // ========================================
     // STATE VARIABLES
@@ -335,6 +336,145 @@ access(all) contract SemesterZero {
     }
     
     // ========================================
+    // PIN NFT - Location-based collectibles
+    // ========================================
+    
+    access(all) resource PinNFT: NonFungibleToken.NFT {
+        access(all) let id: UInt64
+        access(all) let location: String
+        access(all) let recipient: Address
+        access(all) let mintedAt: UFix64
+        access(all) let metadata: {String: String}
+        
+        init(id: UInt64, recipient: Address, location: String, name: String, description: String, rarity: String, image: String) {
+            self.id = id
+            self.location = location
+            self.recipient = recipient
+            self.mintedAt = getCurrentBlock().timestamp
+            self.metadata = {
+                "name": name,
+                "description": description,
+                "location": location,
+                "type": "Pin",
+                "rarity": rarity,
+                "image": image
+            }
+        }
+        
+        access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection} {
+            return <-SemesterZero.createEmptyChapter5Collection()
+        }
+        
+        access(all) view fun getViews(): [Type] {
+            return [
+                Type<MetadataViews.Display>(),
+                Type<MetadataViews.ExternalURL>(),
+                Type<MetadataViews.NFTCollectionData>(),
+                Type<MetadataViews.NFTCollectionDisplay>(),
+                Type<MetadataViews.Serial>()
+            ]
+        }
+        
+        access(all) fun resolveView(_ view: Type): AnyStruct? {
+            switch view {
+                case Type<MetadataViews.Display>():
+                    return MetadataViews.Display(
+                        name: self.metadata["name"] ?? "Semester Zero Pin",
+                        description: self.metadata["description"] ?? "Collectible pin from Semester Zero",
+                        thumbnail: MetadataViews.HTTPFile(
+                            url: self.metadata["image"] ?? "https://storage.googleapis.com/flunks_public/images/default-pin.png"
+                        )
+                    )
+                    
+                case Type<MetadataViews.ExternalURL>():
+                    return MetadataViews.ExternalURL("https://www.flunks.net/semester-zero")
+                    
+                case Type<MetadataViews.NFTCollectionData>():
+                    return SemesterZero.resolveContractView(resourceType: Type<@SemesterZero.PinNFT>(), viewType: Type<MetadataViews.NFTCollectionData>())
+                    
+                case Type<MetadataViews.NFTCollectionDisplay>():
+                    return SemesterZero.resolveContractView(resourceType: Type<@SemesterZero.PinNFT>(), viewType: Type<MetadataViews.NFTCollectionDisplay>())
+                    
+                case Type<MetadataViews.Serial>():
+                    return MetadataViews.Serial(self.id)
+            }
+            
+            return nil
+        }
+    }
+    
+    // ========================================
+    // PATCH NFT - Achievement patches
+    // ========================================
+    
+    access(all) resource PatchNFT: NonFungibleToken.NFT {
+        access(all) let id: UInt64
+        access(all) let location: String
+        access(all) let achievement: String
+        access(all) let recipient: Address
+        access(all) let mintedAt: UFix64
+        access(all) let metadata: {String: String}
+        
+        init(id: UInt64, recipient: Address, location: String, achievement: String, name: String, description: String, rarity: String, image: String) {
+            self.id = id
+            self.location = location
+            self.achievement = achievement
+            self.recipient = recipient
+            self.mintedAt = getCurrentBlock().timestamp
+            self.metadata = {
+                "name": name,
+                "description": description,
+                "location": location,
+                "achievement": achievement,
+                "type": "Patch",
+                "rarity": rarity,
+                "image": image
+            }
+        }
+        
+        access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection} {
+            return <-SemesterZero.createEmptyChapter5Collection()
+        }
+        
+        access(all) view fun getViews(): [Type] {
+            return [
+                Type<MetadataViews.Display>(),
+                Type<MetadataViews.ExternalURL>(),
+                Type<MetadataViews.NFTCollectionData>(),
+                Type<MetadataViews.NFTCollectionDisplay>(),
+                Type<MetadataViews.Serial>()
+            ]
+        }
+        
+        access(all) fun resolveView(_ view: Type): AnyStruct? {
+            switch view {
+                case Type<MetadataViews.Display>():
+                    return MetadataViews.Display(
+                        name: self.metadata["name"] ?? "Semester Zero Patch",
+                        description: self.metadata["description"] ?? "Achievement patch from Semester Zero",
+                        thumbnail: MetadataViews.HTTPFile(
+                            url: self.metadata["image"] ?? "https://storage.googleapis.com/flunks_public/images/default-patch.png"
+                        )
+                    )
+                    
+                case Type<MetadataViews.ExternalURL>():
+                    return MetadataViews.ExternalURL("https://www.flunks.net/semester-zero")
+                    
+                case Type<MetadataViews.NFTCollectionData>():
+                    return SemesterZero.resolveContractView(resourceType: Type<@SemesterZero.PatchNFT>(), viewType: Type<MetadataViews.NFTCollectionData>())
+                    
+                case Type<MetadataViews.NFTCollectionDisplay>():
+                    return SemesterZero.resolveContractView(resourceType: Type<@SemesterZero.PatchNFT>(), viewType: Type<MetadataViews.NFTCollectionDisplay>())
+                    
+                case Type<MetadataViews.Serial>():
+                    return MetadataViews.Serial(self.id)
+            }
+            
+            return nil
+        }
+    }
+    
+    // ========================================
     // CHAPTER 5 COLLECTION
     // ========================================
     
@@ -545,6 +685,112 @@ access(all) contract SemesterZero {
                 recipient: userAddress,
                 timestamp: getCurrentBlock().timestamp
             )
+        }
+        
+        /// Mint and airdrop a Pin NFT (location-based collectible)
+        access(all) fun mintPin(
+            userAddress: Address,
+            location: String,
+            name: String,
+            description: String,
+            rarity: String,
+            image: String
+        ) {
+            // Get recipient's collection capability
+            let recipientCap = getAccount(userAddress)
+                .capabilities.get<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionPublicPath)
+            
+            assert(recipientCap.check(), message: "Recipient does not have Chapter 5 collection set up")
+            
+            let recipient = recipientCap.borrow()!
+            
+            // Mint Pin NFT
+            let nftID = SemesterZero.totalChapter5NFTs
+            SemesterZero.totalChapter5NFTs = SemesterZero.totalChapter5NFTs + 1
+            
+            let pin <- create PinNFT(
+                id: nftID,
+                recipient: userAddress,
+                location: location,
+                name: name,
+                description: description,
+                rarity: rarity,
+                image: image
+            )
+            
+            // Deposit to recipient
+            recipient.deposit(token: <-pin)
+            
+            emit Chapter5NFTMinted(
+                nftID: nftID,
+                recipient: userAddress,
+                timestamp: getCurrentBlock().timestamp
+            )
+        }
+        
+        /// Mint and airdrop a Patch NFT (achievement collectible)
+        access(all) fun mintPatch(
+            userAddress: Address,
+            location: String,
+            achievement: String,
+            name: String,
+            description: String,
+            rarity: String,
+            image: String
+        ) {
+            // Get recipient's collection capability
+            let recipientCap = getAccount(userAddress)
+                .capabilities.get<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionPublicPath)
+            
+            assert(recipientCap.check(), message: "Recipient does not have Chapter 5 collection set up")
+            
+            let recipient = recipientCap.borrow()!
+            
+            // Mint Patch NFT
+            let nftID = SemesterZero.totalChapter5NFTs
+            SemesterZero.totalChapter5NFTs = SemesterZero.totalChapter5NFTs + 1
+            
+            let patch <- create PatchNFT(
+                id: nftID,
+                recipient: userAddress,
+                location: location,
+                achievement: achievement,
+                name: name,
+                description: description,
+                rarity: rarity,
+                image: image
+            )
+            
+            // Deposit to recipient
+            recipient.deposit(token: <-patch)
+            
+            emit Chapter5NFTMinted(
+                nftID: nftID,
+                recipient: userAddress,
+                timestamp: getCurrentBlock().timestamp
+            )
+        }
+        
+        /// Burn (permanently destroy) an NFT from a user's collection
+        /// Useful for removing test NFTs or unwanted items
+        /// Note: This requires a transaction from the NFT owner to authorize withdrawal
+        access(all) fun burnNFTFromOwner(ownerAuth: auth(NonFungibleToken.Withdraw) &Chapter5Collection, nftID: UInt64) {
+            // Verify the NFT exists in the collection
+            assert(ownerAuth.ownedNFTs[nftID] != nil, message: "NFT does not exist in this collection")
+            
+            // Withdraw and destroy the NFT
+            let nft <- ownerAuth.withdraw(withdrawID: nftID)
+            
+            let ownerAddress = ownerAuth.owner!.address
+            
+            emit Chapter5NFTBurned(
+                nftID: nftID,
+                owner: ownerAddress,
+                timestamp: getCurrentBlock().timestamp
+            )
+            
+            // NFT is destroyed when it goes out of scope
+            destroy nft
         }
     }
     

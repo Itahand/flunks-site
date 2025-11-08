@@ -1,20 +1,21 @@
 #!/bin/bash
 
-# Update SemesterZero contract with MetadataViews on mainnet
-# This adds the required views for Token List compatibility
+# Update SemesterZero contract NFT image URL
+# Changes Chapter5 NFT image from chapter5-completion.png to 1.png
 
 FLUNKS_FLOW_DIR="$HOME/Desktop/flunks.flow"
 CONTRACT_FILE="./contracts/semesterzero.cdc"
 
-echo "🚀 Updating SemesterZero with reveal mechanism on mainnet..."
+echo "🚀 Updating SemesterZero NFT image URL on mainnet..."
 echo ""
-echo "⚠️  WARNING: This will update the contract deployed at 0xce9dd43888d99574"
+echo "⚠️  This will update the contract deployed at 0xce9dd43888d99574"
 echo ""
 echo "✨ Changes being deployed:"
-echo "   - Added Chapter 5 NFT reveal mechanism"
-echo "   - Updated NFT image to placeholder (1.png)"
-echo "   - Added admin function to reveal all NFTs at once"
-echo "   - Added reveal status tracking"
+echo "   - Updated Chapter5 NFT image URL"
+echo "   - Old: https://storage.googleapis.com/flunks_public/nfts/chapter5-completion.png"
+echo "   - New: https://storage.googleapis.com/flunks_public/images/1.png"
+echo ""
+echo "📝 Note: This only affects NEW mints. Existing NFTs keep their old metadata."
 echo ""
 echo "Current contract location: $CONTRACT_FILE"
 echo "Using flow.json from: $FLUNKS_FLOW_DIR"
@@ -47,11 +48,10 @@ if [ $? -eq 0 ]; then
   echo ""
   echo "📝 Next steps:"
   echo "1. Wait for the transaction to be sealed (~2-3 seconds)"
-  echo "2. Check reveal status: flow scripts execute ./cadence/scripts/check-chapter5-reveal-status.cdc --network mainnet"
-  echo "3. Airdrop NFTs to eligible users (they'll see placeholder image)"
-  echo "4. When ready, reveal: flow transactions send ./cadence/transactions/reveal-chapter5-nfts.cdc <image-url> --network mainnet --signer mainnet-account"
+  echo "2. All new Chapter 5 NFTs will use the new image"
+  echo "3. Check Flowty to verify the new NFTs display correctly"
   echo ""
-  echo "🎉 Reveal mechanism deployed! NFTs can now be revealed when ready!"
+  echo "🎉 NFT image updated!"
 else
   echo ""
   echo "❌ Contract update failed. Check the error message above."

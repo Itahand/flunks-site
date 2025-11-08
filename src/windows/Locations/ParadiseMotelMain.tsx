@@ -8,6 +8,7 @@ import RetroTextBox from "components/RetroTextBox";
 import { useState, useEffect, useRef } from "react";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import * as fcl from '@onflow/fcl';
+import SetupCollectionButton from "components/SetupCollectionButton";
 // Ensure FCL is properly configured for mainnet
 import '../../config/fcl';
 
@@ -624,149 +625,6 @@ const ParadiseMotelMain = () => {
     });
   };
 
-  // Function to setup Chapter 5 NFT collection
-  const setupChapter5Collection = async () => {
-    if (!effectiveWallet?.address) {
-      alert('Please connect your wallet first');
-      return;
-    }
-
-    // Check if wallet is on allowlist
-    if (isDevelopment) {
-      // 🚀 DEVELOPMENT BYPASS: Skip allowlist check on localhost
-      console.log('🚀 DEV MODE: Bypassing allowlist check');
-    } else {
-      try {
-        const allowlistResponse = await fetch(`/api/semester-zero-allowlist?wallet_address=${effectiveWallet.address}`);
-        const allowlistData = await allowlistResponse.json();
-        
-        if (!allowlistData.success || !allowlistData.data?.allowed) {
-          alert('🔒 You need special access to setup Semester Zero collections. Complete more objectives to gain access!');
-          return;
-        }
-        
-        console.log('✅ Access verified, proceeding with setup...');
-      } catch (error) {
-        console.error('Error checking access:', error);
-        alert('❌ Unable to verify access status. Please try again later.');
-        return;
-      }
-    }
-
-    try {
-      console.log('🏆 Setting up Flunks: Semester Zero collection...');
-      console.log('📡 Using wallet address:', effectiveWallet.address);
-      console.log('🌐 Network configuration:', {
-        network: 'mainnet',
-        accessNode: 'https://access-mainnet-beta.onflow.org',
-        contractAddress: '0x807c3d470888cc48'
-      });
-
-      // Check if collection already exists
-      console.log('🔍 Checking existing collection...');
-      const hasCollection = await fcl.query({
-        cadence: `
-          import SemesterZero from 0x807c3d470888cc48
-          import NonFungibleToken from 0x1d7e57aa55817448
-          
-          access(all) fun main(address: Address): Bool {
-            return getAccount(address)
-              .capabilities.get<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionPublicPath)
-              .check()
-          }
-        `,
-        args: (arg, t) => [arg(effectiveWallet.address, t.Address)],
-      });
-
-      if (hasCollection) {
-        console.log('ℹ️ Collection already exists');
-        alert('✅ You already have Flunks: Semester Zero enabled!');
-        return;
-      }
-
-      console.log('📝 Creating collection transaction...');
-      
-      // Use the separate Cadence file content for consistency
-      const createCollectionCadence = `
-// Create Chapter5 NFT collection only
-// UserProfile is managed in Supabase
-
-import SemesterZero from 0x807c3d470888cc48
-import NonFungibleToken from 0x1d7e57aa55817448
-
-transaction() {
-  prepare(signer: auth(Storage, Capabilities) &Account) {
-    // Check if user already has Chapter 5 collection
-    if signer.storage.borrow<&SemesterZero.Chapter5Collection>(from: SemesterZero.Chapter5CollectionStoragePath) == nil {
-      // Create collection
-      let collection <- SemesterZero.createEmptyChapter5Collection()
-      signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
-      
-      // Link public capability
-      let nftCap = signer.capabilities.storage.issue<&{NonFungibleToken.Receiver}>(SemesterZero.Chapter5CollectionStoragePath)
-      signer.capabilities.publish(nftCap, at: SemesterZero.Chapter5CollectionPublicPath)
-      
-      log("✅ Created Chapter 5 NFT collection")
-    } else {
-      log("ℹ️ Collection already exists")
-    }
-  }
-  
-  execute {
-    log("🎃 Ready to receive Chapter 5 NFTs!")
-  }
-}
-      `;
-
-      // Send the transaction
-      const transactionId = await fcl.mutate({
-        cadence: createCollectionCadence,
-        args: (arg, t) => [],
-        payer: fcl.currentUser,
-        proposer: fcl.currentUser,
-        authorizations: [fcl.currentUser],
-        limit: 9999,
-      });
-
-      console.log('📤 Transaction sent:', transactionId);
-      alert('⏳ Setting up your Flunks: Semester Zero collection...');
-
-      // Wait for transaction to be sealed
-      console.log('⏳ Waiting for transaction to be sealed...');
-      const result = await fcl.tx(transactionId).onceSealed();
-      
-      console.log('✅ Transaction sealed successfully:', result);
-      console.log('🎉 Flunks: Semester Zero collection created!');
-      alert('🎉 Flunks: Semester Zero enabled! You\'re ready to receive NFTs!');
-
-    } catch (error) {
-      console.error('💥 Error setting up collection:', error);
-      
-      // Provide more specific error messages
-      let errorMessage = '❌ Failed to setup collection. ';
-      
-      if (error.message && error.message.includes('ErrInvalidRequest')) {
-        errorMessage += 'The transaction is not supported. This might be a wallet or network issue.';
-      } else if (error.message && error.message.includes('declined')) {
-        errorMessage += 'Transaction was declined by user.';
-      } else if (error.message && error.message.includes('timeout')) {
-        errorMessage += 'Transaction timed out. Please try again.';
-      } else if (error.message && error.message.includes('insufficient')) {
-        errorMessage += 'Insufficient account balance for transaction fees.';
-      } else {
-        errorMessage += 'Please check your wallet connection and try again.';
-      }
-      
-      console.log('🔍 Error details:', {
-        message: error.message,
-        code: error.code || 'Unknown',
-        stack: error.stack
-      });
-      
-      alert(errorMessage);
-    }
-  };
-
   // Function to open Lobby with 4 new buttons
   const openLobby = () => {
     openWindow({
@@ -834,15 +692,12 @@ transaction() {
                 </button>
               </div>
 
-              {/* Bottom row: Full width Semester Zero button */}
+              {/* Bottom row: Full width Semester Zero Collection Setup */}
               <div className="max-w-4xl mx-auto">
-                <button
-                  onClick={setupChapter5Collection}
-                  className="w-full bg-gradient-to-br from-green-700 to-teal-900 hover:from-green-600 hover:to-teal-800 text-white px-4 py-3 rounded-lg border-3 border-green-500 hover:border-green-400 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg"
-                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
-                >
-                  👁️ Flunks: Semester Zero Collection
-                </button>
+                <SetupCollectionButton 
+                  wallet={effectiveWallet?.address}
+                  compact={false}
+                />
               </div>
             </div>
           </div>

@@ -1,12 +1,11 @@
-// FlunksSemesterZero - Wrapper contract for NFT token list compatibility
-// This creates standard-named resources that wrap the existing Chapter5NFT
-// Allows listing on Flow NFT token list without breaking existing NFT holders
+// FlunksSemesterZero - Clean Chapter 5 NFT Collection
+// This is the main collection for Semester Zero Chapter 5 NFTs
+// Replaces the old SemesterZero collection which had test mints
 
 import NonFungibleToken from 0x1d7e57aa55817448
 import MetadataViews from 0x1d7e57aa55817448
 import ViewResolver from 0x1d7e57aa55817448
 import FungibleToken from 0xf233dcee88fe0abe
-import SemesterZero from 0xce9dd43888d99574
 
 access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
     
@@ -16,29 +15,48 @@ access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
     
     access(all) let CollectionStoragePath: StoragePath
     access(all) let CollectionPublicPath: PublicPath
+    access(all) let AdminStoragePath: StoragePath
     
     // ========================================
-    // EVENTS (Required by NonFungibleToken)
+    // STATE
+    // ========================================
+    
+    access(all) var totalSupply: UInt64
+    access(all) let chapter5Completions: {Address: Bool}
+    
+    // ========================================
+    // EVENTS
     // ========================================
     
     access(all) event ContractInitialized()
     access(all) event Withdraw(id: UInt64, from: Address?)
     access(all) event Deposit(id: UInt64, to: Address?)
+    access(all) event Chapter5NFTMinted(nftID: UInt64, recipient: Address, timestamp: UFix64)
     
     // ========================================
-    // NFT RESOURCE (Standard Name for Token List)
+    // NFT RESOURCE
     // ========================================
     
-    /// This wraps the Chapter5NFT to provide standard naming
     access(all) resource NFT: NonFungibleToken.NFT, ViewResolver.Resolver {
         access(all) let id: UInt64
+        access(all) let achievementType: String
+        access(all) let recipient: Address
+        access(all) let mintedAt: UFix64
+        access(all) let metadata: {String: String}
         
-        // Reference to the actual Chapter5NFT
-        access(self) let chapter5NFT: @SemesterZero.Chapter5NFT
-        
-        init(chapter5NFT: @SemesterZero.Chapter5NFT) {
-            self.id = chapter5NFT.id
-            self.chapter5NFT <- chapter5NFT
+        init(id: UInt64, recipient: Address) {
+            self.id = id
+            self.achievementType = "SLACKER_AND_OVERACHIEVER"
+            self.recipient = recipient
+            self.mintedAt = getCurrentBlock().timestamp
+            self.metadata = {
+                "name": "Chapter 5 Completion",
+                "description": "Awarded for completing both Slacker and Overachiever objectives in Chapter 5",
+                "achievement": "SLACKER_AND_OVERACHIEVER",
+                "chapter": "5",
+                "rarity": "Legendary",
+                "image": "https://storage.googleapis.com/flunks_public/images/1.png"
+            }
         }
         
         access(all) view fun getViews(): [Type] {
@@ -56,27 +74,37 @@ access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
             switch view {
                 case Type<MetadataViews.Display>():
                     return MetadataViews.Display(
-                        name: "Chapter 5 Completion",
-                        description: "Awarded for completing both Slacker and Overachiever objectives in Chapter 5 of Flunks: Semester Zero",
+                        name: self.metadata["name"] ?? "Chapter 5 NFT",
+                        description: self.metadata["description"] ?? "Flunks: Semester Zero achievement",
                         thumbnail: MetadataViews.HTTPFile(
-                            url: "https://storage.googleapis.com/flunks_public/nfts/chapter5-completion.png"
+                            url: self.metadata["image"] ?? "https://storage.googleapis.com/flunks_public/images/1.png"
                         )
                     )
                     
                 case Type<MetadataViews.ExternalURL>():
                     return MetadataViews.ExternalURL("https://www.flunks.net/semester-zero/chapter-5")
                     
-                case Type<MetadataViews.NFTCollectionData>():
-                    return FlunksSemesterZero.resolveContractView(resourceType: Type<@FlunksSemesterZero.NFT>(), viewType: Type<MetadataViews.NFTCollectionData>())
-                    
-                case Type<MetadataViews.NFTCollectionDisplay>():
-                    return FlunksSemesterZero.resolveContractView(resourceType: Type<@FlunksSemesterZero.NFT>(), viewType: Type<MetadataViews.NFTCollectionDisplay>())
-                    
                 case Type<MetadataViews.Royalties>():
-                    return FlunksSemesterZero.resolveContractView(resourceType: Type<@FlunksSemesterZero.NFT>(), viewType: Type<MetadataViews.Royalties>())
-                    
+                    let royaltyReceiver: Capability<&{FungibleToken.Receiver}> =
+                        getAccount(0xce9dd43888d99574).capabilities.get<&{FungibleToken.Receiver}>(MetadataViews.getRoyaltyReceiverPublicPath())!
+                    return MetadataViews.Royalties(
+                        [
+                            MetadataViews.Royalty(
+                                receiver: royaltyReceiver,
+                                cut: 0.10,
+                                description: "Flunks: Semester Zero marketplace royalty"
+                            )
+                        ]
+                    )
+                
                 case Type<MetadataViews.Serial>():
                     return MetadataViews.Serial(self.id)
+                
+                case Type<MetadataViews.NFTCollectionData>():
+                    return FlunksSemesterZero.resolveContractView(resourceType: Type<@FlunksSemesterZero.NFT>(), viewType: Type<MetadataViews.NFTCollectionData>())
+                
+                case Type<MetadataViews.NFTCollectionDisplay>():
+                    return FlunksSemesterZero.resolveContractView(resourceType: Type<@FlunksSemesterZero.NFT>(), viewType: Type<MetadataViews.NFTCollectionDisplay>())
             }
             
             return nil
@@ -88,10 +116,10 @@ access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
     }
     
     // ========================================
-    // COLLECTION RESOURCE (Standard Name for Token List)
+    // COLLECTION RESOURCE
     // ========================================
     
-    access(all) resource Collection: NonFungibleToken.Collection, ViewResolver.ResolverCollection {
+    access(all) resource Collection: NonFungibleToken.Collection {
         access(all) var ownedNFTs: @{UInt64: {NonFungibleToken.NFT}}
         
         init() {
@@ -110,6 +138,14 @@ access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
             return &self.ownedNFTs[id]
         }
         
+        access(NonFungibleToken.Withdraw) fun withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT} {
+            let token <- self.ownedNFTs.remove(key: withdrawID)
+                ?? panic("NFT not found in collection")
+            
+            emit Withdraw(id: token.id, from: self.owner?.address)
+            return <- token
+        }
+        
         access(all) fun deposit(token: @{NonFungibleToken.NFT}) {
             let nft <- token as! @FlunksSemesterZero.NFT
             let id = nft.id
@@ -120,32 +156,62 @@ access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
             emit Deposit(id: id, to: self.owner?.address)
         }
         
-        access(NonFungibleToken.Withdraw) fun withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT} {
-            let token <- self.ownedNFTs.remove(key: withdrawID)
-                ?? panic("NFT not found")
-            
-            emit Withdraw(id: token.id, from: self.owner?.address)
-            
-            return <- token
+        access(all) view fun getSupportedNFTTypes(): {Type: Bool} {
+            let supportedTypes: {Type: Bool} = {}
+            supportedTypes[Type<@FlunksSemesterZero.NFT>()] = true
+            return supportedTypes
         }
         
-        access(all) view fun borrowViewResolver(id: UInt64): &{ViewResolver.Resolver}? {
-            if let nft = &self.ownedNFTs[id] as &{NonFungibleToken.NFT}? {
-                return nft as &{ViewResolver.Resolver}
-            }
-            return nil
+        access(all) view fun isSupportedNFTType(type: Type): Bool {
+            return type == Type<@FlunksSemesterZero.NFT>()
         }
         
         access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection} {
             return <- FlunksSemesterZero.createEmptyCollection(nftType: Type<@FlunksSemesterZero.NFT>())
         }
+    }
+    
+    // ========================================
+    // ADMIN RESOURCE
+    // ========================================
+    
+    access(all) resource Admin {
         
-        access(all) view fun getSupportedNFTTypes(): {Type: Bool} {
-            return {Type<@FlunksSemesterZero.NFT>(): true}
-        }
-        
-        access(all) view fun isSupportedNFTType(type: Type): Bool {
-            return type == Type<@FlunksSemesterZero.NFT>()
+        /// Airdrop Chapter 5 NFT to eligible user
+        access(all) fun airdropChapter5NFT(userAddress: Address) {
+            pre {
+                FlunksSemesterZero.chapter5Completions[userAddress] == nil: "User already received Chapter 5 NFT"
+            }
+            
+            // Check user has collection set up
+            let userAccount = getAccount(userAddress)
+            let collectionCap = userAccount.capabilities
+                .get<&{NonFungibleToken.Receiver}>(FlunksSemesterZero.CollectionPublicPath)
+            
+            assert(collectionCap.check(), message: "User does not have FlunksSemesterZero collection set up")
+            
+            // Mint the NFT
+            let newNFT <- create NFT(
+                id: FlunksSemesterZero.totalSupply,
+                recipient: userAddress
+            )
+            let nftID = newNFT.id
+            
+            // Get recipient's collection reference
+            let recipientCollection = collectionCap.borrow()!
+            
+            // Deposit into recipient's collection
+            recipientCollection.deposit(token: <- newNFT)
+            
+            // Update state
+            FlunksSemesterZero.totalSupply = FlunksSemesterZero.totalSupply + 1
+            FlunksSemesterZero.chapter5Completions[userAddress] = true
+            
+            emit Chapter5NFTMinted(
+                nftID: nftID,
+                recipient: userAddress,
+                timestamp: getCurrentBlock().timestamp
+            )
         }
     }
     
@@ -157,20 +223,10 @@ access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
         return <- create Collection()
     }
     
-    // Admin function to wrap existing Chapter5NFTs
-    access(all) fun wrapChapter5NFT(chapter5NFT: @SemesterZero.Chapter5NFT): @NFT {
-        return <- create NFT(chapter5NFT: <- chapter5NFT)
-    }
-    
-    // ========================================
-    // CONTRACT VIEWS (For Token List)
-    // ========================================
-    
     access(all) view fun getContractViews(resourceType: Type?): [Type] {
         return [
             Type<MetadataViews.NFTCollectionData>(),
-            Type<MetadataViews.NFTCollectionDisplay>(),
-            Type<MetadataViews.Royalties>()
+            Type<MetadataViews.NFTCollectionDisplay>()
         ]
     }
     
@@ -208,20 +264,6 @@ access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
                         "discord": MetadataViews.ExternalURL("https://discord.gg/flunks")
                     }
                 )
-            
-            case Type<MetadataViews.Royalties>():
-                // 10% creator royalty to Flunks treasury wallet
-                let royaltyReceiver: Capability<&{FungibleToken.Receiver}> =
-                    getAccount(0xce9dd43888d99574).capabilities.get<&{FungibleToken.Receiver}>(MetadataViews.getRoyaltyReceiverPublicPath())!
-                return MetadataViews.Royalties(
-                    [
-                        MetadataViews.Royalty(
-                            receiver: royaltyReceiver,
-                            cut: 0.10,
-                            description: "Flunks: Semester Zero marketplace royalty"
-                        )
-                    ]
-                )
         }
         
         return nil
@@ -230,6 +272,14 @@ access(all) contract FlunksSemesterZero: NonFungibleToken, ViewResolver {
     init() {
         self.CollectionStoragePath = /storage/FlunksSemesterZeroCollection
         self.CollectionPublicPath = /public/FlunksSemesterZeroCollection
+        self.AdminStoragePath = /storage/FlunksSemesterZeroAdmin
+        
+        self.totalSupply = 0
+        self.chapter5Completions = {}
+        
+        // Create admin resource
+        let admin <- create Admin()
+        self.account.storage.save(<-admin, to: self.AdminStoragePath)
         
         emit ContractInitialized()
     }

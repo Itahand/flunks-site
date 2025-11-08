@@ -1,0 +1,37 @@
+{
+  "collection": "SemesterZero",
+  "contract": "0xce9dd43888d99574",
+  "genesisNFTs": [
+    {
+      "id": 0,
+      "type": "Chapter5NFT",
+      "status": "Genesis",
+      "tier": "Legendary",
+      "mintDate": "2025-11-08",
+      "description": "The very first NFT minted in the Semester Zero collection. A test mint that became a legendary artifact.",
+      "specialTrait": "Genesis #1",
+      "rarity": "1 of 1"
+    },
+    {
+      "id": 1,
+      "type": "Chapter5NFT", 
+      "status": "Genesis",
+      "tier": "Legendary",
+      "mintDate": "2025-11-08",
+      "description": "The second NFT ever minted in Semester Zero. Part of the original Genesis pair.",
+      "specialTrait": "Genesis #2",
+      "rarity": "1 of 1"
+    }
+  ],
+  "verification": {
+    "method": "NFT ID on Flow blockchain",
+    "note": "Genesis status determined by NFT ID 0 or 1",
+    "flowscan": "https://flowdiver.io/contract?a=0xce9dd43888d99574&c=SemesterZero"
+  },
+  "collectorNotes": [
+    "Only 2 Genesis NFTs exist in the entire collection",
+    "IDs cannot be replicated - these are forever the first two",
+    "Originally test mints that became permanent collection artifacts",
+    "Special historical significance as the collection's foundation"
+  ]
+}

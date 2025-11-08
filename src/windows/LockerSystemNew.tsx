@@ -2006,7 +2006,7 @@ const LockerSystemNew: React.FC = () => {
               textAlign: 'center',
               textShadow: '0 0 2px #00ff00'
             }}>
-              {gumBalance.toLocaleString()}
+              {gumBalance?.toLocaleString() || '0'}
             </div>
             <span style={{ fontSize: '10px', color: '#333' }}>GUM</span>
           </div>

@@ -31,22 +31,24 @@ console.log('🌊 Configuring FCL with access node:', FLOW_ACCESS_NODE);
 console.log('📱 WalletConnect Project ID:', WALLETCONNECT_PROJECT_ID ? 'Set ✅' : 'Missing ❌');
 console.log('🌐 App URL:', APP_URL);
 
-// FORCE mainnet configuration - override any cached settings
+// Simplified FCL configuration following official Flow docs pattern
+// The key: use REST mainnet URL and let FCL/wallet handle the rest
 config({
   "flow.network": "mainnet",
-  "accessNode.api": FLOW_ACCESS_NODE,
-  "discovery.wallet": "https://fcl-discovery.onflow.org/mainnet/authn",
-  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/mainnet/authn",
-  "challenge.handshake": "https://fcl-discovery.onflow.org/api/mainnet/handshake",
+  "accessNode.api": "https://rest-mainnet.onflow.org",
+  
+  // Discovery - use the non-versioned endpoints (no /api/mainnet)
+  "discovery.wallet": "https://fcl-discovery.onflow.org/authn",
+  
+  // App details
   "app.detail.title": "Flunks",
   "app.detail.icon": "https://flunks.net/flunks-logo.png",
   "app.detail.url": APP_URL,
+  
+  // WalletConnect
   "walletconnect.projectId": WALLETCONNECT_PROJECT_ID,
   
-  // MOBILE SPECIFIC: Force WalletConnect on mobile devices
-  "discovery.wallet.method": "POP/RPC",
-  
-  // Contract addresses (mainnet deployment)
+  // Contracts
   "0xSemesterZero": "0x807c3d470888cc48",
   "0xFlunks": "0x807c3d470888cc48",
 });
@@ -58,9 +60,8 @@ if (typeof window !== 'undefined') {
     const actualNetwork = await config().get('flow.network');
     const actualDiscoveryWallet = await config().get('discovery.wallet');
     const actualDiscoveryAuthn = await config().get('discovery.authn.endpoint');
-    const actualHandshake = await config().get('challenge.handshake');
 
-    console.log('✅ FCL Configuration verified:', {
+    console.log('✅ FCL Configuration verified (Bypass Discovery Mode):', {
       accessNode: actualAccessNode,
       network: actualNetwork,
       expectedAccessNode: FLOW_ACCESS_NODE,
@@ -68,14 +69,15 @@ if (typeof window !== 'undefined') {
       walletConnectConfigured: !!WALLETCONNECT_PROJECT_ID,
       discoveryWallet: actualDiscoveryWallet,
       discoveryAuthn: actualDiscoveryAuthn,
-      handshake: actualHandshake
+      mode: 'DIRECT_DAPPER_BYPASS'
     });
 
     // Alert if there's a mismatch (testnet detected)
     if (
       (typeof actualAccessNode === 'string' && actualAccessNode.includes('testnet')) || 
       actualNetwork === 'testnet' ||
-      (typeof actualHandshake === 'string' && actualHandshake.includes('testnet'))
+      (typeof actualDiscoveryWallet === 'string' && actualDiscoveryWallet.includes('testnet')) ||
+      (typeof actualDiscoveryAuthn === 'string' && actualDiscoveryAuthn.includes('testnet'))
     ) {
       console.error('❌ TESTNET DETECTED! Configuration override failed. Clearing all FCL cache...');
       Object.keys(localStorage)

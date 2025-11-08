@@ -48,6 +48,7 @@ import { AuthProvider } from "contexts/AuthContext";
 import { MusicProvider } from "contexts/MusicContext";
 import { UnifiedWalletProvider } from "contexts/UnifiedWalletContext";
 import { GumDisplay } from "components/GumDisplay";
+import Chapter5NFTNotification from "components/Chapter5NFTNotification";
 import UserProfilePrompt from "components/UserProfile/UserProfilePrompt";
 import AutoWalletAccessGrant from "components/AutoWalletAccessGrant";
 import ErrorBoundary from "components/ErrorBoundary";
@@ -201,6 +202,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                               <Analytics />
                               <AutoWalletAccessGrant />
                               <UserProfilePrompt autoShow={false} showToast={false} />
+                              <Chapter5NFTNotification />
                               <DynamicUserProfile />
                               <AmbientSoundPlayer />
                             </GumProvider>
