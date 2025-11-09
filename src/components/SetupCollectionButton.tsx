@@ -36,7 +36,7 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
   const checkCollection = async (address: string) => {
     try {
       const script = `
-        import SemesterZero from 0xce9dd43888d99574
+        import SemesterZero from 0x807c3d470888cc48
         
         access(all) fun main(address: Address): Bool {
           let account = getAccount(address)
@@ -70,7 +70,7 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
 
     try {
       const transaction = `
-        import SemesterZero from 0xce9dd43888d99574
+        import SemesterZero from 0x807c3d470888cc48
         import NonFungibleToken from 0x1d7e57aa55817448
         
         transaction {
