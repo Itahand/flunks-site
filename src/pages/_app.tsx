@@ -172,9 +172,6 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                         "53675303-5e80-4fe5-88a4-e6caae677432",
                       walletConnectors: [MainnetFlowWalletConnectors],
                       
-                      // CRITICAL: Disable auto-reconnect - user must explicitly connect
-                      initialAuthenticationMode: 'connect-only',
-                      
                       // Show ALL Flow wallets - let Dynamic/FCL handle mobile detection
                       walletsFilter: (wallets) => {
                         console.log('🔍 Dynamic walletsFilter - Available wallets:', wallets.map(w => ({

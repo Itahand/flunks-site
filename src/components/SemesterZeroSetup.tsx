@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { useUnifiedWallet } from '../contexts/UnifiedWalletContext';
 import SetupCollectionButton from './SetupCollectionButton';
 import '../config/fcl';
 
@@ -15,6 +16,10 @@ interface SemesterZeroSetupProps {
  */
 const SemesterZeroSetup: React.FC<SemesterZeroSetupProps> = ({ onClose, compact = false }) => {
   const { primaryWallet } = useDynamicContext();
+  const { address: unifiedAddress } = useUnifiedWallet();
+  
+  // Use unified address (works for both Dapper and FCL wallets)
+  const walletAddress = unifiedAddress || primaryWallet?.address;
 
   // Compact version for small UI elements
   if (compact) {
@@ -24,7 +29,7 @@ const SemesterZeroSetup: React.FC<SemesterZeroSetupProps> = ({ onClose, compact 
           <h3 className="text-sm font-bold text-white">🎓 Semester Zero</h3>
         </div>
         <SetupCollectionButton 
-          wallet={primaryWallet?.address} 
+          wallet={walletAddress} 
           compact={true}
         />
       </div>
@@ -54,14 +59,14 @@ const SemesterZeroSetup: React.FC<SemesterZeroSetupProps> = ({ onClose, compact 
           <div className="bg-purple-800/50 border border-purple-600 rounded-lg p-4">
             <p className="text-sm text-purple-200 mb-1">Connected Wallet:</p>
             <p className="font-mono text-sm">
-              {primaryWallet?.address || 'Not connected'}
+              {walletAddress || 'Not connected'}
             </p>
           </div>
 
           {/* Setup Button */}
           <div className="bg-purple-800/30 border-2 border-purple-600 rounded-lg p-6">
             <SetupCollectionButton 
-              wallet={primaryWallet?.address}
+              wallet={walletAddress}
               compact={false}
             />
           </div>

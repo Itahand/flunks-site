@@ -116,7 +116,7 @@ Output after reveal:
 1. **Today**: Deploy contract with reveal mechanism
 2. **This week**: Airdrop NFTs to users (they see placeholder)
 3. **Next week**: Finish final artwork, upload to storage
-4. **Reveal day**: Run reveal transaction - instant update for all users!
+4. **Reveal day**: Run reveal transaction - instant update fobir all users!
 5. **Forever**: All NFTs show revealed image
 
 ## Notes

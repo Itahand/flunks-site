@@ -7,6 +7,7 @@ import { useTimeBasedImage } from "utils/timeBasedImages";
 import RetroTextBox from "components/RetroTextBox";
 import { useState, useEffect, useRef } from "react";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { useUnifiedWallet } from 'contexts/UnifiedWalletContext';
 import * as fcl from '@onflow/fcl';
 import SetupCollectionButton from "components/SetupCollectionButton";
 // Ensure FCL is properly configured for mainnet
@@ -152,6 +153,7 @@ const Room1BellComponent: React.FC<Room1BellComponentProps> = ({ onClose, wallet
 const ParadiseMotelMain = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   const { primaryWallet } = useDynamicContext();
+  const { address: unifiedAddress } = useUnifiedWallet();
   
   // 🚀 LOCALHOST DEVELOPMENT BYPASS
   const isDevelopment = typeof window !== 'undefined' && 
@@ -159,7 +161,8 @@ const ParadiseMotelMain = () => {
   
   // Create mock wallet for localhost development
   const mockWallet = isDevelopment ? { address: 'dev-wallet-bypass' } : null;
-  const effectiveWallet = isDevelopment ? mockWallet : primaryWallet;
+  // Use unified address (works for both Dapper and FCL wallets)
+  const effectiveWallet = isDevelopment ? mockWallet : (unifiedAddress ? { address: unifiedAddress } : primaryWallet);
   
   // Use day/night images for Paradise Motel
   const dayImage = "/images/locations/paradise motel/paradise-motel-day.png";
