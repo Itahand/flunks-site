@@ -702,7 +702,8 @@ const windowsMemod = useMemo(() => (
         )}
 
         {/* 22. Magic Test (Reveal Tester) - Build Mode Only */}
-        {isFeatureEnabled('showMagicTest') && (
+        {/* Magic Test - LOCALHOST ONLY */}
+        {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
           <ConditionalAppIcon
             appId="magic-test"
             title="Magic Test"
@@ -713,7 +714,7 @@ const windowsMemod = useMemo(() => (
                 <DraggableResizeableWindow
                   windowsId={WINDOW_IDS.MAGIC_TEST}
                   onClose={() => closeWindow(WINDOW_IDS.MAGIC_TEST)}
-                  headerTitle="🎭 Magic Test - NFT Reveal Preview"
+                  headerTitle="🎭 Magic Test - NFT Reveal Preview (localhost only)"
                   initialWidth="95vw"
                   initialHeight="95vh"
                   headerIcon="/images/icons/experiment-3d.png"

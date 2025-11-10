@@ -61,12 +61,77 @@ const Grid = styled.div<{ revealing?: boolean }>`
   }
 `;
 
-const Card = styled.div`
+const Card = styled.div<{ revealing?: boolean }>`
   background: rgba(255,255,255,0.1);
   border-radius: 12px;
   padding: 25px;
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255,255,255,0.2);
+  position: relative;
+  overflow: hidden;
+  
+  ${props => props.revealing && `
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+      animation: shimmer 0.8s ease-in-out 3;
+      z-index: 10;
+    }
+    
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+  `}
+`;
+
+const TransformOverlay = styled.div<{ show: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, 
+    rgba(138, 43, 226, 0.95) 0%, 
+    rgba(75, 0, 130, 0.9) 50%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  display: ${props => props.show ? 'flex' : 'none'};
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  border-radius: 12px;
+  animation: ${props => props.show ? 'overlayFadeIn 0.5s ease-out' : 'none'};
+  
+  &::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(0.8); opacity: 0.5; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
 `;
 
 const CardTitle = styled.h2`
@@ -76,7 +141,7 @@ const CardTitle = styled.h2`
   color: #FFD700;
 `;
 
-const NFTImage = styled.img`
+const NFTImage = styled.img<{ revealing?: boolean; isRevealed?: boolean }>`
   width: 100%;
   max-width: 300px;
   height: auto;
@@ -88,6 +153,51 @@ const NFTImage = styled.img`
   
   &:hover {
     transform: scale(1.05);
+  }
+  
+  ${props => props.revealing && !props.isRevealed && `
+    animation: fadeOutShrink 1s ease-out forwards;
+  `}
+  
+  ${props => props.revealing && props.isRevealed && `
+    animation: fadeInGrow 1s ease-out 1s forwards;
+    opacity: 0;
+  `}
+  
+  @keyframes fadeOutShrink {
+    0% { 
+      opacity: 1; 
+      transform: scale(1) rotate(0deg);
+      filter: brightness(1);
+    }
+    50% { 
+      opacity: 0.5; 
+      transform: scale(0.7) rotate(5deg);
+      filter: brightness(1.5);
+    }
+    100% { 
+      opacity: 0; 
+      transform: scale(0.3) rotate(10deg);
+      filter: brightness(2);
+    }
+  }
+  
+  @keyframes fadeInGrow {
+    0% { 
+      opacity: 0; 
+      transform: scale(0.3) rotate(-10deg);
+      filter: brightness(2) saturate(2);
+    }
+    50% { 
+      opacity: 0.5; 
+      transform: scale(1.2) rotate(-5deg);
+      filter: brightness(1.5) saturate(1.5);
+    }
+    100% { 
+      opacity: 1; 
+      transform: scale(1) rotate(0deg);
+      filter: brightness(1) saturate(1);
+    }
   }
 `;
 
@@ -609,6 +719,7 @@ export const RevealTester: React.FC = () => {
   const [revealedMetadata, setRevealedMetadata] = useState<Metadata>(PRESETS.simple.revealed);
   const [revealing, setRevealing] = useState(false);
   const [showRevealOverlay, setShowRevealOverlay] = useState(false);
+  const [showCardOverlay, setShowCardOverlay] = useState(false);
 
   const loadPreset = (presetKey: keyof typeof PRESETS) => {
     const preset = PRESETS[presetKey];
@@ -618,12 +729,25 @@ export const RevealTester: React.FC = () => {
 
   const simulateReveal = () => {
     setRevealing(true);
-    setShowRevealOverlay(true);
     
+    // Show in-card overlay immediately
+    setShowCardOverlay(true);
+    
+    // Show fullscreen overlay after a brief delay
+    setTimeout(() => {
+      setShowRevealOverlay(true);
+    }, 500);
+    
+    // Hide fullscreen overlay
     setTimeout(() => {
       setShowRevealOverlay(false);
-      setRevealing(false);
     }, 2000);
+    
+    // Hide card overlay and stop animation
+    setTimeout(() => {
+      setShowCardOverlay(false);
+      setRevealing(false);
+    }, 2500);
   };
 
   const renderMetadata = (metadata: Metadata) => {
@@ -672,25 +796,73 @@ export const RevealTester: React.FC = () => {
 
       <Grid revealing={revealing}>
         {/* BEFORE (Unrevealed) */}
-        <Card>
+        <Card revealing={revealing}>
           <CardTitle>BEFORE (Unrevealed)</CardTitle>
           <AnimationContainer revealing={false}>
-            <NFTImage src={unrevealedMetadata.image} alt="Unrevealed" />
+            <NFTImage 
+              src={unrevealedMetadata.image} 
+              alt="Unrevealed" 
+              revealing={revealing}
+              isRevealed={false}
+            />
           </AnimationContainer>
           <MetadataBox>
             {renderMetadata(unrevealedMetadata)}
           </MetadataBox>
+          
+          {/* In-card transformation overlay */}
+          <TransformOverlay show={showCardOverlay}>
+            <div style={{ 
+              fontSize: '80px', 
+              animation: 'spin 1s linear infinite',
+              marginBottom: '20px'
+            }}>
+              ✨
+            </div>
+            <div style={{ 
+              color: '#FFD700', 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              textShadow: '0 0 20px rgba(255, 215, 0, 0.8)'
+            }}>
+              TRANSFORMING...
+            </div>
+          </TransformOverlay>
         </Card>
 
         {/* AFTER (Revealed) */}
-        <Card>
+        <Card revealing={revealing}>
           <CardTitle>AFTER (Revealed)</CardTitle>
           <AnimationContainer revealing={revealing}>
-            <NFTImage src={revealedMetadata.image} alt="Revealed" />
+            <NFTImage 
+              src={revealedMetadata.image} 
+              alt="Revealed" 
+              revealing={revealing}
+              isRevealed={true}
+            />
           </AnimationContainer>
           <MetadataBox>
             {renderMetadata(revealedMetadata)}
           </MetadataBox>
+          
+          {/* In-card transformation overlay */}
+          <TransformOverlay show={showCardOverlay}>
+            <div style={{ 
+              fontSize: '80px', 
+              animation: 'spin 1s linear infinite',
+              marginBottom: '20px'
+            }}>
+              🎉
+            </div>
+            <div style={{ 
+              color: '#FFD700', 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              textShadow: '0 0 20px rgba(255, 215, 0, 0.8)'
+            }}>
+              REVEALING...
+            </div>
+          </TransformOverlay>
         </Card>
       </Grid>
 
