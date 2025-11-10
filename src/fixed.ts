@@ -187,6 +187,9 @@ export const WINDOW_IDS = {
   
   // Magic Test
   MAGIC_TEST: "magic-test",
+  
+  // Level Up
+  LEVEL_UP: "level-up",
 };
 
 export const WINDOW_APP_INFO_TO_WINDOW_ID = {

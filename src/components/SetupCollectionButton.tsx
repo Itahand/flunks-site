@@ -130,7 +130,7 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
               if !existingCap.check() {
                 log("🔧 Recreating public capability...")
                 
-                // Unpublish old capability if it exists (Dapper-safe)
+                // Always unpublish first to clear any existing capability (Dapper-safe)
                 signer.capabilities.unpublish(SemesterZero.Chapter5CollectionPublicPath)
                 
                 // Create new public capability (Dapper-safe)
@@ -138,21 +138,19 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
                   SemesterZero.Chapter5CollectionStoragePath
                 )
                 
-                // Only publish if path is free
-                if signer.capabilities.get<&AnyResource>(SemesterZero.Chapter5CollectionPublicPath).check() == false {
-                  signer.capabilities.publish(newCap, at: SemesterZero.Chapter5CollectionPublicPath)
-                  log("✅ Public capability published!")
-                } else {
-                  log("⚠️ Public path occupied - skipping publish")
-                }
-                
-                log("✅ Public capability restored!")
+                // Publish the new capability
+                signer.capabilities.publish(newCap, at: SemesterZero.Chapter5CollectionPublicPath)
+                log("✅ Public capability published!")
               }
               
               return
             }
             
             log("🆕 Creating new collection...")
+            
+            // ALWAYS unpublish first to ensure path is completely clear
+            signer.capabilities.unpublish(SemesterZero.Chapter5CollectionPublicPath)
+            log("🧹 Cleared public path")
             
             // Check if storage path is clear
             if signer.storage.borrow<&AnyResource>(from: SemesterZero.Chapter5CollectionStoragePath) != nil {
@@ -165,19 +163,17 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
             
             // Save collection to storage (Dapper-safe)
             signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
+            log("💾 Collection saved to storage")
             
             // Create public capability (Dapper-safe)
             let collectionCap = signer.capabilities.storage.issue<&SemesterZero.Chapter5Collection>(
               SemesterZero.Chapter5CollectionStoragePath
             )
+            log("🔑 Capability issued")
             
-            // Only publish if public path is free
-            if signer.capabilities.get<&AnyResource>(SemesterZero.Chapter5CollectionPublicPath).check() == false {
-              signer.capabilities.publish(collectionCap, at: SemesterZero.Chapter5CollectionPublicPath)
-              log("✅ Public capability published!")
-            } else {
-              log("⚠️ Public path occupied, capability created but not published")
-            }
+            // Publish the capability
+            signer.capabilities.publish(collectionCap, at: SemesterZero.Chapter5CollectionPublicPath)
+            log("✅ Public capability published!")
             
             log("🎉 SemesterZero collection created!")
           }

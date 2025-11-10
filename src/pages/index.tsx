@@ -58,6 +58,7 @@ import { GumAdminPanel } from "components/GumAdminPanel";
 import { TimeConfigAdmin } from "components/DayNightHouse";
 import SemesterZeroSetup from "components/SemesterZeroSetup";
 import RevealTester from "components/admin/RevealTester";
+import LevelUp from "components/admin/LevelUp";
 
 const FullScreenLoader = () => {
   const [percent, setPercent] = useState(0);
@@ -721,6 +722,31 @@ const windowsMemod = useMemo(() => (
                   resizable={true}
                 >
                   <RevealTester />
+                </DraggableResizeableWindow>
+              )
+            })}
+          />
+        )}
+
+        {/* 22.5 Level Up - LOCALHOST + BUILD MODE */}
+        {(typeof window !== 'undefined' && (window.location.hostname === 'localhost' || isFeatureEnabled('showLevelUp'))) && (
+          <ConditionalAppIcon
+            appId="level-up"
+            title="Level Up"
+            icon="/images/icons/experiment-3d.png"
+            onDoubleClick={() => openWindow({
+              key: WINDOW_IDS.LEVEL_UP,
+              window: (
+                <DraggableResizeableWindow
+                  windowsId={WINDOW_IDS.LEVEL_UP}
+                  onClose={() => closeWindow(WINDOW_IDS.LEVEL_UP)}
+                  headerTitle="⚡ LEVEL UP - NFT Upgrade Arcade"
+                  initialWidth="95vw"
+                  initialHeight="95vh"
+                  headerIcon="/images/icons/experiment-3d.png"
+                  resizable={true}
+                >
+                  <LevelUp />
                 </DraggableResizeableWindow>
               )
             })}
