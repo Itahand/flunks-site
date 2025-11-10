@@ -57,6 +57,7 @@ import LoadingScreenPreview from "windows/LoadingScreenPreview";
 import { GumAdminPanel } from "components/GumAdminPanel";
 import { TimeConfigAdmin } from "components/DayNightHouse";
 import SemesterZeroSetup from "components/SemesterZeroSetup";
+import RevealTester from "components/admin/RevealTester";
 
 const FullScreenLoader = () => {
   const [percent, setPercent] = useState(0);
@@ -700,7 +701,32 @@ const windowsMemod = useMemo(() => (
           />
         )}
 
-        {/* 21. Fantasy Football */}
+        {/* 22. Magic Test (Reveal Tester) - Build Mode Only */}
+        {isFeatureEnabled('showMagicTest') && (
+          <ConditionalAppIcon
+            appId="magic-test"
+            title="Magic Test"
+            icon="/images/icons/experiment-3d.png"
+            onDoubleClick={() => openWindow({
+              key: WINDOW_IDS.MAGIC_TEST,
+              window: (
+                <DraggableResizeableWindow
+                  windowsId={WINDOW_IDS.MAGIC_TEST}
+                  onClose={() => closeWindow(WINDOW_IDS.MAGIC_TEST)}
+                  headerTitle="🎭 Magic Test - NFT Reveal Preview"
+                  initialWidth="95vw"
+                  initialHeight="95vh"
+                  headerIcon="/images/icons/experiment-3d.png"
+                  resizable={true}
+                >
+                  <RevealTester />
+                </DraggableResizeableWindow>
+              )
+            })}
+          />
+        )}
+
+        {/* 23. Fantasy Football */}
         <a
           href="https://sports.yahoo.com/dailyfantasy/league/147616/overview"
           target="_blank"

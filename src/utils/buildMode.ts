@@ -36,6 +36,7 @@ export interface BuildModeConfig {
   showStoryManual: boolean;
   showVCREffectsTest: boolean;
   showZoltarFortune: boolean;
+  showMagicTest: boolean;
   
   // Special Announcements
   flappyFlunkWeekend: boolean;
@@ -85,6 +86,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showStoryManual: true,
     showVCREffectsTest: false,
     showZoltarFortune: true,
+    showMagicTest: false,
     
     // Special Announcements - visible on public site
     flappyFlunkWeekend: true,
@@ -132,6 +134,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showStoryManual: true,
     showVCREffectsTest: true,
     showZoltarFortune: true,
+    showMagicTest: true,
     
     // Special Announcements - visible in build mode
     flappyFlunkWeekend: true,

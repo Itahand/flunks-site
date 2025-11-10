@@ -184,6 +184,9 @@ export const WINDOW_IDS = {
   
   // Semester Zero Setup
   SEMESTER_ZERO_SETUP: "semester_zero_setup",
+  
+  // Magic Test
+  MAGIC_TEST: "magic-test",
 };
 
 export const WINDOW_APP_INFO_TO_WINDOW_ID = {
