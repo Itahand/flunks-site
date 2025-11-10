@@ -137,7 +137,14 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
                 let newCap = signer.capabilities.storage.issue<&SemesterZero.Chapter5Collection>(
                   SemesterZero.Chapter5CollectionStoragePath
                 )
-                signer.capabilities.publish(newCap, at: SemesterZero.Chapter5CollectionPublicPath)
+                
+                // Only publish if path is free
+                if signer.capabilities.get<&AnyResource>(SemesterZero.Chapter5CollectionPublicPath).check() == false {
+                  signer.capabilities.publish(newCap, at: SemesterZero.Chapter5CollectionPublicPath)
+                  log("✅ Public capability published!")
+                } else {
+                  log("⚠️ Public path occupied - skipping publish")
+                }
                 
                 log("✅ Public capability restored!")
               }
@@ -146,6 +153,12 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
             }
             
             log("🆕 Creating new collection...")
+            
+            // Check if storage path is clear
+            if signer.storage.borrow<&AnyResource>(from: SemesterZero.Chapter5CollectionStoragePath) != nil {
+              log("❌ Storage path already occupied!")
+              panic("Collection storage path is already in use. Please contact support.")
+            }
             
             // Create new empty collection
             let collection <- SemesterZero.createEmptyCollection(nftType: Type<@SemesterZero.Chapter5NFT>())
@@ -157,7 +170,14 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
             let collectionCap = signer.capabilities.storage.issue<&SemesterZero.Chapter5Collection>(
               SemesterZero.Chapter5CollectionStoragePath
             )
-            signer.capabilities.publish(collectionCap, at: SemesterZero.Chapter5CollectionPublicPath)
+            
+            // Only publish if public path is free
+            if signer.capabilities.get<&AnyResource>(SemesterZero.Chapter5CollectionPublicPath).check() == false {
+              signer.capabilities.publish(collectionCap, at: SemesterZero.Chapter5CollectionPublicPath)
+              log("✅ Public capability published!")
+            } else {
+              log("⚠️ Public path occupied, capability created but not published")
+            }
             
             log("🎉 SemesterZero collection created!")
           }

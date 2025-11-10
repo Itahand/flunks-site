@@ -285,7 +285,7 @@ const NFTImage = styled.img<{ revealing?: boolean; isRevealed?: boolean }>`
   `}
   
   ${props => props.revealing && props.isRevealed && `
-    animation: fadeInGrow 1s ease-out 1s forwards;
+    animation: keyStyleReveal 5s ease-in-out forwards;
     opacity: 0;
   `}
   
@@ -307,21 +307,31 @@ const NFTImage = styled.img<{ revealing?: boolean; isRevealed?: boolean }>`
     }
   }
   
-  @keyframes fadeInGrow {
+  @keyframes keyStyleReveal {
     0% { 
       opacity: 0; 
-      transform: scale(0.3) rotate(-10deg);
-      filter: brightness(2) saturate(2);
+      transform: scale(0.3) rotate(-180deg);
+      filter: brightness(2) saturate(2) blur(20px);
     }
-    50% { 
-      opacity: 0.5; 
-      transform: scale(1.2) rotate(-5deg);
-      filter: brightness(1.5) saturate(1.5);
+    40% {
+      opacity: 1;
+      transform: scale(1.2) rotate(10deg);
+      filter: brightness(1.5) saturate(1.5) blur(5px);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.1) rotate(-5deg);
+      filter: brightness(1.2) saturate(1.2) blur(2px);
+    }
+    80% {
+      opacity: 1;
+      transform: scale(1.05) rotate(2deg);
+      filter: brightness(1.1) saturate(1.1) blur(0px);
     }
     100% { 
       opacity: 1; 
       transform: scale(1) rotate(0deg);
-      filter: brightness(1) saturate(1);
+      filter: brightness(1) saturate(1) blur(0px);
     }
   }
 `;
@@ -393,6 +403,63 @@ const Button = styled.button<{ variant?: 'primary' | 'secondary' | 'danger' }>`
         `;
     }
   }}
+`;
+
+const KeyholeContainer = styled.div`
+  background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
+  border-radius: 20px;
+  padding: 40px;
+  margin: 30px 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  text-align: center;
+`;
+
+const KeyholeCircle = styled.div<{ hasNFT: boolean }>`
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 30px;
+  background: radial-gradient(circle, #2a2a2a 0%, #000000 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 40px rgba(0,0,0,0.5);
+  cursor: ${props => props.hasNFT ? 'pointer' : 'default'};
+  transition: all 0.3s ease;
+  
+  ${props => props.hasNFT && `
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: inset 0 0 30px rgba(255,215,0,0.3), 0 10px 50px rgba(0,0,0,0.6);
+    }
+  `}
+`;
+
+const NFTSelector = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+`;
+
+const NFTOption = styled.div<{ selected: boolean }>`
+  padding: 15px;
+  border-radius: 12px;
+  border: 3px solid ${props => props.selected ? '#FFD700' : 'rgba(255,255,255,0.3)'};
+  background: ${props => props.selected ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.1)'};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    border-color: ${props => props.selected ? '#FFD700' : 'rgba(255,255,255,0.5)'};
+  }
+  
+  img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
 `;
 
 const PresetButtons = styled.div`
@@ -847,6 +914,10 @@ export const RevealTester: React.FC = () => {
   const [revealing, setRevealing] = useState(false);
   const [showCardOverlay, setShowCardOverlay] = useState(false);
   const [animationStyle, setAnimationStyle] = useState<AnimationStyle>('simple');
+  const [revealSound, setRevealSound] = useState<string | null>('/sounds/reveal.mp3');
+  const [imageRevealed, setImageRevealed] = useState(false);
+  const [keyholeMode, setKeyholeMode] = useState(false);
+  const [selectedNFT, setSelectedNFT] = useState<string | null>(null);
 
   const loadPreset = (presetKey: keyof typeof PRESETS) => {
     const preset = PRESETS[presetKey];
@@ -859,7 +930,7 @@ export const RevealTester: React.FC = () => {
       'retro90s': 'vhs',
       'vintage': 'vintage',
       'neon80s': 'neon',
-      'upgrade': 'powerup',
+      'upgrade': 'neon',  // Changed from 'powerup' to 'neon' for synthwave colors
       'transform': 'morph',
       'achievement': 'glitch',
       'basic1': 'simple',
@@ -871,15 +942,42 @@ export const RevealTester: React.FC = () => {
 
   const simulateReveal = () => {
     setRevealing(true);
+    setImageRevealed(false);
+    
+    // Play reveal sound if uploaded
+    if (revealSound) {
+      const audio = new Audio(revealSound);
+      audio.volume = 0.5;
+      audio.play().catch(err => console.log('Audio play failed:', err));
+      
+      // Stop audio after 10 seconds
+      setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0;
+      }, 10000);
+    }
     
     // Show in-card overlay immediately
     setShowCardOverlay(true);
     
-    // Hide card overlay and stop animation after 2.5 seconds
+    // Start key-style reveal at 5 seconds (matching the key animation timing)
+    setTimeout(() => {
+      setImageRevealed(true);
+    }, 5000);
+    
+    // Hide card overlay and stop animation after 10 seconds (full key reveal duration)
     setTimeout(() => {
       setShowCardOverlay(false);
       setRevealing(false);
-    }, 2500);
+    }, 10000);
+  };
+
+  const handleSoundUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setRevealSound(url);
+    }
   };
 
   const renderMetadata = (metadata: Metadata) => {
@@ -896,6 +994,116 @@ export const RevealTester: React.FC = () => {
       <Title>🎭 NFT Reveal Tester</Title>
       <Subtitle>⚠️ flunks-build ONLY - Preview different reveal scenarios</Subtitle>
 
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', justifyContent: 'center' }}>
+        <Button 
+          variant={!keyholeMode ? 'primary' : 'secondary'}
+          onClick={() => setKeyholeMode(false)}
+          style={{ maxWidth: '300px' }}
+        >
+          🎬 Animation Preview
+        </Button>
+        <Button 
+          variant={keyholeMode ? 'primary' : 'secondary'}
+          onClick={() => setKeyholeMode(true)}
+          style={{ maxWidth: '300px' }}
+        >
+          🔑 Keyhole Simulation
+        </Button>
+      </div>
+
+      {keyholeMode ? (
+        <KeyholeContainer>
+          <CardTitle>🔓 Keyhole Transform Simulation</CardTitle>
+          <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '30px' }}>
+            This simulates the real user flow: select an NFT, then transform it through the keyhole
+          </p>
+
+          <KeyholeCircle hasNFT={selectedNFT !== null}>
+            <svg width="80" height="120" viewBox="0 0 100 150">
+              <circle cx="50" cy="40" r="35" fill={selectedNFT ? '#FFD700' : '#444'} 
+                      stroke={selectedNFT ? '#FFA500' : '#222'} strokeWidth="3"/>
+              <rect x="35" y="60" width="30" height="60" rx="5" 
+                    fill={selectedNFT ? '#FFD700' : '#444'} 
+                    stroke={selectedNFT ? '#FFA500' : '#222'} strokeWidth="3"/>
+            </svg>
+          </KeyholeCircle>
+
+          {!selectedNFT ? (
+            <>
+              <h3 style={{ marginBottom: '20px' }}>Select an NFT to Transform:</h3>
+              <NFTSelector>
+                {Object.keys(PRESETS).slice(0, 4).map((presetKey) => {
+                  const preset = PRESETS[presetKey as keyof typeof PRESETS];
+                  return (
+                    <NFTOption
+                      key={presetKey}
+                      selected={false}
+                      onClick={() => {
+                        loadPreset(presetKey as keyof typeof PRESETS);
+                        setSelectedNFT(presetKey);
+                      }}
+                    >
+                      <img src={preset.unrevealed.image} alt={preset.unrevealed.name} />
+                      <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
+                        {preset.unrevealed.name}
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>
+                        {'rarity' in preset.unrevealed ? preset.unrevealed.rarity : 'NFT'}
+                      </div>
+                    </NFTOption>
+                  );
+                })}
+              </NFTSelector>
+            </>
+          ) : (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', alignItems: 'start' }}>
+                {/* Left side: Keyhole */}
+                <div>
+                  <KeyholeCircle hasNFT={selectedNFT !== null}>
+                    <svg width="80" height="120" viewBox="0 0 100 150">
+                      <circle cx="50" cy="40" r="35" fill="#FFD700" 
+                              stroke="#FFA500" strokeWidth="3"/>
+                      <rect x="35" y="60" width="30" height="60" rx="5" 
+                            fill="#FFD700" 
+                            stroke="#FFA500" strokeWidth="3"/>
+                    </svg>
+                  </KeyholeCircle>
+
+                  <Button onClick={() => {
+                    simulateReveal();
+                    setTimeout(() => setSelectedNFT(null), 11000);
+                  }}>
+                    ✨ Insert NFT & Transform
+                  </Button>
+                  <Button 
+                    variant="secondary" 
+                    onClick={() => setSelectedNFT(null)}
+                    style={{ marginTop: '10px' }}
+                  >
+                    ← Choose Different NFT
+                  </Button>
+                </div>
+
+                {/* Right side: NFT Card with transformation */}
+                <Card>
+                  <CardTitle>Selected NFT</CardTitle>
+                  <NFTImage 
+                    src={revealing && imageRevealed ? revealedMetadata.image : unrevealedMetadata.image}
+                    alt="Selected NFT"
+                    revealing={revealing}
+                    isRevealed={imageRevealed}
+                  />
+                  <MetadataBox>
+                    {renderMetadata(revealing && imageRevealed ? revealedMetadata : unrevealedMetadata)}
+                  </MetadataBox>
+                </Card>
+              </div>
+            </>
+          )}
+        </KeyholeContainer>
+      ) : (
+        <>
       <PresetButtons>
         <PresetButton onClick={() => loadPreset('simple')}>
           🎨 Simple Reveal
@@ -1022,6 +1230,20 @@ export const RevealTester: React.FC = () => {
         ✨ Simulate Reveal Animation
       </Button>
 
+      <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+        <label htmlFor="sound-upload" style={{ display: 'block', marginBottom: '10px', fontSize: '14px', fontWeight: 'bold' }}>
+          🔊 Upload Reveal Sound (10 sec max):
+        </label>
+        <input
+          id="sound-upload"
+          type="file"
+          accept="audio/*"
+          onChange={handleSoundUpload}
+          style={{ display: 'block', marginBottom: '10px' }}
+        />
+        {revealSound && <span style={{ color: '#4ade80', fontSize: '13px' }}>✅ Sound loaded and ready</span>}
+      </div>
+
       <Card style={{ marginTop: '30px' }}>
         <CardTitle>📝 How This Would Work</CardTitle>
         <div style={{ fontSize: '14px', lineHeight: '1.8' }}>
@@ -1032,6 +1254,8 @@ export const RevealTester: React.FC = () => {
           <p><strong>5. Same NFT ID</strong> - just new image & traits!</p>
         </div>
       </Card>
+      </>
+      )}
     </Container>
   );
 };
