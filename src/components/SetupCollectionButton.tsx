@@ -41,6 +41,16 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
         access(all) fun main(address: Address): Bool {
           let account = getAccount(address)
           
+          // Check if storage has the collection
+          let hasStorage = account.storage.borrow<&SemesterZero.Chapter5Collection>(
+            from: SemesterZero.Chapter5CollectionStoragePath
+          ) != nil
+          
+          if !hasStorage {
+            return false
+          }
+          
+          // Also check public capability (for receiving NFTs)
           let collectionRef = account.capabilities
             .borrow<&SemesterZero.Chapter5Collection>(
               SemesterZero.Chapter5CollectionPublicPath
@@ -58,6 +68,7 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
       setHasCollection(result);
     } catch (error) {
       console.error('Error checking collection:', error);
+      // On error, assume collection doesn't exist to allow setup
       setHasCollection(false);
     }
   };
@@ -69,27 +80,55 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
     setMessage('Setting up collection...');
 
     try {
+      // Simplified transaction for Dapper Wallet compatibility
+      // Uses minimal auth entitlements that Dapper supports
       const transaction = `
         import SemesterZero from 0x807c3d470888cc48
         import NonFungibleToken from 0x1d7e57aa55817448
         
         transaction {
-          prepare(signer: auth(SaveValue, Capabilities, IssueStorageCapabilityController, PublishCapability, BorrowValue) &Account) {
-            // Check if collection already exists
-            if signer.storage.borrow<&SemesterZero.Chapter5Collection>(
+          prepare(signer: &Account) {
+            // Check if collection already exists in storage
+            let existingCollection = signer.storage.borrow<&SemesterZero.Chapter5Collection>(
               from: SemesterZero.Chapter5CollectionStoragePath
-            ) != nil {
-              log("✅ SemesterZero collection already set up")
+            )
+            
+            if existingCollection != nil {
+              log("✅ Collection already exists in storage")
+              
+              // Check if public capability exists
+              let existingCap = signer.capabilities.get<&SemesterZero.Chapter5Collection>(
+                SemesterZero.Chapter5CollectionPublicPath
+              )
+              
+              // If capability doesn't exist or is invalid, recreate it
+              if !existingCap.check() {
+                log("🔧 Recreating public capability...")
+                
+                // Unpublish old capability if it exists (Dapper-safe)
+                signer.capabilities.unpublish(SemesterZero.Chapter5CollectionPublicPath)
+                
+                // Create new public capability (Dapper-safe)
+                let newCap = signer.capabilities.storage.issue<&SemesterZero.Chapter5Collection>(
+                  SemesterZero.Chapter5CollectionStoragePath
+                )
+                signer.capabilities.publish(newCap, at: SemesterZero.Chapter5CollectionPublicPath)
+                
+                log("✅ Public capability restored!")
+              }
+              
               return
             }
+            
+            log("🆕 Creating new collection...")
             
             // Create new empty collection
             let collection <- SemesterZero.createEmptyCollection(nftType: Type<@SemesterZero.Chapter5NFT>())
             
-            // Save collection to storage
+            // Save collection to storage (Dapper-safe)
             signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
             
-            // Create public capability
+            // Create public capability (Dapper-safe)
             let collectionCap = signer.capabilities.storage.issue<&SemesterZero.Chapter5Collection>(
               SemesterZero.Chapter5CollectionStoragePath
             )
@@ -110,20 +149,44 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
 
       setMessage('Transaction submitted. Waiting for confirmation...');
       
-      await fcl.tx(txId).onceSealed();
+      const sealedTx = await fcl.tx(txId).onceSealed();
       
-      setMessage('✅ Collection set up successfully!');
-      setHasCollection(true);
-      
-      if (onSuccess) {
-        onSuccess();
+      // Check if transaction succeeded
+      if (sealedTx.status === 4 && sealedTx.statusCode === 0) {
+        setMessage('✅ Collection set up successfully!');
+        setHasCollection(true);
+        
+        if (onSuccess) {
+          onSuccess();
+        }
+        
+        // Recheck collection status
+        setTimeout(() => {
+          checkCollection(wallet);
+        }, 1000);
+        
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        throw new Error('Transaction failed with status: ' + sealedTx.statusCode);
       }
-      
-      setTimeout(() => setMessage(''), 3000);
       
     } catch (error: any) {
       console.error('Setup failed:', error);
-      setMessage(`❌ ${error.message || 'Failed to set up collection'}`);
+      
+      // Parse common errors
+      let errorMessage = 'Failed to set up collection';
+      
+      if (error.message?.includes('declined')) {
+        errorMessage = 'Transaction was declined';
+      } else if (error.message?.includes('Authorizers')) {
+        errorMessage = 'Please approve the transaction in your wallet';
+      } else if (error.message?.includes('Declined: User rejected')) {
+        errorMessage = 'Transaction rejected by user';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setMessage(`❌ ${errorMessage}`);
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setSettingUp(false);
@@ -133,7 +196,12 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
   // Don't show button if collection already exists
   if (hasCollection === true) {
     return compact ? null : (
-      <StatusText>✅ Collection ready!</StatusText>
+      <SuccessContainer>
+        <StatusText>✅ Collection ready!</StatusText>
+        <RefreshButton onClick={() => wallet && checkCollection(wallet)}>
+          🔄 Refresh
+        </RefreshButton>
+      </SuccessContainer>
     );
   }
 
@@ -161,11 +229,11 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
         {settingUp ? '⏳ Setting up...' : '🎫 Set up Collection'}
       </SetupButton>
       
-      {message && <Message>{message}</Message>}
+      {message && <Message error={message.startsWith('❌')}>{message}</Message>}
       
       {!compact && (
         <HelpText>
-          Required to receive Chapter 5 NFTs
+          Required to receive Chapter 5 NFTs (Pins, Patches, etc.)
         </HelpText>
       )}
     </Container>
@@ -203,23 +271,47 @@ const SetupButton = styled.button<{ compact?: boolean }>`
   }
 `;
 
+const SuccessContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+`;
+
 const StatusText = styled.p`
   font-size: 12px;
   color: #10b981;
   font-weight: bold;
   margin: 0;
-  padding: 8px 16px;
 `;
 
-const Message = styled.p`
+const RefreshButton = styled.button`
+  background: rgba(99, 102, 241, 0.2);
+  color: #6366f1;
+  border: 1px solid #6366f1;
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: rgba(99, 102, 241, 0.3);
+    transform: scale(1.05);
+  }
+`;
+
+const Message = styled.p<{ error?: boolean }>`
   font-size: 11px;
   color: #fff;
-  background: rgba(0, 0, 0, 0.7);
+  background: ${props => props.error ? 'rgba(239, 68, 68, 0.8)' : 'rgba(0, 0, 0, 0.7)'};
   padding: 8px 16px;
   border-radius: 6px;
   margin: 0;
   text-align: center;
   max-width: 300px;
+  border: ${props => props.error ? '1px solid #ef4444' : 'none'};
 `;
 
 const HelpText = styled.p`
