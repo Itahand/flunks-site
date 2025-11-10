@@ -8,6 +8,31 @@ import styled from 'styled-components';
  * Must be set up before receiving airdrops
  */
 
+// Custom wait function with longer timeout for Dapper wallet
+const waitForSealWithTimeout = async (
+  transactionId: string,
+  timeoutSeconds: number = 90
+): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    let statusReceived = false;
+    const timeout = setTimeout(() => {
+      if (!statusReceived) {
+        reject(new Error('Transaction timed out waiting for seal'));
+      }
+    }, timeoutSeconds * 1000);
+
+    fcl.tx(transactionId).subscribe((txStatus: any) => {
+      console.log('Transaction status update:', txStatus);
+      
+      if (txStatus.status >= 4) {
+        statusReceived = true;
+        clearTimeout(timeout);
+        resolve(txStatus);
+      }
+    });
+  });
+};
+
 interface SetupCollectionButtonProps {
   wallet?: string;
   onSuccess?: () => void;
@@ -147,27 +172,67 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
         limit: 999
       });
 
-      setMessage('Transaction submitted. Waiting for confirmation...');
+      console.log('✅ Transaction submitted:', txId);
+      setMessage(`Transaction submitted: ${txId.slice(0, 8)}...`);
       
-      const sealedTx = await fcl.tx(txId).onceSealed();
+      // Track status updates while waiting
+      const statusInterval = setInterval(() => {
+        fcl.tx(txId).snapshot().then((status: any) => {
+          if (status.status === 0 || status.status === 1) {
+            setMessage('⏳ Transaction pending...');
+          } else if (status.status === 2) {
+            setMessage('⏳ Executing transaction...');
+          } else if (status.status === 3) {
+            setMessage('⏳ Sealing transaction...');
+          } else if (status.status === 4) {
+            clearInterval(statusInterval);
+          }
+        }).catch(() => {
+          // Ignore snapshot errors
+        });
+      }, 2000);
       
-      // Check if transaction succeeded
-      if (sealedTx.status === 4 && sealedTx.statusCode === 0) {
-        setMessage('✅ Collection set up successfully!');
-        setHasCollection(true);
+      // Use custom wait function with 90 second timeout
+      try {
+        const sealedTx = await waitForSealWithTimeout(txId, 90);
+        clearInterval(statusInterval);
         
-        if (onSuccess) {
-          onSuccess();
+        console.log('Transaction sealed:', sealedTx);
+        
+        if (sealedTx.status === 4 && sealedTx.statusCode === 0) {
+          setMessage('✅ Collection set up successfully!');
+          setHasCollection(true);
+          
+          if (onSuccess) {
+            onSuccess();
+          }
+          
+          // Recheck collection status
+          setTimeout(() => {
+            checkCollection(wallet);
+          }, 1000);
+          
+          setTimeout(() => setMessage(''), 3000);
+        } else {
+          throw new Error(
+            sealedTx.errorMessage || 
+            `Transaction failed with status code: ${sealedTx.statusCode}`
+          );
         }
         
-        // Recheck collection status
-        setTimeout(() => {
-          checkCollection(wallet);
-        }, 1000);
+      } catch (sealError: any) {
+        clearInterval(statusInterval);
+        console.error('Error waiting for seal:', sealError);
         
-        setTimeout(() => setMessage(''), 3000);
-      } else {
-        throw new Error('Transaction failed with status: ' + sealedTx.statusCode);
+        // If it's a timeout, still check if collection was created
+        if (sealError.message?.includes('timed out')) {
+          setMessage('⚠️ Transaction taking longer than expected. Checking collection...');
+          setTimeout(() => {
+            checkCollection(wallet);
+          }, 3000);
+        } else {
+          throw sealError;
+        }
       }
       
     } catch (error: any) {
@@ -176,18 +241,32 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
       // Parse common errors
       let errorMessage = 'Failed to set up collection';
       
-      if (error.message?.includes('declined')) {
+      if (error.message?.includes('declined') || error.message?.includes('rejected')) {
         errorMessage = 'Transaction was declined';
       } else if (error.message?.includes('Authorizers')) {
         errorMessage = 'Please approve the transaction in your wallet';
       } else if (error.message?.includes('Declined: User rejected')) {
         errorMessage = 'Transaction rejected by user';
+      } else if (error.message?.includes('timeout') || error.message?.includes('Timeout')) {
+        errorMessage = 'Transaction timed out. Please try again or check your wallet.';
+        // Still check if collection was created despite timeout
+        setTimeout(() => {
+          checkCollection(wallet);
+        }, 2000);
+      } else if (error.message?.includes('network') || error.message?.includes('Network')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.message?.includes('follow your transaction')) {
+        errorMessage = 'Transaction may still be processing. Checking status...';
+        // Transaction was submitted but we lost track of it
+        setTimeout(() => {
+          checkCollection(wallet);
+        }, 3000);
       } else if (error.message) {
         errorMessage = error.message;
       }
       
       setMessage(`❌ ${errorMessage}`);
-      setTimeout(() => setMessage(''), 5000);
+      setTimeout(() => setMessage(''), 8000);
     } finally {
       setSettingUp(false);
     }

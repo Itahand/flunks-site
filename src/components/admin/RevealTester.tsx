@@ -90,17 +90,12 @@ const Card = styled.div<{ revealing?: boolean }>`
   `}
 `;
 
-const TransformOverlay = styled.div<{ show: boolean }>`
+const TransformOverlay = styled.div<{ show: boolean; animStyle: AnimationStyle }>`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at center, 
-    rgba(138, 43, 226, 0.95) 0%, 
-    rgba(75, 0, 130, 0.9) 50%,
-    rgba(0, 0, 0, 0.95) 100%
-  );
   display: ${props => props.show ? 'flex' : 'none'};
   flex-direction: column;
   align-items: center;
@@ -108,6 +103,136 @@ const TransformOverlay = styled.div<{ show: boolean }>`
   z-index: 20;
   border-radius: 12px;
   animation: ${props => props.show ? 'overlayFadeIn 0.5s ease-out' : 'none'};
+  
+  /* VHS Style - Scan lines and tracking issues */
+  ${props => props.animStyle === 'vhs' && `
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      ),
+      radial-gradient(circle at center, 
+        rgba(139, 69, 19, 0.95) 0%, 
+        rgba(0, 0, 0, 0.95) 100%
+      );
+    animation: vhsGlitch 0.3s infinite, overlayFadeIn 0.5s ease-out;
+    
+    @keyframes vhsGlitch {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-3px); }
+      40% { transform: translateX(3px); }
+      60% { transform: translateX(-2px); }
+      80% { transform: translateX(2px); }
+    }
+  `}
+  
+  /* Vintage Photo Style - Sepia grain */
+  ${props => props.animStyle === 'vintage' && `
+    background: 
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9"/></filter><rect width="200" height="200" filter="url(%23noise)" opacity="0.3"/></svg>'),
+      radial-gradient(circle at center, 
+        rgba(112, 66, 20, 0.95) 0%, 
+        rgba(61, 35, 10, 0.95) 100%
+      );
+    filter: sepia(80%);
+    animation: vintageFlicker 0.2s infinite, overlayFadeIn 0.5s ease-out;
+    
+    @keyframes vintageFlicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
+    }
+  `}
+  
+  /* Neon 80s Style - Synthwave colors */
+  ${props => props.animStyle === 'neon' && `
+    background: 
+      linear-gradient(45deg, 
+        rgba(255, 0, 255, 0.3) 0%,
+        rgba(0, 255, 255, 0.3) 50%,
+        rgba(255, 0, 255, 0.3) 100%
+      ),
+      radial-gradient(circle at center, 
+        rgba(138, 43, 226, 0.95) 0%, 
+        rgba(0, 0, 0, 0.95) 100%
+      );
+    box-shadow: 
+      inset 0 0 50px rgba(255, 0, 255, 0.8),
+      inset 0 0 100px rgba(0, 255, 255, 0.5);
+    animation: neonPulse 0.8s ease-in-out infinite, overlayFadeIn 0.5s ease-out;
+    
+    @keyframes neonPulse {
+      0%, 100% { filter: hue-rotate(0deg) brightness(1.2); }
+      50% { filter: hue-rotate(180deg) brightness(1.5); }
+    }
+  `}
+  
+  /* Power Up Style - Energy burst */
+  ${props => props.animStyle === 'powerup' && `
+    background: 
+      radial-gradient(circle at center, 
+        rgba(255, 215, 0, 0.95) 0%,
+        rgba(255, 140, 0, 0.9) 40%,
+        rgba(138, 43, 226, 0.95) 100%
+      );
+    animation: powerBurst 0.5s ease-out infinite, overlayFadeIn 0.5s ease-out;
+    
+    @keyframes powerBurst {
+      0% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.1); filter: brightness(2); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+  `}
+  
+  /* Morph Style - Liquid transformation */
+  ${props => props.animStyle === 'morph' && `
+    background: 
+      radial-gradient(circle at center, 
+        rgba(138, 43, 226, 0.95) 0%, 
+        rgba(75, 0, 130, 0.9) 50%,
+        rgba(0, 0, 0, 0.95) 100%
+      );
+    animation: liquidMorph 1s ease-in-out infinite, overlayFadeIn 0.5s ease-out;
+    filter: blur(5px);
+    
+    @keyframes liquidMorph {
+      0%, 100% { border-radius: 12px; }
+      25% { border-radius: 50% 12px 50% 12px; }
+      50% { border-radius: 12px 50% 12px 50%; }
+      75% { border-radius: 50% 12px 12px 50%; }
+    }
+  `}
+  
+  /* Glitch Style - Digital corruption */
+  ${props => props.animStyle === 'glitch' && `
+    background: 
+      radial-gradient(circle at center, 
+        rgba(0, 255, 0, 0.95) 0%, 
+        rgba(0, 128, 0, 0.9) 50%,
+        rgba(0, 0, 0, 0.95) 100%
+      );
+    animation: digitalGlitch 0.1s infinite, overlayFadeIn 0.5s ease-out;
+    
+    @keyframes digitalGlitch {
+      0% { transform: translate(0, 0); filter: hue-rotate(0deg); }
+      20% { transform: translate(-5px, 5px); filter: hue-rotate(90deg); }
+      40% { transform: translate(5px, -5px); filter: hue-rotate(180deg); }
+      60% { transform: translate(-5px, -5px); filter: hue-rotate(270deg); }
+      80% { transform: translate(5px, 5px); filter: hue-rotate(360deg); }
+      100% { transform: translate(0, 0); filter: hue-rotate(0deg); }
+    }
+  `}
+  
+  /* Default/Simple Style */
+  ${props => props.animStyle === 'simple' && `
+    background: radial-gradient(circle at center, 
+      rgba(138, 43, 226, 0.95) 0%, 
+      rgba(75, 0, 130, 0.9) 50%,
+      rgba(0, 0, 0, 0.95) 100%
+    );
+  `}
   
   &::before {
     content: '';
@@ -714,17 +839,34 @@ const PRESETS = {
   }
 };
 
+type AnimationStyle = 'simple' | 'vhs' | 'vintage' | 'neon' | 'powerup' | 'morph' | 'glitch';
+
 export const RevealTester: React.FC = () => {
   const [unrevealedMetadata, setUnrevealedMetadata] = useState<Metadata>(PRESETS.simple.unrevealed);
   const [revealedMetadata, setRevealedMetadata] = useState<Metadata>(PRESETS.simple.revealed);
   const [revealing, setRevealing] = useState(false);
-  const [showRevealOverlay, setShowRevealOverlay] = useState(false);
   const [showCardOverlay, setShowCardOverlay] = useState(false);
+  const [animationStyle, setAnimationStyle] = useState<AnimationStyle>('simple');
 
   const loadPreset = (presetKey: keyof typeof PRESETS) => {
     const preset = PRESETS[presetKey];
     setUnrevealedMetadata(preset.unrevealed);
     setRevealedMetadata(preset.revealed);
+    
+    // Map presets to animation styles
+    const styleMap: Record<string, AnimationStyle> = {
+      'simple': 'simple',
+      'retro90s': 'vhs',
+      'vintage': 'vintage',
+      'neon80s': 'neon',
+      'upgrade': 'powerup',
+      'transform': 'morph',
+      'achievement': 'glitch',
+      'basic1': 'simple',
+      'basic2': 'simple'
+    };
+    
+    setAnimationStyle(styleMap[presetKey] || 'simple');
   };
 
   const simulateReveal = () => {
@@ -733,17 +875,7 @@ export const RevealTester: React.FC = () => {
     // Show in-card overlay immediately
     setShowCardOverlay(true);
     
-    // Show fullscreen overlay after a brief delay
-    setTimeout(() => {
-      setShowRevealOverlay(true);
-    }, 500);
-    
-    // Hide fullscreen overlay
-    setTimeout(() => {
-      setShowRevealOverlay(false);
-    }, 2000);
-    
-    // Hide card overlay and stop animation
+    // Hide card overlay and stop animation after 2.5 seconds
     setTimeout(() => {
       setShowCardOverlay(false);
       setRevealing(false);
@@ -811,11 +943,13 @@ export const RevealTester: React.FC = () => {
           </MetadataBox>
           
           {/* In-card transformation overlay */}
-          <TransformOverlay show={showCardOverlay}>
+          <TransformOverlay show={showCardOverlay} animStyle={animationStyle}>
             <div style={{ 
               fontSize: '80px', 
               animation: 'spin 1s linear infinite',
-              marginBottom: '20px'
+              marginBottom: '20px',
+              position: 'relative',
+              zIndex: 10
             }}>
               ✨
             </div>
@@ -823,9 +957,17 @@ export const RevealTester: React.FC = () => {
               color: '#FFD700', 
               fontSize: '24px', 
               fontWeight: 'bold',
-              textShadow: '0 0 20px rgba(255, 215, 0, 0.8)'
+              textShadow: '0 0 20px rgba(255, 215, 0, 0.8)',
+              position: 'relative',
+              zIndex: 10
             }}>
-              TRANSFORMING...
+              {animationStyle === 'vhs' && '📼 VHS TRACKING...'}
+              {animationStyle === 'vintage' && '📷 DEVELOPING...'}
+              {animationStyle === 'neon' && '🌴 NEON GLOW...'}
+              {animationStyle === 'powerup' && '⚡ POWERING UP...'}
+              {animationStyle === 'morph' && '🌀 MORPHING...'}
+              {animationStyle === 'glitch' && '👾 GLITCHING...'}
+              {animationStyle === 'simple' && 'TRANSFORMING...'}
             </div>
           </TransformOverlay>
         </Card>
@@ -846,11 +988,13 @@ export const RevealTester: React.FC = () => {
           </MetadataBox>
           
           {/* In-card transformation overlay */}
-          <TransformOverlay show={showCardOverlay}>
+          <TransformOverlay show={showCardOverlay} animStyle={animationStyle}>
             <div style={{ 
               fontSize: '80px', 
               animation: 'spin 1s linear infinite',
-              marginBottom: '20px'
+              marginBottom: '20px',
+              position: 'relative',
+              zIndex: 10
             }}>
               🎉
             </div>
@@ -858,9 +1002,17 @@ export const RevealTester: React.FC = () => {
               color: '#FFD700', 
               fontSize: '24px', 
               fontWeight: 'bold',
-              textShadow: '0 0 20px rgba(255, 215, 0, 0.8)'
+              textShadow: '0 0 20px rgba(255, 215, 0, 0.8)',
+              position: 'relative',
+              zIndex: 10
             }}>
-              REVEALING...
+              {animationStyle === 'vhs' && '📼 VHS REVEALED!'}
+              {animationStyle === 'vintage' && '📷 PHOTO READY!'}
+              {animationStyle === 'neon' && '🌴 NEON ACTIVE!'}
+              {animationStyle === 'powerup' && '⚡ POWERED UP!'}
+              {animationStyle === 'morph' && '🌀 TRANSFORMED!'}
+              {animationStyle === 'glitch' && '👾 UNLOCKED!'}
+              {animationStyle === 'simple' && 'REVEALING...'}
             </div>
           </TransformOverlay>
         </Card>
@@ -880,50 +1032,6 @@ export const RevealTester: React.FC = () => {
           <p><strong>5. Same NFT ID</strong> - just new image & traits!</p>
         </div>
       </Card>
-
-      {/* Reveal Animation Overlay */}
-      <RevealOverlay show={showRevealOverlay}>
-        <SparkleEffect />
-        <SparkleEffect style={{ transform: 'rotate(180deg)' }} />
-        <RevealContent>
-          <div style={{ fontSize: '100px', marginBottom: '30px', animation: 'spin 2s linear infinite' }}>
-            🎭
-          </div>
-          <RevealText>
-            ✨ REVEALING... ✨
-          </RevealText>
-          <div style={{ 
-            fontSize: '28px', 
-            color: 'white',
-            textShadow: '0 0 10px rgba(255,255,255,0.5)',
-            animation: 'fadeInOut 1.5s ease-in-out infinite'
-          }}>
-            NFT Transformation In Progress
-          </div>
-          <div style={{ 
-            marginTop: '30px',
-            fontSize: '50px',
-            animation: 'rotate 1s linear infinite'
-          }}>
-            💫
-          </div>
-        </RevealContent>
-        <style>{`
-          @keyframes spin {
-            from { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.2); }
-            to { transform: rotate(360deg) scale(1); }
-          }
-          @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-          @keyframes fadeInOut {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-          }
-        `}</style>
-      </RevealOverlay>
     </Container>
   );
 };
