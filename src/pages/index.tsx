@@ -59,6 +59,7 @@ import { TimeConfigAdmin } from "components/DayNightHouse";
 import SemesterZeroSetup from "components/SemesterZeroSetup";
 import RevealTester from "components/admin/RevealTester";
 import LevelUp from "components/admin/LevelUp";
+import BurnNFT from "components/admin/BurnNFT";
 
 const FullScreenLoader = () => {
   const [percent, setPercent] = useState(0);
@@ -733,7 +734,7 @@ const windowsMemod = useMemo(() => (
           <ConditionalAppIcon
             appId="level-up"
             title="Level Up"
-            icon="/images/icons/experiment-3d.png"
+            icon="/images/icons/level.png"
             onDoubleClick={() => openWindow({
               key: WINDOW_IDS.LEVEL_UP,
               window: (
@@ -743,10 +744,35 @@ const windowsMemod = useMemo(() => (
                   headerTitle="⚡ LEVEL UP - NFT Upgrade Arcade"
                   initialWidth="95vw"
                   initialHeight="95vh"
-                  headerIcon="/images/icons/experiment-3d.png"
+                  headerIcon="/images/icons/level.png"
                   resizable={true}
                 >
                   <LevelUp />
+                </DraggableResizeableWindow>
+              )
+            })}
+          />
+        )}
+
+        {/* 22.6 Burn NFT - LOCALHOST + BUILD MODE ONLY */}
+        {(typeof window !== 'undefined' && (window.location.hostname === 'localhost' || isFeatureEnabled('showBurnNFT'))) && (
+          <ConditionalAppIcon
+            appId="burn-nft"
+            title="Burn NFT"
+            icon="/images/icons/Icon-Face.png"
+            onDoubleClick={() => openWindow({
+              key: WINDOW_IDS.BURN_NFT,
+              window: (
+                <DraggableResizeableWindow
+                  windowsId={WINDOW_IDS.BURN_NFT}
+                  onClose={() => closeWindow(WINDOW_IDS.BURN_NFT)}
+                  headerTitle="🔥 BURN NFT - DANGER ZONE"
+                  initialWidth="650px"
+                  initialHeight="700px"
+                  headerIcon="/images/icons/Icon-Face.png"
+                  resizable={true}
+                >
+                  <BurnNFT />
                 </DraggableResizeableWindow>
               )
             })}

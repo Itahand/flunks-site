@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useUnifiedWallet } from '../../contexts/UnifiedWalletContext';
 import * as fcl from '@onflow/fcl';
@@ -46,8 +46,8 @@ const fullscreenReveal = keyframes`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.3) rotate(-180deg);
-    width: 50vw;
-    max-width: 50vw;
+    width: 37.5vw;
+    max-width: 37.5vw;
     height: auto;
     z-index: 9999;
     filter: brightness(2) blur(10px);
@@ -58,8 +58,8 @@ const fullscreenReveal = keyframes`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(1) rotate(10deg);
-    width: 50vw;
-    max-width: 50vw;
+    width: 37.5vw;
+    max-width: 37.5vw;
     z-index: 9999;
     filter: brightness(1.5) blur(3px);
     opacity: 1;
@@ -69,8 +69,8 @@ const fullscreenReveal = keyframes`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(1.05) rotate(-5deg);
-    width: 50vw;
-    max-width: 50vw;
+    width: 37.5vw;
+    max-width: 37.5vw;
     z-index: 9999;
     filter: brightness(1.2) blur(1px);
     opacity: 1;
@@ -80,8 +80,8 @@ const fullscreenReveal = keyframes`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
-    width: 40vw;
-    max-width: 40vw;
+    width: 30vw;
+    max-width: 30vw;
     z-index: 9999;
     filter: brightness(1.1) blur(0px);
     opacity: 1;
@@ -116,42 +116,8 @@ const ArcadeContainer = styled.div`
     linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px),
     #000000;
   background-size: 4px 4px;
-  min-height: 100vh;
   height: 100%;
-  position: relative;
-  font-family: 'Press Start 2P', 'Courier New', monospace;
-  overflow: auto;
-  
-  /* CRT scanline effect */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0, 255, 0, 0.05) 0px,
-      transparent 1px,
-      transparent 2px,
-      rgba(0, 255, 0, 0.05) 3px
-    );
-    pointer-events: none;
-    animation: ${scanlines} 10s linear infinite;
-  }
-  
-  /* CRT screen curve */
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.5) 100%);
-    pointer-events: none;
-  }
+  overflow: hidden;
 `;
 
 const ArcadeFrame = styled.div`
@@ -168,6 +134,8 @@ const ArcadeFrame = styled.div`
   padding: 20px;
   position: relative;
   z-index: 1;
+  height: calc(100vh - 40px);
+  overflow-y: auto;
 `;
 
 const ArcadeTitle = styled.h1`
@@ -477,30 +445,105 @@ const MOCK_NFTS = [
 
 const LevelUp: React.FC = () => {
   const { address } = useUnifiedWallet();
-  const [selectedNFT, setSelectedNFT] = useState<typeof MOCK_NFTS[0] | null>(null);
+  const [nfts, setNfts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedNFT, setSelectedNFT] = useState<any | null>(null);
   const [revealing, setRevealing] = useState(false);
   const [imageRevealed, setImageRevealed] = useState(false);
   const [revealSound] = useState('/sounds/reveal.mp3');
-  const [upgradedNFT, setUpgradedNFT] = useState<typeof MOCK_NFTS[0] | null>(null);
+  const [upgradedNFT, setUpgradedNFT] = useState<any | null>(null);
 
-  const handleSelectNFT = (nft: typeof MOCK_NFTS[0]) => {
+  // Fetch Chapter 5 NFTs from connected wallet
+  useEffect(() => {
+    const fetchNFTs = async () => {
+      if (!address) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const result = await fcl.query({
+          cadence: `
+            import SemesterZero from 0xce9dd43888d99574
+            import MetadataViews from 0x1d7e57aa55817448
+
+            access(all) fun main(address: Address): [Chapter5NFTData] {
+              let account = getAccount(address)
+              
+              let collectionRef = account.capabilities
+                .get<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
+                .borrow()
+              
+              if collectionRef == nil {
+                return []
+              }
+              
+              let collection = collectionRef!
+              let ids = collection.getIDs()
+              let nftData: [Chapter5NFTData] = []
+              
+              for id in ids {
+                if let nft = collection.borrowChapter5NFT(id: id) {
+                  let display = nft.resolveView(Type<MetadataViews.Display>())! as! MetadataViews.Display
+                  let revealedStatus = nft.metadata["revealed"] ?? "false"
+                  
+                  nftData.append(Chapter5NFTData(
+                    id: id,
+                    name: display.name,
+                    description: display.description,
+                    image: display.thumbnail.uri(),
+                    serialNumber: nft.serialNumber,
+                    revealed: revealedStatus == "true"
+                  ))
+                }
+              }
+              
+              return nftData
+            }
+
+            access(all) struct Chapter5NFTData {
+              access(all) let id: UInt64
+              access(all) let name: String
+              access(all) let description: String
+              access(all) let image: String
+              access(all) let serialNumber: UInt64
+              access(all) let revealed: Bool
+
+              init(id: UInt64, name: String, description: String, image: String, serialNumber: UInt64, revealed: Bool) {
+                self.id = id
+                self.name = name
+                self.description = description
+                self.image = image
+                self.serialNumber = serialNumber
+                self.revealed = revealed
+              }
+            }
+          `,
+          args: (arg: any, t: any) => [arg(address, t.Address)]
+        });
+
+        setNfts(result || []);
+      } catch (error) {
+        console.error('Error fetching Chapter 5 NFTs:', error);
+        setNfts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNFTs();
+  }, [address]);
+
+  const handleSelectNFT = (nft: any) => {
     setSelectedNFT(nft);
     setRevealing(false);
     setImageRevealed(false);
     setUpgradedNFT(null);
   };
 
-  const handleLevelUp = () => {
-    if (!selectedNFT) return;
-    
-    // Calculate upgraded NFT immediately with new image
-    const upgraded = {
-      ...selectedNFT,
-      image: selectedNFT.upgradedImage || selectedNFT.image,
-      level: selectedNFT.level + 1,
-      rarity: selectedNFT.level >= 5 ? 'Legendary' : selectedNFT.rarity
-    };
-    setUpgradedNFT(upgraded);
+  const handleLevelUp = async () => {
+    if (!selectedNFT || !address) return;
     
     setRevealing(true);
     setImageRevealed(false);
@@ -517,17 +560,146 @@ const LevelUp: React.FC = () => {
       }, 10000);
     }
 
-    // Trigger key-style reveal at 5 seconds
+    // Trigger image reveal at 5 seconds
     setTimeout(() => {
       setImageRevealed(true);
+      
+      // Calculate upgraded NFT for display
+      const upgraded = {
+        ...selectedNFT,
+        image: 'https://storage.googleapis.com/flunks_public/images/testmedaddy.png',
+        revealed: true,
+        name: selectedNFT.name + ' ⚡'
+      };
+      setUpgradedNFT(upgraded);
     }, 5000);
 
-    // Complete animation at 10 seconds
-    setTimeout(() => {
+    try {
+      // Execute reveal transaction on blockchain
+      const txId = await fcl.mutate({
+        cadence: `
+          import SemesterZero from 0xce9dd43888d99574
+
+          transaction(userAddress: Address) {
+            let admin: &SemesterZero.Admin
+            
+            prepare(signer: auth(BorrowValue) &Account) {
+              self.admin = signer.storage.borrow<&SemesterZero.Admin>(
+                from: SemesterZero.AdminStoragePath
+              ) ?? panic("Could not borrow admin reference")
+            }
+            
+            execute {
+              let newMetadata: {String: String} = {
+                "upgraded": "true",
+                "upgradeTime": getCurrentBlock().timestamp.toString(),
+                "image": "https://storage.googleapis.com/flunks_public/images/testmedaddy.png"
+              }
+              
+              self.admin.revealChapter5NFT(
+                userAddress: userAddress,
+                newMetadata: newMetadata
+              )
+              
+              log("Chapter 5 NFT upgraded!")
+            }
+          }
+        `,
+        args: (arg: any, t: any) => [arg(address, t.Address)],
+        payer: fcl.authz,
+        proposer: fcl.authz,
+        authorizations: [fcl.authz],
+        limit: 9999
+      });
+
+      console.log('Upgrade transaction:', txId);
+      await fcl.tx(txId).onceSealed();
+      console.log('Upgrade complete!');
+
+      // Complete animation at 10 seconds
+      setTimeout(async () => {
+        // Refresh NFT list
+        try {
+          const result = await fcl.query({
+            cadence: `
+              import SemesterZero from 0xce9dd43888d99574
+              import MetadataViews from 0x1d7e57aa55817448
+
+              access(all) fun main(address: Address): [Chapter5NFTData] {
+                let account = getAccount(address)
+                
+                let collectionRef = account.capabilities
+                  .get<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
+                  .borrow()
+                
+                if collectionRef == nil {
+                  return []
+                }
+                
+                let collection = collectionRef!
+                let ids = collection.getIDs()
+                let nftData: [Chapter5NFTData] = []
+                
+                for id in ids {
+                  if let nft = collection.borrowChapter5NFT(id: id) {
+                    let display = nft.resolveView(Type<MetadataViews.Display>())! as! MetadataViews.Display
+                    let revealedStatus = nft.metadata["revealed"] ?? "false"
+                    
+                    nftData.append(Chapter5NFTData(
+                      id: id,
+                      name: display.name,
+                      description: display.description,
+                      image: display.thumbnail.uri(),
+                      serialNumber: nft.serialNumber,
+                      revealed: revealedStatus == "true"
+                    ))
+                  }
+                }
+                
+                return nftData
+              }
+
+              access(all) struct Chapter5NFTData {
+                access(all) let id: UInt64
+                access(all) let name: String
+                access(all) let description: String
+                access(all) let image: String
+                access(all) let serialNumber: UInt64
+                access(all) let revealed: Bool
+
+                init(id: UInt64, name: String, description: String, image: String, serialNumber: UInt64, revealed: Bool) {
+                  self.id = id
+                  self.name = name
+                  self.description = description
+                  self.image = image
+                  self.serialNumber = serialNumber
+                  self.revealed = revealed
+                }
+              }
+            `,
+            args: (arg: any, t: any) => [arg(address, t.Address)]
+          });
+          setNfts(result || []);
+          
+          // Update selected NFT
+          if (upgradedNFT) {
+            setSelectedNFT(upgradedNFT);
+          }
+        } catch (error) {
+          console.error('Error refreshing NFTs:', error);
+        }
+        
+        setRevealing(false);
+        setImageRevealed(false);
+        setUpgradedNFT(null);
+      }, 10000);
+      
+    } catch (error) {
+      console.error('Upgrade failed:', error);
       setRevealing(false);
-      setSelectedNFT(upgraded);
-      setUpgradedNFT(null);
-    }, 10000);
+      setImageRevealed(false);
+      alert('Upgrade failed: ' + error);
+    }
   };
 
   return (
@@ -539,52 +711,44 @@ const LevelUp: React.FC = () => {
         <InsertCoin>★ INSERT COIN TO CONTINUE ★</InsertCoin>
 
         <KeyholeSection>
-          <KeyholeTitle>🔑 SELECT NFT TO UPGRADE 🔑</KeyholeTitle>
+          <KeyholeTitle>🔑 SELECT CHAPTER 5 NFT TO UPGRADE 🔑</KeyholeTitle>
 
-          {!selectedNFT ? (
-            <NFTSelector>
-              {MOCK_NFTS.map((nft) => (
-                <NFTOption
-                  key={nft.id}
-                  selected={false}
-                  onClick={() => handleSelectNFT(nft)}
-                >
-                  <img src={nft.image} alt={nft.name} />
-                  <NFTLabel>
-                    <strong>{nft.name}</strong>
-                    <br />
-                    LVL {nft.level} • {nft.rarity}
-                  </NFTLabel>
-                </NFTOption>
-              ))}
-            </NFTSelector>
+          {loading ? (
+            <div style={{ textAlign: 'center', color: '#00ff00', padding: '40px' }}>
+              <div style={{ fontSize: '24px', marginBottom: '10px' }}>⏳</div>
+              <div>LOADING NFTs...</div>
+            </div>
+          ) : !selectedNFT ? (
+            nfts.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#ff00ff', padding: '40px' }}>
+                <div style={{ fontSize: '24px', marginBottom: '10px' }}>❌</div>
+                <div>NO CHAPTER 5 NFTs FOUND</div>
+                <div style={{ fontSize: '10px', marginTop: '10px', color: '#00ff00' }}>
+                  {address ? 'Connect admin wallet with Chapter 5 NFTs' : 'CONNECT WALLET FIRST'}
+                </div>
+              </div>
+            ) : (
+              <NFTSelector>
+                {nfts.map((nft) => (
+                  <NFTOption
+                    key={nft.id}
+                    selected={false}
+                    onClick={() => handleSelectNFT(nft)}
+                  >
+                    <img src={nft.image} alt={nft.name} />
+                    <NFTLabel>
+                      <strong>{nft.name}</strong>
+                      <br />
+                      #{nft.serialNumber} • {nft.revealed ? '⚡ REVEALED' : '🔒 UNREVEALED'}
+                    </NFTLabel>
+                  </NFTOption>
+                ))}
+              </NFTSelector>
+            )
           ) : (
             <KeyholeGrid>
-              {/* Left: Keyhole */}
+              {/* Left: Buttons */}
               <div>
-                <KeyholeCircle hasNFT={true} glowing={revealing}>
-                  <svg width="60" height="90" viewBox="0 0 100 150">
-                    <circle 
-                      cx="50" 
-                      cy="40" 
-                      r="35" 
-                      fill="#ffff00" 
-                      stroke="#ff00ff" 
-                      strokeWidth="4"
-                    />
-                    <rect 
-                      x="35" 
-                      y="60" 
-                      width="30" 
-                      height="60" 
-                      rx="5" 
-                      fill="#ffff00" 
-                      stroke="#ff00ff" 
-                      strokeWidth="4"
-                    />
-                  </svg>
-                </KeyholeCircle>
-
                 <ArcadeButton onClick={handleLevelUp} disabled={revealing}>
                   {revealing ? '⚡ LEVELING UP... ⚡' : '⬆️ LEVEL UP! ⬆️'}
                 </ArcadeButton>
@@ -600,8 +764,8 @@ const LevelUp: React.FC = () => {
               {/* Right: NFT Card */}
               <NFTCard>
                 <NFTImage 
-                  src={(revealing && upgradedNFT) ? upgradedNFT.image : selectedNFT.image}
-                  alt={(revealing && upgradedNFT) ? upgradedNFT.name : selectedNFT.name}
+                  src={(imageRevealed && upgradedNFT) ? upgradedNFT.image : selectedNFT.image}
+                  alt={(imageRevealed && upgradedNFT) ? upgradedNFT.name : selectedNFT.name}
                   revealing={revealing}
                   isRevealed={imageRevealed}
                 />
@@ -611,16 +775,16 @@ const LevelUp: React.FC = () => {
                     <span>{selectedNFT.name}</span>
                   </MetadataRow>
                   <MetadataRow>
-                    <strong>LEVEL:</strong>
-                    <span>⚡ {selectedNFT.level}</span>
+                    <strong>SERIAL #:</strong>
+                    <span>#{selectedNFT.serialNumber}</span>
                   </MetadataRow>
                   <MetadataRow>
-                    <strong>RARITY:</strong>
-                    <span>{selectedNFT.rarity}</span>
+                    <strong>NFT ID:</strong>
+                    <span>#{selectedNFT.id}</span>
                   </MetadataRow>
                   <MetadataRow>
                     <strong>STATUS:</strong>
-                    <span>{revealing ? 'UPGRADING...' : 'READY'}</span>
+                    <span>{revealing ? '⚡ UPGRADING...' : (selectedNFT.revealed ? '✅ REVEALED' : '🔒 UNREVEALED')}</span>
                   </MetadataRow>
                 </MetadataBox>
               </NFTCard>

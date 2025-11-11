@@ -190,6 +190,9 @@ export const WINDOW_IDS = {
   
   // Level Up
   LEVEL_UP: "level-up",
+  
+  // Burn NFT (Admin Only)
+  BURN_NFT: "burn-nft",
 };
 
 export const WINDOW_APP_INFO_TO_WINDOW_ID = {

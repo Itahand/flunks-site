@@ -38,6 +38,7 @@ export interface BuildModeConfig {
   showZoltarFortune: boolean;
   showMagicTest: boolean;
   showLevelUp: boolean;
+  showBurnNFT: boolean;
   
   // Special Announcements
   flappyFlunkWeekend: boolean;
@@ -88,7 +89,8 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showVCREffectsTest: false,
     showZoltarFortune: true,
     showMagicTest: false,
-    showLevelUp: false,
+    showLevelUp: true,
+    showBurnNFT: true,
     
     // Special Announcements - visible on public site
     flappyFlunkWeekend: true,
@@ -138,6 +140,7 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showZoltarFortune: true,
     showMagicTest: true,
     showLevelUp: true,
+    showBurnNFT: true,
     
     // Special Announcements - visible in build mode
     flappyFlunkWeekend: true,
