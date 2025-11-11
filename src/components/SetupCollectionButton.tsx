@@ -61,7 +61,7 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
   const checkCollection = async (address: string) => {
     try {
       const script = `
-        import SemesterZero from 0x807c3d470888cc48
+        import SemesterZero from 0xce9dd43888d99574
         
         access(all) fun main(address: Address): Bool {
           let account = getAccount(address)
@@ -108,11 +108,11 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
       // Simplified transaction for Dapper Wallet compatibility
       // Uses minimal auth entitlements that Dapper supports
       const transaction = `
-        import SemesterZero from 0x807c3d470888cc48
+        import SemesterZero from 0xce9dd43888d99574
         import NonFungibleToken from 0x1d7e57aa55817448
         
         transaction {
-          prepare(signer: &Account) {
+          prepare(signer: auth(Storage, Capabilities) &Account) {
             // Check if collection already exists in storage
             let existingCollection = signer.storage.borrow<&SemesterZero.Chapter5Collection>(
               from: SemesterZero.Chapter5CollectionStoragePath
