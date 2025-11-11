@@ -89,8 +89,8 @@ const BUILD_MODE_CONFIGS: Record<BuildMode, BuildModeConfig> = {
     showVCREffectsTest: false,
     showZoltarFortune: true,
     showMagicTest: false,
-    showLevelUp: true,
-    showBurnNFT: true,
+    showLevelUp: false,
+    showBurnNFT: false,
     
     // Special Announcements - visible on public site
     flappyFlunkWeekend: true,
