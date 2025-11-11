@@ -547,12 +547,6 @@ const LevelUp: React.FC = () => {
   const handleLevelUp = async () => {
     if (!selectedNFT || !address) return;
     
-    // Prevent upgrading already-upgraded NFTs
-    if (selectedNFT.revealed === true || selectedNFT.revealed === 'true') {
-      alert('⚠️ This NFT has already been upgraded!');
-      return;
-    }
-    
     setRevealing(true);
     setImageRevealed(false);
 
@@ -586,59 +580,33 @@ const LevelUp: React.FC = () => {
       // Execute reveal transaction on blockchain
       const txId = await fcl.mutate({
         cadence: `
-          try {
-      // Execute reveal transaction on blockchain
-      const txId = await fcl.mutate({
-        cadence: `
-          import SemesterZero from 0xce9dd43888d99574
+import SemesterZero from 0xce9dd43888d99574
 
-          transaction(userAddress: Address, nftID: UInt64) {
-            let admin: &SemesterZero.Admin
-            
-            prepare(signer: auth(BorrowValue) &Account) {
-              self.admin = signer.storage.borrow<&SemesterZero.Admin>(
-                from: SemesterZero.AdminStoragePath
-              ) ?? panic("Could not borrow admin reference")
-            }
-            
-            execute {
-              // Get existing metadata first
-              let account = getAccount(userAddress)
-              let collection = account.capabilities
-                .get<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
-                .borrow() ?? panic("Could not borrow collection")
-              
-              let nft = collection.borrowChapter5NFT(id: nftID)
-                ?? panic("Could not borrow NFT")
-              
-              // Preserve existing metadata
-              let newMetadata: {String: String} = {}
-              for key in nft.metadata.keys {
-                newMetadata[key] = nft.metadata[key]!
-              }
-              
-              // Update only specific fields
-              newMetadata["upgraded"] = "true"
-              newMetadata["upgradeTime"] = getCurrentBlock().timestamp.toString()
-              newMetadata["image"] = "https://storage.googleapis.com/flunks_public/images/testmedaddy.png"
-              newMetadata["revealed"] = "true"
-              
-              self.admin.revealChapter5NFT(
-                userAddress: userAddress,
-                newMetadata: newMetadata
-              )
-              
-              log("Chapter 5 NFT upgraded!")
-            }
-          }
-        `,
-        args: (arg: any, t: any) => [
-          arg(address, t.Address),
-          arg(selectedNFT.id.toString(), t.UInt64)
-        ],
-        limit: 9999
-      });
-        `,
+transaction(userAddress: Address) {
+  let admin: &SemesterZero.Admin
+  
+  prepare(signer: auth(BorrowValue) &Account) {
+    self.admin = signer.storage.borrow<&SemesterZero.Admin>(
+      from: SemesterZero.AdminStoragePath
+    ) ?? panic("Could not borrow admin reference")
+  }
+  
+  execute {
+    let newMetadata: {String: String} = {
+      "upgraded": "true",
+      "upgradeTime": getCurrentBlock().timestamp.toString(),
+      "image": "https://storage.googleapis.com/flunks_public/images/testmedaddy.png"
+    }
+    
+    self.admin.revealChapter5NFT(
+      userAddress: userAddress,
+      newMetadata: newMetadata
+    )
+    
+    log("Chapter 5 NFT upgraded!")
+  }
+}
+`,
         args: (arg: any, t: any) => [arg(address, t.Address)],
         payer: fcl.authz,
         proposer: fcl.authz,
@@ -765,24 +733,20 @@ const LevelUp: React.FC = () => {
               </div>
             ) : (
               <NFTSelector>
-                {nfts.map((nft) => {
-                  const isUpgraded = nft.revealed === true || nft.revealed === 'true';
-                  return (
-                    <NFTOption
-                      key={nft.id}
-                      selected={false}
-                      onClick={() => handleSelectNFT(nft)}
-                      style={{ opacity: isUpgraded ? 0.6 : 1 }}
-                    >
-                      <img src={nft.image} alt={nft.name} />
-                      <NFTLabel>
-                        <strong>{nft.name}</strong>
-                        <br />
-                        #{nft.serialNumber} • {isUpgraded ? '✅ UPGRADED' : '🎯 READY'}
-                      </NFTLabel>
-                    </NFTOption>
-                  );
-                })}
+                {nfts.map((nft) => (
+                  <NFTOption
+                    key={nft.id}
+                    selected={false}
+                    onClick={() => handleSelectNFT(nft)}
+                  >
+                    <img src={nft.image} alt={nft.name} />
+                    <NFTLabel>
+                      <strong>{nft.name}</strong>
+                      <br />
+                      #{nft.serialNumber} • {nft.revealed ? '⚡ REVEALED' : '🔒 UNREVEALED'}
+                    </NFTLabel>
+                  </NFTOption>
+                ))}
               </NFTSelector>
             )
           ) : (
