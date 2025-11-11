@@ -547,6 +547,12 @@ const LevelUp: React.FC = () => {
   const handleLevelUp = async () => {
     if (!selectedNFT || !address) return;
     
+    // Prevent upgrading already-upgraded NFTs
+    if (selectedNFT.revealed === true || selectedNFT.revealed === 'true') {
+      alert('⚠️ This NFT has already been upgraded!');
+      return;
+    }
+    
     setRevealing(true);
     setImageRevealed(false);
 
@@ -759,20 +765,24 @@ const LevelUp: React.FC = () => {
               </div>
             ) : (
               <NFTSelector>
-                {nfts.map((nft) => (
-                  <NFTOption
-                    key={nft.id}
-                    selected={false}
-                    onClick={() => handleSelectNFT(nft)}
-                  >
-                    <img src={nft.image} alt={nft.name} />
-                    <NFTLabel>
-                      <strong>{nft.name}</strong>
-                      <br />
-                      #{nft.serialNumber} • {nft.revealed ? '⚡ REVEALED' : '🔒 UNREVEALED'}
-                    </NFTLabel>
-                  </NFTOption>
-                ))}
+                {nfts.map((nft) => {
+                  const isUpgraded = nft.revealed === true || nft.revealed === 'true';
+                  return (
+                    <NFTOption
+                      key={nft.id}
+                      selected={false}
+                      onClick={() => handleSelectNFT(nft)}
+                      style={{ opacity: isUpgraded ? 0.6 : 1 }}
+                    >
+                      <img src={nft.image} alt={nft.name} />
+                      <NFTLabel>
+                        <strong>{nft.name}</strong>
+                        <br />
+                        #{nft.serialNumber} • {isUpgraded ? '✅ UPGRADED' : '🎯 READY'}
+                      </NFTLabel>
+                    </NFTOption>
+                  );
+                })}
               </NFTSelector>
             )
           ) : (
