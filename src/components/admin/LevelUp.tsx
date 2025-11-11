@@ -580,9 +580,13 @@ const LevelUp: React.FC = () => {
       // Execute reveal transaction on blockchain
       const txId = await fcl.mutate({
         cadence: `
+          try {
+      // Execute reveal transaction on blockchain
+      const txId = await fcl.mutate({
+        cadence: `
           import SemesterZero from 0xce9dd43888d99574
 
-          transaction(userAddress: Address) {
+          transaction(userAddress: Address, nftID: UInt64) {
             let admin: &SemesterZero.Admin
             
             prepare(signer: auth(BorrowValue) &Account) {
@@ -592,11 +596,26 @@ const LevelUp: React.FC = () => {
             }
             
             execute {
-              let newMetadata: {String: String} = {
-                "upgraded": "true",
-                "upgradeTime": getCurrentBlock().timestamp.toString(),
-                "image": "https://storage.googleapis.com/flunks_public/images/testmedaddy.png"
+              // Get existing metadata first
+              let account = getAccount(userAddress)
+              let collection = account.capabilities
+                .get<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
+                .borrow() ?? panic("Could not borrow collection")
+              
+              let nft = collection.borrowChapter5NFT(id: nftID)
+                ?? panic("Could not borrow NFT")
+              
+              // Preserve existing metadata
+              let newMetadata: {String: String} = {}
+              for key in nft.metadata.keys {
+                newMetadata[key] = nft.metadata[key]!
               }
+              
+              // Update only specific fields
+              newMetadata["upgraded"] = "true"
+              newMetadata["upgradeTime"] = getCurrentBlock().timestamp.toString()
+              newMetadata["image"] = "https://storage.googleapis.com/flunks_public/images/testmedaddy.png"
+              newMetadata["revealed"] = "true"
               
               self.admin.revealChapter5NFT(
                 userAddress: userAddress,
@@ -606,6 +625,13 @@ const LevelUp: React.FC = () => {
               log("Chapter 5 NFT upgraded!")
             }
           }
+        `,
+        args: (arg: any, t: any) => [
+          arg(address, t.Address),
+          arg(selectedNFT.id.toString(), t.UInt64)
+        ],
+        limit: 9999
+      });
         `,
         args: (arg: any, t: any) => [arg(address, t.Address)],
         payer: fcl.authz,
