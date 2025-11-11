@@ -485,14 +485,16 @@ const LevelUp: React.FC = () => {
               
               for id in ids {
                 if let nft = collection.borrowChapter5NFT(id: id) {
-                  let display = nft.resolveView(Type<MetadataViews.Display>())! as! MetadataViews.Display
                   let revealedStatus = nft.metadata["revealed"] ?? "false"
+                  let name = nft.metadata["name"] ?? "Chapter 5 NFT"
+                  let description = nft.metadata["description"] ?? ""
+                  let image = nft.metadata["image"] ?? ""
                   
                   nftData.append(Chapter5NFTData(
                     id: id,
-                    name: display.name,
-                    description: display.description,
-                    image: display.thumbnail.uri(),
+                    name: name,
+                    description: description,
+                    image: image,
                     serialNumber: nft.serialNumber,
                     revealed: revealedStatus == "true"
                   ))
@@ -642,14 +644,16 @@ const LevelUp: React.FC = () => {
                 
                 for id in ids {
                   if let nft = collection.borrowChapter5NFT(id: id) {
-                    let display = nft.resolveView(Type<MetadataViews.Display>())! as! MetadataViews.Display
                     let revealedStatus = nft.metadata["revealed"] ?? "false"
+                    let name = nft.metadata["name"] ?? "Chapter 5 NFT"
+                    let description = nft.metadata["description"] ?? ""
+                    let image = nft.metadata["image"] ?? ""
                     
                     nftData.append(Chapter5NFTData(
                       id: id,
-                      name: display.name,
-                      description: display.description,
-                      image: display.thumbnail.uri(),
+                      name: name,
+                      description: description,
+                      image: image,
                       serialNumber: nft.serialNumber,
                       revealed: revealedStatus == "true"
                     ))
