@@ -1,4 +1,7 @@
 {
+	"contracts": {
+		"SemesterZero": "./contracts/semesterzero-deployed.cdc"
+	},
 	"networks": {
 		"emulator": "127.0.0.1:3569",
 		"mainnet": "access.mainnet.nodes.onflow.org:9000",
@@ -14,14 +17,19 @@
 			}
 		},
 		"flunks-admin": {
-			"address": "0xce9dd43888d99574",
+			"address": "ce9dd43888d99574",
 			"key": {
 				"type": "hex",
-				"index": 0,
-				"signatureAlgorithm": "ECDSA_P256",
 				"hashAlgorithm": "SHA2_256",
 				"privateKey": "84b16ebda82e663e88f823557dd7788c829c0f8ff506b543e56e286c1c3527f3"
 			}
+		}
+	},
+	"deployments": {
+		"mainnet": {
+			"flunks-admin": [
+				"SemesterZero"
+			]
 		}
 	}
 }
