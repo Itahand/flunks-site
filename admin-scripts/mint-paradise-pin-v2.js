@@ -1,6 +1,6 @@
 /**
- * Mint a test Patch NFT with 1.png to test the Level Up upgrade
- * Usage: node admin-scripts/mint-test-patch.js <address>
+ * Mint Paradise Motel Pin NFT
+ * Usage: node admin-scripts/mint-paradise-pin-v2.js <address>
  */
 
 import * as fcl from "@onflow/fcl";
@@ -24,20 +24,19 @@ if (!ADMIN_PRIVATE_KEY) {
 
 const recipientAddress = process.argv[2] || '0xe327216d843357f1';
 
-console.log(`🎯 Minting test Patch NFT to: ${recipientAddress}`);
+console.log(`📍 Minting Paradise Motel Pin to: ${recipientAddress}`);
 
 // Read transaction
 const transaction = readFileSync(
-  resolve('./cadence/transactions/airdrop-patch.cdc'),
+  resolve('./cadence/transactions/airdrop-pin.cdc'),
   'utf8'
 );
 
 // Authorization function
 const authorization = async (account) => {
   const { SHA3 } = await import('sha3');
-  const ellipticModule = await import('elliptic');
-  const EC = ellipticModule.default || ellipticModule;
-  const ec = new EC.ec('p256');
+  const elliptic = await import('elliptic');
+  const ec = new elliptic.ec('p256');
   
   const key = ec.keyFromPrivate(Buffer.from(ADMIN_PRIVATE_KEY, 'hex'));
   
@@ -60,7 +59,7 @@ const authorization = async (account) => {
   };
 };
 
-async function mintTestPatch() {
+async function mintParadisePin() {
   try {
     console.log('📝 Sending transaction...');
     
@@ -69,11 +68,10 @@ async function mintTestPatch() {
       args: (arg, t) => [
         arg(recipientAddress, t.Address),
         arg('Paradise Motel', t.String),
-        arg('Test Achievement', t.String),
-        arg('Paradise Motel Patch', t.String),
-        arg('Test Patch from Paradise Motel - Ready for Level Up upgrade', t.String),
-        arg('common', t.String),
-        arg('https://storage.googleapis.com/flunks_public/images/1.png', t.String)
+        arg('Paradise Motel', t.String),
+        arg('Collectible pin from Paradise Motel', t.String),
+        arg('Base', t.String),
+        arg('https://storage.googleapis.com/flunks_public/images/paradise-motel-pin.png', t.String)
       ],
       proposer: authorization,
       payer: authorization,
@@ -91,23 +89,17 @@ async function mintTestPatch() {
       process.exit(1);
     }
     
-    console.log('✅ Test Patch minted successfully!');
+    console.log('✅ Paradise Motel Pin minted successfully!');
     console.log('');
     console.log('📍 Traits:');
-    console.log('   • Type: Patch');
+    console.log('   • Type: Pin');
     console.log('   • Location: Paradise Motel');
-    console.log('   • Achievement: Test Achievement');
-    console.log('   • Rarity: common');
-    console.log('   • Image: 1.png');
+    console.log('   • Rarity: Base');
+    console.log('   • Image: Metallic keychain pin');
     console.log('');
     console.log('🎯 Recipient:', recipientAddress);
     console.log('');
-    console.log('🔄 Next steps:');
-    console.log('   1. Check your Dapper wallet for the new Patch');
-    console.log('   2. Open Level Up app on localhost');
-    console.log('   3. Click "LEVEL UP!" to upgrade');
-    console.log('   4. Watch for new image reveal animation');
-    console.log('   5. Check Flowty for updated traits');
+    console.log('✅ Check your Flow Wallet and Flowty - it will show under "Flunks: Semester Zero" collection!');
     
   } catch (error) {
     console.error('❌ Error:', error);
@@ -115,4 +107,4 @@ async function mintTestPatch() {
   }
 }
 
-mintTestPatch();
+mintParadisePin();

@@ -1,0 +1,63 @@
+{
+  "contractName": "SemesterZero",
+  "contractAddress": "0xce9dd43888d99574",
+  "nftType": {
+    "typeID": "A.ce9dd43888d99574.SemesterZero.Chapter5NFT"
+  },
+  "collectionData": {
+    "storagePath": {
+      "identifier": "SemesterZeroChapter5Collection"
+    },
+    "publicPath": {
+      "identifier": "SemesterZeroChapter5Collection"
+    },
+    "publicLinkedType": {
+      "type": "",
+      "kind": "Restriction",
+      "typeID": "",
+      "restrictions": [
+        {
+          "type": "",
+          "kind": "ResourceInterface",
+          "typeID": "A.1d7e57aa55817448.NonFungibleToken.Receiver",
+          "fields": []
+        },
+        {
+          "type": "",
+          "kind": "ResourceInterface",
+          "typeID": "A.1d7e57aa55817448.NonFungibleToken.CollectionPublic",
+          "fields": []
+        }
+      ]
+    },
+    "publicCollectionName": "Flunks: Semester Zero",
+    "externalURL": "https://www.flunks.net/semester-zero",
+    "squareImage": "https://storage.googleapis.com/flunks_public/images/semester-zero-logo.png",
+    "bannerImage": "https://storage.googleapis.com/flunks_public/images/semester-zero-banner.png"
+  },
+  "collectionDisplay": {
+    "name": "Flunks: Semester Zero",
+    "description": "Collectible NFTs from Flunks: Semester Zero including achievement NFTs, location pins, and patches. Earned by exploring flunks.net and completing objectives throughout the Semester Zero experience.",
+    "externalURL": {
+      "url": "https://www.flunks.net/semester-zero"
+    },
+    "squareImage": {
+      "file": {
+        "url": "https://storage.googleapis.com/flunks_public/images/semester-zero-logo.png"
+      }
+    },
+    "bannerImage": {
+      "file": {
+        "url": "https://storage.googleapis.com/flunks_public/images/semester-zero-banner.png"
+      }
+    },
+    "socials": {
+      "twitter": {
+        "url": "https://twitter.com/flunksnft"
+      },
+      "discord": {
+        "url": "https://discord.gg/flunks"
+      }
+    }
+  }
+}
