@@ -224,6 +224,17 @@ access(all) fun resolveContractView(resourceType: Type?, viewType: Type): AnyStr
    - User must still initialize collection in their account
    - Wallet will prompt automatically when they receive first NFT
 
+### **Flow Wallet transfer fails: `invalid send nft identifier`**
+
+This error means Flow Wallet could not map your NFT to a registered Token List entry, so it refuses to build the send transaction.
+
+**Fix:** Register the collection (see steps above). Once the on-chain `NFTList` entry exists and indexes (usually <2 minutes), reconnect Flow Wallet and try the transfer again.
+
+If it still fails:
+- Re-run `node admin-scripts/register-token-list.js` to confirm `true`
+- Disconnect / reconnect Wallet, or clear extension cache
+- Ask the recipient to initialize their `SemesterZero` collection so the transfer succeeds
+
 ### **Images not loading?**
 
 - Verify URLs in contract are accessible:

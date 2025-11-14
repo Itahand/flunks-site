@@ -215,6 +215,8 @@ access(all) contract SemesterZero: NonFungibleToken, ViewResolver {
         // Admin can update metadata for the reveal
         access(contract) fun reveal(newMetadata: {String: String}) {
             self.metadata = newMetadata
+            // Note: Updated event must be emitted from the admin function, not here
+            // because it requires Update entitlement
         }
         
         access(all) view fun getViews(): [Type] {
@@ -257,7 +259,7 @@ access(all) contract SemesterZero: NonFungibleToken, ViewResolver {
                     ])
 
                 case Type<MetadataViews.ExternalURL>():
-                    return MetadataViews.ExternalURL("https://flunks.flow")
+                    return MetadataViews.ExternalURL("https://flunks.net")
                 
                 case Type<MetadataViews.Serial>():
                     return MetadataViews.Serial(self.serialNumber)
