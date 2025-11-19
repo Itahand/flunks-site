@@ -326,10 +326,20 @@ const ParadiseMotelMainSimple = () => {
     openWindow({
       key: WINDOW_IDS.STORY_MANUAL,
       window: (
-        <StoryManual 
-          autoPlayChapterId="paradise-motel" 
+        <DraggableResizeableWindow
+          windowsId={WINDOW_IDS.STORY_MANUAL}
           onClose={() => closeWindow(WINDOW_IDS.STORY_MANUAL)}
-        />
+          initialWidth="100vw"
+          initialHeight="100vh"
+          resizable={false}
+          headerTitle="Story Mode"
+          style={{ zIndex: 9999 }}
+        >
+          <StoryManual 
+            autoPlayChapterId="paradise-motel" 
+            onClose={() => closeWindow(WINDOW_IDS.STORY_MANUAL)}
+          />
+        </DraggableResizeableWindow>
       ),
     });
   };
