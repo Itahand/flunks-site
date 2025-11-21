@@ -1,15 +1,14 @@
--- FIX award_gum function for Nov 18 revert
--- The function is using wrong column names for user_gum_balances
+-- FIX award_gum function - correct schema based on actual database
 -- Run this in Supabase SQL Editor
 
--- First, drop ALL existing award_gum functions
+-- Drop all existing award_gum functions
 DROP FUNCTION IF EXISTS public.award_gum(character varying, character varying, jsonb) CASCADE;
 DROP FUNCTION IF EXISTS public.award_gum(text, text, jsonb) CASCADE;
 DROP FUNCTION IF EXISTS public.award_gum(varchar, varchar, jsonb) CASCADE;
 DROP FUNCTION IF EXISTS public.award_gum(p_wallet_address character varying, p_source character varying, p_metadata jsonb) CASCADE;
 DROP FUNCTION IF EXISTS public.award_gum(p_wallet_address text, p_source text, p_metadata jsonb) CASCADE;
 
--- Create the clean function
+-- Create clean function with correct schema
 CREATE OR REPLACE FUNCTION public.award_gum(
   p_wallet_address TEXT,
   p_source TEXT,
@@ -65,11 +64,11 @@ BEGIN
     END IF;
   END IF;
 
-  -- Insert transaction record
-  INSERT INTO public.gum_transactions (wallet_address, source, amount, metadata)
-  VALUES (p_wallet_address, p_source, v_amount, p_metadata);
+  -- Insert transaction record with correct schema (transaction_type, description)
+  INSERT INTO public.gum_transactions (wallet_address, source, amount, metadata, transaction_type, description)
+  VALUES (p_wallet_address, p_source, v_amount, p_metadata, 'earned', 'Earned gum from ' || p_source);
 
-  -- Update or insert user balance (using correct columns: current_balance, total_earned, total_spent)
+  -- Update or insert user balance with correct columns (current_balance, total_earned, total_spent)
   INSERT INTO public.user_gum_balances (wallet_address, current_balance, total_earned, total_spent)
   VALUES (p_wallet_address, v_amount, v_amount, 0)
   ON CONFLICT (wallet_address) 
