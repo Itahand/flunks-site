@@ -53,6 +53,7 @@ import UserProfilePrompt from "components/UserProfile/UserProfilePrompt";
 import AutoWalletAccessGrant from "components/AutoWalletAccessGrant";
 import ErrorBoundary from "components/ErrorBoundary";
 import { AmbientSoundPlayer } from "components/AmbientSoundPlayer";
+import { initializeEasterEggs } from "utils/easterEggs";
 
 const ThemeWrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { theme } = useThemeSettings();
@@ -87,6 +88,11 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       };
       
       enhanceDetection();
+
+      // Initialize easter eggs and console ASCII art after everything loads
+      setTimeout(() => {
+        initializeEasterEggs();
+      }, 2000);
     } catch (error) {
       console.error('Wallet initialization failed:', error);
     }
