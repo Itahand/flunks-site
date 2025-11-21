@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import type { HiddenRiffPreset, MajorChord } from "lib/hiddenRiffPresets";
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { useUnifiedWallet } from "contexts/UnifiedWalletContext";
 
 const Shell = styled.div`
   display: flex;
@@ -219,9 +219,8 @@ const MINOR_CHORD_NOTES: Record<string, string[]> = {
 };
 
 const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
-  // Get wallet address from Dynamic context
-  const { primaryWallet } = useDynamicContext();
-  const walletAddress = primaryWallet?.address;
+  // Get wallet address from Unified Wallet context
+  const { address: walletAddress } = useUnifiedWallet();
 
   // The secret sequence (updated - no longer revealed publicly)
   const correctSequence: string[] = ['C', 'G', 'Am', 'F'];
@@ -343,7 +342,6 @@ const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
       try {
         // Call API to award GUM and achievement
         console.log('💰 Wallet Address:', walletAddress);
-        console.log('👤 Primary Wallet:', primaryWallet);
         
         const headers: HeadersInit = { 'Content-Type': 'application/json' };
         if (walletAddress) {
