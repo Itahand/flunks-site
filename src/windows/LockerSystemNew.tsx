@@ -1822,7 +1822,16 @@ const LockerSystemNew: React.FC = () => {
                                   headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify({ wallet: unifiedAddress })
                                 });
+                                
+                                if (!result.ok) {
+                                  console.error('Daily check-in API error:', result.status, result.statusText);
+                                  alert('❌ Unable to claim daily bonus. Please try again later.');
+                                  return;
+                                }
+                                
                                 const data = await result.json();
+                                console.log('Daily check-in response:', data);
+                                
                                 if (data.success) {
                                   alert(`🎉 Daily bonus claimed: +${data.earned} GUM!`);
                                   // Refresh gum balance and tracking data
@@ -1832,10 +1841,13 @@ const LockerSystemNew: React.FC = () => {
                                   // Reset button state
                                   setCanClaimDaily(false);
                                 } else {
-                                  alert(`ℹ️ ${data.message || 'Already claimed today!'}`);
+                                  // Show friendly message for cooldown or other issues
+                                  alert(`ℹ️ ${data.message || 'Daily bonus already claimed! Come back tomorrow.'}`);
+                                  setCanClaimDaily(false);
                                 }
                               } catch (err) {
-                                alert('❌ Check-in failed. Try again later.');
+                                console.error('Daily check-in error:', err);
+                                alert('❌ Unable to claim daily bonus. Please try again later.');
                               }
                             }}
                           >
