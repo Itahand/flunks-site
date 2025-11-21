@@ -52,22 +52,8 @@ export default async function handler(
     });
 
     if (result.success && result.earned > 0) {
-      // Mark Chapter 5 Overachiever as complete by inserting access code discovery
-      // This is how the locker system tracks completion
-      const accessCodeResult = await supabase
-        .from('access_code_discoveries')
-        .insert({
-          wallet_address: wallet,
-          code_entered: 'CGAF', // Chapter 5 Overachiever code (C, G, A, F - Let It Be)
-          success: true,
-          discovered_at: new Date().toISOString(),
-        });
-
-      if (accessCodeResult.error) {
-        console.error('Error inserting access code discovery:', accessCodeResult.error);
-        // Don't fail the request, GUM was already awarded
-      }
-
+      // Chapter 5 Overachiever tracked via gum_transactions with source='hidden_riff'
+      // The gum transaction above is all we need
       return res.status(200).json({
         success: true,
         gumEarned: result.earned,
