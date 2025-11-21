@@ -31,33 +31,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Get user's locker information
-    let { data: lockerInfo, error } = await supabase
+    // Get user's locker information (order by created_at desc and take first to handle duplicates)
+    let { data: lockerInfoArray, error } = await supabase
       .from('user_profiles')
       .select('locker_number, username, created_at')
       .eq('wallet_address', wallet_address)
-      .single();
+      .order('created_at', { ascending: false })
+      .limit(1);
+    
+    let lockerInfo = lockerInfoArray && lockerInfoArray.length > 0 ? lockerInfoArray[0] : null;
 
-    if (error?.code === 'PGRST116' && raw_wallet_address && wallet_address !== raw_wallet_address) {
-      const { data: legacyInfo, error: legacyError } = await supabase
+    // Fallback: try raw wallet address if normalized didn't work
+    if (!lockerInfo && raw_wallet_address && wallet_address !== raw_wallet_address) {
+      const { data: legacyInfoArray } = await supabase
         .from('user_profiles')
         .select('locker_number, username, created_at')
         .eq('wallet_address', raw_wallet_address)
-        .single();
-      if (!legacyError && legacyInfo) {
-        lockerInfo = legacyInfo as any;
-        error = null;
+        .order('created_at', { ascending: false })
+        .limit(1);
+      
+      if (legacyInfoArray && legacyInfoArray.length > 0) {
+        lockerInfo = legacyInfoArray[0];
       }
     }
 
-    if (error) {
-      if (error.code === 'PGRST116') { // No rows found
-        return res.status(404).json({ 
-          error: 'User not found' 
-        });
-      }
+    if (error && error.code !== 'PGRST116') {
       console.error('🔥 Supabase error:', error);
       return res.status(500).json({ error: error.message });
+    }
+
+    if (!lockerInfo) {
+      return res.status(404).json({ 
+        error: 'User not found' 
+      });
     }
 
     // Format the response
