@@ -342,9 +342,15 @@ const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
       
       try {
         // Call API to award GUM and achievement
+        console.log('💰 Wallet Address:', walletAddress);
+        console.log('👤 Primary Wallet:', primaryWallet);
+        
         const headers: HeadersInit = { 'Content-Type': 'application/json' };
         if (walletAddress) {
           headers['x-wallet-address'] = walletAddress;
+          console.log('✅ Added wallet header:', walletAddress);
+        } else {
+          console.warn('⚠️ No wallet address found - will run in test mode');
         }
 
         const response = await fetch('/api/claim-hidden-riff', {
