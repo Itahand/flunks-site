@@ -379,8 +379,17 @@ const HiddenRiff = ({ preset, onComplete }: HiddenRiffProps) => {
             ms: 0,
           });
           setUserSequence([]);
+        } else if (data.alreadyClaimed) {
+          alert(`✅ You already completed the Hidden Riff! Chapter 5 Overachiever achievement is unlocked.`);
+          onComplete?.({
+            presetId: preset?.id || 'hidden-riff',
+            perfect: true,
+            misses: 0,
+            ms: 0,
+          });
+          setUserSequence([]);
         } else {
-          alert(data.message || 'Already claimed or error occurred');
+          alert(data.message || 'Unable to complete Hidden Riff');
         }
       } catch (error) {
         console.error('Error submitting:', error);
