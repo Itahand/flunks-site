@@ -47,6 +47,9 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
   const [hasCollection, setHasCollection] = useState<boolean | null>(null);
   const [settingUp, setSettingUp] = useState(false);
   const [message, setMessage] = useState('');
+  
+  // Detect if user is using Dapper Wallet (starts with 0x and length is specific to Dapper)
+  const isDapperWallet = wallet?.startsWith('0x') && wallet.length === 18;
 
   // Check if user already has collection
   useEffect(() => {
@@ -255,7 +258,9 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
       // Parse common errors
       let errorMessage = 'Failed to set up collection';
       
-      if (error.message?.includes('declined') || error.message?.includes('rejected')) {
+      if (error.message?.includes('ErrInvalidRequest') || error.message?.includes('not supported')) {
+        errorMessage = '⚠️ Dapper Wallet detected: Please use Flow Wallet (Lilico) for setup';
+      } else if (error.message?.includes('declined') || error.message?.includes('rejected')) {
         errorMessage = 'Transaction was declined';
       } else if (error.message?.includes('Authorizers')) {
         errorMessage = 'Please approve the transaction in your wallet';
@@ -314,6 +319,13 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
 
   return (
     <Container compact={compact}>
+      {isDapperWallet && !compact && (
+        <DapperWarning>
+          ⚠️ <strong>Dapper Wallet users:</strong> This transaction may not be supported. 
+          Please switch to <strong>Flow Wallet (Lilico)</strong> for collection setup.
+        </DapperWarning>
+      )}
+      
       <SetupButton
         onClick={setupCollection}
         disabled={settingUp}
@@ -413,6 +425,21 @@ const HelpText = styled.p`
   margin: 0;
   text-align: center;
   font-style: italic;
+`;
+
+const DapperWarning = styled.div`
+  background: rgba(251, 191, 36, 0.2);
+  border: 2px solid #fbbf24;
+  color: #fbbf24;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.5;
+  
+  strong {
+    color: #fff;
+  }
 `;
 
 export default SetupCollectionButton;

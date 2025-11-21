@@ -5,6 +5,8 @@ import MaidDialogue from "components/MaidDialogue";
 import StoryManual from "components/StoryManual";
 import { WINDOW_IDS } from "fixed";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { useUnifiedWallet } from '../../contexts/UnifiedWalletContext';
+import SetupCollectionButton from '../../components/SetupCollectionButton';
 import * as fcl from '@onflow/fcl';
 // Ensure FCL is properly configured for mainnet
 import '../../config/fcl';
@@ -129,7 +131,9 @@ const Room1BellComponent: React.FC<Room1BellComponentProps> = ({ onClose, wallet
 const ParadiseMotelMainSimple = () => {
   const { openWindow, closeWindow } = useWindowsContext();
   const { primaryWallet } = useDynamicContext();
+  const { address: unifiedAddress } = useUnifiedWallet();
   const effectiveWallet = primaryWallet;
+  const walletAddress = unifiedAddress || primaryWallet?.address;
 
   // Get current hour for day/night logic (6 AM - 6 PM is daytime)
   const now = new Date();
@@ -532,15 +536,20 @@ transaction() {
                 </button>
               </div>
 
-              {/* Second row: Full width Semester Zero button */}
+              {/* Second row: Semester Zero Collection Setup */}
               <div className="max-w-4xl mx-auto">
-                <button
-                  onClick={setupChapter5Collection}
-                  className="w-full bg-gradient-to-br from-green-700 to-teal-900 hover:from-green-600 hover:to-teal-800 text-white px-4 py-3 rounded-lg border-3 border-green-500 hover:border-green-400 transition-all duration-300 hover:scale-105 text-center text-sm font-black shadow-lg"
-                  style={{ fontFamily: 'Cooper Black, Georgia, serif' }}
-                >
-                  👁️ Flunks: Semester Zero Collection
-                </button>
+                <div className="bg-gradient-to-br from-green-900/80 to-teal-900/80 border-4 border-green-500 rounded-lg p-4">
+                  <div className="text-center mb-3">
+                    <h3 className="text-white text-lg font-black" style={{ fontFamily: 'Cooper Black, Georgia, serif' }}>
+                      👁️ Flunks: Semester Zero Collection
+                    </h3>
+                    <p className="text-green-200 text-xs mt-1">Setup required to receive Chapter 5 NFTs</p>
+                  </div>
+                  <SetupCollectionButton 
+                    wallet={walletAddress}
+                    compact={false}
+                  />
+                </div>
               </div>
             </div>
           </div>
