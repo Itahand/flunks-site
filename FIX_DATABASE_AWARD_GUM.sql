@@ -68,13 +68,12 @@ BEGIN
   INSERT INTO public.gum_transactions (wallet_address, source, amount, metadata, transaction_type, description)
   VALUES (p_wallet_address, p_source, v_amount, p_metadata, 'earned', 'Earned gum from ' || p_source);
 
-  -- Update or insert user balance with correct columns (current_balance, total_earned, total_spent)
-  INSERT INTO public.user_gum_balances (wallet_address, current_balance, total_earned, total_spent)
-  VALUES (p_wallet_address, v_amount, v_amount, 0)
+  -- Update or insert user balance with correct column (total_gum)
+  INSERT INTO public.user_gum_balances (wallet_address, total_gum)
+  VALUES (p_wallet_address, v_amount)
   ON CONFLICT (wallet_address) 
   DO UPDATE SET 
-    current_balance = public.user_gum_balances.current_balance + v_amount,
-    total_earned = public.user_gum_balances.total_earned + v_amount,
+    total_gum = public.user_gum_balances.total_gum + v_amount,
     updated_at = NOW();
 
   -- Return success
