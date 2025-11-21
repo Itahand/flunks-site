@@ -18,9 +18,9 @@
     "test-mobile-wallets": "node ./scripts/test-mobile-wallets.js"
   },
   "dependencies": {
-    "@dynamic-labs/flow": "^3.9.13",
-    "@dynamic-labs/sdk-api": "^0.0.715",
-    "@dynamic-labs/sdk-react-core": "^3.9.13",
+    "@dynamic-labs/flow": "^4.47.0",
+    "@dynamic-labs/sdk-api": "^0.0.824",
+    "@dynamic-labs/sdk-react-core": "^4.47.0",
     "@onflow/fcl": "^1.20.3",
     "@onflow/fcl-wc": "^6.0.8",
     "@onflow/types": "^1.4.2",
