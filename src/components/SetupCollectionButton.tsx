@@ -66,10 +66,8 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
         access(all) fun main(address: Address): Bool {
           let account = getAccount(address)
           
-          // Check if storage has the collection
-          let hasStorage = account.storage.borrow<&SemesterZeroV3.Collection>(
-            from: /storage/SemesterZeroV3Collection
-          ) != nil
+          // Check if storage has the collection using type check (no auth needed)
+          let hasStorage = account.storage.type(at: /storage/SemesterZeroV3Collection) != nil
           
           if !hasStorage {
             return false
