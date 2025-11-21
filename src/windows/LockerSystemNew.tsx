@@ -1841,8 +1841,8 @@ const LockerSystemNew: React.FC = () => {
                                   // Reset button state
                                   setCanClaimDaily(false);
                                 } else {
-                                  // Show friendly message for cooldown or other issues
-                                  alert(`ℹ️ ${data.message || 'Daily bonus already claimed! Come back tomorrow.'}`);
+                                  // Show friendly message - always say come back tomorrow for cooldowns
+                                  alert(`ℹ️ Come back tomorrow for more GUM!`);
                                   setCanClaimDaily(false);
                                 }
                               } catch (err) {
