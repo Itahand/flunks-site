@@ -61,14 +61,14 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
   const checkCollection = async (address: string) => {
     try {
       const script = `
-        import SemesterZero from 0xce9dd43888d99574
+        import SemesterZeroV3 from 0xce9dd43888d99574
         
         access(all) fun main(address: Address): Bool {
           let account = getAccount(address)
           
           // Check if storage has the collection
-          let hasStorage = account.storage.borrow<&SemesterZero.Chapter5Collection>(
-            from: SemesterZero.Chapter5CollectionStoragePath
+          let hasStorage = account.storage.borrow<&SemesterZeroV3.Collection>(
+            from: /storage/SemesterZeroV3Collection
           ) != nil
           
           if !hasStorage {
@@ -77,8 +77,8 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
           
           // Also check public capability (for receiving NFTs)
           let collectionRef = account.capabilities
-            .borrow<&SemesterZero.Chapter5Collection>(
-              SemesterZero.Chapter5CollectionPublicPath
+            .borrow<&SemesterZeroV3.Collection>(
+              /public/SemesterZeroV3Collection
             )
           
           return collectionRef != nil
@@ -108,22 +108,22 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
       // Simplified transaction for Dapper Wallet compatibility
       // Uses minimal auth entitlements that Dapper supports
       const transaction = `
-        import SemesterZero from 0xce9dd43888d99574
+        import SemesterZeroV3 from 0xce9dd43888d99574
         import NonFungibleToken from 0x1d7e57aa55817448
         
         transaction {
           prepare(signer: auth(Storage, Capabilities) &Account) {
             // Check if collection already exists in storage
-            let existingCollection = signer.storage.borrow<&SemesterZero.Chapter5Collection>(
-              from: SemesterZero.Chapter5CollectionStoragePath
+            let existingCollection = signer.storage.borrow<&SemesterZeroV3.Collection>(
+              from: /storage/SemesterZeroV3Collection
             )
             
             if existingCollection != nil {
               log("✅ Collection already exists in storage")
               
               // Check if public capability exists
-              let existingCap = signer.capabilities.get<&SemesterZero.Chapter5Collection>(
-                SemesterZero.Chapter5CollectionPublicPath
+              let existingCap = signer.capabilities.get<&SemesterZeroV3.Collection>(
+                /public/SemesterZeroV3Collection
               )
               
               // If capability doesn't exist or is invalid, recreate it
@@ -131,15 +131,15 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
                 log("🔧 Recreating public capability...")
                 
                 // Always unpublish first to clear any existing capability (Dapper-safe)
-                signer.capabilities.unpublish(SemesterZero.Chapter5CollectionPublicPath)
+                signer.capabilities.unpublish(/public/SemesterZeroV3Collection)
                 
                 // Create new public capability (Dapper-safe)
-                let newCap = signer.capabilities.storage.issue<&SemesterZero.Chapter5Collection>(
-                  SemesterZero.Chapter5CollectionStoragePath
+                let newCap = signer.capabilities.storage.issue<&SemesterZeroV3.Collection>(
+                  /storage/SemesterZeroV3Collection
                 )
                 
                 // Publish the new capability
-                signer.capabilities.publish(newCap, at: SemesterZero.Chapter5CollectionPublicPath)
+                signer.capabilities.publish(newCap, at: /public/SemesterZeroV3Collection)
                 log("✅ Public capability published!")
               }
               
@@ -149,33 +149,33 @@ export const SetupCollectionButton: React.FC<SetupCollectionButtonProps> = ({
             log("🆕 Creating new collection...")
             
             // ALWAYS unpublish first to ensure path is completely clear
-            signer.capabilities.unpublish(SemesterZero.Chapter5CollectionPublicPath)
+            signer.capabilities.unpublish(/public/SemesterZeroV3Collection)
             log("🧹 Cleared public path")
             
             // Check if storage path is clear
-            if signer.storage.borrow<&AnyResource>(from: SemesterZero.Chapter5CollectionStoragePath) != nil {
+            if signer.storage.borrow<&AnyResource>(from: /storage/SemesterZeroV3Collection) != nil {
               log("❌ Storage path already occupied!")
               panic("Collection storage path is already in use. Please contact support.")
             }
             
             // Create new empty collection
-            let collection <- SemesterZero.createEmptyCollection(nftType: Type<@SemesterZero.Chapter5NFT>())
+            let collection <- SemesterZeroV3.createEmptyCollection(nftType: Type<@SemesterZeroV3.NFT>())
             
             // Save collection to storage (Dapper-safe)
-            signer.storage.save(<-collection, to: SemesterZero.Chapter5CollectionStoragePath)
+            signer.storage.save(<-collection, to: /storage/SemesterZeroV3Collection)
             log("💾 Collection saved to storage")
             
             // Create public capability (Dapper-safe)
-            let collectionCap = signer.capabilities.storage.issue<&SemesterZero.Chapter5Collection>(
-              SemesterZero.Chapter5CollectionStoragePath
+            let collectionCap = signer.capabilities.storage.issue<&SemesterZeroV3.Collection>(
+              /storage/SemesterZeroV3Collection
             )
             log("🔑 Capability issued")
             
             // Publish the capability
-            signer.capabilities.publish(collectionCap, at: SemesterZero.Chapter5CollectionPublicPath)
+            signer.capabilities.publish(collectionCap, at: /public/SemesterZeroV3Collection)
             log("✅ Public capability published!")
             
-            log("🎉 SemesterZero collection created!")
+            log("🎉 SemesterZeroV3 collection created!")
           }
         }
       `;
