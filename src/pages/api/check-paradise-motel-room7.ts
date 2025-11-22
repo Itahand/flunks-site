@@ -36,30 +36,30 @@ export default async function handler(
       });
     }
 
-    console.log('🔍 Checking Room 7 visit for:', walletAddress.slice(0, 8) + '...');
+    console.log('🔍 Checking Room 7 key for:', walletAddress.slice(0, 8) + '...');
 
-    // Check if user has already visited Room 7
-    const { data: existingVisit, error: checkError } = await supabase
-      .from('paradise_motel_room7_visits')
-      .select('id, visit_timestamp')
+    // Check if user has a Room 7 key
+    const { data: existingKey, error: checkError } = await supabase
+      .from('paradise_motel_room7_keys')
+      .select('id, created_at')
       .eq('wallet_address', walletAddress)
       .single();
 
     if (checkError && checkError.code !== 'PGRST116') {
-      console.error('❌ Database error checking Room 7 visit:', checkError);
+      console.error('❌ Database error checking Room 7 key:', checkError);
       return res.status(500).json({
         success: false,
         hasVisited: false,
-        message: 'Database error while checking visit'
+        message: 'Database error while checking key'
       });
     }
 
-    const hasVisited = !!existingVisit;
+    const hasVisited = !!existingKey;
     
-    console.log('📊 Room 7 visit check result:', {
+    console.log('📊 Room 7 key check result:', {
       wallet: walletAddress.slice(0, 8) + '...',
       hasVisited,
-      visitedAt: existingVisit?.visit_timestamp
+      keyObtainedAt: existingKey?.created_at
     });
 
     return res.status(200).json({
