@@ -585,18 +585,8 @@ const MyPlace = () => {
   };
 
   const userHasTrait = (clique: string) => {
-    // Map our clique names to CliqueType
-    const cliqueMap: Record<string, CliqueType> = {
-      'the-nerds': 'GEEK',
-      'the-preps': 'PREP', 
-      'the-jocks': 'JOCK',
-      'the-freaks': 'FREAK',
-      'the-artists': 'GEEK', // Map to GEEK for now
-      'the-rebels': 'FREAK', // Map to FREAK for now
-    };
-    
-    const cliqueType = cliqueMap[clique];
-    return cliqueType ? hasAccess(cliqueType) : false;
+    // All cliques are now accessible without NFT ownership
+    return true;
   };
 
   const handleCharacterClick = (character: typeof characterSlots[0]) => {

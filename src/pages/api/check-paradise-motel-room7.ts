@@ -38,14 +38,14 @@ export default async function handler(
 
     console.log('🔍 Checking Room 7 key for:', walletAddress.slice(0, 8) + '...');
 
-    // Check if user has a Room 7 key
+    // Check if user has a Room 7 key (use maybeSingle() to avoid errors when no row exists)
     const { data: existingKey, error: checkError } = await supabase
       .from('paradise_motel_room7_keys')
-      .select('id, created_at')
+      .select('id, obtained_at')
       .eq('wallet_address', walletAddress)
-      .single();
+      .maybeSingle();
 
-    if (checkError && checkError.code !== 'PGRST116') {
+    if (checkError) {
       console.error('❌ Database error checking Room 7 key:', checkError);
       return res.status(500).json({
         success: false,
@@ -59,7 +59,7 @@ export default async function handler(
     console.log('📊 Room 7 key check result:', {
       wallet: walletAddress.slice(0, 8) + '...',
       hasVisited,
-      keyObtainedAt: existingKey?.created_at
+      keyObtainedAt: existingKey?.obtained_at
     });
 
     return res.status(200).json({
