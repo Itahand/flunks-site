@@ -1833,7 +1833,7 @@ const LockerSystemNew: React.FC = () => {
                                 console.log('Daily check-in response:', data);
                                 
                                 if (data.success) {
-                                  alert(`🎉 Daily bonus claimed: +${data.earned} GUM!`);
+                                  alert(`🎉 +${data.earned} GUM added! Check in tomorrow to keep earning GUM!`);
                                   // Refresh gum balance and tracking data
                                   refetch();
                                   loadGumBalance();
