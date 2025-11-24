@@ -1,6 +1,6 @@
 -- Transfer wallet address from old to new
--- Old: 0xbfffec679fff3a94
--- New: 0x807c3d470888cc48
+-- Old: 0x6e5d12b1735caa83
+-- New: 0x7ab6ddec8328399a
 -- Date: 2025-11-23
 
 BEGIN;
@@ -8,8 +8,8 @@ BEGIN;
 -- Store old and new addresses for safety
 DO $$
 DECLARE
-  v_old_wallet TEXT := '0xbfffec679fff3a94';
-  v_new_wallet TEXT := '0x807c3d470888cc48';
+  v_old_wallet TEXT := '0x6e5d12b1735caa83';
+  v_new_wallet TEXT := '0x7ab6ddec8328399a';
   v_profile_count INTEGER;
   v_gum_balance BIGINT;
 BEGIN
@@ -42,178 +42,178 @@ BEGIN
 END $$;
 
 -- 1. Handle existing data in new wallet (if any exists, delete it first)
-DELETE FROM user_gum_balances WHERE wallet_address = '0x807c3d470888cc48';
-DELETE FROM gum_transactions WHERE wallet_address = '0x807c3d470888cc48';
-DELETE FROM user_gum_cooldowns WHERE wallet_address = '0x807c3d470888cc48';
-DELETE FROM user_profiles WHERE wallet_address = '0x807c3d470888cc48';
+DELETE FROM user_gum_balances WHERE wallet_address = '0x7ab6ddec8328399a';
+DELETE FROM gum_transactions WHERE wallet_address = '0x7ab6ddec8328399a';
+DELETE FROM user_gum_cooldowns WHERE wallet_address = '0x7ab6ddec8328399a';
+DELETE FROM user_profiles WHERE wallet_address = '0x7ab6ddec8328399a';
 
 -- 2. Update the main profile (this updates locker_assignments view automatically)
 UPDATE user_profiles 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 -- 3. Update GUM system tables (have foreign keys but no ON UPDATE CASCADE)
 UPDATE user_gum_balances 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE gum_transactions 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE user_gum_cooldowns 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 -- 4. Delete any existing data in objective tables for new wallet (if tables exist)
 DO $$
 BEGIN
-  DELETE FROM paradise_motel_room7_visits WHERE wallet_address = '0x807c3d470888cc48';
-  DELETE FROM crack_the_code WHERE wallet_address = '0x807c3d470888cc48';
-  DELETE FROM flunko_clicks WHERE wallet_address = '0x807c3d470888cc48';
-  DELETE FROM homecoming_dance_attendance WHERE wallet_address = '0x807c3d470888cc48';
-  DELETE FROM paradise_motel_entries WHERE wallet_address = '0x807c3d470888cc48';
-  DELETE FROM paradise_motel_room7_keys WHERE wallet_address = '0x807c3d470888cc48';
-  DELETE FROM cafeteria_button_clicks WHERE wallet_address = '0x807c3d470888cc48';
-  DELETE FROM friday_night_lights_clicks WHERE wallet_address = '0x807c3d470888cc48';
-  DELETE FROM picture_day_votes WHERE user_wallet = '0x807c3d470888cc48';
+  DELETE FROM paradise_motel_room7_visits WHERE wallet_address = '0x7ab6ddec8328399a';
+  DELETE FROM crack_the_code WHERE wallet_address = '0x7ab6ddec8328399a';
+  DELETE FROM flunko_clicks WHERE wallet_address = '0x7ab6ddec8328399a';
+  DELETE FROM homecoming_dance_attendance WHERE wallet_address = '0x7ab6ddec8328399a';
+  DELETE FROM paradise_motel_entries WHERE wallet_address = '0x7ab6ddec8328399a';
+  DELETE FROM paradise_motel_room7_keys WHERE wallet_address = '0x7ab6ddec8328399a';
+  DELETE FROM cafeteria_button_clicks WHERE wallet_address = '0x7ab6ddec8328399a';
+  DELETE FROM friday_night_lights_clicks WHERE wallet_address = '0x7ab6ddec8328399a';
+  DELETE FROM picture_day_votes WHERE user_wallet = '0x7ab6ddec8328399a';
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'flow_drawing_entries') THEN
-    DELETE FROM flow_drawing_entries WHERE wallet_address = '0x807c3d470888cc48';
+    DELETE FROM flow_drawing_entries WHERE wallet_address = '0x7ab6ddec8328399a';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'digital_lock_attempts') THEN
-    DELETE FROM digital_lock_attempts WHERE wallet_address = '0x807c3d470888cc48';
+    DELETE FROM digital_lock_attempts WHERE wallet_address = '0x7ab6ddec8328399a';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'terminal_activities') THEN
-    DELETE FROM terminal_activities WHERE wallet_address = '0x807c3d470888cc48';
+    DELETE FROM terminal_activities WHERE wallet_address = '0x7ab6ddec8328399a';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'magic_carpet_logs') THEN
-    DELETE FROM magic_carpet_logs WHERE wallet_address = '0x807c3d470888cc48';
+    DELETE FROM magic_carpet_logs WHERE wallet_address = '0x7ab6ddec8328399a';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'flow_logs') THEN
-    DELETE FROM flow_logs WHERE wallet_address = '0x807c3d470888cc48';
+    DELETE FROM flow_logs WHERE wallet_address = '0x7ab6ddec8328399a';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'semester_zero_allowlist') THEN
-    DELETE FROM semester_zero_allowlist WHERE wallet_address = '0x807c3d470888cc48';
+    DELETE FROM semester_zero_allowlist WHERE wallet_address = '0x7ab6ddec8328399a';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'weekly_objectives_completed') THEN
-    DELETE FROM weekly_objectives_completed WHERE wallet_address = '0x807c3d470888cc48';
+    DELETE FROM weekly_objectives_completed WHERE wallet_address = '0x7ab6ddec8328399a';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'chat_messages') THEN
-    DELETE FROM chat_messages WHERE wallet_address = '0x807c3d470888cc48';
+    DELETE FROM chat_messages WHERE wallet_address = '0x7ab6ddec8328399a';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'feedback_reports') THEN
-    DELETE FROM feedback_reports WHERE wallet_address = '0x807c3d470888cc48';
+    DELETE FROM feedback_reports WHERE wallet_address = '0x7ab6ddec8328399a';
   END IF;
 END $$;
 
 -- 5. Update Chapter/Objective tracking tables
 UPDATE paradise_motel_room7_visits 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE crack_the_code 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE flunko_clicks 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE homecoming_dance_attendance 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE paradise_motel_entries 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE paradise_motel_room7_keys 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE cafeteria_button_clicks 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE friday_night_lights_clicks 
-SET wallet_address = '0x807c3d470888cc48'
-WHERE wallet_address = '0xbfffec679fff3a94';
+SET wallet_address = '0x7ab6ddec8328399a'
+WHERE wallet_address = '0x6e5d12b1735caa83';
 
 UPDATE picture_day_votes 
-SET user_wallet = '0x807c3d470888cc48'
-WHERE user_wallet = '0xbfffec679fff3a94';
+SET user_wallet = '0x7ab6ddec8328399a'
+WHERE user_wallet = '0x6e5d12b1735caa83';
 
 -- 6. Update optional tracking tables (only if they exist)
 DO $$
 BEGIN
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'flow_drawing_entries') THEN
     UPDATE flow_drawing_entries 
-    SET wallet_address = '0x807c3d470888cc48'
-    WHERE wallet_address = '0xbfffec679fff3a94';
+    SET wallet_address = '0x7ab6ddec8328399a'
+    WHERE wallet_address = '0x6e5d12b1735caa83';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'digital_lock_attempts') THEN
     UPDATE digital_lock_attempts 
-    SET wallet_address = '0x807c3d470888cc48'
-    WHERE wallet_address = '0xbfffec679fff3a94';
+    SET wallet_address = '0x7ab6ddec8328399a'
+    WHERE wallet_address = '0x6e5d12b1735caa83';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'terminal_activities') THEN
     UPDATE terminal_activities 
-    SET wallet_address = '0x807c3d470888cc48'
-    WHERE wallet_address = '0xbfffec679fff3a94';
+    SET wallet_address = '0x7ab6ddec8328399a'
+    WHERE wallet_address = '0x6e5d12b1735caa83';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'magic_carpet_logs') THEN
     UPDATE magic_carpet_logs 
-    SET wallet_address = '0x807c3d470888cc48'
-    WHERE wallet_address = '0xbfffec679fff3a94';
+    SET wallet_address = '0x7ab6ddec8328399a'
+    WHERE wallet_address = '0x6e5d12b1735caa83';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'flow_logs') THEN
     UPDATE flow_logs 
-    SET wallet_address = '0x807c3d470888cc48'
-    WHERE wallet_address = '0xbfffec679fff3a94';
+    SET wallet_address = '0x7ab6ddec8328399a'
+    WHERE wallet_address = '0x6e5d12b1735caa83';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'semester_zero_allowlist') THEN
     UPDATE semester_zero_allowlist 
-    SET wallet_address = '0x807c3d470888cc48'
-    WHERE wallet_address = '0xbfffec679fff3a94';
+    SET wallet_address = '0x7ab6ddec8328399a'
+    WHERE wallet_address = '0x6e5d12b1735caa83';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'weekly_objectives_completed') THEN
     UPDATE weekly_objectives_completed 
-    SET wallet_address = '0x807c3d470888cc48'
-    WHERE wallet_address = '0xbfffec679fff3a94';
+    SET wallet_address = '0x7ab6ddec8328399a'
+    WHERE wallet_address = '0x6e5d12b1735caa83';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'chat_messages') THEN
     UPDATE chat_messages 
-    SET wallet_address = '0x807c3d470888cc48'
-    WHERE wallet_address = '0xbfffec679fff3a94';
+    SET wallet_address = '0x7ab6ddec8328399a'
+    WHERE wallet_address = '0x6e5d12b1735caa83';
   END IF;
   
   IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'feedback_reports') THEN
     UPDATE feedback_reports 
-    SET wallet_address = '0x807c3d470888cc48'
-    WHERE wallet_address = '0xbfffec679fff3a94';
+    SET wallet_address = '0x7ab6ddec8328399a'
+    WHERE wallet_address = '0x6e5d12b1735caa83';
   END IF;
 END $$;
 
 -- Show summary of changes
 DO $$
 DECLARE
-  v_new_wallet TEXT := '0x807c3d470888cc48';
+  v_new_wallet TEXT := '0x7ab6ddec8328399a';
   v_profile RECORD;
   v_gum_balance BIGINT;
   v_transaction_count INTEGER;
@@ -255,4 +255,4 @@ SELECT
   created_at,
   updated_at
 FROM user_profiles
-WHERE wallet_address = '0x807c3d470888cc48';
+WHERE wallet_address = '0x7ab6ddec8328399a';
