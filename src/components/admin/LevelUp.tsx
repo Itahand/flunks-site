@@ -1,461 +1,458 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useUnifiedWallet } from '../../contexts/UnifiedWalletContext';
+import { useGum } from '../../contexts/GumContext';
 import * as fcl from '@onflow/fcl';
 
-// Retro 8-bit arcade animations
-const pixelateIn = keyframes`
-  0% {
-    transform: scale(0.3) rotate(-180deg);
-    filter: brightness(2) blur(10px);
-    opacity: 0;
-  }
-  40% {
-    transform: scale(1.2) rotate(10deg);
-    filter: brightness(1.5) blur(3px);
-    opacity: 1;
-  }
-  60% {
-    transform: scale(1.1) rotate(-5deg);
-    filter: brightness(1.2) blur(1px);
-  }
-  80% {
-    transform: scale(1.05) rotate(2deg);
-    filter: brightness(1.1) blur(0px);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-    filter: brightness(1) blur(0px);
-    opacity: 1;
-  }
-`;
+// Tier configuration
+const TIERS = {
+  Silver: {
+    cost: 250,
+    image: 'https://storage.googleapis.com/flunks_public/images/paradise-motel-pin-silver.png',
+    color: '#C0C0C0',
+    glow: 'rgba(192, 192, 192, 0.6)',
+  },
+  Gold: {
+    cost: 500,
+    image: 'https://storage.googleapis.com/flunks_public/images/paradise-motel-pin-gold.png',
+    color: '#FFD700',
+    glow: 'rgba(255, 215, 0, 0.6)',
+  },
+  'Special Edition': {
+    cost: 1000,
+    image: 'https://storage.googleapis.com/flunks_public/images/paradise-motel-pin-special.png',
+    color: '#FF00FF',
+    glow: 'rgba(255, 0, 255, 0.6)',
+  },
+} as const;
 
+type TierName = keyof typeof TIERS;
+
+// Sound effects
+const playSound = (soundName: string) => {
+  try {
+    const audio = new Audio(`/sounds/${soundName}.mp3`);
+    audio.volume = 0.5;
+    audio.play().catch(() => {});
+  } catch (e) {
+    // Ignore audio errors
+  }
+};
+
+// Demo mode mock NFTs (start with 3 unrevealed, they become revealed after evolution)
+const createDemoNFTs = () => [
+  {
+    id: 1001,
+    name: 'Paradise Motel Pin #1',
+    image: '/images/test-nft-before.svg',
+    serialNumber: 1,
+    revealed: false,
+    tier: '',
+  },
+  {
+    id: 1002,
+    name: 'Paradise Motel Pin #2',
+    image: '/images/test-nft-before.svg',
+    serialNumber: 2,
+    revealed: false,
+    tier: '',
+  },
+  {
+    id: 1003,
+    name: 'Paradise Motel Pin #3',
+    image: '/images/test-nft-before.svg',
+    serialNumber: 3,
+    revealed: false,
+    tier: '',
+  },
+];
+
+// Animations
 const arcadeBlink = keyframes`
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 `;
 
-const scanlines = keyframes`
-  0% { transform: translateY(0); }
-  100% { transform: translateY(10px); }
-`;
-
-const fullscreenReveal = keyframes`
-  0% {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.3) rotate(-180deg);
-    width: 37.5vw;
-    max-width: 37.5vw;
-    height: auto;
-    z-index: 9999;
-    filter: brightness(2) blur(10px);
-    opacity: 0;
-  }
-  40% {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(1) rotate(10deg);
-    width: 37.5vw;
-    max-width: 37.5vw;
-    z-index: 9999;
-    filter: brightness(1.5) blur(3px);
-    opacity: 1;
-  }
-  70% {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(1.05) rotate(-5deg);
-    width: 37.5vw;
-    max-width: 37.5vw;
-    z-index: 9999;
-    filter: brightness(1.2) blur(1px);
-    opacity: 1;
-  }
-  85% {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
-    width: 30vw;
-    max-width: 30vw;
-    z-index: 9999;
-    filter: brightness(1.1) blur(0px);
-    opacity: 1;
-  }
-  100% {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: translate(0, 0) scale(1) rotate(0deg);
-    width: 50%;
-    max-width: 175px;
-    z-index: 1;
-    filter: brightness(1) blur(0px);
-    opacity: 1;
-  }
-`;
-
 const glowPulse = keyframes`
   0%, 100% { 
-    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
   }
   50% { 
-    text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff;
+    box-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
   }
 `;
 
-// Main container with CRT monitor effect
-const ArcadeContainer = styled.div`
+const evolveAnimation = keyframes`
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+  25% {
+    transform: scale(1.2) rotate(10deg);
+    filter: brightness(1.5) hue-rotate(30deg);
+  }
+  50% {
+    transform: scale(0.8) rotate(-10deg);
+    filter: brightness(2) hue-rotate(60deg);
+  }
+  75% {
+    transform: scale(1.3) rotate(5deg);
+    filter: brightness(1.8) hue-rotate(90deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+`;
+
+// Styled Components
+const Container = styled.div`
   padding: 20px;
   background: 
     linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px),
     #000000;
   background-size: 4px 4px;
-  height: 100%;
-  overflow: hidden;
-`;
-
-const ArcadeFrame = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
-  border: 8px solid #ff0000;
-  border-radius: 20px;
-  background: #000000;
-  box-shadow: 
-    0 0 0 4px #ffff00,
-    0 0 0 8px #00ff00,
-    0 0 30px rgba(255, 0, 255, 0.5),
-    inset 0 0 50px rgba(0, 255, 255, 0.1);
-  padding: 20px;
-  position: relative;
-  z-index: 1;
-  height: calc(100vh - 40px);
+  min-height: 100%;
   overflow-y: auto;
 `;
 
-const ArcadeTitle = styled.h1`
+const ArcadeFrame = styled.div`
+  max-width: 1000px;
+  margin: 0 auto;
+  border: 6px solid #ff0000;
+  border-radius: 20px;
+  background: #000000;
+  box-shadow: 
+    0 0 0 3px #ffff00,
+    0 0 0 6px #00ff00,
+    0 0 30px rgba(255, 0, 255, 0.5),
+    inset 0 0 50px rgba(0, 255, 255, 0.1);
+  padding: 20px;
+`;
+
+const Title = styled.h1`
   text-align: center;
-  font-size: 36px;
+  font-size: 28px;
   color: #ffff00;
   text-shadow: 
     3px 3px 0 #ff0000,
-    6px 6px 0 #ff00ff,
-    9px 9px 0 #00ffff;
+    6px 6px 0 #ff00ff;
   margin-bottom: 5px;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   animation: ${arcadeBlink} 2s ease-in-out infinite;
   
   @media (max-width: 768px) {
-    font-size: 24px;
+    font-size: 20px;
   }
 `;
 
 const Subtitle = styled.div`
   text-align: center;
   color: #00ff00;
-  font-size: 10px;
-  margin-bottom: 15px;
-  animation: ${glowPulse} 3s ease-in-out infinite;
+  font-size: 12px;
+  margin-bottom: 20px;
+`;
+
+const GumDisplay = styled.div`
+  text-align: center;
+  background: rgba(255, 0, 255, 0.2);
+  border: 3px solid #ff00ff;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #ffff00;
+  
+  span {
+    color: #00ff00;
+    font-weight: bold;
+  }
 `;
 
 const TabContainer = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 10px;
   justify-content: center;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 `;
 
 const TabButton = styled.button<{ active: boolean }>`
-  padding: 15px 30px;
-  font-family: 'Press Start 2P', 'Courier New', monospace;
-  font-size: 14px;
+  padding: 10px 20px;
+  font-family: inherit;
+  font-size: 12px;
   background: ${props => props.active ? '#ff00ff' : '#000000'};
   color: ${props => props.active ? '#ffff00' : '#00ff00'};
-  border: 4px solid ${props => props.active ? '#ffff00' : '#00ff00'};
+  border: 3px solid ${props => props.active ? '#ffff00' : '#00ff00'};
   cursor: pointer;
   transition: all 0.3s ease;
-  text-shadow: ${props => props.active ? '2px 2px 0 #ff0000' : 'none'};
-  box-shadow: ${props => props.active 
-    ? '0 0 20px #ff00ff, inset 0 0 20px rgba(255, 255, 0, 0.3)' 
-    : '0 0 10px #00ff00'};
   
   &:hover {
     background: #ff00ff;
     color: #ffff00;
     border-color: #ffff00;
-    transform: scale(1.05);
-    box-shadow: 0 0 30px #ff00ff;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 10px 15px;
-    font-size: 10px;
   }
 `;
 
-const KeyholeSection = styled.div`
-  background: 
-    radial-gradient(circle, #1a1a1a 0%, #000000 100%);
-  border: 6px solid #00ffff;
-  border-radius: 20px;
+const Section = styled.div`
+  background: rgba(0, 255, 255, 0.1);
+  border: 4px solid #00ffff;
+  border-radius: 15px;
   padding: 20px;
-  box-shadow: 
-    0 0 30px rgba(0, 255, 255, 0.5),
-    inset 0 0 50px rgba(255, 0, 255, 0.2);
+  margin-bottom: 20px;
 `;
 
-const KeyholeTitle = styled.h2`
-  text-align: center;
+const SectionTitle = styled.h2`
   color: #ff00ff;
   font-size: 16px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  text-align: center;
   text-shadow: 2px 2px 0 #00ffff;
-  
-  @media (max-width: 768px) {
-    font-size: 14px;
-  }
 `;
 
-const KeyholeGrid = styled.div`
+const NFTGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: start;
-  
-  @media (max-width: 968px) {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
 `;
 
-const KeyholeCircle = styled.div<{ hasNFT: boolean; glowing?: boolean }>`
-  width: 150px;
-  height: 150px;
-  margin: 0 auto 20px;
-  background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 
-    inset 0 0 50px rgba(0, 0, 0, 0.9),
-    0 10px 40px rgba(0, 0, 0, 0.8),
-    ${props => props.hasNFT ? '0 0 50px #ffff00, 0 0 100px #ff00ff' : 'none'};
-  cursor: ${props => props.hasNFT ? 'pointer' : 'default'};
+const NFTCard = styled.div<{ selected?: boolean; evolving?: boolean }>`
+  background: rgba(0, 0, 0, 0.8);
+  border: 4px solid ${props => props.selected ? '#ffff00' : '#00ff00'};
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
   transition: all 0.3s ease;
-  border: 6px solid ${props => props.hasNFT ? '#ffff00' : '#333'};
-  position: relative;
   
-  ${props => props.glowing && css`
-    animation: ${glowPulse} 1.5s ease-in-out infinite;
-    border-color: #ff00ff;
+  ${props => props.selected && css`
+    box-shadow: 0 0 20px #ffff00, 0 0 40px #ff00ff;
+  `}
+  
+  ${props => props.evolving && css`
+    animation: ${evolveAnimation} 2s ease-in-out infinite;
   `}
   
   &:hover {
-    ${props => props.hasNFT && css`
-      transform: scale(1.1);
-      box-shadow: 
-        inset 0 0 50px rgba(255, 255, 0, 0.3),
-        0 0 60px #ffff00,
-        0 0 120px #ff00ff;
-    `}
-  }
-`;
-
-const NFTSelector = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-top: 10px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const NFTOption = styled.div<{ selected: boolean }>`
-  padding: 8px;
-  border: 3px solid ${props => props.selected ? '#ffff00' : '#00ff00'};
-  background: ${props => props.selected ? 'rgba(255, 255, 0, 0.2)' : 'rgba(0, 255, 0, 0.1)'};
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 8px;
-  box-shadow: ${props => props.selected 
-    ? '0 0 20px #ffff00, inset 0 0 20px rgba(255, 255, 0, 0.2)' 
-    : '0 0 10px #00ff00'};
-  
-  &:hover {
     transform: scale(1.05);
-    border-color: ${props => props.selected ? '#ffff00' : '#ff00ff'};
-    box-shadow: 0 0 30px ${props => props.selected ? '#ffff00' : '#ff00ff'};
+    border-color: #ff00ff;
   }
   
   img {
-    width: 45%;
-    max-width: 120px;
-    margin: 0 auto;
-    display: block;
-    border: 2px solid #00ffff;
-    border-radius: 6px;
-    margin-bottom: 5px;
-    image-rendering: pixelated;
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 8px;
   }
 `;
 
 const NFTLabel = styled.div`
-  font-size: 8px;
+  font-size: 10px;
   color: #00ff00;
   text-align: center;
-  margin-top: 3px;
-  line-height: 1.3;
+  
+  strong {
+    color: #ffff00;
+    display: block;
+    margin-bottom: 3px;
+  }
 `;
 
-const NFTCard = styled.div`
-  background: rgba(0, 0, 0, 0.8);
-  border: 6px solid #ff00ff;
+const TierGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const TierCard = styled.div<{ tierColor: string; disabled?: boolean; selected?: boolean }>`
+  background: rgba(0, 0, 0, 0.9);
+  border: 4px solid ${props => props.tierColor};
   border-radius: 15px;
   padding: 15px;
-  box-shadow: 
-    0 0 30px rgba(255, 0, 255, 0.5),
-    inset 0 0 30px rgba(0, 255, 255, 0.1);
-`;
-
-const NFTImage = styled.img<{ revealing?: boolean; isRevealed?: boolean }>`
-  width: 50%;
-  max-width: 175px;
-  height: auto;
-  border: 4px solid #00ffff;
-  border-radius: 12px;
-  margin: 0 auto 15px;
-  display: block;
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-  image-rendering: pixelated;
-  position: relative;
+  text-align: center;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${props => props.disabled ? 0.5 : 1};
+  transition: all 0.3s ease;
+  color: ${props => props.tierColor};
   
-  ${props => props.revealing && props.isRevealed && css`
-    animation: ${fullscreenReveal} 5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-    opacity: 0;
+  ${props => props.selected && css`
+    animation: ${glowPulse} 1.5s ease-in-out infinite;
+    transform: scale(1.05);
+  `}
+  
+  ${props => !props.disabled && !props.selected && css`
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px ${props.tierColor};
+    }
   `}
 `;
 
-const ArcadeButton = styled.button<{ variant?: 'primary' | 'secondary' }>`
+const TierName = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 0 #000;
+`;
+
+const TierCost = styled.div`
+  font-size: 24px;
+  margin-bottom: 10px;
+  
+  span {
+    font-size: 14px;
+  }
+`;
+
+const TierImage = styled.img`
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin: 10px auto;
+  display: block;
+`;
+
+const EvolveButton = styled.button<{ disabled?: boolean }>`
   width: 100%;
-  padding: 12px;
-  font-family: 'Press Start 2P', 'Courier New', monospace;
-  font-size: 10px;
-  background: ${props => props.variant === 'secondary' ? '#000000' : '#ff0000'};
+  padding: 15px;
+  font-family: inherit;
+  font-size: 16px;
+  background: ${props => props.disabled ? '#333' : '#ff0000'};
   color: #ffff00;
-  border: 3px solid #ffff00;
-  cursor: pointer;
+  border: 4px solid ${props => props.disabled ? '#666' : '#ffff00'};
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: all 0.3s ease;
-  margin-top: 10px;
+  margin-top: 20px;
   text-shadow: 2px 2px 0 #ff00ff;
-  box-shadow: 0 0 20px ${props => props.variant === 'secondary' ? '#00ff00' : '#ff0000'};
   
-  &:hover {
-    background: ${props => props.variant === 'secondary' ? '#00ff00' : '#ff00ff'};
-    transform: scale(1.05);
-    box-shadow: 0 0 40px ${props => props.variant === 'secondary' ? '#00ff00' : '#ff00ff'};
-  }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  @media (max-width: 768px) {
-    font-size: 8px;
-    padding: 10px;
-  }
+  ${props => !props.disabled && css`
+    &:hover {
+      background: #ff00ff;
+      transform: scale(1.02);
+      box-shadow: 0 0 40px #ff00ff;
+    }
+  `}
 `;
 
-const MetadataBox = styled.div`
-  background: rgba(0, 0, 0, 0.6);
-  border: 3px solid #00ff00;
-  border-radius: 10px;
-  padding: 10px;
-  margin-top: 10px;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-`;
-
-const MetadataRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 0;
-  border-bottom: 1px solid rgba(0, 255, 0, 0.3);
-  font-size: 9px;
-  color: #00ff00;
-  
-  &:last-child {
-    border-bottom: none;
-  }
-  
-  strong {
-    color: #00ffff;
-  }
-`;
-
-const InsertCoin = styled.div`
+const Message = styled.div<{ type?: 'error' | 'success' | 'info' }>`
   text-align: center;
-  color: #ffff00;
-  font-size: 14px;
+  padding: 15px;
   margin: 15px 0;
-  animation: ${arcadeBlink} 1s ease-in-out infinite;
-  text-shadow: 2px 2px 0 #ff0000;
+  border-radius: 10px;
+  font-size: 14px;
+  
+  ${props => props.type === 'error' && css`
+    background: rgba(255, 0, 0, 0.2);
+    border: 2px solid #ff0000;
+    color: #ff6666;
+  `}
+  
+  ${props => props.type === 'success' && css`
+    background: rgba(0, 255, 0, 0.2);
+    border: 2px solid #00ff00;
+    color: #00ff00;
+  `}
+  
+  ${props => props.type === 'info' && css`
+    background: rgba(0, 255, 255, 0.2);
+    border: 2px solid #00ffff;
+    color: #00ffff;
+  `}
 `;
 
-// Mock NFT data (replace with actual contract data)
-const MOCK_NFTS = [
-  {
-    id: '1',
-    name: 'Paradise Key',
-    image: 'https://storage.googleapis.com/flunks_public/images/1.png',
-    upgradedImage: 'https://storage.googleapis.com/flunks_public/images/testmedaddy.png',
-    rarity: 'Common',
-    level: 1
-  },
-  {
-    id: '2',
-    name: 'Flunks Genesis',
-    image: 'https://storage.googleapis.com/flunks_public/images/testmedaddy.png',
-    upgradedImage: 'https://storage.googleapis.com/flunks_public/images/1.png',
-    rarity: 'Rare',
-    level: 2
-  },
-  {
-    id: '3',
-    name: 'Mystery Pin',
-    image: 'https://storage.googleapis.com/flunks_public/images/1.png',
-    upgradedImage: 'https://storage.googleapis.com/flunks_public/images/testmedaddy.png',
-    rarity: 'Epic',
-    level: 5
-  },
-  {
-    id: '4',
-    name: 'Legend Badge',
-    image: 'https://storage.googleapis.com/flunks_public/images/testmedaddy.png',
-    upgradedImage: 'https://storage.googleapis.com/flunks_public/images/1.png',
-    rarity: 'Legendary',
-    level: 10
+const EvolvedDisplay = styled.div`
+  text-align: center;
+  padding: 20px;
+  
+  img {
+    max-width: 200px;
+    border: 4px solid #ffff00;
+    border-radius: 15px;
+    box-shadow: 0 0 30px #ffff00, 0 0 60px #ff00ff;
+    margin-bottom: 15px;
   }
-];
+  
+  h3 {
+    color: #ffff00;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  a {
+    color: #00ffff;
+    text-decoration: none;
+    font-size: 12px;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
 
+const LoadingSpinner = styled.div`
+  text-align: center;
+  padding: 40px;
+  color: #00ff00;
+  font-size: 14px;
+  
+  &::before {
+    content: '⏳';
+    display: block;
+    font-size: 32px;
+    margin-bottom: 10px;
+    animation: ${arcadeBlink} 0.5s ease-in-out infinite;
+  }
+`;
+
+const ConnectPrompt = styled.div`
+  text-align: center;
+  padding: 60px 20px;
+  color: #ff00ff;
+  
+  h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ffff00;
+  }
+  
+  p {
+    font-size: 14px;
+    color: #00ff00;
+  }
+`;
+
+// Main Component
 const LevelUp: React.FC = () => {
   const { address } = useUnifiedWallet();
+  const { balance, refreshBalance } = useGum();
+  
+  const [demoMode, setDemoMode] = useState(false);
+  const [activeTab, setActiveTab] = useState<'evolve' | 'collection'>('evolve');
   const [nfts, setNfts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedNFT, setSelectedNFT] = useState<any | null>(null);
-  const [revealing, setRevealing] = useState(false);
-  const [imageRevealed, setImageRevealed] = useState(false);
-  const [revealSound] = useState('/sounds/reveal.mp3');
-  const [upgradedNFT, setUpgradedNFT] = useState<any | null>(null);
+  const [selectedTier, setSelectedTier] = useState<TierName | null>(null);
+  const [evolving, setEvolving] = useState(false);
+  const [message, setMessage] = useState<{ text: string; type: 'error' | 'success' | 'info' } | null>(null);
+  const [evolvedResult, setEvolvedResult] = useState<any | null>(null);
+  const [demoBalance, setDemoBalance] = useState(5000); // Demo GUM balance
 
-  // Fetch Chapter 5 NFTs from connected wallet
+  // Use demo mode if no wallet connected
+  const isDemo = demoMode || !address;
+  const displayBalance = isDemo ? demoBalance : balance;
+
+  // Fetch NFTs from wallet
   useEffect(() => {
     const fetchNFTs = async () => {
+      // In demo mode, use mock NFTs
+      if (isDemo) {
+        setNfts(createDemoNFTs());
+        setLoading(false);
+        return;
+      }
+      
       if (!address) {
         setLoading(false);
         return;
@@ -466,14 +463,12 @@ const LevelUp: React.FC = () => {
         const result = await fcl.query({
           cadence: `
             import SemesterZero from 0xce9dd43888d99574
-            import MetadataViews from 0x1d7e57aa55817448
 
-            access(all) fun main(address: Address): [Chapter5NFTData] {
+            access(all) fun main(address: Address): [NFTData] {
               let account = getAccount(address)
               
               let collectionRef = account.capabilities
-                .get<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
-                .borrow()
+                .borrow<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
               
               if collectionRef == nil {
                 return []
@@ -481,22 +476,22 @@ const LevelUp: React.FC = () => {
               
               let collection = collectionRef!
               let ids = collection.getIDs()
-              let nftData: [Chapter5NFTData] = []
+              let nftData: [NFTData] = []
               
               for id in ids {
                 if let nft = collection.borrowChapter5NFT(id: id) {
                   let revealedStatus = nft.metadata["revealed"] ?? "false"
-                  let name = nft.metadata["name"] ?? "Chapter 5 NFT"
-                  let description = nft.metadata["description"] ?? ""
+                  let name = nft.metadata["name"] ?? "Paradise Motel Pin"
                   let image = nft.metadata["image"] ?? ""
+                  let tier = nft.metadata["tier"] ?? ""
                   
-                  nftData.append(Chapter5NFTData(
+                  nftData.append(NFTData(
                     id: id,
                     name: name,
-                    description: description,
                     image: image,
                     serialNumber: nft.serialNumber,
-                    revealed: revealedStatus == "true"
+                    revealed: revealedStatus == "true",
+                    tier: tier
                   ))
                 }
               }
@@ -504,21 +499,21 @@ const LevelUp: React.FC = () => {
               return nftData
             }
 
-            access(all) struct Chapter5NFTData {
+            access(all) struct NFTData {
               access(all) let id: UInt64
               access(all) let name: String
-              access(all) let description: String
               access(all) let image: String
               access(all) let serialNumber: UInt64
               access(all) let revealed: Bool
+              access(all) let tier: String
 
-              init(id: UInt64, name: String, description: String, image: String, serialNumber: UInt64, revealed: Bool) {
+              init(id: UInt64, name: String, image: String, serialNumber: UInt64, revealed: Bool, tier: String) {
                 self.id = id
                 self.name = name
-                self.description = description
                 self.image = image
                 self.serialNumber = serialNumber
                 self.revealed = revealed
+                self.tier = tier
               }
             }
           `,
@@ -527,7 +522,7 @@ const LevelUp: React.FC = () => {
 
         setNfts(result || []);
       } catch (error) {
-        console.error('Error fetching Chapter 5 NFTs:', error);
+        console.error('Error fetching NFTs:', error);
         setNfts([]);
       } finally {
         setLoading(false);
@@ -535,104 +530,94 @@ const LevelUp: React.FC = () => {
     };
 
     fetchNFTs();
-  }, [address]);
+  }, [address, isDemo]);
 
-  const handleSelectNFT = (nft: any) => {
-    setSelectedNFT(nft);
-    setRevealing(false);
-    setImageRevealed(false);
-    setUpgradedNFT(null);
-  };
+  // Filter NFTs
+  const unrevealedNFTs = nfts.filter(nft => !nft.revealed);
+  const revealedNFTs = nfts.filter(nft => nft.revealed);
 
-  const handleLevelUp = async () => {
-    if (!selectedNFT || !address) return;
+  // Handle evolution
+  const handleEvolve = async () => {
+    if (!selectedNFT || !selectedTier) return;
+    if (!isDemo && !address) return;
+
+    const tierConfig = TIERS[selectedTier];
     
-    setRevealing(true);
-    setImageRevealed(false);
-
-    // Play arcade sound if available
-    if (revealSound) {
-      const audio = new Audio(revealSound);
-      audio.volume = 0.5;
-      audio.play().catch(err => console.log('Audio play failed:', err));
-      
-      setTimeout(() => {
-        audio.pause();
-        audio.currentTime = 0;
-      }, 10000);
+    if (displayBalance < tierConfig.cost) {
+      setMessage({ text: `Insufficient GUM! You need ${tierConfig.cost} but have ${displayBalance}.`, type: 'error' });
+      return;
     }
 
-    // Trigger image reveal at 5 seconds
-    setTimeout(() => {
-      setImageRevealed(true);
-      
-      // Calculate upgraded NFT for display
-      const upgraded = {
-        ...selectedNFT,
-        image: 'https://storage.googleapis.com/flunks_public/images/testmedaddy.png',
-        revealed: true,
-        name: selectedNFT.name + ' ⚡'
-      };
-      setUpgradedNFT(upgraded);
-    }, 5000);
+    setEvolving(true);
+    setMessage({ text: 'Evolving your NFT... Please wait...', type: 'info' });
+    setEvolvedResult(null);
+    
+    // Play evolution start sound
+    playSound('arcade');
+
+    // Demo mode: simulate evolution
+    if (isDemo) {
+      await new Promise(resolve => setTimeout(resolve, 2500)); // Simulate delay
+      playSound('reveal'); // Play reveal sound
+      setDemoBalance(prev => prev - tierConfig.cost);
+      setMessage({ text: `🎉 Successfully evolved to ${selectedTier}!`, type: 'success' });
+      playSound('success-gum-claim'); // Play success sound
+      setEvolvedResult({
+        tier: selectedTier,
+        image: tierConfig.image,
+        transactionId: 'demo-tx-' + Date.now(),
+        explorerUrl: '#',
+      });
+      // Update demo NFTs
+      setNfts(prev => prev.map(nft => 
+        nft.id === selectedNFT.id 
+          ? { ...nft, revealed: true, tier: selectedTier, image: tierConfig.image }
+          : nft
+      ));
+      setSelectedNFT(null);
+      setSelectedTier(null);
+      setEvolving(false);
+      return;
+    }
 
     try {
-      // Execute reveal transaction on blockchain
-      const txId = await fcl.mutate({
-        cadence: `
-import SemesterZero from 0xce9dd43888d99574
-
-transaction(userAddress: Address) {
-  let admin: &SemesterZero.Admin
-  
-  prepare(signer: auth(BorrowValue) &Account) {
-    self.admin = signer.storage.borrow<&SemesterZero.Admin>(
-      from: SemesterZero.AdminStoragePath
-    ) ?? panic("Could not borrow admin reference")
-  }
-  
-  execute {
-    let newMetadata: {String: String} = {
-      "upgraded": "true",
-      "upgradeTime": getCurrentBlock().timestamp.toString(),
-      "image": "https://storage.googleapis.com/flunks_public/images/testmedaddy.png"
-    }
-    
-    self.admin.revealChapter5NFT(
-      userAddress: userAddress,
-      newMetadata: newMetadata
-    )
-    
-    log("Chapter 5 NFT upgraded!")
-  }
-}
-`,
-        args: (arg: any, t: any) => [arg(address, t.Address)],
-        payer: fcl.authz,
-        proposer: fcl.authz,
-        authorizations: [fcl.authz],
-        limit: 9999
+      const response = await fetch('/api/level-up', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: address,
+          nftId: selectedNFT.id,
+          tier: selectedTier,
+        }),
       });
 
-      console.log('Upgrade transaction:', txId);
-      await fcl.tx(txId).onceSealed();
-      console.log('Upgrade complete!');
+      const result = await response.json();
 
-      // Complete animation at 10 seconds
-      setTimeout(async () => {
-        // Refresh NFT list
-        try {
-          const result = await fcl.query({
+      if (result.success) {
+        playSound('reveal'); // Play reveal sound
+        setMessage({ text: `🎉 Successfully evolved to ${selectedTier}!`, type: 'success' });
+        playSound('success-gum-claim'); // Play success sound
+        setEvolvedResult({
+          tier: selectedTier,
+          image: tierConfig.image,
+          transactionId: result.transactionId,
+          explorerUrl: result.explorerUrl,
+        });
+        
+        // Refresh GUM balance
+        refreshBalance();
+        
+        // Refresh NFT list after a delay
+        setTimeout(async () => {
+          const updatedNFTs = await fcl.query({
             cadence: `
               import SemesterZero from 0xce9dd43888d99574
-              import MetadataViews from 0x1d7e57aa55817448
 
-              access(all) fun main(address: Address): [Chapter5NFTData] {
+              access(all) fun main(address: Address): [NFTData] {
                 let account = getAccount(address)
                 
                 let collectionRef = account.capabilities
-                  .get<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
-                  .borrow()
+                  .borrow<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
                 
                 if collectionRef == nil {
                   return []
@@ -640,22 +625,22 @@ transaction(userAddress: Address) {
                 
                 let collection = collectionRef!
                 let ids = collection.getIDs()
-                let nftData: [Chapter5NFTData] = []
+                let nftData: [NFTData] = []
                 
                 for id in ids {
                   if let nft = collection.borrowChapter5NFT(id: id) {
                     let revealedStatus = nft.metadata["revealed"] ?? "false"
-                    let name = nft.metadata["name"] ?? "Chapter 5 NFT"
-                    let description = nft.metadata["description"] ?? ""
+                    let name = nft.metadata["name"] ?? "Paradise Motel Pin"
                     let image = nft.metadata["image"] ?? ""
+                    let tier = nft.metadata["tier"] ?? ""
                     
-                    nftData.append(Chapter5NFTData(
+                    nftData.append(NFTData(
                       id: id,
                       name: name,
-                      description: description,
                       image: image,
                       serialNumber: nft.serialNumber,
-                      revealed: revealedStatus == "true"
+                      revealed: revealedStatus == "true",
+                      tier: tier
                     ))
                   }
                 }
@@ -663,147 +648,210 @@ transaction(userAddress: Address) {
                 return nftData
               }
 
-              access(all) struct Chapter5NFTData {
+              access(all) struct NFTData {
                 access(all) let id: UInt64
                 access(all) let name: String
-                access(all) let description: String
                 access(all) let image: String
                 access(all) let serialNumber: UInt64
                 access(all) let revealed: Bool
+                access(all) let tier: String
 
-                init(id: UInt64, name: String, description: String, image: String, serialNumber: UInt64, revealed: Bool) {
+                init(id: UInt64, name: String, image: String, serialNumber: UInt64, revealed: Bool, tier: String) {
                   self.id = id
                   self.name = name
-                  self.description = description
                   self.image = image
                   self.serialNumber = serialNumber
                   self.revealed = revealed
+                  self.tier = tier
                 }
               }
             `,
             args: (arg: any, t: any) => [arg(address, t.Address)]
           });
-          setNfts(result || []);
-          
-          // Update selected NFT
-          if (upgradedNFT) {
-            setSelectedNFT(upgradedNFT);
-          }
-        } catch (error) {
-          console.error('Error refreshing NFTs:', error);
-        }
+          setNfts(updatedNFTs || []);
+        }, 3000);
         
-        setRevealing(false);
-        setImageRevealed(false);
-        setUpgradedNFT(null);
-      }, 10000);
-      
-    } catch (error) {
-      console.error('Upgrade failed:', error);
-      setRevealing(false);
-      setImageRevealed(false);
-      alert('Upgrade failed: ' + error);
+        setSelectedNFT(null);
+        setSelectedTier(null);
+      } else {
+        playSound('error');
+        setMessage({ text: result.error || 'Evolution failed', type: 'error' });
+      }
+    } catch (error: any) {
+      playSound('error');
+      console.error('Evolution error:', error);
+      setMessage({ text: error.message || 'Evolution failed', type: 'error' });
+    } finally {
+      setEvolving(false);
     }
   };
 
+  // Render - always show the app (demo mode when not connected)
   return (
-    <ArcadeContainer>
+    <Container>
       <ArcadeFrame>
-        <ArcadeTitle>⚡ LEVEL UP ⚡</ArcadeTitle>
-        <Subtitle>◆ UPGRADE YOUR NFTS ◆ ARCADE EDITION ◆</Subtitle>
+        <Title>⚡ LEVEL UP ⚡</Title>
+        <Subtitle>◆ EVOLVE YOUR PARADISE MOTEL PINS ◆</Subtitle>
+        
+        {isDemo && (
+          <div style={{ 
+            background: 'rgba(255, 0, 255, 0.2)', 
+            border: '2px dashed #ff00ff', 
+            borderRadius: '10px', 
+            padding: '10px 20px', 
+            marginBottom: '15px',
+            textAlign: 'center'
+          }}>
+            <span style={{ color: '#ff00ff', fontSize: '12px' }}>
+              🎮 DEMO MODE - Test the evolution flow without a wallet!
+            </span>
+          </div>
+        )}
 
-        <InsertCoin>★ INSERT COIN TO CONTINUE ★</InsertCoin>
+        <GumDisplay>
+          🍬 YOUR GUM: <span>{displayBalance.toLocaleString()}</span>
+          {isDemo && <span style={{ fontSize: '10px', color: '#ff00ff', marginLeft: '10px' }}>(DEMO)</span>}
+        </GumDisplay>
 
-        <KeyholeSection>
-          <KeyholeTitle>🔑 SELECT CHAPTER 5 NFT TO UPGRADE 🔑</KeyholeTitle>
+        <TabContainer>
+          <TabButton active={activeTab === 'evolve'} onClick={() => setActiveTab('evolve')}>
+            🔮 EVOLVE
+          </TabButton>
+          <TabButton active={activeTab === 'collection'} onClick={() => setActiveTab('collection')}>
+            📦 COLLECTION
+          </TabButton>
+        </TabContainer>
 
-          {loading ? (
-            <div style={{ textAlign: 'center', color: '#00ff00', padding: '40px' }}>
-              <div style={{ fontSize: '24px', marginBottom: '10px' }}>⏳</div>
-              <div>LOADING NFTs...</div>
-            </div>
-          ) : !selectedNFT ? (
-            nfts.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#ff00ff', padding: '40px' }}>
-                <div style={{ fontSize: '24px', marginBottom: '10px' }}>❌</div>
-                <div>NO CHAPTER 5 NFTs FOUND</div>
-                <div style={{ fontSize: '10px', marginTop: '10px', color: '#00ff00' }}>
-                  {address ? 'Connect admin wallet with Chapter 5 NFTs' : 'CONNECT WALLET FIRST'}
-                </div>
-              </div>
+        {loading ? (
+          <LoadingSpinner>Loading NFTs...</LoadingSpinner>
+        ) : activeTab === 'evolve' ? (
+          <>
+            {/* Evolved Result Display */}
+            {evolvedResult && (
+              <Section>
+                <EvolvedDisplay>
+                  <img src={evolvedResult.image} alt={evolvedResult.tier} />
+                  <h3>✨ Evolution Complete! ✨</h3>
+                  <p style={{ color: '#00ff00', marginBottom: '10px' }}>
+                    Your pin evolved to {evolvedResult.tier}!
+                  </p>
+                  <a href={evolvedResult.explorerUrl} target="_blank" rel="noopener noreferrer">
+                    View on FlowScan →
+                  </a>
+                </EvolvedDisplay>
+              </Section>
+            )}
+
+            {/* Select NFT Section */}
+            <Section>
+              <SectionTitle>🎯 SELECT NFT TO EVOLVE</SectionTitle>
+              
+              {unrevealedNFTs.length === 0 ? (
+                <Message type="info">
+                  No unrevealed Paradise Motel pins found. 
+                  {nfts.length > 0 ? ' All your pins have been evolved!' : ' Complete Chapter 5 to earn one!'}
+                </Message>
+              ) : (
+                <NFTGrid>
+                  {unrevealedNFTs.map((nft) => (
+                    <NFTCard
+                      key={nft.id}
+                      selected={selectedNFT?.id === nft.id}
+                      evolving={evolving && selectedNFT?.id === nft.id}
+                      onClick={() => {
+                        if (!evolving) {
+                          playSound('ding');
+                          setSelectedNFT(nft);
+                        }
+                      }}
+                    >
+                      <img src={nft.image || 'https://storage.googleapis.com/flunks_public/images/capsule.png'} alt={nft.name} />
+                      <NFTLabel>
+                        <strong>{nft.name}</strong>
+                        #{nft.serialNumber} • 🔒 Unrevealed
+                      </NFTLabel>
+                    </NFTCard>
+                  ))}
+                </NFTGrid>
+              )}
+            </Section>
+
+            {/* Tier Selection */}
+            {selectedNFT && (
+              <Section>
+                <SectionTitle>⚡ CHOOSE YOUR TIER</SectionTitle>
+                
+                <TierGrid>
+                  {(Object.entries(TIERS) as [TierName, typeof TIERS[TierName]][]).map(([tierName, tierConfig]) => (
+                    <TierCard
+                      key={tierName}
+                      tierColor={tierConfig.color}
+                      disabled={displayBalance < tierConfig.cost}
+                      selected={selectedTier === tierName}
+                      onClick={() => {
+                        if (displayBalance >= tierConfig.cost && !evolving) {
+                          playSound('bubble');
+                          setSelectedTier(tierName);
+                        } else if (displayBalance < tierConfig.cost) {
+                          playSound('error');
+                        }
+                      }}
+                    >
+                      <TierName>{tierName}</TierName>
+                      <TierImage src={tierConfig.image} alt={tierName} />
+                      <TierCost>
+                        {tierConfig.cost} <span>GUM</span>
+                      </TierCost>
+                      {displayBalance < tierConfig.cost && (
+                        <div style={{ fontSize: '10px', color: '#ff6666' }}>
+                          Need {tierConfig.cost - displayBalance} more GUM
+                        </div>
+                      )}
+                    </TierCard>
+                  ))}
+                </TierGrid>
+
+                {message && <Message type={message.type}>{message.text}</Message>}
+
+                <EvolveButton
+                  disabled={!selectedTier || evolving}
+                  onClick={handleEvolve}
+                >
+                  {evolving ? '⚡ EVOLVING... ⚡' : selectedTier ? `EVOLVE TO ${selectedTier.toUpperCase()}!` : 'SELECT A TIER'}
+                </EvolveButton>
+              </Section>
+            )}
+          </>
+        ) : (
+          /* Collection Tab */
+          <Section>
+            <SectionTitle>📦 YOUR EVOLVED PINS</SectionTitle>
+            
+            {revealedNFTs.length === 0 ? (
+              <Message type="info">
+                No evolved pins yet. Evolve your first one in the EVOLVE tab!
+              </Message>
             ) : (
-              <NFTSelector>
-                {nfts.map((nft) => (
-                  <NFTOption
-                    key={nft.id}
-                    selected={false}
-                    onClick={() => handleSelectNFT(nft)}
-                  >
+              <NFTGrid>
+                {revealedNFTs.map((nft) => (
+                  <NFTCard key={nft.id}>
                     <img src={nft.image} alt={nft.name} />
                     <NFTLabel>
                       <strong>{nft.name}</strong>
-                      <br />
-                      #{nft.serialNumber} • {nft.revealed ? '⚡ REVEALED' : '🔒 UNREVEALED'}
+                      #{nft.serialNumber} • {nft.tier || 'Evolved'}
                     </NFTLabel>
-                  </NFTOption>
+                  </NFTCard>
                 ))}
-              </NFTSelector>
-            )
-          ) : (
-            <KeyholeGrid>
-              {/* Left: Buttons */}
-              <div>
-                <ArcadeButton onClick={handleLevelUp} disabled={revealing}>
-                  {revealing ? '⚡ LEVELING UP... ⚡' : '⬆️ LEVEL UP! ⬆️'}
-                </ArcadeButton>
-                
-                <ArcadeButton 
-                  variant="secondary"
-                  onClick={() => setSelectedNFT(null)}
-                >
-                  ← BACK TO SELECT
-                </ArcadeButton>
-              </div>
+              </NFTGrid>
+            )}
+          </Section>
+        )}
 
-              {/* Right: NFT Card */}
-              <NFTCard>
-                <NFTImage 
-                  src={(imageRevealed && upgradedNFT) ? upgradedNFT.image : selectedNFT.image}
-                  alt={(imageRevealed && upgradedNFT) ? upgradedNFT.name : selectedNFT.name}
-                  revealing={revealing}
-                  isRevealed={imageRevealed}
-                />
-                <MetadataBox>
-                  <MetadataRow>
-                    <strong>NAME:</strong>
-                    <span>{selectedNFT.name}</span>
-                  </MetadataRow>
-                  <MetadataRow>
-                    <strong>SERIAL #:</strong>
-                    <span>#{selectedNFT.serialNumber}</span>
-                  </MetadataRow>
-                  <MetadataRow>
-                    <strong>NFT ID:</strong>
-                    <span>#{selectedNFT.id}</span>
-                  </MetadataRow>
-                  <MetadataRow>
-                    <strong>STATUS:</strong>
-                    <span>{revealing ? '⚡ UPGRADING...' : (selectedNFT.revealed ? '✅ REVEALED' : '🔒 UNREVEALED')}</span>
-                  </MetadataRow>
-                </MetadataBox>
-              </NFTCard>
-            </KeyholeGrid>
-          )}
-        </KeyholeSection>
-
-        <div style={{ marginTop: '15px', textAlign: 'center', fontSize: '8px', color: '#00ff00' }}>
-          <p>★ CONNECTED: {address ? address.slice(0, 8) + '...' + address.slice(-6) : 'NOT CONNECTED'} ★</p>
-          <p style={{ marginTop: '5px', color: '#ffff00' }}>
-            ◆ LOCALHOST + FLUNKS-BUILD ONLY ◆
-          </p>
+        <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '10px', color: '#666' }}>
+          {address ? `Connected: ${address.slice(0, 8)}...${address.slice(-6)}` : '🎮 Demo Mode Active'}
         </div>
       </ArcadeFrame>
-    </ArcadeContainer>
+    </Container>
   );
 };
 
