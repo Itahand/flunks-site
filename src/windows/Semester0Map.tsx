@@ -810,6 +810,8 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   onTouchStart={() => handleTouchEnter('snack-shack')}
                   onTouchEnd={handleTouchLeave}
                 />
+                {/* 4 Thieves Bar - Build Mode Only */}
+                {buildMode === 'build' && (
                 <DynamicHouseIcon
                   houseId="four-thieves-bar"
                   className={`${styles["nav-icon"]} ${styles['four-thieves-bar-nav']}`}
@@ -854,6 +856,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                   onTouchStart={() => handleTouchEnter('four-thieves-bar')}
                   onTouchEnd={handleTouchLeave}
                 />
+                )}
                 <DynamicHouseIcon
                   houseId="flunk-fm"
                   className={`${styles["nav-icon"]} ${styles['flunk-fm-nav']}`}

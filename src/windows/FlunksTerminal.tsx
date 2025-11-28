@@ -1,7 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  TextField
-} from 'react95';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { trackTerminalActivity, generateSessionId, COMMAND_TYPES } from 'utils/activityTracking';
@@ -228,43 +225,298 @@ const FlunksTerminal = ({ onClose }: { onClose: () => void }) => {
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-        padding: 8,
+        padding: 0,
         height: '100%',
-        minHeight: 0
+        minHeight: 0,
+        background: 'linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%)',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      {/* CRT Screen Effect Container */}
       <div
         style={{
-          backgroundColor: 'black',
-          color: 'lime',
-          fontFamily: 'monospace',
+          position: 'relative',
           flexGrow: 1,
-          overflowY: 'auto',
-          padding: '10px',
-          marginBottom: '10px',
-          display: 'flex',
-          flexDirection: 'column'
+          margin: '12px',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: `
+            inset 0 0 60px rgba(0, 255, 0, 0.1),
+            inset 0 0 100px rgba(0, 0, 0, 0.8),
+            0 0 20px rgba(0, 255, 0, 0.15),
+            0 0 40px rgba(0, 0, 0, 0.5)
+          `,
+          border: '4px solid #333',
+          background: '#000',
         }}
       >
-        {history.map((line, i) => (
-          <div key={i}>{line}</div>
-        ))}
-        <div ref={terminalEndRef} />
+        {/* Scanlines Overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: `repeating-linear-gradient(
+              0deg,
+              rgba(0, 0, 0, 0.15),
+              rgba(0, 0, 0, 0.15) 1px,
+              transparent 1px,
+              transparent 2px
+            )`,
+            pointerEvents: 'none',
+            zIndex: 10,
+          }}
+        />
+
+        {/* CRT Flicker Effect */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 255, 0, 0.03)',
+            pointerEvents: 'none',
+            zIndex: 9,
+            animation: 'crtFlicker 0.15s infinite',
+          }}
+        />
+
+        {/* Screen Curve Effect (corners) */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: `radial-gradient(
+              ellipse at center,
+              transparent 0%,
+              transparent 70%,
+              rgba(0, 0, 0, 0.4) 100%
+            )`,
+            pointerEvents: 'none',
+            zIndex: 8,
+          }}
+        />
+
+        {/* Terminal Header */}
+        <div
+          style={{
+            background: 'linear-gradient(180deg, #1a3a1a 0%, #0d1f0d 100%)',
+            borderBottom: '2px solid #00ff00',
+            padding: '8px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            position: 'relative',
+            zIndex: 5,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ 
+              color: '#00ff00', 
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              textShadow: '0 0 10px #00ff00',
+            }}>
+              ▶ FLUNKS OS v1.0.7
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f56', boxShadow: '0 0 5px #ff5f56' }} />
+            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ffbd2e', boxShadow: '0 0 5px #ffbd2e' }} />
+            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#27ca40', boxShadow: '0 0 5px #27ca40' }} />
+          </div>
+        </div>
+
+        {/* Terminal Output */}
+        <div
+          style={{
+            color: '#00ff00',
+            fontFamily: '"Courier New", Courier, monospace',
+            fontSize: '14px',
+            lineHeight: '1.6',
+            flexGrow: 1,
+            overflowY: 'auto',
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            height: 'calc(100% - 100px)',
+            textShadow: '0 0 5px #00ff00, 0 0 10px rgba(0, 255, 0, 0.5)',
+            position: 'relative',
+            zIndex: 5,
+          }}
+        >
+          {/* Welcome Message */}
+          {history.length === 0 && (
+            <div style={{ marginBottom: '16px', opacity: 0.8 }}>
+              <div style={{ color: '#00ffff', marginBottom: '8px' }}>
+                ╔══════════════════════════════════════════╗
+              </div>
+              <div style={{ color: '#00ffff' }}>
+                ║  Welcome to FLUNKS TERMINAL              ║
+              </div>
+              <div style={{ color: '#00ffff' }}>
+                ║  Type "help" for available commands      ║
+              </div>
+              <div style={{ color: '#00ffff' }}>
+                ╚══════════════════════════════════════════╝
+              </div>
+            </div>
+          )}
+          
+          {history.map((line, i) => (
+            <div 
+              key={i} 
+              style={{ 
+                marginBottom: '4px',
+                color: line.startsWith('>') ? '#00ffff' : '#00ff00',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}
+            >
+              {line}
+            </div>
+          ))}
+          <div ref={terminalEndRef} />
+        </div>
+
+        {/* Input Area */}
+        <div
+          style={{
+            background: 'linear-gradient(180deg, #0d1f0d 0%, #0a150a 100%)',
+            borderTop: '2px solid #00ff00',
+            padding: '12px',
+            position: 'relative',
+            zIndex: 5,
+          }}
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleCommand();
+            }}
+            style={{ 
+              margin: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <span style={{ 
+              color: '#00ff00', 
+              fontFamily: 'monospace',
+              fontWeight: 'bold',
+              textShadow: '0 0 5px #00ff00',
+            }}>
+              {'>'}
+            </span>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              autoFocus
+              style={{
+                flex: 1,
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                color: '#00ff00',
+                fontFamily: '"Courier New", Courier, monospace',
+                fontSize: '14px',
+                textShadow: '0 0 5px #00ff00',
+                caretColor: '#00ff00',
+              }}
+              placeholder="Enter command..."
+            />
+            <button
+              type="submit"
+              style={{
+                background: 'linear-gradient(180deg, #00aa00 0%, #006600 100%)',
+                border: '2px solid #00ff00',
+                borderRadius: '4px',
+                padding: '6px 16px',
+                color: '#fff',
+                fontFamily: 'monospace',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                textShadow: '0 0 5px #00ff00',
+                boxShadow: '0 0 10px rgba(0, 255, 0, 0.3)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.6)';
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 255, 0, 0.3)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              EXEC
+            </button>
+          </form>
+        </div>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleCommand();
+      {/* Status Bar */}
+      <div
+        style={{
+          background: 'linear-gradient(180deg, #1a1a2e 0%, #0a0a15 100%)',
+          borderTop: '1px solid #333',
+          padding: '6px 16px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '11px',
+          fontFamily: 'monospace',
+          color: '#00ff00',
+          textShadow: '0 0 5px rgba(0, 255, 0, 0.5)',
         }}
-        style={{ margin: 0 }}
       >
-        <TextField
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          fullWidth
-        />
-      </form>
+        <span>◉ CONNECTED</span>
+        <span>SESSION: {sessionId.slice(0, 8)}</span>
+        <span>{new Date().toLocaleTimeString()}</span>
+      </div>
+
+      {/* CSS Animations */}
+      <style>{`
+        @keyframes crtFlicker {
+          0% { opacity: 0.97; }
+          50% { opacity: 1; }
+          100% { opacity: 0.98; }
+        }
+        
+        @keyframes blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0; }
+        }
+        
+        input::placeholder {
+          color: rgba(0, 255, 0, 0.3);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #00aa00;
+          border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #00ff00;
+        }
+      `}</style>
     </div>
   );
   };

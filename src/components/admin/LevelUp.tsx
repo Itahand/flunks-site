@@ -39,34 +39,6 @@ const playSound = (soundName: string) => {
   }
 };
 
-// Demo mode mock NFTs (start with 3 unrevealed, they become revealed after evolution)
-const createDemoNFTs = () => [
-  {
-    id: 1001,
-    name: 'Paradise Motel Pin #1',
-    image: '/images/test-nft-before.svg',
-    serialNumber: 1,
-    revealed: false,
-    tier: '',
-  },
-  {
-    id: 1002,
-    name: 'Paradise Motel Pin #2',
-    image: '/images/test-nft-before.svg',
-    serialNumber: 2,
-    revealed: false,
-    tier: '',
-  },
-  {
-    id: 1003,
-    name: 'Paradise Motel Pin #3',
-    image: '/images/test-nft-before.svg',
-    serialNumber: 3,
-    revealed: false,
-    tier: '',
-  },
-];
-
 // Animations
 const arcadeBlink = keyframes`
   0%, 100% { opacity: 1; }
@@ -115,6 +87,11 @@ const Container = styled.div`
   background-size: 4px 4px;
   min-height: 100%;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  
+  @media (max-width: 480px) {
+    padding: 10px;
+  }
 `;
 
 const ArcadeFrame = styled.div`
@@ -129,6 +106,16 @@ const ArcadeFrame = styled.div`
     0 0 30px rgba(255, 0, 255, 0.5),
     inset 0 0 50px rgba(0, 255, 255, 0.1);
   padding: 20px;
+  
+  @media (max-width: 480px) {
+    border-width: 3px;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 
+      0 0 0 2px #ffff00,
+      0 0 0 4px #00ff00,
+      0 0 15px rgba(255, 0, 255, 0.5);
+  }
 `;
 
 const Title = styled.h1`
@@ -164,6 +151,13 @@ const GumDisplay = styled.div`
   font-size: 16px;
   color: #ffff00;
   
+  @media (max-width: 480px) {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-width: 2px;
+    margin-bottom: 15px;
+  }
+  
   span {
     color: #00ff00;
     font-weight: bold;
@@ -175,6 +169,11 @@ const TabContainer = styled.div`
   gap: 10px;
   justify-content: center;
   margin-bottom: 20px;
+  
+  @media (max-width: 480px) {
+    gap: 8px;
+    margin-bottom: 15px;
+  }
 `;
 
 const TabButton = styled.button<{ active: boolean }>`
@@ -186,6 +185,13 @@ const TabButton = styled.button<{ active: boolean }>`
   border: 3px solid ${props => props.active ? '#ffff00' : '#00ff00'};
   cursor: pointer;
   transition: all 0.3s ease;
+  touch-action: manipulation;
+  
+  @media (max-width: 480px) {
+    padding: 12px 16px;
+    font-size: 14px;
+    min-height: 44px;
+  }
   
   &:hover {
     background: #ff00ff;
@@ -200,6 +206,13 @@ const Section = styled.div`
   border-radius: 15px;
   padding: 20px;
   margin-bottom: 20px;
+  
+  @media (max-width: 480px) {
+    border-width: 2px;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 15px;
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -214,6 +227,15 @@ const NFTGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 15px;
+  
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  @media (max-width: 320px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const NFTCard = styled.div<{ selected?: boolean; evolving?: boolean }>`
@@ -223,6 +245,14 @@ const NFTCard = styled.div<{ selected?: boolean; evolving?: boolean }>`
   padding: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  
+  @media (max-width: 480px) {
+    border-width: 3px;
+    border-radius: 8px;
+    padding: 8px;
+  }
   
   ${props => props.selected && css`
     box-shadow: 0 0 20px #ffff00, 0 0 40px #ff00ff;
@@ -237,10 +267,24 @@ const NFTCard = styled.div<{ selected?: boolean; evolving?: boolean }>`
     border-color: #ff00ff;
   }
   
+  @media (hover: none) {
+    &:hover {
+      transform: none;
+    }
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+  
   img {
     width: 100%;
     border-radius: 8px;
     margin-bottom: 8px;
+    
+    @media (max-width: 480px) {
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
   }
 `;
 
@@ -263,6 +307,7 @@ const TierGrid = styled.div`
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 `;
 
@@ -276,6 +321,14 @@ const TierCard = styled.div<{ tierColor: string; disabled?: boolean; selected?: 
   opacity: ${props => props.disabled ? 0.5 : 1};
   transition: all 0.3s ease;
   color: ${props => props.tierColor};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  
+  @media (max-width: 480px) {
+    border-width: 3px;
+    border-radius: 10px;
+    padding: 12px;
+  }
   
   ${props => props.selected && css`
     animation: ${glowPulse} 1.5s ease-in-out infinite;
@@ -286,6 +339,16 @@ const TierCard = styled.div<{ tierColor: string; disabled?: boolean; selected?: 
     &:hover {
       transform: scale(1.05);
       box-shadow: 0 0 30px ${props.tierColor};
+    }
+    
+    @media (hover: none) {
+      &:hover {
+        transform: none;
+        box-shadow: none;
+      }
+      &:active {
+        transform: scale(0.98);
+      }
     }
   `}
 `;
@@ -326,12 +389,35 @@ const EvolveButton = styled.button<{ disabled?: boolean }>`
   transition: all 0.3s ease;
   margin-top: 20px;
   text-shadow: 2px 2px 0 #ff00ff;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 56px;
+  
+  @media (max-width: 480px) {
+    padding: 16px;
+    font-size: 14px;
+    border-width: 3px;
+    margin-top: 15px;
+    min-height: 52px;
+  }
   
   ${props => !props.disabled && css`
     &:hover {
       background: #ff00ff;
       transform: scale(1.02);
       box-shadow: 0 0 40px #ff00ff;
+    }
+    
+    @media (hover: none) {
+      &:hover {
+        background: #ff0000;
+        transform: none;
+        box-shadow: none;
+      }
+      &:active {
+        background: #ff00ff;
+        transform: scale(0.98);
+      }
     }
   `}
 `;
@@ -366,18 +452,35 @@ const EvolvedDisplay = styled.div`
   text-align: center;
   padding: 20px;
   
+  @media (max-width: 480px) {
+    padding: 12px;
+  }
+  
   img {
     max-width: 200px;
+    width: 100%;
     border: 4px solid #ffff00;
     border-radius: 15px;
     box-shadow: 0 0 30px #ffff00, 0 0 60px #ff00ff;
     margin-bottom: 15px;
+    
+    @media (max-width: 480px) {
+      max-width: 160px;
+      border-width: 3px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
   }
   
   h3 {
     color: #ffff00;
     font-size: 20px;
     margin-bottom: 10px;
+    
+    @media (max-width: 480px) {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
   }
   
   a {
@@ -428,7 +531,6 @@ const LevelUp: React.FC = () => {
   const { address } = useUnifiedWallet();
   const { balance, refreshBalance } = useGum();
   
-  const [demoMode, setDemoMode] = useState(false);
   const [activeTab, setActiveTab] = useState<'evolve' | 'collection'>('evolve');
   const [nfts, setNfts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -437,23 +539,12 @@ const LevelUp: React.FC = () => {
   const [evolving, setEvolving] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'error' | 'success' | 'info' } | null>(null);
   const [evolvedResult, setEvolvedResult] = useState<any | null>(null);
-  const [demoBalance, setDemoBalance] = useState(5000); // Demo GUM balance
-
-  // Use demo mode if no wallet connected
-  const isDemo = demoMode || !address;
-  const displayBalance = isDemo ? demoBalance : balance;
 
   // Fetch NFTs from wallet
   useEffect(() => {
     const fetchNFTs = async () => {
-      // In demo mode, use mock NFTs
-      if (isDemo) {
-        setNfts(createDemoNFTs());
-        setLoading(false);
-        return;
-      }
-      
       if (!address) {
+        setNfts([]);
         setLoading(false);
         return;
       }
@@ -462,13 +553,14 @@ const LevelUp: React.FC = () => {
         setLoading(true);
         const result = await fcl.query({
           cadence: `
-            import SemesterZero from 0xce9dd43888d99574
+            import SemesterZeroV3 from 0xce9dd43888d99574
+            import MetadataViews from 0x1d7e57aa55817448
 
             access(all) fun main(address: Address): [NFTData] {
               let account = getAccount(address)
               
               let collectionRef = account.capabilities
-                .borrow<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
+                .borrow<&SemesterZeroV3.Collection>(/public/SemesterZeroV3Collection)
               
               if collectionRef == nil {
                 return []
@@ -479,18 +571,47 @@ const LevelUp: React.FC = () => {
               let nftData: [NFTData] = []
               
               for id in ids {
-                if let nft = collection.borrowChapter5NFT(id: id) {
-                  let revealedStatus = nft.metadata["revealed"] ?? "false"
-                  let name = nft.metadata["name"] ?? "Paradise Motel Pin"
-                  let image = nft.metadata["image"] ?? ""
-                  let tier = nft.metadata["tier"] ?? ""
+                if let nft = collection.borrowNFT(id) {
+                  // Get Display view for name and image
+                  var name = "Paradise Motel Pin"
+                  var image = ""
+                  var revealed = false
+                  var tier = ""
+                  
+                  if let display = nft.resolveView(Type<MetadataViews.Display>()) {
+                    let displayView = display as! MetadataViews.Display
+                    name = displayView.name
+                    if let httpFile = displayView.thumbnail as? MetadataViews.HTTPFile {
+                      image = httpFile.url
+                    }
+                  }
+                  
+                  // Get traits for revealed status and tier
+                  if let traits = nft.resolveView(Type<MetadataViews.Traits>()) {
+                    let traitsView = traits as! MetadataViews.Traits
+                    for trait in traitsView.traits {
+                      if trait.name == "revealed" {
+                        revealed = trait.value as? Bool ?? false
+                      }
+                      if trait.name == "tier" {
+                        tier = trait.value as? String ?? ""
+                      }
+                    }
+                  }
+                  
+                  // Get serial number
+                  var serialNumber: UInt64 = 0
+                  if let serial = nft.resolveView(Type<MetadataViews.Serial>()) {
+                    let serialView = serial as! MetadataViews.Serial
+                    serialNumber = serialView.number
+                  }
                   
                   nftData.append(NFTData(
                     id: id,
                     name: name,
                     image: image,
-                    serialNumber: nft.serialNumber,
-                    revealed: revealedStatus == "true",
+                    serialNumber: serialNumber,
+                    revealed: revealed,
                     tier: tier
                   ))
                 }
@@ -530,7 +651,7 @@ const LevelUp: React.FC = () => {
     };
 
     fetchNFTs();
-  }, [address, isDemo]);
+  }, [address]);
 
   // Filter NFTs
   const unrevealedNFTs = nfts.filter(nft => !nft.revealed);
@@ -539,12 +660,12 @@ const LevelUp: React.FC = () => {
   // Handle evolution
   const handleEvolve = async () => {
     if (!selectedNFT || !selectedTier) return;
-    if (!isDemo && !address) return;
+    if (!address) return;
 
     const tierConfig = TIERS[selectedTier];
     
-    if (displayBalance < tierConfig.cost) {
-      setMessage({ text: `Insufficient GUM! You need ${tierConfig.cost} but have ${displayBalance}.`, type: 'error' });
+    if (balance < tierConfig.cost) {
+      setMessage({ text: `Insufficient GUM! You need ${tierConfig.cost} but have ${balance}.`, type: 'error' });
       return;
     }
 
@@ -554,31 +675,6 @@ const LevelUp: React.FC = () => {
     
     // Play evolution start sound
     playSound('arcade');
-
-    // Demo mode: simulate evolution
-    if (isDemo) {
-      await new Promise(resolve => setTimeout(resolve, 2500)); // Simulate delay
-      playSound('reveal'); // Play reveal sound
-      setDemoBalance(prev => prev - tierConfig.cost);
-      setMessage({ text: `🎉 Successfully evolved to ${selectedTier}!`, type: 'success' });
-      playSound('success-gum-claim'); // Play success sound
-      setEvolvedResult({
-        tier: selectedTier,
-        image: tierConfig.image,
-        transactionId: 'demo-tx-' + Date.now(),
-        explorerUrl: '#',
-      });
-      // Update demo NFTs
-      setNfts(prev => prev.map(nft => 
-        nft.id === selectedNFT.id 
-          ? { ...nft, revealed: true, tier: selectedTier, image: tierConfig.image }
-          : nft
-      ));
-      setSelectedNFT(null);
-      setSelectedTier(null);
-      setEvolving(false);
-      return;
-    }
 
     try {
       const response = await fetch('/api/level-up', {
@@ -611,13 +707,14 @@ const LevelUp: React.FC = () => {
         setTimeout(async () => {
           const updatedNFTs = await fcl.query({
             cadence: `
-              import SemesterZero from 0xce9dd43888d99574
+              import SemesterZeroV3 from 0xce9dd43888d99574
+              import MetadataViews from 0x1d7e57aa55817448
 
               access(all) fun main(address: Address): [NFTData] {
                 let account = getAccount(address)
                 
                 let collectionRef = account.capabilities
-                  .borrow<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
+                  .borrow<&SemesterZeroV3.Collection>(/public/SemesterZeroV3Collection)
                 
                 if collectionRef == nil {
                   return []
@@ -628,18 +725,44 @@ const LevelUp: React.FC = () => {
                 let nftData: [NFTData] = []
                 
                 for id in ids {
-                  if let nft = collection.borrowChapter5NFT(id: id) {
-                    let revealedStatus = nft.metadata["revealed"] ?? "false"
-                    let name = nft.metadata["name"] ?? "Paradise Motel Pin"
-                    let image = nft.metadata["image"] ?? ""
-                    let tier = nft.metadata["tier"] ?? ""
+                  if let nft = collection.borrowNFT(id) {
+                    var name = "Paradise Motel Pin"
+                    var image = ""
+                    var revealed = false
+                    var tier = ""
+                    
+                    if let display = nft.resolveView(Type<MetadataViews.Display>()) {
+                      let displayView = display as! MetadataViews.Display
+                      name = displayView.name
+                      if let httpFile = displayView.thumbnail as? MetadataViews.HTTPFile {
+                        image = httpFile.url
+                      }
+                    }
+                    
+                    if let traits = nft.resolveView(Type<MetadataViews.Traits>()) {
+                      let traitsView = traits as! MetadataViews.Traits
+                      for trait in traitsView.traits {
+                        if trait.name == "revealed" {
+                          revealed = trait.value as? Bool ?? false
+                        }
+                        if trait.name == "tier" {
+                          tier = trait.value as? String ?? ""
+                        }
+                      }
+                    }
+                    
+                    var serialNumber: UInt64 = 0
+                    if let serial = nft.resolveView(Type<MetadataViews.Serial>()) {
+                      let serialView = serial as! MetadataViews.Serial
+                      serialNumber = serialView.number
+                    }
                     
                     nftData.append(NFTData(
                       id: id,
                       name: name,
                       image: image,
-                      serialNumber: nft.serialNumber,
-                      revealed: revealedStatus == "true",
+                      serialNumber: serialNumber,
+                      revealed: revealed,
                       tier: tier
                     ))
                   }
@@ -692,39 +815,34 @@ const LevelUp: React.FC = () => {
       <ArcadeFrame>
         <Title>⚡ LEVEL UP ⚡</Title>
         <Subtitle>◆ EVOLVE YOUR PARADISE MOTEL PINS ◆</Subtitle>
-        
-        {isDemo && (
-          <div style={{ 
-            background: 'rgba(255, 0, 255, 0.2)', 
-            border: '2px dashed #ff00ff', 
-            borderRadius: '10px', 
-            padding: '10px 20px', 
-            marginBottom: '15px',
-            textAlign: 'center'
-          }}>
-            <span style={{ color: '#ff00ff', fontSize: '12px' }}>
-              🎮 DEMO MODE - Test the evolution flow without a wallet!
-            </span>
-          </div>
+
+        {!address && (
+          <ConnectPrompt>
+            <h2>🔌 CONNECT WALLET</h2>
+            <p>Connect your wallet to view and evolve your Paradise Motel Pins</p>
+          </ConnectPrompt>
         )}
 
-        <GumDisplay>
-          🍬 YOUR GUM: <span>{displayBalance.toLocaleString()}</span>
-          {isDemo && <span style={{ fontSize: '10px', color: '#ff00ff', marginLeft: '10px' }}>(DEMO)</span>}
-        </GumDisplay>
+        {address && (
+          <GumDisplay>
+            🍬 YOUR GUM: <span>{balance.toLocaleString()}</span>
+          </GumDisplay>
+        )}
 
-        <TabContainer>
-          <TabButton active={activeTab === 'evolve'} onClick={() => setActiveTab('evolve')}>
-            🔮 EVOLVE
-          </TabButton>
-          <TabButton active={activeTab === 'collection'} onClick={() => setActiveTab('collection')}>
-            📦 COLLECTION
-          </TabButton>
-        </TabContainer>
+        {address && (
+          <>
+            <TabContainer>
+              <TabButton active={activeTab === 'evolve'} onClick={() => setActiveTab('evolve')}>
+                🔮 EVOLVE
+              </TabButton>
+              <TabButton active={activeTab === 'collection'} onClick={() => setActiveTab('collection')}>
+                📦 COLLECTION
+              </TabButton>
+            </TabContainer>
 
-        {loading ? (
-          <LoadingSpinner>Loading NFTs...</LoadingSpinner>
-        ) : activeTab === 'evolve' ? (
+            {loading ? (
+              <LoadingSpinner>Loading NFTs...</LoadingSpinner>
+            ) : activeTab === 'evolve' ? (
           <>
             {/* Evolved Result Display */}
             {evolvedResult && (
@@ -786,13 +904,13 @@ const LevelUp: React.FC = () => {
                     <TierCard
                       key={tierName}
                       tierColor={tierConfig.color}
-                      disabled={displayBalance < tierConfig.cost}
+                      disabled={balance < tierConfig.cost}
                       selected={selectedTier === tierName}
                       onClick={() => {
-                        if (displayBalance >= tierConfig.cost && !evolving) {
+                        if (balance >= tierConfig.cost && !evolving) {
                           playSound('bubble');
                           setSelectedTier(tierName);
-                        } else if (displayBalance < tierConfig.cost) {
+                        } else if (balance < tierConfig.cost) {
                           playSound('error');
                         }
                       }}
@@ -802,9 +920,9 @@ const LevelUp: React.FC = () => {
                       <TierCost>
                         {tierConfig.cost} <span>GUM</span>
                       </TierCost>
-                      {displayBalance < tierConfig.cost && (
+                      {balance < tierConfig.cost && (
                         <div style={{ fontSize: '10px', color: '#ff6666' }}>
-                          Need {tierConfig.cost - displayBalance} more GUM
+                          Need {tierConfig.cost - balance} more GUM
                         </div>
                       )}
                     </TierCard>
@@ -846,10 +964,14 @@ const LevelUp: React.FC = () => {
             )}
           </Section>
         )}
+          </>
+        )}
 
-        <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '10px', color: '#666' }}>
-          {address ? `Connected: ${address.slice(0, 8)}...${address.slice(-6)}` : '🎮 Demo Mode Active'}
-        </div>
+        {address && (
+          <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '10px', color: '#666' }}>
+            Connected: {address.slice(0, 8)}...{address.slice(-6)}
+          </div>
+        )}
       </ArcadeFrame>
     </Container>
   );
