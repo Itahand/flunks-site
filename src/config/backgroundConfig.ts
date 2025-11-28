@@ -12,6 +12,13 @@ export const BACKGROUND_CONFIG = {
   // Enable/disable scrolling animation
   enableScrolling: false,
   
+  // Enable slow horizontal cloud scrolling effect
+  enableCloudScroll: true,
+  
+  // Cloud scroll speed in seconds (higher = slower)
+  // 120 = 2 minutes for full cycle, 180 = 3 minutes, 240 = 4 minutes
+  cloudScrollSpeed: 180,
+  
   // Scrolling pattern options:
   // 'diagonal' - Moves diagonally across screen (like matrix rain)
   // 'horizontal' - Scrolls left to right continuously  

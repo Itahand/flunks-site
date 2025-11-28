@@ -871,6 +871,8 @@ const MonitorScreenWrapper: React.FC<React.PropsWithChildren> = ({ children }) =
       scrollingSpeed={BACKGROUND_CONFIG.speed}
       scrollingOpacity={BACKGROUND_CONFIG.opacity}
       scrollingTileSize={BACKGROUND_CONFIG.tileSize}
+      enableCloudScroll={BACKGROUND_CONFIG.enableCloudScroll}
+      cloudScrollSpeed={BACKGROUND_CONFIG.cloudScrollSpeed}
     >
       {children}
     </CustomMonitor>

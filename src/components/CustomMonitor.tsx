@@ -1,10 +1,20 @@
 import { useWindowsContext } from "contexts/WindowsContext";
 import React, { forwardRef, useEffect, useRef } from "react";
 import { AppBar, Button, ScrollViewProps, TextInput, Toolbar } from "react95";
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import Appbar from "./Appbar/Appbar";
 import useThemeSettings from "store/useThemeSettings";
 import ScrollingBackground, { ScrollingPattern } from "./ScrollingBackground";
+
+// Slow horizontal cloud scroll animation
+const cloudScroll = keyframes`
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 100% center;
+  }
+`;
 
 export const StyledScrollView = styled.div<Pick<ScrollViewProps, "shadow">>`
   position: relative;
@@ -45,6 +55,8 @@ type MonitorProps = {
   scrollingSpeed?: number;
   scrollingOpacity?: number;
   scrollingTileSize?: number;
+  enableCloudScroll?: boolean;
+  cloudScrollSpeed?: number;
 };
 
 const Wrapper = styled.div`
@@ -104,11 +116,16 @@ const MonitorBody = styled.div`
 
 const Background = styled(StyledScrollView).attrs(() => ({
   "data-testid": "background",
-}))`
+}))<{ $enableCloudScroll?: boolean; $cloudScrollSpeed?: number }>`
   width: 100%;
   height: 100%;
   position: relative;
   overflow: hidden;
+  
+  ${props => props.$enableCloudScroll && css`
+    animation: ${cloudScroll} ${props.$cloudScrollSpeed || 180}s linear infinite;
+    background-size: 200% 100%;
+  `}
   
   @media (max-width: 768px) {
     /* Ensure proper containment on mobile */
@@ -145,6 +162,8 @@ const CustomMonitor = forwardRef<HTMLDivElement, MonitorProps>(
     scrollingSpeed = 20,
     scrollingOpacity = 1,
     scrollingTileSize = 50,
+    enableCloudScroll = false,
+    cloudScrollSpeed = 180,
     ...otherProps 
   }, ref) => {
     const { backgroundColor, backgroundImage, oldMonitorMode, desktopBackground, desktopBackgroundType } =
@@ -182,6 +201,8 @@ const CustomMonitor = forwardRef<HTMLDivElement, MonitorProps>(
             >
               <Background
                 ref={backgroundRef}
+                $enableCloudScroll={enableCloudScroll && isMainDesktop}
+                $cloudScrollSpeed={cloudScrollSpeed}
                 style={{
                   ...backgroundStyles,
                   ...(isMainDesktop && desktopBackgroundType === 'pattern' ? {
@@ -190,9 +211,9 @@ const CustomMonitor = forwardRef<HTMLDivElement, MonitorProps>(
                     // Use desktop image background
                     backgroundColor: shouldUseScrollingBackground ? 'transparent' : 'transparent',
                     backgroundImage: shouldUseScrollingBackground ? 'none' : `url(${desktopBackground})`,
-                    backgroundSize: shouldUseScrollingBackground ? 'auto' : "cover",
+                    backgroundSize: enableCloudScroll ? '200% 100%' : (shouldUseScrollingBackground ? 'auto' : "cover"),
                     backgroundPosition: shouldUseScrollingBackground ? 'auto' : "center",
-                    backgroundRepeat: shouldUseScrollingBackground ? 'auto' : "no-repeat",
+                    backgroundRepeat: enableCloudScroll ? 'repeat-x' : (shouldUseScrollingBackground ? 'auto' : "no-repeat"),
                   } : {
                     // Use regular image background
                     backgroundColor: shouldUseScrollingBackground ? 'transparent' : backgroundColor,
