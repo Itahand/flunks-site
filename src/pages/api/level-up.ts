@@ -92,13 +92,14 @@ export default async function handler(
     
     const nftData = await queryFlow(
       `
-        import SemesterZero from 0xce9dd43888d99574
+        import SemesterZeroV3 from 0xce9dd43888d99574
+        import MetadataViews from 0x1d7e57aa55817448
         
         access(all) fun main(address: Address, nftId: UInt64): {String: String}? {
           let account = getAccount(address)
           
           let collectionRef = account.capabilities
-            .borrow<&SemesterZero.Chapter5Collection>(SemesterZero.Chapter5CollectionPublicPath)
+            .borrow<&SemesterZeroV3.Collection>(/public/SemesterZeroV3Collection)
           
           if collectionRef == nil {
             return nil
@@ -213,14 +214,14 @@ export default async function handler(
       const achievement = nftData.achievement || 'SLACKER_AND_OVERACHIEVER';
 
       const revealTransaction = `
-        import SemesterZero from 0xce9dd43888d99574
+        import SemesterZeroV3 from 0xce9dd43888d99574
         
         transaction(userAddress: Address, nftId: UInt64) {
-          let admin: &SemesterZero.Admin
+          let admin: &SemesterZeroV3.Admin
           
           prepare(signer: auth(BorrowValue) &Account) {
-            self.admin = signer.storage.borrow<&SemesterZero.Admin>(
-              from: SemesterZero.AdminStoragePath
+            self.admin = signer.storage.borrow<&SemesterZeroV3.Admin>(
+              from: /storage/SemesterZeroV3Admin
             ) ?? panic("Could not borrow admin reference")
           }
           

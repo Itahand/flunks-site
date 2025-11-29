@@ -674,7 +674,7 @@ const LevelUp: React.FC = () => {
     setEvolvedResult(null);
     
     // Play evolution start sound
-    playSound('arcade');
+    playSound('bubble');
 
     try {
       const response = await fetch('/api/level-up', {
@@ -690,7 +690,6 @@ const LevelUp: React.FC = () => {
       const result = await response.json();
 
       if (result.success) {
-        playSound('reveal'); // Play reveal sound
         setMessage({ text: `🎉 Successfully evolved to ${selectedTier}!`, type: 'success' });
         playSound('success-gum-claim'); // Play success sound
         setEvolvedResult({

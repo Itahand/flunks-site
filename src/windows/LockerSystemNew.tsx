@@ -1833,7 +1833,7 @@ const LockerSystemNew: React.FC = () => {
                                 console.log('Daily check-in response:', data);
                                 
                                 if (data.success) {
-                                  alert(`🎉 +${data.earned} GUM added! Check in tomorrow to keep earning GUM!`);
+                                  alert(`🎉 You just got +${data.earned} GUM!\n\nCome back tomorrow for more GUM! 🍬`);
                                   // Refresh gum balance and tracking data
                                   refetch();
                                   loadGumBalance();
@@ -1842,7 +1842,7 @@ const LockerSystemNew: React.FC = () => {
                                   setCanClaimDaily(false);
                                 } else {
                                   // Show friendly message - always say come back tomorrow for cooldowns
-                                  alert(`ℹ️ Come back tomorrow for more GUM!`);
+                                  alert(`ℹ️ You already claimed today!\n\nCome back tomorrow for more GUM! 🍬`);
                                   setCanClaimDaily(false);
                                 }
                               } catch (err) {
@@ -1851,7 +1851,7 @@ const LockerSystemNew: React.FC = () => {
                               }
                             }}
                           >
-                            {canClaimDaily ? '✨ Claim 15 GUM' : '⏰ Daily Amount Claimed'}
+                            {canClaimDaily ? '✨ Claim 15 GUM' : '✅ +15 GUM Claimed! Come back tomorrow'}
                           </button>
                           </div>
                         </div>
