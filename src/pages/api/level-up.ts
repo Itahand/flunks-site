@@ -18,24 +18,28 @@ import { supabase } from '../../lib/supabase';
 import { executeAdminTransaction, queryFlow, isAdminConfigured } from '../../lib/flowServerAuth';
 
 // Tier configuration
+// Note: Contract accepts: Silver, Gold, Special, Retro, Punk, or Nerdy
 const TIERS = {
   Silver: {
     cost: 250,
+    contractTier: 'Silver', // Matches contract validation
     image: 'https://storage.googleapis.com/flunks_public/images/paradise-motel-pin-silver.png',
     name: 'Paradise Motel Pin - Silver',
     description: 'A Silver tier Paradise Motel pin from Flunks: Semester Zero. Awarded for completing Chapter 5.',
   },
   Gold: {
     cost: 500,
+    contractTier: 'Gold', // Matches contract validation
     image: 'https://storage.googleapis.com/flunks_public/images/paradise-motel-pin-gold.png',
     name: 'Paradise Motel Pin - Gold',
     description: 'A Gold tier Paradise Motel pin from Flunks: Semester Zero. Awarded for completing Chapter 5.',
   },
-  'Special Edition': {
+  Special: {
     cost: 1000,
+    contractTier: 'Special', // Matches contract validation (NOT "Special Edition")
     image: 'https://storage.googleapis.com/flunks_public/images/paradise-motel-pin-special.png',
-    name: 'Paradise Motel Pin - Special Edition',
-    description: 'A Special Edition Paradise Motel pin from Flunks: Semester Zero. Awarded for completing Chapter 5.',
+    name: 'Paradise Motel Pin - Special',
+    description: 'A Special tier Paradise Motel pin from Flunks: Semester Zero. Awarded for completing Chapter 5.',
   },
 } as const;
 
@@ -231,7 +235,7 @@ export default async function handler(
               "name": "${tierConfig.name}",
               "description": "${tierConfig.description}",
               "image": "${tierConfig.image}",
-              "tier": "${tier}",
+              "tier": "${tierConfig.contractTier}",
               "location": "Paradise Motel",
               "chapter": "5",
               "collection": "Flunks: Semester Zero",
@@ -243,11 +247,11 @@ export default async function handler(
             self.admin.evolveNFT(
               userAddress: userAddress,
               nftID: nftId,
-              newTier: "${tier}",
+              newTier: "${tierConfig.contractTier}",
               newMetadata: newMetadata
             )
             
-            log("✨ NFT evolved to ${tier} tier!")
+            log("✨ NFT evolved to ${tierConfig.contractTier} tier!")
           }
         }
       `;

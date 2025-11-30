@@ -4,7 +4,7 @@ import { useUnifiedWallet } from '../../contexts/UnifiedWalletContext';
 import { useGum } from '../../contexts/GumContext';
 import * as fcl from '@onflow/fcl';
 
-// Tier configuration
+// Tier configuration - must match API tiers
 const TIERS = {
   Silver: {
     cost: 250,
@@ -18,7 +18,7 @@ const TIERS = {
     color: '#FFD700',
     glow: 'rgba(255, 215, 0, 0.6)',
   },
-  'Special Edition': {
+  Special: {
     cost: 1000,
     image: 'https://storage.googleapis.com/flunks_public/images/paradise-motel-pin-special.png',
     color: '#FF00FF',
@@ -28,12 +28,53 @@ const TIERS = {
 
 type TierName = keyof typeof TIERS;
 
-// Sound effects
+// MP3-based sound effects for special events
 const playSound = (soundName: string) => {
   try {
     const audio = new Audio(`/sounds/${soundName}.mp3`);
     audio.volume = 0.5;
     audio.play().catch(() => {});
+  } catch (e) {
+    // Ignore audio errors
+  }
+};
+
+// Retro synth sound effects using Web Audio API (same as MyPlace)
+const playRetroSound = (type: 'hover' | 'select' | 'error') => {
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    if (type === 'hover') {
+      // Quick ascending beep (same as MyPlace hover)
+      oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.1);
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    } else if (type === 'select') {
+      // Selection sound - three ascending tones (same as MyPlace select)
+      oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+      oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+      oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } else if (type === 'error') {
+      // Error sound - descending buzz
+      oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(150, audioContext.currentTime + 0.2);
+      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+    }
   } catch (e) {
     // Ignore audio errors
   }
@@ -691,7 +732,7 @@ const LevelUp: React.FC = () => {
 
       if (result.success) {
         setMessage({ text: `🎉 Successfully evolved to ${selectedTier}!`, type: 'success' });
-        playSound('success-gum-claim'); // Play success sound
+        playSound('reveal'); // Play reveal sound on successful evolution
         setEvolvedResult({
           tier: selectedTier,
           image: tierConfig.image,
@@ -875,9 +916,10 @@ const LevelUp: React.FC = () => {
                       key={nft.id}
                       selected={selectedNFT?.id === nft.id}
                       evolving={evolving && selectedNFT?.id === nft.id}
+                      onMouseEnter={() => playRetroSound('hover')}
                       onClick={() => {
                         if (!evolving) {
-                          playSound('ding');
+                          playRetroSound('select');
                           setSelectedNFT(nft);
                         }
                       }}
@@ -905,12 +947,13 @@ const LevelUp: React.FC = () => {
                       tierColor={tierConfig.color}
                       disabled={balance < tierConfig.cost}
                       selected={selectedTier === tierName}
+                      onMouseEnter={() => playRetroSound('hover')}
                       onClick={() => {
                         if (balance >= tierConfig.cost && !evolving) {
-                          playSound('bubble');
+                          playRetroSound('select');
                           setSelectedTier(tierName);
                         } else if (balance < tierConfig.cost) {
-                          playSound('error');
+                          playRetroSound('error');
                         }
                       }}
                     >

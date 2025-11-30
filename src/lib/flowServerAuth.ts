@@ -12,9 +12,9 @@
 
 import * as fcl from '@onflow/fcl';
 import { ec as EC } from 'elliptic';
-import { SHA3 } from 'sha3';
+import { createHash } from 'crypto';
 
-// Initialize elliptic curve for secp256k1 (Flow's curve)
+// Initialize elliptic curve for P-256 (Flow's curve)
 const ec = new EC('p256');
 
 // Environment variables
@@ -27,12 +27,11 @@ fcl.config()
   .put('flow.network', 'mainnet');
 
 /**
- * Hash a message using SHA3-256 (Flow's hashing algorithm)
+ * Hash a message using SHA2-256 (matching the account's hash algorithm)
+ * Note: The admin account uses SHA2_256, not SHA3_256
  */
 function hashMessage(message: string): Buffer {
-  const sha3 = new SHA3(256);
-  sha3.update(Buffer.from(message, 'hex'));
-  return sha3.digest();
+  return createHash('sha256').update(Buffer.from(message, 'hex')).digest();
 }
 
 /**
