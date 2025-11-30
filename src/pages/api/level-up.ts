@@ -105,7 +105,7 @@ export default async function handler(
             return nil
           }
           
-          let nft = collectionRef!.borrowChapter5NFT(id: nftId)
+          let nft = collectionRef!.borrowSemesterZeroNFT(id: nftId)
           if nft == nil {
             return nil
           }
@@ -115,6 +115,7 @@ export default async function handler(
             result[key] = nft!.metadata[key]!
           }
           result["serialNumber"] = nft!.serialNumber.toString()
+          result["evolutionTier"] = nft!.evolutionTier
           return result
         }
       `,
@@ -130,11 +131,11 @@ export default async function handler(
 
     console.log('📄 Current NFT metadata:', nftData);
 
-    // Check if already revealed
-    if (nftData.revealed === 'true') {
+    // Check if already revealed/evolved
+    if (nftData.evolutionTier && nftData.evolutionTier !== 'Base') {
       return res.status(400).json({
         success: false,
-        error: 'This NFT has already been evolved/revealed.',
+        error: `This NFT has already been evolved to ${nftData.evolutionTier} tier.`,
       });
     }
 
@@ -230,7 +231,6 @@ export default async function handler(
               "name": "${tierConfig.name}",
               "description": "${tierConfig.description}",
               "image": "${tierConfig.image}",
-              "revealed": "true",
               "tier": "${tier}",
               "location": "Paradise Motel",
               "chapter": "5",
@@ -240,8 +240,10 @@ export default async function handler(
               "evolvedAt": getCurrentBlock().timestamp.toString()
             }
             
-            self.admin.revealChapter5NFT(
+            self.admin.evolveNFT(
               userAddress: userAddress,
+              nftID: nftId,
+              newTier: "${tier}",
               newMetadata: newMetadata
             )
             
