@@ -326,6 +326,7 @@ export default async function handler(
         error: 'Blockchain transaction failed. Your GUM has been refunded.',
         refunded: !refundError,
         details: blockchainError.message,
+        fullError: JSON.stringify(blockchainError, Object.getOwnPropertyNames(blockchainError)),
       });
     }
 
