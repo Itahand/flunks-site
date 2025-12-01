@@ -171,7 +171,16 @@ const Title = styled.h1`
   animation: ${arcadeBlink} 2s ease-in-out infinite;
   
   @media (max-width: 768px) {
-    font-size: 20px;
+    font-size: 22px;
+    letter-spacing: 2px;
+  }
+  
+  @media (max-width: 380px) {
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-shadow: 
+      2px 2px 0 #ff0000,
+      4px 4px 0 #ff00ff;
   }
 `;
 
@@ -180,6 +189,11 @@ const Subtitle = styled.div`
   color: #00ff00;
   font-size: 12px;
   margin-bottom: 20px;
+  
+  @media (max-width: 480px) {
+    font-size: 10px;
+    margin-bottom: 15px;
+  }
 `;
 
 const GumDisplay = styled.div`
@@ -262,6 +276,11 @@ const SectionTitle = styled.h2`
   margin-bottom: 15px;
   text-align: center;
   text-shadow: 2px 2px 0 #00ffff;
+  
+  @media (max-width: 480px) {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
 `;
 
 const NFTGrid = styled.div`
@@ -333,11 +352,22 @@ const NFTLabel = styled.div`
   font-size: 10px;
   color: #00ff00;
   text-align: center;
+  word-break: break-word;
   
   strong {
     color: #ffff00;
     display: block;
     margin-bottom: 3px;
+    font-size: 11px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 9px;
+    
+    strong {
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
   }
 `;
 
@@ -399,6 +429,11 @@ const TierName = styled.div`
   font-weight: bold;
   margin-bottom: 10px;
   text-shadow: 2px 2px 0 #000;
+  
+  @media (max-width: 480px) {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
 `;
 
 const TierCost = styled.div`
@@ -408,6 +443,15 @@ const TierCost = styled.div`
   span {
     font-size: 14px;
   }
+  
+  @media (max-width: 480px) {
+    font-size: 22px;
+    margin-bottom: 8px;
+    
+    span {
+      font-size: 12px;
+    }
+  }
 `;
 
 const TierImage = styled.img`
@@ -416,6 +460,12 @@ const TierImage = styled.img`
   object-fit: contain;
   margin: 10px auto;
   display: block;
+  
+  @media (max-width: 480px) {
+    width: 60px;
+    height: 60px;
+    margin: 8px auto;
+  }
 `;
 
 const EvolveButton = styled.button<{ disabled?: boolean }>`
@@ -469,6 +519,14 @@ const Message = styled.div<{ type?: 'error' | 'success' | 'info' }>`
   margin: 15px 0;
   border-radius: 10px;
   font-size: 14px;
+  word-break: break-word;
+  
+  @media (max-width: 480px) {
+    padding: 12px;
+    margin: 12px 0;
+    font-size: 12px;
+    border-radius: 8px;
+  }
   
   ${props => props.type === 'error' && css`
     background: rgba(255, 0, 0, 0.2);
@@ -548,6 +606,16 @@ const LoadingSpinner = styled.div`
     margin-bottom: 10px;
     animation: ${arcadeBlink} 0.5s ease-in-out infinite;
   }
+  
+  @media (max-width: 480px) {
+    padding: 30px;
+    font-size: 12px;
+    
+    &::before {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+  }
 `;
 
 const ConnectPrompt = styled.div`
@@ -564,6 +632,19 @@ const ConnectPrompt = styled.div`
   p {
     font-size: 14px;
     color: #00ff00;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 40px 15px;
+    
+    h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    
+    p {
+      font-size: 12px;
+    }
   }
 `;
 
@@ -939,8 +1020,8 @@ const LevelUp: React.FC = () => {
                         {tierConfig.cost} <span>GUM</span>
                       </TierCost>
                       {balance < tierConfig.cost && (
-                        <div style={{ fontSize: '10px', color: '#ff6666' }}>
-                          Need {tierConfig.cost - balance} more GUM
+                        <div style={{ fontSize: '10px', color: '#ff6666', marginTop: '5px' }}>
+                          Need {(tierConfig.cost - balance).toLocaleString()} more GUM
                         </div>
                       )}
                     </TierCard>
@@ -986,8 +1067,15 @@ const LevelUp: React.FC = () => {
         )}
 
         {address && (
-          <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '10px', color: '#666' }}>
-            Connected: {address.slice(0, 8)}...{address.slice(-6)}
+          <div style={{ 
+            marginTop: '20px', 
+            textAlign: 'center', 
+            fontSize: '10px', 
+            color: '#666',
+            padding: '0 10px',
+            wordBreak: 'break-all'
+          }}>
+            Connected: {address.slice(0, 6)}...{address.slice(-4)}
           </div>
         )}
       </ArcadeFrame>

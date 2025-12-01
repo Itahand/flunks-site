@@ -60,6 +60,7 @@ import SemesterZeroSetup from "components/SemesterZeroSetup";
 import RevealTester from "components/admin/RevealTester";
 import LevelUp from "components/admin/LevelUp";
 import BurnNFT from "components/admin/BurnNFT";
+import AlexandriaLibrary from "components/AlexandriaLibrary";
 
 const FullScreenLoader = () => {
   const [percent, setPercent] = useState(0);
@@ -793,6 +794,29 @@ const windowsMemod = useMemo(() => (
             onDoubleClick={() => null}
           />
         </a>
+
+        {/* 24. Alexandria Library - On-Chain Books */}
+        <ConditionalAppIcon
+          appId="alexandria-library"
+          title="Library"
+          icon="/images/icons/open-book.png"
+          onDoubleClick={() => openWindow({
+            key: WINDOW_IDS.ALEXANDRIA_LIBRARY,
+            window: (
+              <DraggableResizeableWindow
+                windowsId={WINDOW_IDS.ALEXANDRIA_LIBRARY}
+                onClose={() => closeWindow(WINDOW_IDS.ALEXANDRIA_LIBRARY)}
+                headerTitle="📚 Alexandria Library - On-Chain Books"
+                initialWidth="95vw"
+                initialHeight="95vh"
+                headerIcon="/images/icons/open-book.png"
+                resizable={true}
+              >
+                <AlexandriaLibrary />
+              </DraggableResizeableWindow>
+            )
+          })}
+        />
         </div>
       </div>
 

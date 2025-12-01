@@ -198,6 +198,9 @@ export const WINDOW_IDS = {
   
   // Burn NFT (Admin Only)
   BURN_NFT: "burn-nft",
+  
+  // Alexandria Library
+  ALEXANDRIA_LIBRARY: "alexandria-library",
 };
 
 export const WINDOW_APP_INFO_TO_WINDOW_ID = {
