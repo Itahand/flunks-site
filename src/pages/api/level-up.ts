@@ -215,8 +215,9 @@ export default async function handler(
 
     try {
       // Build new metadata
+      // Note: We exclude 'tier', 'achievement', and 'evolvedAt' from metadata
+      // to prevent them from showing as traits on marketplaces like Flowty
       const serialNumber = nftData.serialNumber || '0';
-      const achievement = nftData.achievement || 'SLACKER_AND_OVERACHIEVER';
 
       const revealTransaction = `
         import SemesterZeroV3 from 0xce9dd43888d99574
@@ -235,13 +236,10 @@ export default async function handler(
               "name": "${tierConfig.name}",
               "description": "${tierConfig.description}",
               "image": "${tierConfig.image}",
-              "tier": "${tierConfig.contractTier}",
               "location": "Paradise Motel",
               "chapter": "5",
               "collection": "Flunks: Semester Zero",
-              "serialNumber": "${serialNumber}",
-              "achievement": "${achievement}",
-              "evolvedAt": getCurrentBlock().timestamp.toString()
+              "serialNumber": "${serialNumber}"
             }
             
             self.admin.evolveNFT(
