@@ -89,7 +89,7 @@ transaction(recipientAddress: Address) {
     let metadata: {String: String} = {
       "name": "Paradise Motel Pin",
       "description": "A collectible pin from Paradise Motel. Evolve it to unlock special artwork!",
-      "image": "https://storage.googleapis.com/flunks_public/images/paradise-motel-pin-base.png"
+      "image": "https://storage.googleapis.com/flunks_public/images/the%20placeholder.png"
     }
     
     self.admin.mintNFT(

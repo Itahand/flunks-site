@@ -597,7 +597,7 @@ const LevelUp: React.FC = () => {
             import SemesterZeroV3 from 0xce9dd43888d99574
             import MetadataViews from 0x1d7e57aa55817448
 
-            access(all) fun main(address: Address): [NFTData] {
+              access(all) fun main(address: Address): [NFTData] {
               let account = getAccount(address)
               
               let collectionRef = account.capabilities
@@ -612,12 +612,10 @@ const LevelUp: React.FC = () => {
               let nftData: [NFTData] = []
               
               for id in ids {
-                if let nft = collection.borrowNFT(id) {
+                if let nft = collection.borrowSemesterZeroNFT(id: id) {
                   // Get Display view for name and image
                   var name = "Paradise Motel Pin"
                   var image = ""
-                  var revealed = false
-                  var tier = ""
                   
                   if let display = nft.resolveView(Type<MetadataViews.Display>()) {
                     let displayView = display as! MetadataViews.Display
@@ -627,18 +625,9 @@ const LevelUp: React.FC = () => {
                     }
                   }
                   
-                  // Get traits for revealed status and tier
-                  if let traits = nft.resolveView(Type<MetadataViews.Traits>()) {
-                    let traitsView = traits as! MetadataViews.Traits
-                    for trait in traitsView.traits {
-                      if trait.name == "revealed" {
-                        revealed = trait.value as? Bool ?? false
-                      }
-                      if trait.name == "tier" {
-                        tier = trait.value as? String ?? ""
-                      }
-                    }
-                  }
+                  // Get tier directly from NFT resource
+                  let tier = nft.evolutionTier
+                  let isEvolved = tier != "Base"
                   
                   // Get serial number
                   var serialNumber: UInt64 = 0
@@ -652,16 +641,14 @@ const LevelUp: React.FC = () => {
                     name: name,
                     image: image,
                     serialNumber: serialNumber,
-                    revealed: revealed,
+                    revealed: isEvolved,
                     tier: tier
                   ))
                 }
               }
               
               return nftData
-            }
-
-            access(all) struct NFTData {
+            }            access(all) struct NFTData {
               access(all) let id: UInt64
               access(all) let name: String
               access(all) let image: String
@@ -765,11 +752,9 @@ const LevelUp: React.FC = () => {
                 let nftData: [NFTData] = []
                 
                 for id in ids {
-                  if let nft = collection.borrowNFT(id) {
+                  if let nft = collection.borrowSemesterZeroNFT(id: id) {
                     var name = "Paradise Motel Pin"
                     var image = ""
-                    var revealed = false
-                    var tier = ""
                     
                     if let display = nft.resolveView(Type<MetadataViews.Display>()) {
                       let displayView = display as! MetadataViews.Display
@@ -779,17 +764,8 @@ const LevelUp: React.FC = () => {
                       }
                     }
                     
-                    if let traits = nft.resolveView(Type<MetadataViews.Traits>()) {
-                      let traitsView = traits as! MetadataViews.Traits
-                      for trait in traitsView.traits {
-                        if trait.name == "revealed" {
-                          revealed = trait.value as? Bool ?? false
-                        }
-                        if trait.name == "tier" {
-                          tier = trait.value as? String ?? ""
-                        }
-                      }
-                    }
+                    let tier = nft.evolutionTier
+                    let isEvolved = tier != "Base"
                     
                     var serialNumber: UInt64 = 0
                     if let serial = nft.resolveView(Type<MetadataViews.Serial>()) {
@@ -802,7 +778,7 @@ const LevelUp: React.FC = () => {
                       name: name,
                       image: image,
                       serialNumber: serialNumber,
-                      revealed: revealed,
+                      revealed: isEvolved,
                       tier: tier
                     ))
                   }
