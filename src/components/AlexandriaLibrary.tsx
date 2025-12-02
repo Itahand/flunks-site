@@ -438,8 +438,7 @@ const PoweredBy = styled.div`
 // Types
 interface Book {
   title: string;
-  author?: string;
-  genre?: string;
+  genre: string;
 }
 
 interface Chapter {
@@ -447,115 +446,147 @@ interface Chapter {
   paragraphs: string[] | null;
 }
 
-// Cadence Scripts
+interface GenreWithCount {
+  name: string;
+  bookCount: number;
+}
+
+// Cadence Scripts - matching exact format from Alexandria repo
 const getGenresScript = `
-import Alexandria from ${ALEXANDRIA_ADDRESS}
+import Alexandria from 0xfed1adffd14ea9d0
 
 access(all) 
-fun main(): [String]? {
+fun main(): [String]?  {
     return Alexandria.getAllGenres()
-}
+} 
 `;
 
 const getBooksByGenreScript = `
-import Alexandria from ${ALEXANDRIA_ADDRESS}
+import Alexandria from 0xfed1adffd14ea9d0
 
 access(all) 
-fun main(genre: String): [String]? {
+fun main(genre: String): [String]?  {
     return Alexandria.getGenre(genre: genre)
-}
+} 
 `;
 
 const getChapterTitlesScript = `
-import Alexandria from ${ALEXANDRIA_ADDRESS}
+import Alexandria from 0xfed1adffd14ea9d0   
 
 access(all) 
-fun main(bookTitle: String): [String] {
+fun main(bookTitle: String): [String]  {
     return Alexandria.getBookChapterTitles(bookTitle: bookTitle)
-}
+} 
 `;
 
 const getChapterParagraphScript = `
-import Alexandria from ${ALEXANDRIA_ADDRESS}
+import Alexandria from 0xfed1adffd14ea9d0
 
 access(all) 
-fun main(bookTitle: String, chapterTitle: String, paragraphIndex: Int): String {
+fun main(bookTitle: String, chapterTitle: String, paragraphIndex: Int): String  {
     return Alexandria.getBookParagraph(bookTitle: bookTitle, chapterTitle: chapterTitle, paragraphIndex: paragraphIndex)
-}
+}   
 `;
 
 // Main Component
 const AlexandriaLibrary: React.FC = () => {
-  const [genres, setGenres] = useState<string[]>([]);
-  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
-  const [books, setBooks] = useState<string[]>([]);
+  const [genresWithCounts, setGenresWithCounts] = useState<GenreWithCount[]>([]);
+  const [allBooks, setAllBooks] = useState<Book[]>([]);
+  const [selectedGenre, setSelectedGenre] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [loadingBooks, setLoadingBooks] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   // Reader state
-  const [selectedBook, setSelectedBook] = useState<string | null>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [selectedChapterIdx, setSelectedChapterIdx] = useState<number | null>(null);
   const [loadingChapter, setLoadingChapter] = useState(false);
 
-  // Fetch genres on mount
+  // Fetch all genres and their books on mount
   useEffect(() => {
-    const fetchGenres = async () => {
+    const fetchAllData = async () => {
       try {
-        const result = await fcl.query({
+        console.log('📚 Alexandria: Fetching genres...');
+        const genreResult = await fcl.query({
           cadence: getGenresScript,
           args: () => []
         });
-        setGenres(result || []);
-        if (result && result.length > 0) {
-          setSelectedGenre(result[0]);
-        }
+        
+        const genres: string[] = genreResult || [];
+        console.log('📚 Alexandria: Found', genres.length, 'genres');
+        
+        // Fetch books for each genre in parallel
+        const genreData: GenreWithCount[] = [];
+        const allBooksData: Book[] = [];
+        
+        await Promise.all(genres.map(async (genreName) => {
+          try {
+            const booksResult = await fcl.query({
+              cadence: getBooksByGenreScript,
+              args: (arg: any, t: any) => [arg(genreName, t.String)]
+            });
+            
+            const books: string[] = booksResult || [];
+            genreData.push({ name: genreName, bookCount: books.length });
+            
+            // Add books to allBooks with genre
+            books.forEach(title => {
+              allBooksData.push({ title, genre: genreName });
+            });
+            
+            if (books.length > 0) {
+              console.log('📚 Alexandria:', genreName, '-', books.length, 'books');
+            }
+          } catch (error) {
+            console.error('📚 Alexandria: Error fetching', genreName, error);
+            genreData.push({ name: genreName, bookCount: 0 });
+          }
+        }));
+        
+        // Sort genres: ones with books first, then alphabetically
+        genreData.sort((a, b) => {
+          if (a.bookCount > 0 && b.bookCount === 0) return -1;
+          if (a.bookCount === 0 && b.bookCount > 0) return 1;
+          return a.name.localeCompare(b.name);
+        });
+        
+        setGenresWithCounts(genreData);
+        setAllBooks(allBooksData);
+        
+        console.log('📚 Alexandria: Total books loaded:', allBooksData.length);
+        
       } catch (error) {
-        console.error('Error fetching genres:', error);
+        console.error('📚 Alexandria: Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchGenres();
+    fetchAllData();
   }, []);
 
-  // Fetch books when genre changes
-  useEffect(() => {
-    if (!selectedGenre) return;
-    
-    const fetchBooks = async () => {
-      setLoadingBooks(true);
-      try {
-        const result = await fcl.query({
-          cadence: getBooksByGenreScript,
-          args: (arg: any, t: any) => [arg(selectedGenre, t.String)]
-        });
-        setBooks(result || []);
-      } catch (error) {
-        console.error('Error fetching books:', error);
-        setBooks([]);
-      } finally {
-        setLoadingBooks(false);
-      }
-    };
-    
-    fetchBooks();
-  }, [selectedGenre]);
+  // Get books to display based on selected genre and search
+  const displayedBooks = allBooks.filter(book => {
+    const matchesGenre = selectedGenre === 'all' || book.genre === selectedGenre;
+    const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesGenre && matchesSearch;
+  });
 
   // Open book and fetch chapters
-  const openBook = useCallback(async (bookTitle: string) => {
-    setSelectedBook(bookTitle);
+  const openBook = useCallback(async (book: Book) => {
+    setSelectedBook(book);
     setChapters([]);
     setSelectedChapterIdx(null);
     
     try {
+      console.log('📚 Alexandria: Fetching chapters for:', book.title);
       const result = await fcl.query({
         cadence: getChapterTitlesScript,
-        args: (arg: any, t: any) => [arg(bookTitle, t.String)]
+        args: (arg: any, t: any) => [arg(book.title, t.String)]
       });
+      
+      console.log('📚 Alexandria: Chapters:', result);
       
       const chapterList = (result || []).map((title: string) => ({
         title,
@@ -567,7 +598,7 @@ const AlexandriaLibrary: React.FC = () => {
         setSelectedChapterIdx(0);
       }
     } catch (error) {
-      console.error('Error fetching chapters:', error);
+      console.error('📚 Alexandria: Error fetching chapters:', error);
     }
   }, []);
 
@@ -585,14 +616,15 @@ const AlexandriaLibrary: React.FC = () => {
       let index = 0;
       
       try {
-        while (consecutiveEmpty < 3) {
+        console.log('📚 Alexandria: Loading paragraphs for:', chapter.title);
+        while (consecutiveEmpty < 3 && index < 200) {  // Max 200 paragraphs safety limit
           try {
             const para = await fcl.query({
               cadence: getChapterParagraphScript,
               args: (arg: any, t: any) => [
-                arg(selectedBook, t.String),
+                arg(selectedBook.title, t.String),
                 arg(chapter.title, t.String),
-                arg(index, t.Int)
+                arg(String(index), t.Int)
               ]
             });
             
@@ -608,6 +640,8 @@ const AlexandriaLibrary: React.FC = () => {
           index++;
         }
         
+        console.log('📚 Alexandria: Loaded', paragraphs.length, 'paragraphs');
+        
         setChapters(prev => {
           const updated = [...prev];
           updated[selectedChapterIdx] = {
@@ -617,7 +651,7 @@ const AlexandriaLibrary: React.FC = () => {
           return updated;
         });
       } catch (error) {
-        console.error('Error fetching chapter content:', error);
+        console.error('📚 Alexandria: Error fetching chapter content:', error);
       } finally {
         setLoadingChapter(false);
       }
@@ -625,11 +659,6 @@ const AlexandriaLibrary: React.FC = () => {
     
     fetchContent();
   }, [selectedBook, selectedChapterIdx, chapters]);
-
-  // Filter books by search
-  const filteredBooks = books.filter(book => 
-    book.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   // Render Reader View
   if (selectedBook) {
@@ -642,7 +671,7 @@ const AlexandriaLibrary: React.FC = () => {
             <BackButton onClick={() => setSelectedBook(null)}>
               ← BACK
             </BackButton>
-            <ReaderTitle>{selectedBook}</ReaderTitle>
+            <ReaderTitle>{selectedBook.title}</ReaderTitle>
           </ReaderHeader>
           
           {chapters.length > 0 && (
@@ -708,18 +737,25 @@ const AlexandriaLibrary: React.FC = () => {
             <GenreList>
               {loading ? (
                 <LoadingText>Loading...</LoadingText>
-              ) : genres.length === 0 ? (
-                <GenreItem disabled>No genres found</GenreItem>
               ) : (
-                genres.map(genre => (
+                <>
                   <GenreItem
-                    key={genre}
-                    active={selectedGenre === genre}
-                    onClick={() => setSelectedGenre(genre)}
+                    active={selectedGenre === 'all'}
+                    onClick={() => setSelectedGenre('all')}
                   >
-                    {genre}
+                    📖 All Books ({allBooks.length})
                   </GenreItem>
-                ))
+                  {genresWithCounts.map(genre => (
+                    <GenreItem
+                      key={genre.name}
+                      active={selectedGenre === genre.name}
+                      onClick={() => setSelectedGenre(genre.name)}
+                      style={{ opacity: genre.bookCount === 0 ? 0.5 : 1 }}
+                    >
+                      {genre.name} {genre.bookCount > 0 && `(${genre.bookCount})`}
+                    </GenreItem>
+                  ))}
+                </>
               )}
             </GenreList>
           )}
@@ -736,18 +772,18 @@ const AlexandriaLibrary: React.FC = () => {
           </SearchBar>
           
           <BookGrid>
-            {loadingBooks ? (
-              <LoadingText>Loading books...</LoadingText>
-            ) : filteredBooks.length === 0 ? (
+            {loading ? (
+              <LoadingText>Loading books from the blockchain...</LoadingText>
+            ) : displayedBooks.length === 0 ? (
               <EmptyState>
                 <h3>No Books Found</h3>
-                <p>{searchQuery ? 'Try a different search term.' : 'Select a genre to browse books.'}</p>
+                <p>{searchQuery ? 'Try a different search term.' : 'This genre has no books yet.'}</p>
               </EmptyState>
             ) : (
-              filteredBooks.map(book => (
-                <BookCard key={book} onClick={() => openBook(book)}>
-                  <BookTitle>{book}</BookTitle>
-                  <BookMeta>{selectedGenre}</BookMeta>
+              displayedBooks.map(book => (
+                <BookCard key={`${book.genre}-${book.title}`} onClick={() => openBook(book)}>
+                  <BookTitle>{book.title}</BookTitle>
+                  <BookMeta>{book.genre}</BookMeta>
                 </BookCard>
               ))
             )}
