@@ -799,7 +799,7 @@ const windowsMemod = useMemo(() => (
         <ConditionalAppIcon
           appId="alexandria-library"
           title="Library"
-          icon="/images/icons/open-book.png"
+          icon="/images/icons/alexandria-library-icon.png"
           onDoubleClick={() => openWindow({
             key: WINDOW_IDS.ALEXANDRIA_LIBRARY,
             window: (
@@ -809,7 +809,7 @@ const windowsMemod = useMemo(() => (
                 headerTitle="📚 Alexandria Library - On-Chain Books"
                 initialWidth="95vw"
                 initialHeight="95vh"
-                headerIcon="/images/icons/open-book.png"
+                headerIcon="/images/icons/alexandria-library-icon.png"
                 resizable={true}
               >
                 <AlexandriaLibrary />

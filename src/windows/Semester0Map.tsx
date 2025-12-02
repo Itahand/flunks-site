@@ -567,7 +567,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
             alt="Semester 0 Map"
           />      {/* Screen dimming overlay - appears when hovering over any target location */}
       {!isMobile && (
-        hovered === 'high-school' || hovered === 'arcade' || hovered === 'football-field' || hovered === 'rug-doctor' ||
+        hovered === 'high-school' || hovered === 'arcade' || hovered === 'rug-doctor' ||
         hovered === 'freaks-house' || hovered === 'geeks-house' || hovered === 'jocks-house' || hovered === 'preps-house' ||
         hovered === 'treehouse' || hovered === 'snack-shack' || hovered === 'four-thieves-bar' || hovered === 'flunk-fm' ||
         hovered === 'police-station' || hovered === 'shed' || hovered === 'junkyard' || hovered === 'paradise-motel' ||
@@ -583,9 +583,11 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
       {!isMobile && hovered === 'arcade' && (
         <div className={`${styles["map-location-hover"]} ${styles["arcade"]}`} />
       )}
+      {/* Football field hover hidden
       {!isMobile && hovered === 'football-field' && (
         <div className={`${styles["map-location-hover"]} ${styles["football-field"]}`} />
       )}
+      */}
       {!isMobile && hovered === 'rug-doctor' && (
         <div className={`${styles["map-location-hover"]} ${styles["rug-doctor"]}`} />
       )}
@@ -1147,7 +1149,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
             >
             </DynamicHouseIcon>
             
-            {/* Football Field - now visible at all times */}
+            {/* Football Field - HIDDEN FOR NOW
             <DynamicHouseIcon
               houseId="football-field"
               className={`${styles["nav-icon"]} ${styles['football-field-nav']}`}
@@ -1204,6 +1206,7 @@ const Semester0Map: React.FC<Props> = ({ onClose }) => {
                 onTouchEnd={handleTouchLeave}
               >
               </DynamicHouseIcon>
+            */}
             
             {/* Rug Doctor - Build Mode Only */}
             {buildMode === 'build' && (

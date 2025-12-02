@@ -412,7 +412,7 @@ export const WINDOW_APP_INFO_TO_WINDOW_ID = {
   },
   [WINDOW_IDS.YEARBOOK]: {
     appName: "Flunks Yearbook",
-    appIcon: "/images/icons/open-book.png",
+    appIcon: "/images/icons/alexandria-library-icon.png",
     key: WINDOW_IDS.YEARBOOK,
   },
   [WINDOW_IDS.FOOTBALL_FIELD_MAIN]: {
