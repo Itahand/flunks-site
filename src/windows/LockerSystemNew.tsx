@@ -899,15 +899,23 @@ const LockerSystemNew: React.FC = () => {
                         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.2)',
                         width: 'clamp(110px, 16%, 160px)', // Slightly smaller
                         letterSpacing: '0.5px',
-                        fontFamily: 'Arial, sans-serif'
+                        fontFamily: 'Arial, sans-serif',
+                        overflow: 'hidden'
                       }}>
                         <div style={{
-                          fontSize: 'clamp(12px, 1.6vw, 16px)', // Bigger username
-                          fontWeight: 'bold', // Made bold instead of 600
+                          fontSize: (lockerInfo.username?.length || 0) > 10 
+                            ? 'clamp(9px, 1.2vw, 12px)' 
+                            : (lockerInfo.username?.length || 0) > 7 
+                              ? 'clamp(10px, 1.4vw, 14px)' 
+                              : 'clamp(12px, 1.6vw, 16px)',
+                          fontWeight: 'bold',
                           marginBottom: '3px',
                           textTransform: 'uppercase',
-                          letterSpacing: '0.8px',
-                          color: '#000000'
+                          letterSpacing: (lockerInfo.username?.length || 0) > 10 ? '0.3px' : '0.8px',
+                          color: '#000000',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis'
                         }}>
                           {lockerInfo.username || 'STUDENT'}
                         </div>
@@ -1841,8 +1849,9 @@ const LockerSystemNew: React.FC = () => {
                                   // Reset button state
                                   setCanClaimDaily(false);
                                 } else {
-                                  // Show friendly message - always say come back tomorrow for cooldowns
-                                  alert(`ℹ️ You already claimed today!\n\nCome back tomorrow for more GUM! 🍬`);
+                                  // Show the specific message from the API
+                                  const message = data.message || 'Daily bonus already claimed!';
+                                  alert(`ℹ️ ${message}\n\nCome back tomorrow for more GUM! 🍬`);
                                   setCanClaimDaily(false);
                                 }
                               } catch (err) {
