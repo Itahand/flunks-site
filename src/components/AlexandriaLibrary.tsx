@@ -451,6 +451,78 @@ interface GenreWithCount {
   bookCount: number;
 }
 
+// Helper function to convert Roman numerals to numbers
+const romanToNumber = (roman: string): number => {
+  const romanMap: { [key: string]: number } = {
+    'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000
+  };
+  
+  let result = 0;
+  let prev = 0;
+  
+  for (let i = roman.length - 1; i >= 0; i--) {
+    const current = romanMap[roman[i]] || 0;
+    if (current < prev) {
+      result -= current;
+    } else {
+      result += current;
+    }
+    prev = current;
+  }
+  
+  return result;
+};
+
+// Helper function to extract and parse chapter number from title
+const extractChapterNumber = (title: string): { number: number; original: string } | null => {
+  // Try to match patterns like "Chapter 1", "Chapter 22", "Ch. 3", etc.
+  const arabicMatch = title.match(/(?:chapter|ch\.?)\s*(\d+)/i);
+  if (arabicMatch) {
+    return { number: parseInt(arabicMatch[1], 10), original: title };
+  }
+  
+  // Try to match Roman numerals like "Chapter I", "Chapter II", "Ch. III", etc.
+  const romanMatch = title.match(/(?:chapter|ch\.?)\s*([IVXLCDM]+)/i);
+  if (romanMatch) {
+    const romanNum = romanMatch[1].toUpperCase();
+    return { number: romanToNumber(romanNum), original: title };
+  }
+  
+  // Try to match standalone numbers at the start or end
+  const standaloneMatch = title.match(/^(\d+)|(\d+)$/);
+  if (standaloneMatch) {
+    return { number: parseInt(standaloneMatch[1] || standaloneMatch[2], 10), original: title };
+  }
+  
+  // Try to match standalone Roman numerals
+  const standaloneRomanMatch = title.match(/^([IVXLCDM]+)$/i);
+  if (standaloneRomanMatch) {
+    return { number: romanToNumber(standaloneRomanMatch[1].toUpperCase()), original: title };
+  }
+  
+  return null;
+};
+
+// Helper function to sort chapters by their numbers
+const sortChapters = (chapters: Chapter[]): Chapter[] => {
+  return [...chapters].sort((a, b) => {
+    const aNum = extractChapterNumber(a.title);
+    const bNum = extractChapterNumber(b.title);
+    
+    // If both have numbers, sort numerically
+    if (aNum && bNum) {
+      return aNum.number - bNum.number;
+    }
+    
+    // If only one has a number, prioritize it
+    if (aNum && !bNum) return -1;
+    if (!aNum && bNum) return 1;
+    
+    // If neither has a number, sort alphabetically
+    return a.title.localeCompare(b.title);
+  });
+};
+
 // Cadence Scripts - matching exact format from Alexandria repo
 const getGenresScript = `
 import Alexandria from 0xfed1adffd14ea9d0
@@ -593,9 +665,12 @@ const AlexandriaLibrary: React.FC = () => {
         paragraphs: null
       }));
       
-      setChapters(chapterList);
-      if (chapterList.length > 0) {
-        setSelectedChapterIdx(0);
+      // Sort chapters by their numbers (handles both Arabic and Roman numerals)
+      const sortedChapters = sortChapters(chapterList);
+      
+      setChapters(sortedChapters);
+      if (sortedChapters.length > 0) {
+        setSelectedChapterIdx(0); // Always start with the first chapter after sorting
       }
     } catch (error) {
       console.error('📚 Alexandria: Error fetching chapters:', error);
