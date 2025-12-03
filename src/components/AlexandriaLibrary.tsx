@@ -560,6 +560,15 @@ fun main(bookTitle: String, chapterTitle: String, paragraphIndex: Int): String  
 }   
 `;
 
+const getBookChaptersScript = `
+import Alexandria from 0xfed1adffd14ea9d0   
+
+access(all) 
+fun main(bookTitle: String): &Alexandria.Book?  {
+    return Alexandria.getBook(bookTitle: bookTitle)
+} 
+`;
+
 // Main Component
 const AlexandriaLibrary: React.FC = () => {
   const [genresWithCounts, setGenresWithCounts] = useState<GenreWithCount[]>([]);
@@ -645,95 +654,78 @@ const AlexandriaLibrary: React.FC = () => {
     return matchesGenre && matchesSearch;
   });
 
-  // Open book and fetch chapters
+  // Open book and fetch all chapters with content at once using original script
   const openBook = useCallback(async (book: Book) => {
     setSelectedBook(book);
     setChapters([]);
     setSelectedChapterIdx(null);
+    setLoadingChapter(true);
     
     try {
-      console.log('📚 Alexandria: Fetching chapters for:', book.title);
+      console.log('📚 Alexandria: Fetching all chapters with content for:', book.title);
       const result = await fcl.query({
-        cadence: getChapterTitlesScript,
+        cadence: getBookChaptersScript,
         args: (arg: any, t: any) => [arg(book.title, t.String)]
       });
       
-      console.log('📚 Alexandria: Chapters:', result);
+      console.log('📚 Alexandria: Book resource:', result);
       
-      const chapterList = (result || []).map((title: string) => ({
-        title,
-        paragraphs: null
-      }));
+      if (!result) {
+        throw new Error('Book not found');
+      }
       
-      // Sort chapters by their numbers (handles both Arabic and Roman numerals)
-      const sortedChapters = sortChapters(chapterList);
+      // Parse the Book resource - it has a Chapters field (matching Alexandria Library pattern)
+      const chaptersData = result.Chapters || {};
+      const entries = Object.values(chaptersData);
       
-      setChapters(sortedChapters);
-      if (sortedChapters.length > 0) {
+      const normalized = entries
+        .map((c: any) => ({
+          title: c.chapterTitle,
+          paragraphs: c.paragraphs,
+          index: typeof c.index === 'string' ? parseInt(c.index, 10) : c.index,
+        }))
+        .filter((c: any) => c.title && Array.isArray(c.paragraphs))
+        .sort((a: any, b: any) => (a.index ?? 0) - (b.index ?? 0))
+        .map(({ title, paragraphs }: any) => ({ 
+          title, 
+          paragraphs: paragraphs.length > 0 ? paragraphs : null 
+        }));
+      
+      // Apply chapter number sorting as a secondary sort (handles Roman numerals)
+      const finalChapters = sortChapters(normalized);
+      
+      console.log('📚 Alexandria: Loaded', finalChapters.length, 'chapters');
+      
+      setChapters(finalChapters);
+      if (finalChapters.length > 0) {
         setSelectedChapterIdx(0); // Always start with the first chapter after sorting
       }
     } catch (error) {
       console.error('📚 Alexandria: Error fetching chapters:', error);
+      // Fallback to fetching just titles if batch fetch fails
+      try {
+        const result = await fcl.query({
+          cadence: getChapterTitlesScript,
+          args: (arg: any, t: any) => [arg(book.title, t.String)]
+        });
+        
+        const chapterList = (result || []).map((title: string) => ({
+          title,
+          paragraphs: null
+        }));
+        
+        const sortedChapters = sortChapters(chapterList);
+        setChapters(sortedChapters);
+        if (sortedChapters.length > 0) {
+          setSelectedChapterIdx(0);
+        }
+      } catch (fallbackError) {
+        console.error('📚 Alexandria: Fallback fetch also failed:', fallbackError);
+      }
+    } finally {
+      setLoadingChapter(false);
     }
   }, []);
-
-  // Fetch chapter content
-  useEffect(() => {
-    if (!selectedBook || selectedChapterIdx === null || !chapters[selectedChapterIdx]) return;
-    
-    const chapter = chapters[selectedChapterIdx];
-    if (chapter.paragraphs !== null) return; // Already loaded
-    
-    const fetchContent = async () => {
-      setLoadingChapter(true);
-      const paragraphs: string[] = [];
-      let consecutiveEmpty = 0;
-      let index = 0;
-      
-      try {
-        console.log('📚 Alexandria: Loading paragraphs for:', chapter.title);
-        while (consecutiveEmpty < 3 && index < 200) {  // Max 200 paragraphs safety limit
-          try {
-            const para = await fcl.query({
-              cadence: getChapterParagraphScript,
-              args: (arg: any, t: any) => [
-                arg(selectedBook.title, t.String),
-                arg(chapter.title, t.String),
-                arg(String(index), t.Int)
-              ]
-            });
-            
-            if (para && para.length > 0) {
-              paragraphs.push(para);
-              consecutiveEmpty = 0;
-            } else {
-              consecutiveEmpty++;
-            }
-          } catch {
-            consecutiveEmpty++;
-          }
-          index++;
-        }
-        
-        console.log('📚 Alexandria: Loaded', paragraphs.length, 'paragraphs');
-        
-        setChapters(prev => {
-          const updated = [...prev];
-          updated[selectedChapterIdx] = {
-            ...updated[selectedChapterIdx],
-            paragraphs
-          };
-          return updated;
-        });
-      } catch (error) {
-        console.error('📚 Alexandria: Error fetching chapter content:', error);
-      } finally {
-        setLoadingChapter(false);
-      }
-    };
-    
-    fetchContent();
-  }, [selectedBook, selectedChapterIdx, chapters]);
 
   // Render Reader View
   if (selectedBook) {
@@ -764,10 +756,10 @@ const AlexandriaLibrary: React.FC = () => {
           )}
           
           <ReaderContent>
-            {!currentChapter ? (
+            {loadingChapter ? (
               <LoadingText>Loading chapters...</LoadingText>
-            ) : loadingChapter && currentChapter.paragraphs === null ? (
-              <LoadingText>Loading chapter content...</LoadingText>
+            ) : !currentChapter ? (
+              <LoadingText>Loading chapters...</LoadingText>
             ) : currentChapter.paragraphs && currentChapter.paragraphs.length > 0 ? (
               <>
                 <ChapterTitle>{currentChapter.title}</ChapterTitle>
